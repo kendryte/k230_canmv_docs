@@ -1,0 +1,139 @@
+# docker image from https://github.com/DavidAnson/markdownlint-cli2
+# vscode markdownlint https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint
+# markdownlint-cli2: https://github.com/DavidAnson/markdownlint-cli2
+# markdownlint rules: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+# markdown-link-check: https://github.com/tcort/markdown-link-check
+#
+variables:
+  GITLAB_REPO: git@g.a-bug.org:maix_sw/k230_canmv_docs.git
+  GITHUB_REPO: git@github.com:kendryte/k230_canmv_docs.git
+  GITEE_REPO: git@gitee.com:kendryte/k230_canmv_docs.git
+
+default:
+  interruptible: true
+
+# MR merged
+merge_sync:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"
+  extends:
+    - .setup_env
+    - .sync_github_gitee
+
+# tag push
+tag_sync:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG =~ /^v\d+\.\d+.*$/
+  extends:
+    - .setup_env
+    - .sync_github_gitee
+
+# auto sync
+schedule_sync:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  extends:
+    - .setup_env
+    - .sync_github_gitee
+
+# manual sync
+manual_sync:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+  extends:
+    - .setup_env
+    - .sync_github_gitee
+
+# new MR open
+markdown-link-check:
+  rules:
+    # MR job
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  stage: test
+  timeout: 10m
+  tags:
+    - k230
+  image: ai.b-bug.org:5000/markdown:latest
+  script:
+    - uname -a
+    - whoami
+    - pwd
+    - find . -name \*.md -print0 | xargs -0 -n1 markdown-link-check -q
+
+# new MR open
+markdownlint:
+  rules:
+    # MR job
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  stage: test
+  timeout: 10m
+  image: ai.b-bug.org:5000/markdown:latest
+  tags:
+    - k230
+  script:
+    - uname -a
+    - whoami
+    - pwd
+    #- markdownlint-cli2 *.md **/*.md **/**/*.md **/**/**/*.md **/**/**/**/*.md
+    - find . -name \*.md -print0 | xargs -0 markdownlint-cli2
+
+.setup_env:
+  before_script:
+    - echo '----------Build ENV Prepare----------'
+    - echo 'Add SSH KEY for Multiple repo'
+    - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | ssh-add - > ~/.ssh/id_ed25519 || exit 1
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n    StrictHostKeyChecking no\n" > ~/.ssh/config'
+    - echo $SHELL
+    - echo "increate ssh timeout for github"
+    - echo "    ServerAliveInterval 30" >> ~/.ssh/config
+    - echo "    ServerAliveCountMax 60" >> ~/.ssh/config
+    - echo "    TCPKeepAlive yes" >> ~/.ssh/config
+    - cat ~/.ssh/config
+    - whoami
+    - uptime
+    - pwd
+    - uname -a
+    - cat /etc/issue
+    - echo $CI_PROJECT_DIR
+    - echo $CI_PROJECT_NAME
+    - echo '----------set git config ----------'
+    - echo "${GITLAB_USER_EMAIL}"
+    - echo "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global --add safe.directory $CI_PROJECT_DIR
+
+.sync_github_gitee:
+  timeout: 45m
+  image: ai.b-bug.org:5000/k230_sdk:latest
+  tags:
+    - k230_sdk
+  script:
+    - cd $CI_PROJECT_DIR
+    - ls -alht
+    - rm -rf ./k230_canmv_docs/
+    - git clone ${GITLAB_REPO} k230_canmv_docs || exit 1
+    - cd k230_canmv_docs || exit 1
+    - pwd
+    - git checkout main
+    - git branch -a
+    - git status
+    - echo '---pull latest main branch---'
+    - git pull origin main
+    - echo '---fetch all tags---'
+    - git fetch --tags
+    - git remote add github ${GITHUB_REPO}
+    - git remote add gitee ${GITEE_REPO}
+    - git remote -v
+    - git branch -a
+    - git status
+    - echo "---push to gitee---"
+    - git push --atomic --tags -u -f gitee main || git push --atomic --tags -u -f gitee main
+    - echo "---push to github---"
+    - git push --atomic --tags -u -f github main || git push --atomic --tags -u -f github main || git push --atomic --tags -u -f github main
+
