@@ -1,0 +1,5 @@
+_build
+venv
+*.pyc
+_templates/layout.html
+

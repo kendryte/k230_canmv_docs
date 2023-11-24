@@ -59,7 +59,10 @@ markdown-link-check:
     - uname -a
     - whoami
     - pwd
-    - find . -name \*.md -print0 | xargs -0 -n1 markdown-link-check -q
+    #- find . -name \*.md -print0 | xargs -0 -n1 markdown-link-check -q
+    - git fetch
+    - git diff origin/dev --name-only -z
+    - git diff origin/dev --name-only -z | (grep "\\.md$" || echo zh/CanMV-K230常见问题解答.md) | xargs markdown-link-check
 
 # new MR open
 markdownlint:
@@ -76,7 +79,10 @@ markdownlint:
     - whoami
     - pwd
     #- markdownlint-cli2 *.md **/*.md **/**/*.md **/**/**/*.md **/**/**/**/*.md
-    - find . -name \*.md -print0 | xargs -0 markdownlint-cli2
+    #- find . -name \*.md -print0 | xargs -0 markdownlint-cli2
+    - git fetch
+    - git diff origin/dev --name-only -z
+    - git diff origin/dev --name-only -z | (grep "\\.md$" || echo zh/CanMV-K230常见问题解答.md) | xargs markdownlint-cli2
 
 .setup_env:
   before_script:
@@ -137,3 +143,24 @@ markdownlint:
     - echo "---push to github---"
     - git push --atomic --tags -u -f github main || git push --atomic --tags -u -f github main || git push --atomic --tags -u -f github main
 
+build-web-docs:
+  stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "dev"
+  image: ai.b-bug.org:5000/python:web-docs
+  tags:
+    - k230
+  environment:
+    name: dev
+    url: https://ai.b-bug.org/k230/k230_canmv_docs/dev/
+  script:
+    - git fetch
+    - git checkout dev
+    - git pull
+    - python3 preprocess.py
+    - git config --global user.email "auto@canaan-creative.com"
+    - git config --global user.name "GitLab CI"
+    - git commit "*.md" -m "remove cover"
+    - make mhtml
+    - rm -rf /data1/k230/k230_canmv_docs/*
+    - cp -r _build/* /data1/k230/k230_canmv_docs
