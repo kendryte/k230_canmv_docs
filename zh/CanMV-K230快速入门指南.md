@@ -86,9 +86,9 @@ Linux串口显示如下：
 
 ### 4.1 固件获取
 
-CanMV-K230 固件下载地址： <https://github.com/kendryte/k230_canmv/releases>
+CanMV-K230 固件下载地址： <https://github.com/kendryte/k230_canmv/releases> 或者 <https://developer.canaan-creative.com/resource>
 
-请下载“sysimage-sdcard.img.gz”结尾的gz压缩包，解压得到sysimage-sdcard.img文件，即为CanMV-K230的固件。
+请下载“CanMV-K230_micropython”开头的gz压缩包，解压得到sysimage-sdcard.img文件，即为CanMV-K230的固件。
 
 ### 4.2 固件烧录
 
@@ -131,9 +131,7 @@ Windows下可通过balena Etcher工具对TF卡进行烧录（balena Etcher工具
 
 ## 5 CanMV-IDE下载
 
-下载地址 : <https://github.com/kendryte/canmv_ide/releases>
-
-用户也可以选择使用 OpenMV IDE : <https://github.com/openmv/openmv-ide/releases>
+下载地址 : <https://kendryte-download.canaan-creative.com/developer/common/canmv-ide-4.0.5.exe>
 
 ## 6 启动系统
 
@@ -145,11 +143,8 @@ Windows下可通过balena Etcher工具对TF卡进行烧录（balena Etcher工具
 打开CanMV-IDE，连接开发板如下图所示
 ![Canmv-link-board](images/Canmv-link-board.png)
 
-点击左下角红框按钮，选择串口，点击OK进行连接。
+点击左下角红框按钮。
 
-等待下图框消失
-
-![canmv_waiting](images/canmv_waiting.png)
 ![canmv_connect_pass](images/canmv_connect_pass.png)
 
 左下角图标变为绿色三角，即为连接成功。

@@ -78,14 +78,14 @@ K230 CanMV没有在其他Linux版本的主机环境下验证过，不保证可�
 说明：本章节命令仅供参考，文件名请根据实际情况进行替换。
 
 ```sh
-git clone git@g.a-bug.org:maix_sw/k230_canmv.git
+git clone https://github.com/kendryte/k230_canmv.git
 cd k230_canmv
 make prepare_sourcecode
 # 生成docker镜像（第一次编译需要，已经生成docker镜像后跳过此步骤，可选）
 docker build -f k230_sdk/tools/docker/Dockerfile -t k230_docker k230_sdk/tools/docker
 # 启动docker环境(可选)
 docker run -u root -it -v $(pwd):$(pwd) -v $(pwd)/k230_sdk/toolchain:/opt/toolchain -w $(pwd) k230_docker /bin/bash
-# 默认使用EVB板卡，如果需要使用其他板卡，请使用 make CONF=k230_xx_defconfig，支持的板卡在configs目录下
+# 默认使用CanMV板卡，如果需要使用其他板卡，请使用 make CONF=k230_xx_defconfig，支持的板卡在configs目录下
 make CONF=k230_canmv_defconfig
 ```
 

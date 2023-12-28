@@ -156,7 +156,7 @@ build-web-docs:
   script:
     - git fetch
     - git checkout dev
-    - git pull
+    - git reset --hard origin/dev
     - python3 preprocess.py
     - git config --global user.email "auto@canaan-creative.com"
     - git config --global user.name "GitLab CI"

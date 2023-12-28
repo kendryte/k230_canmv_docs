@@ -64,15 +64,11 @@ K230 使用的 CanMV IDE 与 K210 的一致，可以在[这里](https://github.c
 
 ### 2.1 连接开发板
 
-将开发板的USB端口连接到电脑，点击界面左下角的连接按钮。
+将开发板的USB端口连接到电脑，点击界面左下角的连接按钮，等待连接完成。
 
 ![IDE connect](images/ide-2.png)
 
-选择 USB 端口对应的COM号，如图为 COM14，并点击 OK ，等待连接完成。
-
-![COM port](images/ide-3.png)
-
-如果使用 OpenMV IDE，则直接点击左下角的连接按钮即可。
+如果使用 OpenMV IDE，同样直接点击左下角的连接按钮即可。
 
 ![OpenMV IDE connect](images/openmv-ide-connect.png)
 
@@ -84,18 +80,22 @@ K230 使用的 CanMV IDE 与 K210 的一致，可以在[这里](https://github.c
 
 ### 2.3 保存代码和文件到开发板
 
-点击菜单栏中的`工具`或者`Tools`选项，前三个选项都可以将文件保存到开发板的`/sdcard`目录下。
+点击菜单栏中的`工具`或者`Tools`选项，有两个选项可以将文件保存到开发板的`/sdcard`目录下。
 
-前两个选项会分别将当前打开的文件保存为固定的`boot.py`或`main.py`，这两个文件功能一致，都是在CanMV启动时运行，但是`boot.py`会先运行，`main.py`后运行。
+第一个选项将当前打开的脚本文件保存为固定的`main.py`，会在CanMV启动时运行。
 
-第三个选项`保存文件到CanMV Cam`可以保存一个指定的文件到开发板。
+第二个选项`保存文件到CanMV Cam`可以保存一个指定的文件到开发板的指定路径上，注意由于只有 SD 卡上的路径可读写，所以实际的路径是 `/sdcard/<填写的路径>`
 
 ![Save](images/ide-5.png)
 
 ### 2.4 在 IDE 中显示图像
 
-openmv 提供了 image 类，对 image 对象调用 `compress_for_ide()` 方法可以将图像发送到 IDE 进行显示，如果图像来源是 camera 并且像素格式为 YUV420SP，会自动使用硬件编码器进行图像编码，此时会占用 VENC 模块的第4通道。
+当启用显示输出（即调用 `display.init()`）时，IDE会显示与 LCD 或 HDMI 相同的图像，也可以使用 image 类，对 image 对象调用 `compress_for_ide()` 方法将指定图像发送到 IDE 进行显示，如果图像来源是 camera 并且像素格式为 YUV420SP，会自动使用硬件编码器进行图像编码，此时会占用 VENC 模块的第4通道。可以参考示例中的 `Media/camera_480p.py`
 
-![IDE 显示图像](images/ide_image.png)
+![IDE 显示图像](images/ide.png)
 
-由于 CanMV IDE 是基于2.9.2版本的OpenMV IDE，使用Qt5，性能较低，图像帧率只能达到20FPS左右，使用4.0以上版本的 OpenMV IDE 可以获得较高的帧率。
+### 2.5 更新资源
+
+当有新的资源（示例和 kmodel 等）可用时，IDE 会在开启时弹出对话框提示更新，点击“安装”按钮即可进行更新。
+
+![资源更新](images/ide-update.png)

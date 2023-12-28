@@ -40,9 +40,9 @@
 
 ## 一、概述
 
-本文档包括19个AI Demo，这些示例程序都实现从摄像头采集数据、kpu推理到显示器展示的流程，应用到了K230 CanMV 平台的多个硬件模块：AI2D，KPU，Camera，Display等。
+本文档包括26个AI Demo，这些示例程序都实现从摄像头采集数据、kpu推理到显示器展示的流程，应用到了K230 CanMV 平台的多个硬件模块：AI2D，KPU，Camera，Display等。
 
-这些AI Demo分为两种类型：单模型、多模型，涵盖物体、人脸、人手、人体、车牌、OCR等方向；参考该文档，k230用户可以更快上手K230 AI应用的开发，实现预期效果。
+这些AI Demo分为两种类型：单模型、多模型，涵盖物体、人脸、人手、人体、车牌、OCR，KWS等方向；参考该文档，k230用户可以更快上手K230 AI应用的开发，实现预期效果。
 
 更多AI Demo后续即将解锁。
 
@@ -57,7 +57,13 @@
 | 人体检测 | OCR识别    |
 | 人体姿态估计 | 手掌关键点检测 |
 | KWS | 静态手势识别   |
-|  | 人脸mesh   |
+| 跌倒检测 | 人脸mesh   |
+|  | 注视估计 |
+|  | 动态手势识别 |
+|  | 单目标跟踪 |
+|  | 隔空放大 |
+|  | 拼图游戏 |
+|  | 基于关键点的手势识别 |
 
 ## 二、AI Demo单模型示例解析
 
@@ -80,9 +86,9 @@ import gc                    #垃圾回收模块
 | 模块           | 说明                             |
 | ---------------------- | ------------------------------------------------------------ |
 | image（必选）      | 图像模块，主要用于读取、图像绘制元素（框、点等）等操作       |
-| media.camera（必选）   | [摄像头模块](https://github.com/kendryte/k230_canmv_docs/blob/main/zh/01_software/mpp/K230_CanMV_Camera%E6%A8%A1%E5%9D%97API%E6%89%8B%E5%86%8C.md) |
-| media.display （必选） | [显示模块](https://github.com/kendryte/k230_canmv_docs/blob/main/zh/01_software/mpp/K230_CanMV_Display%E6%A8%A1%E5%9D%97API%E6%89%8B%E5%86%8C.md) |
-| media.media（必选）    | [媒体软件抽象模块，主要封装媒体数据链路以及媒体缓冲区](https://github.com/kendryte/k230_canmv_docs/blob/main/zh/01_software/mpp/K230_CanMV_Media%E6%A8%A1%E5%9D%97API%E6%89%8B%E5%86%8C.md) |
+| media.camera（必选）   | [摄像头模块](../api/mpp/K230_CanMV_Camera%E6%A8%A1%E5%9D%97API%E6%89%8B%E5%86%8C.md) |
+| media.display （必选） | [显示模块](../api/mpp/K230_CanMV_Display%E6%A8%A1%E5%9D%97API%E6%89%8B%E5%86%8C.md) |
+| media.media（必选）    | [媒体软件抽象模块，主要封装媒体数据链路以及媒体缓冲区](../api/mpp/K230_CanMV_Media%E6%A8%A1%E5%9D%97API%E6%89%8B%E5%86%8C.md) |
 | nncase_runtime（必选） | nncase运行时模块，  封装了kpu（kmodel推理）和ai2d（图片预处理加速）操作 |
 | aidemo（可选）     | 封装部分ai demo相关后处理、复杂画图操作              |
 | aicube（可选）     | 封装基于ai cube训练的检测分割等任务的后处理          |
@@ -128,18 +134,18 @@ ScopedTiming 类是一个用来测量代码块执行时间的上下文管理器�
 #********************for scoped_timing.py********************
 class ScopedTiming:
     def __init__(self, info="", enable_profile=True):
-    self.info = info
-    self.enable_profile = enable_profile
+        self.info = info
+        self.enable_profile = enable_profile
 
     def __enter__(self):
-    if self.enable_profile:
-        self.start_time = time.time_ns()
-    return self
+        if self.enable_profile:
+            self.start_time = time.time_ns()
+        return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-    if self.enable_profile:
-        elapsed_time = time.time_ns() - self.start_time
-        print(f"{self.info} took {elapsed_time / 1000000:.2f} ms")
+        if self.enable_profile:
+            elapsed_time = time.time_ns() - self.start_time
+            print(f"{self.info} took {elapsed_time / 1000000:.2f} ms")
 ```
 
 **使用示例：**
@@ -163,22 +169,22 @@ import nncase_runtime as nn
 # 注：此示例仅为基础用法，其它demo可根据实际情况调整
 def get_pad_one_side_param():
     # 右padding或下padding，获取padding参数
-    dst_w = kmodel_input_shape[3]    # kmodel输入宽（w）
+    dst_w = kmodel_input_shape[3]                         # kmodel输入宽（w）
     dst_h = kmodel_input_shape[2]                          # kmodel输入高（h）
-    
+
     # OUT_RGB888P_WIDTH：原图宽（w）
     # OUT_RGB888P_HEIGH：原图高（h）
     # 计算最小的缩放比例，等比例缩放
     ratio_w = dst_w / OUT_RGB888P_WIDTH
     ratio_h = dst_h / OUT_RGB888P_HEIGH
     if ratio_w < ratio_h:
-    ratio = ratio_w
+        ratio = ratio_w
     else:
-    ratio = ratio_h
+        ratio = ratio_h
     # 计算经过缩放后的新宽和新高
     new_w = (int)(ratio * OUT_RGB888P_WIDTH)
     new_h = (int)(ratio * OUT_RGB888P_HEIGH)
-    
+
     # 计算需要添加的padding，以使得kmodel输入的宽高和原图一致
     dw = (dst_w - new_w) / 2
     dh = (dst_h - new_h) / 2
@@ -226,10 +232,10 @@ def ai2d_demo(rgb888p_img):
     #file.write(ai2d_out_data.tobytes())
         
         # （7）删除 ai2d、ai2d_input_tensor、ai2d_output_tensor、ai2d_builder 变量，释放对它所引用对象的内存引用
-        del ai2d
-        del ai2d_input_tensor
-        del ai2d_output_tensor
-        del ai2d_builder
+    del ai2d
+    del ai2d_input_tensor
+    del ai2d_output_tensor
+    del ai2d_builder
 ```
 
 ##### （2）ai2d示例用法一：ai2d参数固定
@@ -254,44 +260,44 @@ def get_pad_one_side_param():
 def ai2d_init():
     # 初始化AI2D模块
     with ScopedTiming("ai2d_init",debug_mode > 0):
-    global ai2d
-    # （1）创建ai2d实例
-    ai2d = nn.ai2d()
-    # （2）设置ai2d参数
-    # 设置ai2d输入、输出格式和数据类型
-    ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
-                       nn.ai2d_format.NCHW_FMT,
-                       np.uint8, np.uint8)
-    # 设置padding参数
-    ai2d.set_pad_param(True, get_pad_one_side_param(), 0, rgb_mean)
-    # 设置resize参数
-    ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
-        
-        # （3）创建ai2d输出，用于保存ai2d输出结果
-    global ai2d_output_tensor
-    data = np.ones(kmodel_input_shape, dtype=np.uint8)
-    ai2d_output_tensor = nn.from_numpy(data)
-        
-        # （4）根据ai2d参数构建ai2d_builder，因为ai2d的参数不变，因此只需创建一次ai2d_builder
-    global ai2d_builder
-    ai2d_builder = ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], kmodel_input_shape)
+        global ai2d
+        # （1）创建ai2d实例
+        ai2d = nn.ai2d()
+        # （2）设置ai2d参数
+        # 设置ai2d输入、输出格式和数据类型
+        ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                           nn.ai2d_format.NCHW_FMT,
+                           np.uint8, np.uint8)
+        # 设置padding参数
+        ai2d.set_pad_param(True, get_pad_one_side_param(), 0, rgb_mean)
+        # 设置resize参数
+        ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
+            
+            # （3）创建ai2d输出，用于保存ai2d输出结果
+        global ai2d_output_tensor
+        data = np.ones(kmodel_input_shape, dtype=np.uint8)
+        ai2d_output_tensor = nn.from_numpy(data)
+            
+            # （4）根据ai2d参数构建ai2d_builder，因为ai2d的参数不变，因此只需创建一次ai2d_builder
+        global ai2d_builder
+        ai2d_builder = ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], kmodel_input_shape)
 
 
 def ai2d_run(rgb888p_img):
     with ScopedTiming("ai2d_run",debug_mode > 0):
-    global ai2d_input_tensor,ai2d_output_tensor
-    # （1）创建ai2d输入对象，并将对象从numpy转换为tensor
-    ai2d_input = rgb888p_img.to_numpy_ref()
-    ai2d_input_tensor = nn.from_numpy(ai2d_input)
-        
-        # （2）根据输入，ai2d参数，运行得到ai2d输出，将结果保存到ai2d_output_tensor中
-    ai2d_builder.run(ai2d_input_tensor, ai2d_output_tensor)
+        global ai2d_input_tensor,ai2d_output_tensor
+        # （1）创建ai2d输入对象，并将对象从numpy转换为tensor
+        ai2d_input = rgb888p_img.to_numpy_ref()
+        ai2d_input_tensor = nn.from_numpy(ai2d_input)
+            
+            # （2）根据输入，ai2d参数，运行得到ai2d输出，将结果保存到ai2d_output_tensor中
+        ai2d_builder.run(ai2d_input_tensor, ai2d_output_tensor)
 
 def ai2d_release():
     with ScopedTiming("ai2d_release",debug_mode > 0):
-    global ai2d_input_tensor
-    # 删除 ai2d_input_tensor 变量，释放对它所引用对象的内存引用
-    del ai2d_input_tensor
+        global ai2d_input_tensor
+        # 删除 ai2d_input_tensor 变量，释放对它所引用对象的内存引用
+        del ai2d_input_tensor
 ```
 
 **使用示例：**
@@ -333,50 +339,50 @@ def get_affine_matrix(bbox):
 
 def fld_ai2d_init():
     with ScopedTiming("fld_ai2d_init",debug_mode > 0):
-    #for face landmark
-    global fld_ai2d
-    # （1）创建人脸关键点ai2d对象
-    fld_ai2d = nn.ai2d()
-
-    global fld_ai2d_output_tensor
-    # （2）创建人脸关键点ai2d_output_tensor对象
-    data = np.ones(fld_kmodel_input_shape, dtype=np.uint8)
-    fld_ai2d_output_tensor = nn.from_numpy(data)
+        #for face landmark
+        global fld_ai2d
+        # （1）创建人脸关键点ai2d对象
+        fld_ai2d = nn.ai2d()
+    
+        global fld_ai2d_output_tensor
+        # （2）创建人脸关键点ai2d_output_tensor对象
+        data = np.ones(fld_kmodel_input_shape, dtype=np.uint8)
+        fld_ai2d_output_tensor = nn.from_numpy(data)
 
 def fld_ai2d_run(rgb888p_img,det):
     # 人脸关键点ai2d运行，rgb888p_img是Image对象，det为人脸检测框
     with ScopedTiming("fld_ai2d_run",debug_mode > 0):
-    global fld_ai2d,fld_ai2d_input_tensor,fld_ai2d_output_tensor
-    # （1）创建ai2d_input_tensor
-    # Image对象转换为numpy对象
-    ai2d_input = rgb888p_img.to_numpy_ref()
-    # 将numpy对象转换为ai2d_tensor
-    fld_ai2d_input_tensor = nn.from_numpy(ai2d_input)
+        global fld_ai2d,fld_ai2d_input_tensor,fld_ai2d_output_tensor
+        # （1）创建ai2d_input_tensor
+        # Image对象转换为numpy对象
+        ai2d_input = rgb888p_img.to_numpy_ref()
+        # 将numpy对象转换为ai2d_tensor
+        fld_ai2d_input_tensor = nn.from_numpy(ai2d_input)
+        
+        # （2）设置ai2d参数
+        # 设置ai2d输入、输出格式、数据类型
+        fld_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                           nn.ai2d_format.NCHW_FMT,
+                           np.uint8, np.uint8)
+        global matrix_dst
+        # 根据检测框获取affine参数
+        matrix_dst = get_affine_matrix(det)
+        affine_matrix = [matrix_dst[0][0],matrix_dst[0][1],matrix_dst[0][2],
+            matrix_dst[1][0],matrix_dst[1][1],matrix_dst[1][2]]
+        # 设置affine参数
+        fld_ai2d.set_affine_param(True,nn.interp_method.cv2_bilinear,0, 0, 127, 1,affine_matrix)
     
-    # （2）设置ai2d参数
-    # 设置ai2d输入、输出格式、数据类型
-    fld_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
-                       nn.ai2d_format.NCHW_FMT,
-                       np.uint8, np.uint8)
-    global matrix_dst
-    # 根据检测框获取affine参数
-    matrix_dst = get_affine_matrix(det)
-    affine_matrix = [matrix_dst[0][0],matrix_dst[0][1],matrix_dst[0][2],
-        matrix_dst[1][0],matrix_dst[1][1],matrix_dst[1][2]]
-    # 设置affine参数
-    fld_ai2d.set_affine_param(True,nn.interp_method.cv2_bilinear,0, 0, 127, 1,affine_matrix)
-
-    global fld_ai2d_builder
-    # （3）根据新的ai2d affine参数，创建新的ai2d_builder对象
-    fld_ai2d_builder = fld_ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], fld_kmodel_input_shape)
-    # （4）ai2d_builder运行，将结果保存到fld_ai2d_output_tensor
-    fld_ai2d_builder.run(fld_ai2d_input_tensor, fld_ai2d_output_tensor)
+        global fld_ai2d_builder
+        # （3）根据新的ai2d affine参数，创建新的ai2d_builder对象
+        fld_ai2d_builder = fld_ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], fld_kmodel_input_shape)
+        # （4）ai2d_builder运行，将结果保存到fld_ai2d_output_tensor
+        fld_ai2d_builder.run(fld_ai2d_input_tensor, fld_ai2d_output_tensor)
 
 def fld_ai2d_release():
     with ScopedTiming("fld_ai2d_release",debug_mode > 0):
-    global fld_ai2d_input_tensor,fld_ai2d_builder
-    del fld_ai2d_input_tensor  #删除fld_ai2d_input_tensor变量，释放对它所引用对象的内存引用
-    del fld_ai2d_builder       #删除fld_ai2d_builder变量，释放对它所引用对象的内存引用
+        global fld_ai2d_input_tensor,fld_ai2d_builder
+        del fld_ai2d_input_tensor  #删除fld_ai2d_input_tensor变量，释放对它所引用对象的内存引用
+        del fld_ai2d_builder       #删除fld_ai2d_builder变量，释放对它所引用对象的内存引用
 ```
 
 **使用示例：**
@@ -440,12 +446,12 @@ global current_kmodel_obj                      #当前kpu对象
 def kpu_init(kmodel_file):
     # 初始化kpu对象，并加载kmodel
     with ScopedTiming("kpu_init",debug_mode > 0):
-    # （1）初始化kpu对象
-    kpu_obj = nn.kpu()
-    # （2）加载kmodel
-    kpu_obj.load_kmodel(kmodel_file)
-        # （3）ai2d初始化，模型输入需要预处理的情况下，kpu需要配合ai2d使用
-    ai2d_init()
+        # （1）初始化kpu对象
+        kpu_obj = nn.kpu()
+        # （2）加载kmodel
+        kpu_obj.load_kmodel(kmodel_file)
+            # （3）ai2d初始化，模型输入需要预处理的情况下，kpu需要配合ai2d使用
+        ai2d_init()
     return kpu_obj
 
 def kpu_pre_process(rgb888p_img):
@@ -453,21 +459,21 @@ def kpu_pre_process(rgb888p_img):
     # （1）ai2d运行，对原图进行预处理
     ai2d_run(rgb888p_img)
     with ScopedTiming("kpu_pre_process",debug_mode > 0):
-    global current_kmodel_obj,ai2d_output_tensor
-    # （2）将ai2d输出tensor设置为kpu模型输入
-    current_kmodel_obj.set_input_tensor(0, ai2d_output_tensor)
+        global current_kmodel_obj,ai2d_output_tensor
+        # （2）将ai2d输出tensor设置为kpu模型输入
+        current_kmodel_obj.set_input_tensor(0, ai2d_output_tensor)
 
 def kpu_get_output():
     # 获取kpu输出
     with ScopedTiming("kpu_get_output",debug_mode > 0):
-    global current_kmodel_obj
-    # 获取kpu输出，将输出转换为numpy格式，以便进行后处理
-    results = []
-    for i in range(current_kmodel_obj.outputs_size()):
-        data = current_kmodel_obj.get_output_tensor(i)
-        result = data.to_numpy()
-        del data             #tensor对象用完之后释放内存
-        results.append(result)
+        global current_kmodel_obj
+        # 获取kpu输出，将输出转换为numpy格式，以便进行后处理
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+            del data             #tensor对象用完之后释放内存
+            results.append(result)
     return results
     
 def kpu_run(kpu_obj,rgb888p_img):
@@ -477,29 +483,28 @@ def kpu_run(kpu_obj,rgb888p_img):
     # （1）kpu预处理
     kpu_pre_process(rgb888p_img)
     with ScopedTiming("kpu_run",debug_mode > 0):
-    # （2）kpu运行
-    kpu_obj.run()
+        # （2）kpu运行
+        kpu_obj.run()
     # （3）ai2d释放
     ai2d_release()
     # （4）获取模型输出
     results = kpu_get_output()
     # （5）kpu后处理，获取检测结果
     with ScopedTiming("kpu_post",debug_mode > 0):
-    post_ret = aidemo.face_det_post_process(confidence_threshold,nms_threshold,kmodel_input_shape[2],prior_data,[OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGH],results)
+        post_ret = aidemo.face_det_post_process(confidence_threshold,nms_threshold,kmodel_input_shape[2],prior_data,[OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGH],results)
     
     # （6）返回人脸检测框
     if len(post_ret)==0:
-    return post_ret
+        return post_ret
     else:
-    return post_ret[0]
+        return post_ret[0]
 
 # kpu释放
-def kpu_deinit(kpu_obj):
+def kpu_deinit():
     with ScopedTiming("kpu_deinit",debug_mode > 0):
-    global ai2d,ai2d_output_tensor
-    del kpu_obj                  #删除kpu_obj变量，释放对它所引用对象的内存引用
-    del ai2d                    #删除ai2d变量，释放对它所引用对象的内存引用
-    del ai2d_output_tensor        #删除ai2d_output_tensor变量，释放对它所引用对象的内存引用
+        global ai2d,ai2d_output_tensor
+        del ai2d                    #删除ai2d变量，释放对它所引用对象的内存引用
+        del ai2d_output_tensor        #删除ai2d_output_tensor变量，释放对它所引用对象的内存引用
 ```
 
 使用示例：
@@ -512,7 +517,10 @@ while True:
     dets = kpu_run(fd_kmodel,rgb888p_img)            # kmodel推理
     ......
 ......
-kpu_deinit(fd_kmodel)                   # 释放kmodel
+kpu_deinit()                   # 释放kmodel
+global current_kmodel_obj
+del current_kmodel_obj
+del fd_kmodel
 ```
 
 #### 1.6 媒体使用
@@ -552,13 +560,13 @@ def camera_start(dev_id):
 def camera_read(dev_id):
     # 读取指定设备chn2的一帧图像，即获取一帧AI原图
     with ScopedTiming("camera_read",debug_mode >0):
-    rgb888p_img = camera.capture_image(dev_id, CAM_CHN_ID_2)
+        rgb888p_img = camera.capture_image(dev_id, CAM_CHN_ID_2)
     return rgb888p_img
 
 def camera_release_image(dev_id,rgb888p_img):
     # 释放指定设备chn2一帧图像
     with ScopedTiming("camera_release_image",debug_mode >0):
-    camera.release_image(dev_id, CAM_CHN_ID_2, rgb888p_img)
+        camera.release_image(dev_id, CAM_CHN_ID_2, rgb888p_img)
 
 def camera_stop(dev_id):
     # 释放sensor
@@ -615,31 +623,31 @@ def display_deinit():
 def display_draw(dets):
     # 将检测框画到显示上
     with ScopedTiming("display_draw",debug_mode >0):
-    global draw_img,osd_img
-    if dets:
-        # 清空draw_img
-        draw_img.clear()
-        
-        # 画检测框
-        for det in dets:
-        x, y, w, h = map(lambda x: int(round(x, 0)), det[:4])
-        x = x * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
-        y = y * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
-        w = w * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
-        h = h * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH
-        # 先将框画到draw_img，argb
-        draw_img.draw_rectangle(x,y, w, h, color=(255, 255, 0, 255))
-        # 将draw_img拷贝到osd_img
-        draw_img.copy_to(osd_img)
-        # 将osd_img显示到hdmi上
-        display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
-    else:
-        # 清空draw_img
-        draw_img.clear()
-        # 将draw_img拷贝到osd_img
-        draw_img.copy_to(osd_img)
-        # 将透明图显示到hdmi上
-        display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+        global draw_img,osd_img
+        if dets:
+            # 清空draw_img
+            draw_img.clear()
+            
+            # 画检测框
+            for det in dets:
+            x, y, w, h = map(lambda x: int(round(x, 0)), det[:4])
+            x = x * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
+            y = y * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
+            w = w * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
+            h = h * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH
+            # 先将框画到draw_img，argb
+            draw_img.draw_rectangle(x,y, w, h, color=(255, 255, 0, 255))
+            # 将draw_img拷贝到osd_img
+            draw_img.copy_to(osd_img)
+            # 将osd_img显示到hdmi上
+            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+        else:
+            # 清空draw_img
+            draw_img.clear()
+            # 将draw_img拷贝到osd_img
+            draw_img.copy_to(osd_img)
+            # 将透明图显示到hdmi上
+            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
 ```
 
 **使用示例：**
@@ -685,7 +693,7 @@ def media_init():
     # （3）初始化K230 CanMV平台媒体缓冲区
     ret = media.buffer_init()
     if ret:
-    return ret
+        return ret
     
     global buffer, draw_img, osd_img
     # （4）构建用于画图的对象
@@ -723,54 +731,57 @@ rgb888p_img = None
 try:
     ret = media_init()      #媒体初始化（注：媒体初始化必须在camera_start之前，确保media缓冲区已配置完全）   
     if ret:
-    print("face_detect_test, buffer init failed")
-    return ret
+        print("face_detect_test, buffer init failed")
+        return ret
 
     camera_start(CAM_DEV_ID_0)        # 启动camera
     time.sleep(5)           # sleep 5s保证camera启动完全，可以拿到正确的图像
     while True:
-    with ScopedTiming("total",1):
-        # （1）读取一帧图像
-        rgb888p_img = camera_read(CAM_DEV_ID_0)          
-        if rgb888p_img == -1:
-            # 若读取失败，则释放当前帧
-        print("face_detect_test, capture_image failed")      
-        camera_release_image(CAM_DEV_ID_0,rgb888p_img)
-        rgb888p_img = None
-        continue
-
-        # for rgb888planar
-        if rgb888p_img.format() == image.RGBP888:
-            # （2）kpu推理，获取推理结果
-        dets = kpu_run(kpu_face_detect,rgb888p_img)
-        # （3）将推理结果画到原图
-        display_draw(dets)
-            
-            # （4）释放当前帧
-        camera_release_image(CAM_DEV_ID_0,rgb888p_img)
-        rgb888p_img = None
+        with ScopedTiming("total",1):
+            # （1）读取一帧图像
+            rgb888p_img = camera_read(CAM_DEV_ID_0)          
+            if rgb888p_img == -1:
+                # 若读取失败，则释放当前帧
+                print("face_detect_test, capture_image failed")      
+                camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+                rgb888p_img = None
+                continue
+    
+            # for rgb888planar
+            if rgb888p_img.format() == image.RGBP888:
+                # （2）kpu推理，获取推理结果
+                dets = kpu_run(kpu_face_detect,rgb888p_img)
+                # （3）将推理结果画到原图
+                display_draw(dets)
+                    
+                # （4）释放当前帧
+                camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+                rgb888p_img = None
 except Exception as e:
     print(f"An error occurred during buffer used: {e}")
 finally:
     # 注：无论程序是否正常停止，确保释放以下资源。保证下次的正确运行
     if rgb888p_img is not None:
-    #先release掉申请的内存，再stop camera
-    camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+        #先release掉申请的内存，再stop camera
+        camera_release_image(CAM_DEV_ID_0,rgb888p_img)
     
     # 释放camera资源
     camera_stop(CAM_DEV_ID_0)
     # 释放显示资源
     display_deinit()
     # 释放kpu资源
-    kpu_deinit(kpu_face_detect)
+    kpu_deinit()
+    global current_kmodel_obj
+    del current_kmodel_obj
+    del kpu_face_detect
     # 垃圾回收
     gc.collect()
     time.sleep(1)
     # 释放媒体资源
     ret = media_deinit()
     if ret:
-    print("face_detect_test, buffer_deinit failed")
-    return ret
+        print("face_detect_test, buffer_deinit failed")
+        return ret
 ```
 
 ### 2.人脸检测
@@ -973,12 +984,11 @@ def kpu_run(kpu_obj,rgb888p_img):
         return post_ret[0]
 
 
-def kpu_deinit(kpu_obj):
+def kpu_deinit():
     # kpu释放
     with ScopedTiming("kpu_deinit",debug_mode > 0):
         global ai2d,ai2d_output_tensor
-        del kpu_obj                  #删除kpu_obj变量，释放对它所引用对象的内存引用
-        del ai2d                    #删除ai2d变量，释放对它所引用对象的内存引用
+        del ai2d                      #删除ai2d变量，释放对它所引用对象的内存引用
         del ai2d_output_tensor        #删除ai2d_output_tensor变量，释放对它所引用对象的内存引用
 
 #********************for media_utils.py********************
@@ -1004,7 +1014,7 @@ def display_draw(dets):
             for det in dets:
                 x, y, w, h = map(lambda x: int(round(x, 0)), det[:4])
                 x = x * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
-                y = y * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
+                y = y * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH
                 w = w * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
                 h = h * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH
                 draw_img.draw_rectangle(x,y, w, h, color=(255, 255, 0, 255), thickness = 2)
@@ -1107,6 +1117,7 @@ def face_detect_inference():
         # 启动camera
         camera_start(CAM_DEV_ID_0)
         time.sleep(5)
+        gc_count = 0
         while True:
             with ScopedTiming("total",1):
                 # （1）读取一帧图像
@@ -1128,7 +1139,11 @@ def face_detect_inference():
                 # （4）释放当前帧
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)
                 rgb888p_img = None
-
+                if gc_count > 5:
+                    gc.collect()
+                    gc_count = 0
+                else:
+                    gc_count += 1
     except Exception as e:
         # 捕捉运行运行中异常，并打印错误
         print(f"An error occurred during buffer used: {e}")
@@ -1143,7 +1158,10 @@ def face_detect_inference():
         # 释放显示资源
         display_deinit()
         # 释放kpu资源
-        kpu_deinit(kpu_face_detect)
+        kpu_deinit()
+        global current_kmodel_obj
+        del current_kmodel_obj
+        del kpu_face_detect
         # 垃圾回收
         gc.collect()
         time.sleep(1)
@@ -1358,7 +1376,7 @@ def ai2d_init():
 # ai2d 运行
 def ai2d_run(rgb888p_img):
     with ScopedTiming("ai2d_run",debug_mode > 0):
-        global ai2d_input_tensor,ai2d_out_tensor
+        global ai2d_input_tensor,ai2d_out_tensor,ai2d_builder
         ai2d_input = rgb888p_img.to_numpy_ref()
         ai2d_input_tensor = nn.from_numpy(ai2d_input)
 
@@ -1424,9 +1442,10 @@ def kpu_run(kpu_obj,rgb888p_img):
 # kpu 释放内存
 def kpu_deinit(kpu_obj):
     with ScopedTiming("kpu_deinit",debug_mode > 0):
-        global ai2d,ai2d_out_tensor
+        global ai2d,ai2d_out_tensor,ai2d_builder
         del kpu_obj
         del ai2d
+        del ai2d_builder
         del ai2d_out_tensor
 
 #media_utils.py
@@ -1454,7 +1473,7 @@ def display_draw(dets):
                 w = (x2 - x1) * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
                 h = (y2 - y1) * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT
                 draw_img.draw_rectangle(x1 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH,
-                                        y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT, w, h, color=color_four[int(det[5])])
+                                        y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT, w, h, color=color_four[int(det[5])],thickness=4)
                 draw_img.draw_string( int(x1 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH) , int(y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)-50,
                                          " " + labels[int(det[5])] + " " + str(round(det[4],2)) , color=color_four[int(det[5])] , scale=4)
             draw_img.copy_to(osd_img)
@@ -1549,6 +1568,8 @@ def ob_detect_inference():
 
         camera_start(CAM_DEV_ID_0)
         time.sleep(5)
+
+        count = 0
         while True:
             with ScopedTiming("total",1):
                 rgb888p_img = camera_read(CAM_DEV_ID_0)             # 读取一帧图片
@@ -1565,7 +1586,12 @@ def ob_detect_inference():
 
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)      # camera 释放图像
                 rgb888p_img = None
-                # gc.collect()
+
+                if (count > 5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
     except Exception as e:
         print(f"An error occurred during buffer used: {e}")
     finally:
@@ -1628,6 +1654,29 @@ debug_mode = 0                                                  # debug模式 �
 
 #标签 多目标分割的所有可识别类别
 labels = ["person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"]
+
+#颜色板 用于作图
+color_four = [(255, 220, 20, 60), (255, 119, 11, 32), (255, 0, 0, 142), (255, 0, 0, 230),
+        (255, 106, 0, 228), (255, 0, 60, 100), (255, 0, 80, 100), (255, 0, 0, 70),
+        (255, 0, 0, 192), (255, 250, 170, 30), (255, 100, 170, 30), (255, 220, 220, 0),
+        (255, 175, 116, 175), (255, 250, 0, 30), (255, 165, 42, 42), (255, 255, 77, 255),
+        (255, 0, 226, 252), (255, 182, 182, 255), (255, 0, 82, 0), (255, 120, 166, 157),
+        (255, 110, 76, 0), (255, 174, 57, 255), (255, 199, 100, 0), (255, 72, 0, 118),
+        (255, 255, 179, 240), (255, 0, 125, 92), (255, 209, 0, 151), (255, 188, 208, 182),
+        (255, 0, 220, 176), (255, 255, 99, 164), (255, 92, 0, 73), (255, 133, 129, 255),
+        (255, 78, 180, 255), (255, 0, 228, 0), (255, 174, 255, 243), (255, 45, 89, 255),
+        (255, 134, 134, 103), (255, 145, 148, 174), (255, 255, 208, 186),
+        (255, 197, 226, 255), (255, 171, 134, 1), (255, 109, 63, 54), (255, 207, 138, 255),
+        (255, 151, 0, 95), (255, 9, 80, 61), (255, 84, 105, 51), (255, 74, 65, 105),
+        (255, 166, 196, 102), (255, 208, 195, 210), (255, 255, 109, 65), (255, 0, 143, 149),
+        (255, 179, 0, 194), (255, 209, 99, 106), (255, 5, 121, 0), (255, 227, 255, 205),
+        (255, 147, 186, 208), (255, 153, 69, 1), (255, 3, 95, 161), (255, 163, 255, 0),
+        (255, 119, 0, 170), (255, 0, 182, 199), (255, 0, 165, 120), (255, 183, 130, 88),
+        (255, 95, 32, 0), (255, 130, 114, 135), (255, 110, 129, 133), (255, 166, 74, 118),
+        (255, 219, 142, 185), (255, 79, 210, 114), (255, 178, 90, 62), (255, 65, 70, 15),
+        (255, 127, 167, 115), (255, 59, 105, 106), (255, 142, 108, 45), (255, 196, 172, 0),
+        (255, 95, 54, 80), (255, 128, 76, 255), (255, 201, 57, 1), (255, 246, 0, 122),
+        (255, 191, 162, 208)]
 
 #scoped_timing.py 用于debug模式输出程序块运行时间
 class ScopedTiming:
@@ -1702,7 +1751,7 @@ def ai2d_init():
 # ai2d 运行
 def ai2d_run(rgb888p_img):
     with ScopedTiming("ai2d_run",debug_mode > 0):
-        global ai2d_input_tensor,ai2d_out_tensor
+        global ai2d_input_tensor,ai2d_out_tensor,ai2d_builder
         ai2d_input = rgb888p_img.to_numpy_ref()
         ai2d_input_tensor = nn.from_numpy(ai2d_input)
 
@@ -1770,9 +1819,10 @@ def kpu_run(kpu_obj,rgb888p_img):
 # kpu 释放内存
 def kpu_deinit(kpu_obj):
     with ScopedTiming("kpu_deinit",debug_mode > 0):
-        global ai2d,ai2d_out_tensor
+        global ai2d,ai2d_out_tensor,ai2d_builder
         del kpu_obj
         del ai2d
+        del ai2d_builder
         del ai2d_out_tensor
 
 #media_utils.py
@@ -1800,7 +1850,7 @@ def display_draw(seg_res):
 
             for i, det in enumerate(dets):
                 x1, y1, w, h = map(lambda x: int(round(x, 0)), det)
-                draw_img.draw_string( int(x1) , int(y1)-50, " " + labels[int(ids[i])] + " " + str(round(scores[i],2)) , color=(255,0,0,0), scale=4)
+                draw_img.draw_string( int(x1) , int(y1)-50, " " + labels[int(ids[i])] + " " + str(round(scores[i],2)) , color=color_four[int(ids[i])], scale=4)
             draw_img.copy_to(osd_img)
             display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
         else:
@@ -1894,6 +1944,8 @@ def seg_inference():
 
         camera_start(CAM_DEV_ID_0)
         time.sleep(5)
+
+        count = 0
         while True:
             with ScopedTiming("total",1):
                 rgb888p_img = camera_read(CAM_DEV_ID_0)             # 读取一帧图片
@@ -1910,7 +1962,12 @@ def seg_inference():
 
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)      # camera 释放图像
                 rgb888p_img = None
-                #gc.collect()
+
+                if (count > 5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
     except Exception as e:
         print(f"An error occurred during buffer used: {e}")
     finally:
@@ -2016,7 +2073,7 @@ def ai2d_init():
 # ai2d 运行
 def ai2d_run(rgb888p_img):
     with ScopedTiming("ai2d_run",debug_mode > 0):
-        global ai2d_input_tensor,ai2d_out_tensor
+        global ai2d_input_tensor,ai2d_out_tensor,ai2d_builder
         ai2d_input = rgb888p_img.to_numpy_ref()
         ai2d_input_tensor = nn.from_numpy(ai2d_input)
 
@@ -2080,10 +2137,11 @@ def kpu_run(kpu_obj,rgb888p_img):
 # kpu 释放内存
 def kpu_deinit(kpu_obj):
     with ScopedTiming("kpu_deinit",debug_mode > 0):
-        global ai2d,ai2d_out_tensor
+        global ai2d,ai2d_out_tensor,ai2d_builder
         del kpu_obj
         del ai2d
         del ai2d_out_tensor
+        del ai2d_builder
 
 #media_utils.py
 global draw_img,osd_img                                     #for display 定义全局 作图image对象
@@ -2113,7 +2171,7 @@ def display_draw(dets):
                     point_8[i * 2 + 0] = int(x)
                     point_8[i * 2 + 1] = int(y)
                 for i in range(4):
-                    draw_img.draw_line(point_8[i * 2 + 0],point_8[i * 2 + 1],point_8[(i+1) % 4 * 2 + 0],point_8[(i+1) % 4 * 2 + 1],color=(255, 0, 255, 0),thickness=2)
+                    draw_img.draw_line(point_8[i * 2 + 0],point_8[i * 2 + 1],point_8[(i+1) % 4 * 2 + 0],point_8[(i+1) % 4 * 2 + 1],color=(255, 0, 255, 0),thickness=4)
             draw_img.copy_to(osd_img)
             display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
         else:
@@ -2206,6 +2264,8 @@ def licence_det_inference():
 
         camera_start(CAM_DEV_ID_0)
         time.sleep(5)
+
+        count = 0
         while True:
             with ScopedTiming("total",1):
                 rgb888p_img = camera_read(CAM_DEV_ID_0)                                 # 读取一帧图片
@@ -2222,7 +2282,12 @@ def licence_det_inference():
 
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)                          # camera 释放图像
                 rgb888p_img = None
-                # gc.collect()
+
+                if (count > 5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
     except Exception as e:
         print(f"An error occurred during buffer used: {e}")
     finally:
@@ -2563,6 +2628,7 @@ def ocr_det_inference():
 
         camera_start(CAM_DEV_ID_0)
         time.sleep(5)
+        count=0
         while True:
             with ScopedTiming("total",1):
                 rgb888p_img = camera_read(CAM_DEV_ID_0) # 读取一帧图像
@@ -2579,6 +2645,11 @@ def ocr_det_inference():
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)          # 释放内存
                 rgb888p_img = None
                 # gc.collect()
+                if (count>5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
     except Exception as e:
         print(f"An error occurred during buffer used: {e}")
     finally:
@@ -2626,7 +2697,7 @@ DISPLAY_HEIGHT = 1080
 
 ##ai原图分辨率输入
 OUT_RGB888P_WIDTH = ALIGN_UP(1920, 16)
-OUT_RGB888P_HEIGH = 1080
+OUT_RGB888P_HEIGHT = 1080
 
 #kmodel输入shape
 kmodel_input_shape = (1,3,512,512)                  # kmodel输入分辨率
@@ -2635,17 +2706,17 @@ kmodel_input_shape = (1,3,512,512)                  # kmodel输入分辨率
 confidence_threshold = 0.2                          # 手掌检测阈值，用于过滤roi
 nms_threshold = 0.5                                 # 手掌检测框阈值，用于过滤重复roi
 kmodel_frame_size = [512,512]                       # 手掌检测输入图片尺寸
-frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGH]  # 直接输入图片尺寸
+frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGHT] # 直接输入图片尺寸
 strides = [8,16,32]                                 # 输出特征图的尺寸与输入图片尺寸的比
 num_classes = 1                                     # 模型输出类别数
 nms_option = False                                  # 是否所有检测框一起做NMS，False则按照不同的类分别应用NMS
 labels = ["hand"]                                   # 模型输出类别名称
 
 root_dir = '/sdcard/app/tests/'
-kmodel_file = root_dir + 'kmodel/hand_det.kmodel'     # kmodel文件的路径
+kmodel_file = root_dir + 'kmodel/hand_det.kmodel'   # kmodel文件的路径
 anchors = [26,27, 53,52, 75,71, 80,99, 106,82, 99,134, 140,113, 161,172, 245,276]   #anchor设置
 
-debug_mode = 0                                              # debug模式 大于0（调试）、 反之 （不调试）
+debug_mode = 0                                      # debug模式 大于0（调试）、 反之 （不调试）
 
 #scoped_timing.py 用于debug模式输出程序块运行时间
 class ScopedTiming:
@@ -2676,7 +2747,7 @@ def ai2d_init():
         global ai2d_output_tensor
         # 计算padding值
         ori_w = OUT_RGB888P_WIDTH
-        ori_h = OUT_RGB888P_HEIGH
+        ori_h = OUT_RGB888P_HEIGHT
         width = kmodel_frame_size[0]
         height = kmodel_frame_size[1]
         ratiow = float(width) / ori_w
@@ -2700,14 +2771,14 @@ def ai2d_init():
                                        np.uint8, np.uint8)
         ai2d.set_pad_param(True, [0,0,0,0,top,bottom,left,right], 0, [114,114,114])
         ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
-        ai2d_builder = ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], [1,3,height,width])
+        ai2d_builder = ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,height,width])
         data = np.ones(kmodel_input_shape, dtype=np.uint8)
         ai2d_output_tensor = nn.from_numpy(data)
 
 # ai2d 运行
 def ai2d_run(rgb888p_img):
     with ScopedTiming("ai2d_run",debug_mode > 0):
-        global ai2d_input_tensor,ai2d_output_tensor
+        global ai2d_input_tensor, ai2d_output_tensor, ai2d_builder
         ai2d_input = rgb888p_img.to_numpy_ref()
         ai2d_input_tensor = nn.from_numpy(ai2d_input)
         ai2d_builder.run(ai2d_input_tensor, ai2d_output_tensor)
@@ -2772,13 +2843,14 @@ def kpu_run(kpu_obj,rgb888p_img):
 # kpu 释放内存
 def kpu_deinit(kpu_obj):
     with ScopedTiming("kpu_deinit",debug_mode > 0):
-        global ai2d, ai2d_output_tensor
+        global ai2d, ai2d_output_tensor, ai2d_builder
         del kpu_obj
         del ai2d
         del ai2d_output_tensor
+        del ai2d_builder
 
 #media_utils.py
-global draw_img,osd_img,masks                               #for display 定义全局 作图image对象
+global draw_img,osd_img                                     #for display 定义全局 作图image对象
 global buffer,media_source,media_sink                       #for media   定义 media 程序中的中间存储对象
 
 #for display 初始化
@@ -2801,12 +2873,12 @@ def display_draw(dets):
             for det_box in dets:
                 x1, y1, x2, y2 = det_box[2],det_box[3],det_box[4],det_box[5]
                 w = float(x2 - x1) * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
-                h = float(y2 - y1) * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH
+                h = float(y2 - y1) * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT
 
                 x1 = int(x1 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
-                y1 = int(y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH)
+                y1 = int(y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
                 x2 = int(x2 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
-                y2 = int(y2 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH)
+                y2 = int(y2 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
 
                 if (h<(0.1*DISPLAY_HEIGHT)):
                     continue
@@ -2814,8 +2886,8 @@ def display_draw(dets):
                     continue
                 if (w<(0.15*DISPLAY_WIDTH) and ((x1<(0.01*DISPLAY_WIDTH)) or (x2>(0.99*DISPLAY_WIDTH)))):
                     continue
-                draw_img.draw_rectangle(x1 , y1 , int(w) , int(h) , color=(255, 0, 255, 0))
-                draw_img.draw_string( x1 , y1-50, " " + labels[det_box[0]] + " " + str(round(det_box[1],2)) , color=(255,0, 255, 0), scale=4)
+                draw_img.draw_rectangle(x1 , y1 , int(w) , int(h), color=(255, 0, 255, 0), thickness = 2)
+                draw_img.draw_string( x1 , y1-50, " " + labels[det_box[0]] + " " + str(round(det_box[1],2)), color=(255,0, 255, 0), scale=4)
             draw_img.copy_to(osd_img)
             display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
         else:
@@ -2832,7 +2904,7 @@ def camera_init(dev_id):
     camera.set_outfmt(dev_id, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
 
     # set chn2 output rgb88planar
-    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGH)
+    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGHT)
     camera.set_outfmt(dev_id, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
 
 # camera 开启
@@ -2906,6 +2978,7 @@ def hand_detect_inference():
             return ret
 
         camera_start(CAM_DEV_ID_0)
+        count = 0
         while True:
             with ScopedTiming("total",1):
                 rgb888p_img = camera_read(CAM_DEV_ID_0)                 # 读取一帧图片
@@ -2922,7 +2995,12 @@ def hand_detect_inference():
 
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)          # camera 释放图像
                 rgb888p_img = None
-                #gc.collect()
+                if (count>10):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
+
     except Exception as e:
         print(f"An error occurred during buffer used: {e}")
     finally:
@@ -3051,7 +3129,7 @@ def ai2d_init():
 # ai2d 运行
 def ai2d_run(rgb888p_img):
     with ScopedTiming("ai2d_run",debug_mode > 0):
-        global ai2d_input_tensor,ai2d_output_tensor
+        global ai2d_input_tensor,ai2d_output_tensor,ai2d_builder
         ai2d_input = rgb888p_img.to_numpy_ref()
         ai2d_input_tensor = nn.from_numpy(ai2d_input)
         ai2d_builder.run(ai2d_input_tensor, ai2d_output_tensor)
@@ -3117,9 +3195,10 @@ def kpu_run(kpu_obj,rgb888p_img):
 # kpu 释放内存
 def kpu_deinit(kpu_obj):
     with ScopedTiming("kpu_deinit",debug_mode > 0):
-        global ai2d, ai2d_output_tensor
+        global ai2d, ai2d_output_tensor,ai2d_builder
         del kpu_obj
         del ai2d
+        del ai2d_builder
         del ai2d_output_tensor
 
 #media_utils.py
@@ -3159,7 +3238,7 @@ def display_draw(dets):
                     continue
                 if (w<(0.15*DISPLAY_WIDTH) and ((x1<(0.01*DISPLAY_WIDTH)) or (x2>(0.99*DISPLAY_WIDTH)))):
                     continue
-                draw_img.draw_rectangle(x1 , y1 , int(w) , int(h) , color=(255, 0, 255, 0),thickness = 2)
+                draw_img.draw_rectangle(x1 , y1 , int(w) , int(h) , color=(255, 0, 255, 0),thickness = 4)
                 draw_img.draw_string( x1 , y1-50, " " + labels[det_box[0]] + " " + str(round(det_box[1],2)) , color=(255,0, 255, 0), scale=4)
             draw_img.copy_to(osd_img)
             display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
@@ -3251,6 +3330,8 @@ def person_detect_inference():
             return ret
 
         camera_start(CAM_DEV_ID_0)
+
+        count = 0
         while True:
             with ScopedTiming("total",total_debug_mode):
                 rgb888p_img = camera_read(CAM_DEV_ID_0)                 # 读取一帧图片
@@ -3267,7 +3348,12 @@ def person_detect_inference():
 
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)          # camera 释放图像
                 rgb888p_img = None
-                # gc.collect()
+
+                if (count > 5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
     except Exception as e:
         print(f"An error occurred during buffer used: {e}")
     finally:
@@ -3405,7 +3491,7 @@ def ai2d_init():
 # ai2d 运行
 def ai2d_run(rgb888p_img):
     with ScopedTiming("ai2d_run",debug_mode > 0):
-        global ai2d_input_tensor,ai2d_out_tensor
+        global ai2d_input_tensor,ai2d_out_tensor,ai2d_builder
         ai2d_input = rgb888p_img.to_numpy_ref()
         ai2d_input_tensor = nn.from_numpy(ai2d_input)
 
@@ -3466,10 +3552,11 @@ def kpu_run(kpu_obj,rgb888p_img):
 # kpu 释放内存
 def kpu_deinit(kpu_obj):
     with ScopedTiming("kpu_deinit",debug_mode > 0):
-        global ai2d,ai2d_out_tensor
+        global ai2d,ai2d_out_tensor,ai2d_builder
         del kpu_obj
         del ai2d
         del ai2d_out_tensor
+        del ai2d_builder
 
 #media_utils.py
 global draw_img,osd_img                                     #for display 定义全局 作图image对象
@@ -3613,6 +3700,8 @@ def person_kp_detect_inference():
 
         camera_start(CAM_DEV_ID_0)
         time.sleep(5)
+
+        count = 0
         while True:
             with ScopedTiming("total",1):
                 rgb888p_img = camera_read(CAM_DEV_ID_0)             # 读取一帧图片
@@ -3629,7 +3718,12 @@ def person_kp_detect_inference():
 
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)      # camera 释放图像
                 rgb888p_img = None
-                #gc.collect()
+
+                if (count > 5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
     except Exception as e:
         print(f"An error occurred during buffer used: {e}")
     finally:
@@ -3825,6 +3919,352 @@ def kws_inference():
 
 if __name__=="__main__":
     kws_inference()
+```
+
+### 11.跌倒检测
+
+```python
+import aicube                   #aicube模块，封装检测分割等任务相关后处理
+from media.camera import *      #摄像头模块
+from media.display import *     #显示模块
+from media.media import *       #软件抽象模块，主要封装媒体数据链路以及媒体缓冲区
+
+import nncase_runtime as nn     #nncase运行模块，封装了kpu（kmodel推理）和ai2d（图片预处理加速）操作
+import ulab.numpy as np         #类似python numpy操作，但也会有一些接口不同
+
+import time                     #时间统计
+import image                    #图像模块，主要用于读取、图像绘制元素（框、点等）等操作
+
+import gc                       #垃圾回收模块
+
+##config.py
+#display分辨率
+DISPLAY_WIDTH = ALIGN_UP(1920, 16)
+DISPLAY_HEIGHT = 1080
+
+##ai原图分辨率输入
+OUT_RGB888P_WIDTH = ALIGN_UP(1920, 16)
+OUT_RGB888P_HEIGHT = 1080
+
+#kmodel输入shape
+kmodel_input_shape = (1,3,640,640)                  # kmodel输入分辨率
+
+#kmodel相关参数设置
+confidence_threshold = 0.3                          # 摔倒检测阈值，用于过滤roi
+nms_threshold = 0.45                                # 摔倒检测框阈值，用于过滤重复roi
+kmodel_frame_size = [640,640]                       # 摔倒检测输入图片尺寸
+frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGHT] # 直接输入图片尺寸
+strides = [8,16,32]                                 # 输出特征图的尺寸与输入图片尺寸的比
+num_classes = 2                                     # 模型输出类别数
+nms_option = False                                  # 是否所有检测框一起做NMS，False则按照不同的类分别应用NMS
+labels = ["Fall","NoFall"]                          # 模型输出类别名称
+
+root_dir = '/sdcard/app/tests/'
+kmodel_file = root_dir + 'kmodel/yolov5n-falldown.kmodel'                         # kmodel文件的路径
+anchors = [10,13, 16,30, 33,23, 30,61, 62,45, 50,119, 116,90, 156,198, 373,326]   # anchor设置
+
+colors = [(255,0, 0, 255), (255,0, 255, 0), (255,255,0, 0), (255,255,0, 255)]     # 颜色设置
+
+debug_mode = 0                                      # debug模式 大于0（调试）、 反之 （不调试）
+
+#scoped_timing.py 用于debug模式输出程序块运行时间
+class ScopedTiming:
+    def __init__(self, info="", enable_profile=True):
+        self.info = info
+        self.enable_profile = enable_profile
+
+    def __enter__(self):
+        if self.enable_profile:
+            self.start_time = time.time_ns()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.enable_profile:
+            elapsed_time = time.time_ns() - self.start_time
+            print(f"{self.info} took {elapsed_time / 1000000:.2f} ms")
+
+#ai_utils.py
+global current_kmodel_obj                                       # 定义全局的 kpu 对象
+global ai2d,ai2d_input_tensor,ai2d_output_tensor,ai2d_builder   # 定义全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
+
+
+# ai2d 初始化
+def ai2d_init():
+    with ScopedTiming("ai2d_init",debug_mode > 0):
+        global ai2d
+        global ai2d_builder
+        global ai2d_output_tensor
+        # 计算padding值
+        ori_w = OUT_RGB888P_WIDTH
+        ori_h = OUT_RGB888P_HEIGHT
+        width = kmodel_frame_size[0]
+        height = kmodel_frame_size[1]
+        ratiow = float(width) / ori_w
+        ratioh = float(height) / ori_h
+        if ratiow < ratioh:
+            ratio = ratiow
+        else:
+            ratio = ratioh
+        new_w = int(ratio * ori_w)
+        new_h = int(ratio * ori_h)
+        dw = float(width - new_w) / 2
+        dh = float(height - new_h) / 2
+        top = int(round(dh - 0.1))
+        bottom = int(round(dh + 0.1))
+        left = int(round(dw - 0.1))
+        right = int(round(dw - 0.1))
+
+        ai2d = nn.ai2d()
+        ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.NCHW_FMT,
+                                       np.uint8, np.uint8)
+        ai2d.set_pad_param(True, [0,0,0,0,top,bottom,left,right], 0, [114,114,114])
+        ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+        ai2d_builder = ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,height,width])
+        data = np.ones(kmodel_input_shape, dtype=np.uint8)
+        ai2d_output_tensor = nn.from_numpy(data)
+
+# ai2d 运行
+def ai2d_run(rgb888p_img):
+    with ScopedTiming("ai2d_run",debug_mode > 0):
+        global ai2d_input_tensor,ai2d_output_tensor, ai2d_builder
+        ai2d_input = rgb888p_img.to_numpy_ref()
+        ai2d_input_tensor = nn.from_numpy(ai2d_input)
+        ai2d_builder.run(ai2d_input_tensor, ai2d_output_tensor)
+
+# ai2d 释放内存
+def ai2d_release():
+    with ScopedTiming("ai2d_release",debug_mode > 0):
+        global ai2d_input_tensor
+        del ai2d_input_tensor
+
+# kpu 初始化
+def kpu_init(kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("kpu_init",debug_mode > 0):
+        kpu_obj = nn.kpu()
+        kpu_obj.load_kmodel(kmodel_file)
+
+        ai2d_init()
+        return kpu_obj
+
+# kpu 输入预处理
+def kpu_pre_process(rgb888p_img):
+    ai2d_run(rgb888p_img)
+    with ScopedTiming("kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,ai2d_output_tensor
+        # set kpu input
+        current_kmodel_obj.set_input_tensor(0, ai2d_output_tensor)
+
+# kpu 获得 kmodel 输出
+def kpu_get_output():
+    with ScopedTiming("kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+
+            result = result.reshape((result.shape[0]*result.shape[1]*result.shape[2]*result.shape[3]))
+            tmp2 = result.copy()
+            del result
+            results.append(tmp2)
+        return results
+
+# kpu 运行
+def kpu_run(kpu_obj,rgb888p_img):
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # (1)原图预处理，并设置模型输入
+    kpu_pre_process(rgb888p_img)
+    # (2)摔倒检测 kpu 运行
+    with ScopedTiming("kpu_run",debug_mode > 0):
+        current_kmodel_obj.run()
+    # (3)释放摔倒检测 ai2d 资源
+    ai2d_release()
+    # (4)获取摔倒检测 kpu 输出
+    results = kpu_get_output()
+    # (5)摔倒检测 kpu 结果后处理
+    dets = aicube.anchorbasedet_post_process( results[0], results[1], results[2], kmodel_frame_size, frame_size, strides, num_classes, confidence_threshold, nms_threshold, anchors, nms_option)
+    # (6)返回摔倒检测结果
+    return dets
+
+# kpu 释放内存
+def kpu_deinit(kpu_obj):
+    with ScopedTiming("kpu_deinit",debug_mode > 0):
+        global ai2d, ai2d_output_tensor, ai2d_builder
+        del kpu_obj
+        del ai2d
+        del ai2d_output_tensor
+        del ai2d_builder
+
+#media_utils.py
+global draw_img,osd_img                                     #for display 定义全局 作图image对象
+global buffer,media_source,media_sink                       #for media   定义 media 程序中的中间存储对象
+
+#for display 初始化
+def display_init():
+    # use hdmi for display
+    display.init(LT9611_1920X1080_30FPS)
+    display.set_plane(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, PIXEL_FORMAT_YVU_PLANAR_420, DISPLAY_MIRROR_NONE, DISPLAY_CHN_VIDEO1)
+
+# display 释放内存
+def display_deinit():
+    display.deinit()
+
+# display 作图过程 框出所有检测到的行人以及标出是否摔倒的结果
+def display_draw(dets):
+    with ScopedTiming("display_draw",debug_mode >0):
+        global draw_img,osd_img
+
+        if dets:
+            draw_img.clear()
+            for det_box in dets:
+                x1, y1, x2, y2 = det_box[2],det_box[3],det_box[4],det_box[5]
+                w = float(x2 - x1) * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
+                h = float(y2 - y1) * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT
+
+                x1 = int(x1 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
+                y1 = int(y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
+                x2 = int(x2 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
+                y2 = int(y2 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
+
+                draw_img.draw_rectangle(x1 , y1 , int(w) , int(h) , color=colors[det_box[0]], thickness = 2)
+                draw_img.draw_string( x1 , y1-20, " " + labels[det_box[0]] + " " + str(round(det_box[1],2)) , color=colors[det_box[0]+2], scale=4)
+            draw_img.copy_to(osd_img)
+            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+        else:
+            draw_img.clear()
+            draw_img.copy_to(osd_img)
+            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+
+#for camera 初始化
+def camera_init(dev_id):
+    camera.sensor_init(dev_id, CAM_DEFAULT_SENSOR)
+
+    # set chn0 output yuv420sp
+    camera.set_outsize(dev_id, CAM_CHN_ID_0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
+
+    # set chn2 output rgb88planar
+    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
+
+# camera 开启
+def camera_start(dev_id):
+    camera.start_stream(dev_id)
+
+# camera 读取图像
+def camera_read(dev_id):
+    with ScopedTiming("camera_read",debug_mode >0):
+        rgb888p_img = camera.capture_image(dev_id, CAM_CHN_ID_2)
+        return rgb888p_img
+
+# camera 图像释放
+def camera_release_image(dev_id,rgb888p_img):
+    with ScopedTiming("camera_release_image",debug_mode >0):
+        camera.release_image(dev_id, CAM_CHN_ID_2, rgb888p_img)
+
+# camera 结束
+def camera_stop(dev_id):
+    camera.stop_stream(dev_id)
+
+#for media 初始化
+def media_init():
+    config = k_vb_config()
+    config.max_pool_cnt = 1
+    config.comm_pool[0].blk_size = 4 * DISPLAY_WIDTH * DISPLAY_HEIGHT
+    config.comm_pool[0].blk_cnt = 1
+    config.comm_pool[0].mode = VB_REMAP_MODE_NOCACHE
+
+    ret = media.buffer_config(config)
+
+    global media_source, media_sink
+    media_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
+    media_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_VIDEO1)
+    media.create_link(media_source, media_sink)
+
+    # 初始化多媒体buffer
+    ret = media.buffer_init()
+    if ret:
+        return ret
+    global buffer, draw_img, osd_img
+    buffer = media.request_buffer(4 * DISPLAY_WIDTH * DISPLAY_HEIGHT)
+    # 图层1，用于画框
+    draw_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, alloc=image.ALLOC_MPGC)
+    # 图层2，用于拷贝画框结果，防止画框过程中发生buffer搬运
+    osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, poolid=buffer.pool_id, alloc=image.ALLOC_VB,
+                          phyaddr=buffer.phys_addr, virtaddr=buffer.virt_addr)
+    return ret
+
+# media 释放内存
+def media_deinit():
+    global buffer,media_source, media_sink
+    media.release_buffer(buffer)
+    media.destroy_link(media_source, media_sink)
+
+    ret = media.buffer_deinit()
+    return ret
+
+#**********for falldown_detect.py**********
+def falldown_detect_inference():
+    print("falldown_detect_test start")
+    kpu_falldown_detect = kpu_init(kmodel_file)                         # 创建摔倒检测的 kpu 对象
+    camera_init(CAM_DEV_ID_0)                                           # 初始化 camera
+    display_init()                                                      # 初始化 display
+
+    rgb888p_img = None
+    try:
+        ret = media_init()
+        if ret:
+            print("falldown_detect_test, buffer init failed")
+            return ret
+
+        camera_start(CAM_DEV_ID_0)
+        count = 0
+        while True:
+            with ScopedTiming("total",1):
+                rgb888p_img = camera_read(CAM_DEV_ID_0)                 # 读取一帧图片
+                if rgb888p_img == -1:
+                    print("falldown_detect_test, capture_image failed")
+                    camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+                    rgb888p_img = None
+                    continue
+
+                # for rgb888planar
+                if rgb888p_img.format() == image.RGBP888:
+                    dets = kpu_run(kpu_falldown_detect,rgb888p_img)     # 执行摔倒检测 kpu 运行 以及 后处理过程
+                    display_draw(dets)                                  # 将得到的检测结果 绘制到 display
+
+                camera_release_image(CAM_DEV_ID_0,rgb888p_img)          # camera 释放图像
+                rgb888p_img = None
+                if (count>10):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
+
+    except Exception as e:
+        print(f"An error occurred during buffer used: {e}")
+    finally:
+        if rgb888p_img is not None:
+            #先release掉申请的内存再stop
+            camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+
+        camera_stop(CAM_DEV_ID_0)                                       # 停止 camera
+        display_deinit()                                                # 释放 display
+        kpu_deinit(kpu_falldown_detect)                                 # 释放 kpu
+        gc.collect()
+        ret = media_deinit()                                            # 释放 整个media
+        if ret:
+            print("falldown_detect_test, buffer_deinit failed")
+            return ret
+
+    print("falldown_detect_test end")
+    return 0
+
+if __name__ == '__main__':
+    falldown_detect_inference()
 ```
 
 ## 三、AI Demo多模型示例解析
@@ -4071,11 +4511,10 @@ def fd_kpu_run(kpu_obj,rgb888p_img):
     else:
         return post_ret[0]          #0:det,1:landm,2:score
 
-def fd_kpu_deinit(kpu_obj):
+def fd_kpu_deinit():
     # kpu释放
     with ScopedTiming("fd_kpu_deinit",debug_mode > 0):
         global fd_ai2d, fd_ai2d_output_tensor
-        del kpu_obj               #删除人脸检测kpu_obj变量，释放对它所引用对象的内存引用
         del fd_ai2d               #删除人脸检测ai2d变量，释放对它所引用对象的内存引用
         del fd_ai2d_output_tensor #删除人脸检测ai2d_output_tensor变量，释放对它所引用对象的内存引用
 
@@ -4224,11 +4663,10 @@ def fld_kpu_run(kpu_obj,rgb888p_img,det):
     result = fld_kpu_post_process(result)
     return result
 
-def fld_kpu_deinit(kpu_obj):
+def fld_kpu_deinit():
     # 人脸关键点kpu释放
     with ScopedTiming("fld_kpu_deinit",debug_mode > 0):
         global fld_ai2d,fld_ai2d_output_tensor
-        del kpu_obj                # 删除kpu_obj变量，释放对它所引用对象的内存引用
         del fld_ai2d               # 删除fld_ai2d变量，释放对它所引用对象的内存引用
         del fld_ai2d_output_tensor # 删除fld_ai2d_output_tensor变量，释放对它所引用对象的内存引用
 
@@ -4390,6 +4828,7 @@ def face_landmark_inference():
         # 启动camera
         camera_start(CAM_DEV_ID_0)
         time.sleep(5)
+        gc_count = 0
         while True:
             with ScopedTiming("total",1):
                 # （1）读取一帧图像
@@ -4415,8 +4854,11 @@ def face_landmark_inference():
                 # （4）释放当前帧
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)
                 rgb888p_img = None
-                #with ScopedTiming("gc collect", debug_mode > 0):
-                    #gc.collect()
+                if gc_count > 5:
+                    gc.collect()
+                    gc_count = 0
+                else:
+                    gc_count += 1
     except Exception as e:
         # 捕捉运行运行中异常，并打印错误
         print(f"An error occurred during buffer used: {e}")
@@ -4431,8 +4873,12 @@ def face_landmark_inference():
         # 释放显示资源
         display_deinit()
         # 释放kpu资源
-        fd_kpu_deinit(kpu_face_detect)
-        fld_kpu_deinit(kpu_face_landmark)
+        fd_kpu_deinit()
+        fld_kpu_deinit()
+        global current_kmodel_obj
+        del current_kmodel_obj
+        del kpu_face_detect
+        del kpu_face_landmark
         # 垃圾回收
         gc.collect()
         time.sleep(1)
@@ -4659,11 +5105,10 @@ def fd_kpu_run(kpu_obj,rgb888p_img):
     else:
         return post_ret[0],post_ret[1]          #0:det,1:landm,2:score
 
-def fd_kpu_deinit(kpu_obj):
+def fd_kpu_deinit():
     # kpu释放
     with ScopedTiming("fd_kpu_deinit",debug_mode > 0):
         global fd_ai2d, fd_ai2d_output_tensor
-        del kpu_obj               #删除人脸检测kpu_obj变量，释放对它所引用对象的内存引用
         del fd_ai2d               #删除人脸检测ai2d变量，释放对它所引用对象的内存引用
         del fd_ai2d_output_tensor #删除人脸检测ai2d_output_tensor变量，释放对它所引用对象的内存引用
 
@@ -4862,11 +5307,10 @@ def fr_kpu_run(kpu_obj,rgb888p_img,sparse_points):
     results = fr_kpu_get_output()
     return results
 
-def fr_kpu_deinit(kpu_obj):
+def fr_kpu_deinit():
     # 人脸识别kpu相关资源释放
     with ScopedTiming("fr_kpu_deinit",debug_mode > 0):
         global fr_ai2d
-        del kpu_obj
         del fr_ai2d
 
 #********************for face_detect.py********************
@@ -4922,8 +5366,12 @@ def face_registration_inference():
         print(f"An error occurred during buffer used: {e}")
     finally:
         # 释放kpu资源
-        fd_kpu_deinit(kpu_face_detect)
-        fr_kpu_deinit(kpu_face_reg)
+        fd_kpu_deinit()
+        fr_kpu_deinit()
+        global current_kmodel_obj
+        del current_kmodel_obj
+        del kpu_face_detect
+        del kpu_face_reg
         # 垃圾回收
         gc.collect()
         time.sleep(1)
@@ -5158,11 +5606,10 @@ def fd_kpu_run(kpu_obj,rgb888p_img):
     else:
         return post_ret[0],post_ret[1]          #0:det,1:landm,2:score
 
-def fd_kpu_deinit(kpu_obj):
+def fd_kpu_deinit():
     # kpu释放
     with ScopedTiming("fd_kpu_deinit",debug_mode > 0):
         global fd_ai2d, fd_ai2d_output_tensor
-        del kpu_obj               #删除人脸检测kpu_obj变量，释放对它所引用对象的内存引用
         del fd_ai2d               #删除人脸检测ai2d变量，释放对它所引用对象的内存引用
         del fd_ai2d_output_tensor #删除人脸检测ai2d_output_tensor变量，释放对它所引用对象的内存引用
 
@@ -5226,7 +5673,7 @@ def database_search(feature):
             return 'unknown'
         elif v_score_max < face_recognition_threshold:
             # 小于人脸识别阈值，未识别
-            print('v_score_max:',v_score_max)
+#            print('v_score_max:',v_score_max)
             return 'unknown'
         else:
             # 识别成功
@@ -5401,11 +5848,6 @@ def fr_kpu_pre_process(rgb888p_img,sparse_points):
         # 将人脸识别ai2d输出设置为人脸识别kpu输入
         current_kmodel_obj.set_input_tensor(0, fr_ai2d_output_tensor)
 
-        #ai2d_out_data = fr_ai2d_output_tensor.to_numpy()
-        #print('ai2d_out_data.shape:',ai2d_out_data.shape)
-        #with open("/sdcard/app/ai2d_out.bin", "wb") as file:
-            #file.write(ai2d_out_data.tobytes())
-
 def fr_kpu_get_output():
     # 获取人脸识别kpu输出
     with ScopedTiming("fr_kpu_get_output",debug_mode > 0):
@@ -5432,12 +5874,12 @@ def fr_kpu_run(kpu_obj,rgb888p_img,sparse_points):
     recg_result = database_search(results)
     return recg_result
 
-def fr_kpu_deinit(kpu_obj):
+def fr_kpu_deinit():
     # 人脸识别kpu相关资源释放
     with ScopedTiming("fr_kpu_deinit",debug_mode > 0):
-        global fr_ai2d
-        del kpu_obj
+        global fr_ai2d,fr_ai2d_output_tensor
         del fr_ai2d
+        del fr_ai2d_output_tensor
 
 #********************for media_utils.py********************
 global draw_img,osd_img                                     #for display
@@ -5466,11 +5908,11 @@ def display_draw(dets,recg_results):
                 y1 = y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH
                 w =  w * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
                 h = h * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH
-                draw_img.draw_rectangle(x1,y1, w, h, color=(255,0, 255, 0))
+                draw_img.draw_rectangle(x1,y1, w, h, color=(255,0, 0, 255), thickness = 4)
 
                 # （2）写人脸识别结果
                 recg_text = recg_results[i]
-                draw_img.draw_string(x1,y1,recg_text,color=(255,0, 0, 255),scale=4)
+                draw_img.draw_string(x1,y1,recg_text,color=(255, 255, 0, 0),scale=4)
 
             # （3）将画图结果拷贝到osd
             draw_img.copy_to(osd_img)
@@ -5578,6 +6020,7 @@ def face_recognition_inference():
         # 启动camera
         camera_start(CAM_DEV_ID_0)
         time.sleep(5)
+        gc_count = 0
         while True:
             with ScopedTiming("total",1):
                 # （1）读取一帧图像
@@ -5604,7 +6047,11 @@ def face_recognition_inference():
                 # （4）释放当前帧
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)
                 rgb888p_img = None
-                gc.collect()
+                if gc_count > 5:
+                    gc.collect()
+                    gc_count = 0
+                else:
+                    gc_count += 1
     except Exception as e:
         # 捕捉运行运行中异常，并打印错误
         print(f"An error occurred during buffer used: {e}")
@@ -5619,8 +6066,12 @@ def face_recognition_inference():
         # 释放显示资源
         display_deinit()
         # 释放kpu资源
-        fd_kpu_deinit(kpu_face_detect)
-        fr_kpu_deinit(kpu_face_recg)
+        fd_kpu_deinit()
+        fr_kpu_deinit()
+        global current_kmodel_obj
+        del current_kmodel_obj
+        del kpu_face_detect
+        del kpu_face_recg
         # 垃圾回收
         gc.collect()
         time.sleep(1)
@@ -5849,11 +6300,10 @@ def fd_kpu_run(kpu_obj,rgb888p_img):
     else:
         return post_ret[0]          #0:det,1:landm,2:score
 
-def fd_kpu_deinit(kpu_obj):
+def fd_kpu_deinit():
     # kpu释放
     with ScopedTiming("fd_kpu_deinit",debug_mode > 0):
         global fd_ai2d, fd_ai2d_output_tensor
-        del kpu_obj               #删除人脸检测kpu_obj变量，释放对它所引用对象的内存引用
         del fd_ai2d               #删除人脸检测ai2d变量，释放对它所引用对象的内存引用
         del fd_ai2d_output_tensor #删除人脸检测ai2d_output_tensor变量，释放对它所引用对象的内存引用
 
@@ -6027,11 +6477,10 @@ def fp_kpu_run(kpu_obj,rgb888p_img,det):
     R,eular = fp_kpu_post_process(result)
     return R,eular
 
-def fp_kpu_deinit(kpu_obj):
+def fp_kpu_deinit():
     # 释放人脸姿态估计kpu及ai2d资源
     with ScopedTiming("fp_kpu_deinit",debug_mode > 0):
         global fp_ai2d,fp_ai2d_output_tensor
-        del kpu_obj
         del fp_ai2d
         del fp_ai2d_output_tensor
 
@@ -6224,7 +6673,11 @@ def face_pose_inference():
                 # （4）释放当前帧
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)
                 rgb888p_img = None
-
+                if gc_count > 5:
+                    gc.collect()
+                    gc_count = 0
+                else:
+                    gc_count += 1
     except Exception as e:
         # 捕捉运行运行中异常，并打印错误
         print(f"An error occurred during buffer used: {e}")
@@ -6238,8 +6691,12 @@ def face_pose_inference():
         # 释放显示资源
         display_deinit()
         # 释放kpu资源
-        fd_kpu_deinit(kpu_face_detect)
-        fp_kpu_deinit(kpu_face_pose)
+        fd_kpu_deinit()
+        fp_kpu_deinit()
+        global current_kmodel_obj
+        del current_kmodel_obj
+        del kpu_face_detect
+        del kpu_face_pose
         # 垃圾回收
         gc.collect()
         time.sleep(1)
@@ -6469,11 +6926,10 @@ def fd_kpu_run(kpu_obj,rgb888p_img):
     else:
         return post_ret[0]          #0:det,1:landm,2:score
 
-def fd_kpu_deinit(kpu_obj):
+def fd_kpu_deinit():
     # kpu释放
     with ScopedTiming("fd_kpu_deinit",debug_mode > 0):
         global fd_ai2d, fd_ai2d_output_tensor
-        del kpu_obj               #删除人脸检测kpu_obj变量，释放对它所引用对象的内存引用
         del fd_ai2d               #删除人脸检测ai2d变量，释放对它所引用对象的内存引用
         del fd_ai2d_output_tensor #删除人脸检测ai2d_output_tensor变量，释放对它所引用对象的内存引用
 
@@ -6585,11 +7041,10 @@ def fp_kpu_run(kpu_obj,rgb888p_img,det):
     result = fp_kpu_get_output()
     return result
 
-def fp_kpu_deinit(kpu_obj):
+def fp_kpu_deinit():
     # 释放人脸解析kpu和ai2d资源
     with ScopedTiming("fp_kpu_deinit",debug_mode > 0):
         global fp_ai2d,fp_ai2d_output_tensor
-        del kpu_obj
         del fp_ai2d
         del fp_ai2d_output_tensor
 
@@ -6759,6 +7214,7 @@ def face_parse_inference():
                 # （4）释放当前帧
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)
                 rgb888p_img = None
+                gc.collect()
     except Exception as e:
         # 捕捉运行运行中异常，并打印错误
         print(f"An error occurred during buffer used: {e}")
@@ -6773,8 +7229,12 @@ def face_parse_inference():
         # 释放显示资源
         display_deinit()
         # 释放kpu资源
-        fd_kpu_deinit(kpu_face_detect)
-        fp_kpu_deinit(kpu_face_parse)
+        fd_kpu_deinit()
+        fp_kpu_deinit()
+        global current_kmodel_obj
+        del current_kmodel_obj
+        del kpu_face_detect
+        del kpu_face_parse
         # 垃圾回收
         gc.collect()
         time.sleep(1)
@@ -6811,7 +7271,7 @@ DISPLAY_HEIGHT = 1080
 
 #ai原图分辨率输入
 OUT_RGB888P_WIDTH = ALIGN_UP(640, 16)
-OUT_RGB888P_HEIGHT = 480
+OUT_RGB888P_HEIGHT = 360
 
 #车牌检测 和 车牌识别 kmodel输入shape
 det_kmodel_input_shape = (1,3,640,640)
@@ -7101,7 +7561,7 @@ def display_draw(dets_recs):
                     point_8[i * 2 + 0] = int(x)
                     point_8[i * 2 + 1] = int(y)
                 for i in range(4):
-                    draw_img.draw_line(point_8[i * 2 + 0],point_8[i * 2 + 1],point_8[(i+1) % 4 * 2 + 0],point_8[(i+1) % 4 * 2 + 1],color=(255, 0, 255, 0),thickness=2)
+                    draw_img.draw_line(point_8[i * 2 + 0],point_8[i * 2 + 1],point_8[(i+1) % 4 * 2 + 0],point_8[(i+1) % 4 * 2 + 1],color=(255, 0, 255, 0),thickness=4)
                 draw_img.draw_string( point_8[6], point_8[7] + 20, recs[det_index] , color=(255,255,153,18) , scale=4)
             draw_img.copy_to(osd_img)
             display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
@@ -7180,8 +7640,8 @@ def media_deinit():
 
 
 #**********for licence_det_rec.py**********
-def licence_det_inference():
-    print("licence_det start")
+def licence_det_rec_inference():
+    print("licence_det_rec start")
     kpu_licence_det = det_kpu_init(det_kmodel_file)                     # 创建车牌检测的 kpu 对象
     kpu_licence_rec = rec_kpu_init(rec_kmodel_file)                     # 创建车牌识别的 kpu 对象
     camera_init(CAM_DEV_ID_0)                                           # 初始化 camera
@@ -7191,16 +7651,18 @@ def licence_det_inference():
     try:
         ret = media_init()
         if ret:
-            print("licence_det, buffer init failed")
+            print("licence_det_rec, buffer init failed")
             return ret
 
         camera_start(CAM_DEV_ID_0)
         time.sleep(5)
+
+        count = 0
         while True:
             with ScopedTiming("total",1):
                 rgb888p_img = camera_read(CAM_DEV_ID_0)                 # 读取一帧图片
                 if rgb888p_img == -1:
-                    print("licence_det, capture_image failed")
+                    print("licence_det_rec, capture_image failed")
                     camera_release_image(CAM_DEV_ID_0,rgb888p_img)
                     rgb888p_img = None
                     continue
@@ -7213,7 +7675,12 @@ def licence_det_inference():
 
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)                      # camera 释放图像
                 rgb888p_img = None
-                # gc.collect()
+
+                if (count > 5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
     except Exception as e:
         print(f"An error occurred during buffer used: {e}")
     finally:
@@ -7229,14 +7696,14 @@ def licence_det_inference():
         time.sleep(1)
         ret = media_deinit()                                                        # 释放 整个media
         if ret:
-            print("licence_det, buffer_deinit failed")
+            print("licence_det_rec, buffer_deinit failed")
             return ret
 
-    print("licence_det end")
+    print("licence_det_rec end")
     return 0
 
 if __name__ == '__main__':
-    licence_det_inference()
+    licence_det_rec_inference()
 ```
 
 ### 6. 石头剪刀布
@@ -7260,7 +7727,7 @@ DISPLAY_HEIGHT = 1080
 
 #ai原图分辨率输入
 OUT_RGB888P_WIDTH = ALIGN_UP(1920, 16)
-OUT_RGB888P_HEIGH = 1080
+OUT_RGB888P_HEIGHT = 1080
 
 #手掌检测 和 手掌关键点检测 kmodel输入shape
 hd_kmodel_input_shape = (1,3,512,512)
@@ -7270,7 +7737,7 @@ hk_kmodel_input_shape = (1,3,256,256)
 confidence_threshold = 0.2                                  #手掌检测 分数阈值
 nms_threshold = 0.5                                         #非极大值抑制 阈值
 hd_kmodel_frame_size = [512,512]                            #手掌检测kmodel输入  w h
-hd_frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGH]       #手掌检测原始输入图像 w h
+hd_frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGHT]       #手掌检测原始输入图像 w h
 strides = [8,16,32]                                         #手掌检测模型 下采样输出倍数
 num_classes = 1                                             #检测类别数， 及手掌一种
 nms_option = False                                          #控制最大值抑制的方式 False 类内  True 类间
@@ -7328,7 +7795,7 @@ def hd_ai2d_init():
         global hd_ai2d_builder
         # 计算padding值
         ori_w = OUT_RGB888P_WIDTH
-        ori_h = OUT_RGB888P_HEIGH
+        ori_h = OUT_RGB888P_HEIGHT
         width = hd_kmodel_frame_size[0]
         height = hd_kmodel_frame_size[1]
         ratiow = float(width) / ori_w
@@ -7353,7 +7820,7 @@ def hd_ai2d_init():
                                        np.uint8, np.uint8)
         hd_ai2d.set_pad_param(True, [0,0,0,0,top,bottom,left,right], 0, [114,114,114])
         hd_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
-        hd_ai2d_builder = hd_ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], [1,3,height,width])
+        hd_ai2d_builder = hd_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,height,width])
 
         global hd_ai2d_output_tensor
         data = np.ones(hd_kmodel_input_shape, dtype=np.uint8)
@@ -7362,7 +7829,7 @@ def hd_ai2d_init():
 # 手掌检测 ai2d 运行
 def hd_ai2d_run(rgb888p_img):
     with ScopedTiming("hd_ai2d_run",debug_mode > 0):
-        global hd_ai2d_input_tensor,hd_ai2d_output_tensor
+        global hd_ai2d_input_tensor,hd_ai2d_output_tensor,hd_ai2d_builder
         hd_ai2d_input = rgb888p_img.to_numpy_ref()
         hd_ai2d_input_tensor = nn.from_numpy(hd_ai2d_input)
 
@@ -7427,10 +7894,11 @@ def hd_kpu_run(kpu_obj,rgb888p_img):
 # 手掌检测 kpu 释放内存
 def hd_kpu_deinit(kpu_obj):
     with ScopedTiming("hd_kpu_deinit",debug_mode > 0):
-        global hd_ai2d,hd_ai2d_output_tensor
+        global hd_ai2d,hd_ai2d_output_tensor,hd_ai2d_builder
         del kpu_obj
         del hd_ai2d
         del hd_ai2d_output_tensor
+        del hd_ai2d_builder
 
 # 手掌关键点检测 ai2d 初始化
 def hk_ai2d_init():
@@ -7456,14 +7924,15 @@ def hk_ai2d_run(rgb888p_img, x, y, w, h):
         hk_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
 
         global hk_ai2d_builder
-        hk_ai2d_builder = hk_ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], [1,3,hk_kmodel_frame_size[1],hk_kmodel_frame_size[0]])
+        hk_ai2d_builder = hk_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,hk_kmodel_frame_size[1],hk_kmodel_frame_size[0]])
         hk_ai2d_builder.run(hk_ai2d_input_tensor, hk_ai2d_output_tensor)
 
 # 手掌关键点检测 ai2d 释放内存
 def hk_ai2d_release():
     with ScopedTiming("hk_ai2d_release",debug_mode > 0):
-        global hk_ai2d_input_tensor
+        global hk_ai2d_input_tensor,hk_ai2d_builder
         del hk_ai2d_input_tensor
+        del hk_ai2d_builder
 
 # 手掌关键点检测 kpu 初始化
 def hk_kpu_init(hk_kmodel_file):
@@ -7549,20 +8018,15 @@ def hk_vector_2d_angle(v1,v2):
 
 # 利用手掌关键点检测的结果 判断手掌手势
 def hk_gesture(kpu_hand_keypoint_detect,rgb888p_img,det_box):
-    x1, y1, x2, y2 = det_box[2],det_box[3],det_box[4],det_box[5]
-    w = int(float(x2 - x1) * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
-    h = int(float(y2 - y1) * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH)
+    x1, y1, x2, y2 = int(det_box[2]),int(det_box[3]),int(det_box[4]),int(det_box[5])
+    w = int(x2 - x1)
+    h = int(y2 - y1)
 
-    x1 = int(x1 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
-    y1 = int(y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH)
-    x2 = int(x2 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
-    y2 = int(y2 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH)
-
-    if (h<(0.1*DISPLAY_HEIGHT)):
+    if (h<(0.1*OUT_RGB888P_HEIGHT)):
         return
-    if (w<(0.25*DISPLAY_WIDTH) and ((x1<(0.03*DISPLAY_WIDTH)) or (x2>(0.97*DISPLAY_WIDTH)))):
+    if (w<(0.25*OUT_RGB888P_WIDTH) and ((x1<(0.03*OUT_RGB888P_WIDTH)) or (x2>(0.97*OUT_RGB888P_WIDTH)))):
         return
-    if (w<(0.15*DISPLAY_WIDTH) and ((x1<(0.01*DISPLAY_WIDTH)) or (x2>(0.99*DISPLAY_WIDTH)))):
+    if (w<(0.15*OUT_RGB888P_WIDTH) and ((x1<(0.01*OUT_RGB888P_WIDTH)) or (x2>(0.99*OUT_RGB888P_WIDTH)))):
         return
 
     length = max(w,h)/2
@@ -7572,8 +8036,8 @@ def hk_gesture(kpu_hand_keypoint_detect,rgb888p_img,det_box):
 
     x1_kp = int(max(0,cx-ratio_num))
     y1_kp = int(max(0,cy-ratio_num))
-    x2_kp = int(min(DISPLAY_WIDTH-1, cx+ratio_num))
-    y2_kp = int(min(DISPLAY_HEIGHT-1, cy+ratio_num))
+    x2_kp = int(min(OUT_RGB888P_WIDTH-1, cx+ratio_num))
+    y2_kp = int(min(OUT_RGB888P_HEIGHT-1, cy+ratio_num))
     w_kp = int(x2_kp - x1_kp + 1)
     h_kp = int(y2_kp - y1_kp + 1)
 
@@ -7634,7 +8098,7 @@ def camera_init(dev_id):
     camera.set_outfmt(dev_id, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
 
     # set chn2 output rgb88planar
-    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGH)
+    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGHT)
     camera.set_outfmt(dev_id, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
 
 # camera 开启
@@ -7678,7 +8142,7 @@ def media_init():
     global buffer, draw_img, osd_img, masks
     buffer = media.request_buffer(4 * DISPLAY_WIDTH * DISPLAY_HEIGHT)
     # 图层1，用于画框
-    masks = np.zeros((OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH,4),dtype=np.uint8)
+    masks = np.zeros((DISPLAY_HEIGHT,DISPLAY_WIDTH,4),dtype=np.uint8)
     draw_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888,alloc=image.ALLOC_REF,data=masks)
     # 图层2，用于拷贝画框结果，防止画框过程中发生buffer搬运
     osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, poolid=buffer.pool_id, alloc=image.ALLOC_VB,
@@ -7718,6 +8182,7 @@ def finger_guessing_inference():
         set_stop_id = True                                                              # 是否 暂停猜拳
         LIBRARY = ["fist","yeah","five"]                                                # 猜拳 石头剪刀布 三种方案的dict
 
+        count = 0
         while True:
             with ScopedTiming("total",1):
                 rgb888p_img = camera_read(CAM_DEV_ID_0)                                 # 读取一帧图像
@@ -7730,9 +8195,15 @@ def finger_guessing_inference():
                 # for rgb888planar
                 if rgb888p_img.format() == image.RGBP888:
                     with ScopedTiming("trigger time", debug_mode > 0):
-                        dets = hd_kpu_run(kpu_hand_detect,rgb888p_img)                  # 执行手掌检测 kpu 运行 以及 后处理过程
+                        dets_no_pro = hd_kpu_run(kpu_hand_detect,rgb888p_img)                  # 执行手掌检测 kpu 运行 以及 后处理过程
                         gesture = ""
                         draw_img.clear()
+
+                        dets = []
+                        for det_box in dets_no_pro:
+                            if det_box[4] < OUT_RGB888P_WIDTH - 10 :
+                                dets.append(det_box)
+
                         for det_box in dets:
                             gesture = hk_gesture(kpu_hand_keypoint_detect,rgb888p_img,det_box)      # 执行手掌关键点检测 kpu 运行 以及 后处理过程 得到手势类型
                         if (len(dets) >= 2):
@@ -7819,7 +8290,12 @@ def finger_guessing_inference():
 
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)                                          # camera 释放图形
                 rgb888p_img = None
-                gc.collect()
+
+                if (count > 5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
     except Exception as e:
         print(f"An error occurred during buffer used: {e}")
     finally:
@@ -8245,6 +8721,7 @@ def ocr_rec_inference():
 
         camera_start(CAM_DEV_ID_0)
         time.sleep(5)
+        count=0
         while True:
             with ScopedTiming("total",1):
                 rgb888p_img = camera_read(CAM_DEV_ID_0)     # 读取一帧图像
@@ -8266,6 +8743,11 @@ def ocr_rec_inference():
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)
                 rgb888p_img = None
                 # gc.collect()
+                if (count>2):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
     except Exception as e:
         print(f"An error occurred during buffer used: {e}")
     finally:
@@ -8314,34 +8796,26 @@ DISPLAY_HEIGHT = 1080
 
 ##ai原图分辨率输入
 OUT_RGB888P_WIDTH = ALIGN_UP(1920, 16)
-OUT_RGB888P_HEIGH = 1080
+OUT_RGB888P_HEIGHT = 1080
 
-#--------for hand detection----------
 #kmodel输入shape
-hd_kmodel_input_shape = (1,3,512,512)                           # 手掌检测kmodel输入分辨率
+kmodel_input_shape = (1,3,512,512)                  # kmodel输入分辨率
 
 #kmodel相关参数设置
-confidence_threshold = 0.2                                      # 手掌检测阈值，用于过滤roi
-nms_threshold = 0.5                                             # 手掌检测框阈值，用于过滤重复roi
-hd_kmodel_frame_size = [512,512]                                # 手掌检测输入图片尺寸
-hd_frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGH]           # 手掌检测直接输入图片尺寸
-strides = [8,16,32]                                             # 输出特征图的尺寸与输入图片尺寸的比
-num_classes = 1                                                 # 手掌检测模型输出类别数
-nms_option = False                                              # 是否所有检测框一起做NMS，False则按照不同的类分别应用NMS
+confidence_threshold = 0.2                          # 手掌检测阈值，用于过滤roi
+nms_threshold = 0.5                                 # 手掌检测框阈值，用于过滤重复roi
+kmodel_frame_size = [512,512]                       # 手掌检测输入图片尺寸
+frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGHT] # 直接输入图片尺寸
+strides = [8,16,32]                                 # 输出特征图的尺寸与输入图片尺寸的比
+num_classes = 1                                     # 模型输出类别数
+nms_option = False                                  # 是否所有检测框一起做NMS，False则按照不同的类分别应用NMS
+labels = ["hand"]                                   # 模型输出类别名称
 
 root_dir = '/sdcard/app/tests/'
-hd_kmodel_file = root_dir + "kmodel/hand_det.kmodel"      # 手掌检测kmodel文件的路径
+kmodel_file = root_dir + 'kmodel/hand_det.kmodel'   # kmodel文件的路径
 anchors = [26,27, 53,52, 75,71, 80,99, 106,82, 99,134, 140,113, 161,172, 245,276]   #anchor设置
 
-#--------for hand keypoint detection----------
-#kmodel输入shape
-hk_kmodel_input_shape = (1,3,256,256)                           # 手掌关键点检测kmodel输入分辨率
-
-#kmodel相关参数设置
-hk_kmodel_frame_size = [256,256]                                # 手掌关键点检测输入图片尺寸
-hk_kmodel_file = root_dir + 'kmodel/handkp_det.kmodel'    # 手掌关键点检测kmodel文件的路径
-
-debug_mode = 0                                                  # debug模式 大于0（调试）、 反之 （不调试）
+debug_mode = 0                                      # debug模式 大于0（调试）、 反之 （不调试）
 
 #scoped_timing.py 用于debug模式输出程序块运行时间
 class ScopedTiming:
@@ -8360,22 +8834,21 @@ class ScopedTiming:
             print(f"{self.info} took {elapsed_time / 1000000:.2f} ms")
 
 #ai_utils.py
-global current_kmodel_obj                                                   # 定义全局的 kpu 对象
-global hd_ai2d,hd_ai2d_input_tensor,hd_ai2d_output_tensor,hd_ai2d_builder   # 定义手掌检测全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
-global hk_ai2d,hk_ai2d_input_tensor,hk_ai2d_output_tensor,hk_ai2d_builder   # 定义手掌关键点检测全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
+global current_kmodel_obj                                       # 定义全局的 kpu 对象
+global ai2d,ai2d_input_tensor,ai2d_output_tensor,ai2d_builder   # 定义全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
 
-#-------hand detect--------:
-# 手掌检测ai2d 初始化
-def hd_ai2d_init():
-    with ScopedTiming("hd_ai2d_init",debug_mode > 0):
-        global hd_ai2d
-        global hd_ai2d_builder
-        global hd_ai2d_output_tensor
+
+# ai2d 初始化
+def ai2d_init():
+    with ScopedTiming("ai2d_init",debug_mode > 0):
+        global ai2d
+        global ai2d_builder
+        global ai2d_output_tensor
         # 计算padding值
         ori_w = OUT_RGB888P_WIDTH
-        ori_h = OUT_RGB888P_HEIGH
-        width = hd_kmodel_frame_size[0]
-        height = hd_kmodel_frame_size[1]
+        ori_h = OUT_RGB888P_HEIGHT
+        width = kmodel_frame_size[0]
+        height = kmodel_frame_size[1]
         ratiow = float(width) / ori_w
         ratioh = float(height) / ori_h
         if ratiow < ratioh:
@@ -8391,181 +8864,92 @@ def hd_ai2d_init():
         left = int(round(dw - 0.1))
         right = int(round(dw - 0.1))
 
-        # init kpu and load kmodel
-        hd_ai2d = nn.ai2d()
-        hd_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+        ai2d = nn.ai2d()
+        ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
                                        nn.ai2d_format.NCHW_FMT,
                                        np.uint8, np.uint8)
-        hd_ai2d.set_pad_param(True, [0,0,0,0,top,bottom,left,right], 0, [114,114,114])
-        hd_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
-        hd_ai2d_builder = hd_ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], [1,3,height,width])
-        data = np.ones(hd_kmodel_input_shape, dtype=np.uint8)
-        hd_ai2d_output_tensor = nn.from_numpy(data)
+        ai2d.set_pad_param(True, [0,0,0,0,top,bottom,left,right], 0, [114,114,114])
+        ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+        ai2d_builder = ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,height,width])
+        data = np.ones(kmodel_input_shape, dtype=np.uint8)
+        ai2d_output_tensor = nn.from_numpy(data)
 
-# 手掌检测 ai2d 运行
-def hd_ai2d_run(rgb888p_img):
-    with ScopedTiming("hd_ai2d_run",debug_mode > 0):
-        global hd_ai2d_input_tensor,hd_ai2d_output_tensor
-        hd_ai2d_input = rgb888p_img.to_numpy_ref()
-        hd_ai2d_input_tensor = nn.from_numpy(hd_ai2d_input)
+# ai2d 运行
+def ai2d_run(rgb888p_img):
+    with ScopedTiming("ai2d_run",debug_mode > 0):
+        global ai2d_input_tensor, ai2d_output_tensor, ai2d_builder
+        ai2d_input = rgb888p_img.to_numpy_ref()
+        ai2d_input_tensor = nn.from_numpy(ai2d_input)
+        ai2d_builder.run(ai2d_input_tensor, ai2d_output_tensor)
 
-        hd_ai2d_builder.run(hd_ai2d_input_tensor, hd_ai2d_output_tensor)
+# ai2d 释放内存
+def ai2d_release():
+    with ScopedTiming("ai2d_release",debug_mode > 0):
+        global ai2d_input_tensor
+        del ai2d_input_tensor
 
-# 手掌检测 ai2d 释放内存
-def hd_ai2d_release():
-    with ScopedTiming("hd_ai2d_release",debug_mode > 0):
-        global hd_ai2d_input_tensor
-        del hd_ai2d_input_tensor
-
-# 手掌检测 kpu 初始化
-def hd_kpu_init(hd_kmodel_file):
+# kpu 初始化
+def kpu_init(kmodel_file):
     # init kpu and load kmodel
-    with ScopedTiming("hd_kpu_init",debug_mode > 0):
-        hd_kpu_obj = nn.kpu()
-        hd_kpu_obj.load_kmodel(hd_kmodel_file)
+    with ScopedTiming("kpu_init",debug_mode > 0):
+        kpu_obj = nn.kpu()
+        kpu_obj.load_kmodel(kmodel_file)
 
-        hd_ai2d_init()
-        return hd_kpu_obj
+        ai2d_init()
+        return kpu_obj
 
-# 手掌检测 kpu 输入预处理
-def hd_kpu_pre_process(rgb888p_img):
-    hd_ai2d_run(rgb888p_img)
-    with ScopedTiming("hd_kpu_pre_process",debug_mode > 0):
-        global current_kmodel_obj,hd_ai2d_output_tensor
+# kpu 输入预处理
+def kpu_pre_process(rgb888p_img):
+    ai2d_run(rgb888p_img)
+    with ScopedTiming("kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,ai2d_output_tensor
         # set kpu input
-        current_kmodel_obj.set_input_tensor(0, hd_ai2d_output_tensor)
+        current_kmodel_obj.set_input_tensor(0, ai2d_output_tensor)
 
-# 手掌检测 kpu 获得 kmodel 输出
-def hd_kpu_get_output():
-    with ScopedTiming("hd_kpu_get_output",debug_mode > 0):
+# kpu 获得 kmodel 输出
+def kpu_get_output():
+    with ScopedTiming("kpu_get_output",debug_mode > 0):
         global current_kmodel_obj
         results = []
         for i in range(current_kmodel_obj.outputs_size()):
             data = current_kmodel_obj.get_output_tensor(i)
             result = data.to_numpy()
+
             result = result.reshape((result.shape[0]*result.shape[1]*result.shape[2]*result.shape[3]))
             tmp2 = result.copy()
             del result
             results.append(tmp2)
         return results
 
-# 手掌检测 kpu 运行
-def hd_kpu_run(kpu_obj,rgb888p_img):
+# kpu 运行
+def kpu_run(kpu_obj,rgb888p_img):
     global current_kmodel_obj
     current_kmodel_obj = kpu_obj
     # (1)原图预处理，并设置模型输入
-    hd_kpu_pre_process(rgb888p_img)
-     # (2)手掌检测 kpu 运行
-    with ScopedTiming("hd_kpu_run",debug_mode > 0):
+    kpu_pre_process(rgb888p_img)
+    # (2)手掌检测 kpu 运行
+    with ScopedTiming("kpu_run",debug_mode > 0):
         current_kmodel_obj.run()
     # (3)释放手掌检测 ai2d 资源
-    hd_ai2d_release()
+    ai2d_release()
     # (4)获取手掌检测 kpu 输出
-    results = hd_kpu_get_output()
+    results = kpu_get_output()
     # (5)手掌检测 kpu 结果后处理
-    dets = aicube.anchorbasedet_post_process( results[0], results[1], results[2], hd_kmodel_frame_size, hd_frame_size, strides, num_classes, confidence_threshold, nms_threshold, anchors, nms_option)
+    dets = aicube.anchorbasedet_post_process( results[0], results[1], results[2], kmodel_frame_size, frame_size, strides, num_classes, confidence_threshold, nms_threshold, anchors, nms_option)
     # (6)返回手掌检测结果
     return dets
 
-# 手掌检测 kpu 释放内存
-def hd_kpu_deinit(kpu_obj):
-    with ScopedTiming("hd_kpu_deinit",debug_mode > 0):
-        global hd_ai2d, hd_ai2d_output_tensor
+# kpu 释放内存
+def kpu_deinit(kpu_obj):
+    with ScopedTiming("kpu_deinit",debug_mode > 0):
+        global ai2d, ai2d_output_tensor, ai2d_builder
         del kpu_obj
-        del hd_ai2d
-        del hd_ai2d_output_tensor
-
-#-------hand keypoint detection------:
-# 手掌关键点检测 ai2d 初始化
-def hk_ai2d_init():
-    with ScopedTiming("hk_ai2d_init",debug_mode > 0):
-        global hk_ai2d, hk_ai2d_output_tensor
-        hk_ai2d = nn.ai2d()
-        hk_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
-                                       nn.ai2d_format.NCHW_FMT,
-                                       np.uint8, np.uint8)
-        data = np.ones(hk_kmodel_input_shape, dtype=np.uint8)
-        hk_ai2d_output_tensor = nn.from_numpy(data)
-
-# 手掌关键点检测 ai2d 运行
-def hk_ai2d_run(rgb888p_img, x, y, w, h):
-    with ScopedTiming("hk_ai2d_run",debug_mode > 0):
-        global hk_ai2d,hk_ai2d_input_tensor,hk_ai2d_output_tensor
-        hk_ai2d_input = rgb888p_img.to_numpy_ref()
-        hk_ai2d_input_tensor = nn.from_numpy(hk_ai2d_input)
-
-        hk_ai2d.set_crop_param(True, x, y, w, h)
-        hk_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
-
-        global hk_ai2d_builder
-        hk_ai2d_builder = hk_ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], [1,3,hk_kmodel_frame_size[1],hk_kmodel_frame_size[0]])
-        hk_ai2d_builder.run(hk_ai2d_input_tensor, hk_ai2d_output_tensor)
-
-# 手掌关键点检测 ai2d 释放内存
-def hk_ai2d_release():
-    with ScopedTiming("hk_ai2d_release",debug_mode > 0):
-        global hk_ai2d_input_tensor
-        del hk_ai2d_input_tensor
-
-# 手掌关键点检测 kpu 初始化
-def hk_kpu_init(hk_kmodel_file):
-    # init kpu and load kmodel
-    with ScopedTiming("hk_kpu_init",debug_mode > 0):
-        hk_kpu_obj = nn.kpu()
-        hk_kpu_obj.load_kmodel(hk_kmodel_file)
-
-        hk_ai2d_init()
-        return hk_kpu_obj
-
-# 手掌关键点检测 kpu 输入预处理
-def hk_kpu_pre_process(rgb888p_img, x, y, w, h):
-    hk_ai2d_run(rgb888p_img, x, y, w, h)
-    with ScopedTiming("hk_kpu_pre_process",debug_mode > 0):
-        global current_kmodel_obj,hk_ai2d_output_tensor
-        # set kpu input
-        current_kmodel_obj.set_input_tensor(0, hk_ai2d_output_tensor)
-
-# 手掌关键点检测 kpu 获得 kmodel 输出
-def hk_kpu_get_output():
-    with ScopedTiming("hk_kpu_get_output",debug_mode > 0):
-        global current_kmodel_obj
-        results = []
-        for i in range(current_kmodel_obj.outputs_size()):
-            data = current_kmodel_obj.get_output_tensor(i)
-            result = data.to_numpy()
-
-            result = result.reshape((result.shape[0]*result.shape[1]))
-            tmp2 = result.copy()
-            del result
-            results.append(tmp2)
-        return results
-
-# 手掌关键点检测 kpu 运行
-def hk_kpu_run(kpu_obj,rgb888p_img, x, y, w, h):
-    global current_kmodel_obj
-    current_kmodel_obj = kpu_obj
-    # (1)原图预处理，并设置模型输入
-    hk_kpu_pre_process(rgb888p_img, x, y, w, h)
-    # (2)手掌关键点检测 kpu 运行
-    with ScopedTiming("hk_kpu_run",debug_mode > 0):
-        current_kmodel_obj.run()
-    # (3)释放手掌关键点检测 ai2d 资源
-    hk_ai2d_release()
-    # (4)获取手掌关键点检测 kpu 输出
-    results = hk_kpu_get_output()
-    # (5)返回手掌关键点检测结果
-    return results
-
-# 手掌关键点检测 kpu 释放内存
-def hk_kpu_deinit(kpu_obj):
-    with ScopedTiming("hk_kpu_deinit",debug_mode > 0):
-        global hk_ai2d, hk_ai2d_output_tensor
-        del kpu_obj
-        del hk_ai2d
-        del hk_ai2d_output_tensor
+        del ai2d
+        del ai2d_output_tensor
+        del ai2d_builder
 
 #media_utils.py
-global draw_img,osd_img,masks                               #for display 定义全局 作图image对象
+global draw_img,osd_img                                     #for display 定义全局 作图image对象
 global buffer,media_source,media_sink                       #for media   定义 media 程序中的中间存储对象
 
 #for display 初始化
@@ -8578,33 +8962,37 @@ def display_init():
 def display_deinit():
     display.deinit()
 
-# display 作图过程 标出检测到的21个关键点并用不同颜色的线段连接
-def display_draw(results, x, y, w, h):
+# display 作图过程 框出所有检测到的手以及标出得分
+def display_draw(dets):
     with ScopedTiming("display_draw",debug_mode >0):
         global draw_img,osd_img
 
-        if results:
-            results_show = np.zeros(results.shape,dtype=np.int16)
-            results_show[0::2] = results[0::2] * w + x
-            results_show[1::2] = results[1::2] * h + y
-            for i in range(len(results_show)/2):
-                draw_img.draw_circle(results_show[i*2], results_show[i*2+1], 1, color=(255, 0, 255, 0),fill=False)
-            for i in range(5):
-                j = i*8
-                if i==0:
-                    R = 255; G = 0; B = 0
-                if i==1:
-                    R = 255; G = 0; B = 255
-                if i==2:
-                    R = 255; G = 255; B = 0
-                if i==3:
-                    R = 0; G = 255; B = 0
-                if i==4:
-                    R = 0; G = 0; B = 255
-                draw_img.draw_line(results_show[0], results_show[1],results_show[j+2], results_show[j+3],color=(255,R,G,B))
-                draw_img.draw_line(results_show[j+2], results_show[j+3],results_show[j+4], results_show[j+5],color=(255,R,G,B))
-                draw_img.draw_line(results_show[j+4], results_show[j+5],results_show[j+6], results_show[j+7],color=(255,R,G,B))
-                draw_img.draw_line(results_show[j+6], results_show[j+7],results_show[j+8], results_show[j+9],color=(255,R,G,B))
+        if dets:
+            draw_img.clear()
+            for det_box in dets:
+                x1, y1, x2, y2 = det_box[2],det_box[3],det_box[4],det_box[5]
+                w = float(x2 - x1) * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
+                h = float(y2 - y1) * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT
+
+                x1 = int(x1 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
+                y1 = int(y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
+                x2 = int(x2 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
+                y2 = int(y2 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
+
+                if (h<(0.1*DISPLAY_HEIGHT)):
+                    continue
+                if (w<(0.25*DISPLAY_WIDTH) and ((x1<(0.03*DISPLAY_WIDTH)) or (x2>(0.97*DISPLAY_WIDTH)))):
+                    continue
+                if (w<(0.15*DISPLAY_WIDTH) and ((x1<(0.01*DISPLAY_WIDTH)) or (x2>(0.99*DISPLAY_WIDTH)))):
+                    continue
+                draw_img.draw_rectangle(x1 , y1 , int(w) , int(h), color=(255, 0, 255, 0), thickness = 2)
+                draw_img.draw_string( x1 , y1-50, " " + labels[det_box[0]] + " " + str(round(det_box[1],2)), color=(255,0, 255, 0), scale=4)
+            draw_img.copy_to(osd_img)
+            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+        else:
+            draw_img.clear()
+            draw_img.copy_to(osd_img)
+            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
 
 #for camera 初始化
 def camera_init(dev_id):
@@ -8615,7 +9003,7 @@ def camera_init(dev_id):
     camera.set_outfmt(dev_id, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
 
     # set chn2 output rgb88planar
-    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGH)
+    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGHT)
     camera.set_outfmt(dev_id, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
 
 # camera 开启
@@ -8674,11 +9062,10 @@ def media_deinit():
     ret = media.buffer_deinit()
     return ret
 
-#**********for hand_keypoint_detect.py**********
-def hand_keypoint_detect_inference():
-    print("hand_keypoint_detect_test start")
-    kpu_hand_detect = hd_kpu_init(hd_kmodel_file)                       # 创建手掌检测的 kpu 对象
-    kpu_hand_keypoint_detect = hk_kpu_init(hk_kmodel_file)              # 创建手掌关键点检测的 kpu 对象
+#**********for hand_detect.py**********
+def hand_detect_inference():
+    print("hand_detect_test start")
+    kpu_hand_detect = kpu_init(kmodel_file)                             # 创建手掌检测的 kpu 对象
     camera_init(CAM_DEV_ID_0)                                           # 初始化 camera
     display_init()                                                      # 初始化 display
 
@@ -8690,6 +9077,7 @@ def hand_keypoint_detect_inference():
             return ret
 
         camera_start(CAM_DEV_ID_0)
+        count = 0
         while True:
             with ScopedTiming("total",1):
                 rgb888p_img = camera_read(CAM_DEV_ID_0)                 # 读取一帧图片
@@ -8701,48 +9089,17 @@ def hand_keypoint_detect_inference():
 
                 # for rgb888planar
                 if rgb888p_img.format() == image.RGBP888:
-                    dets = hd_kpu_run(kpu_hand_detect,rgb888p_img)                      # 执行手掌检测 kpu 运行 以及 后处理过程
-                    draw_img.clear()
+                    dets = kpu_run(kpu_hand_detect,rgb888p_img)         # 执行手掌检测 kpu 运行 以及 后处理过程
+                    display_draw(dets)                                  # 将得到的检测结果 绘制到 display
 
-                    for det_box in dets:
-                        x1, y1, x2, y2 = det_box[2],det_box[3],det_box[4],det_box[5]
-                        w = int(float(x2 - x1) * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
-                        h = int(float(y2 - y1) * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH)
-
-                        x1 = int(x1 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
-                        y1 = int(y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH)
-                        x2 = int(x2 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
-                        y2 = int(y2 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH)
-
-                        if (h<(0.1*DISPLAY_HEIGHT)):
-                            continue
-                        if (w<(0.25*DISPLAY_WIDTH) and ((x1<(0.03*DISPLAY_WIDTH)) or (x2>(0.97*DISPLAY_WIDTH)))):
-                            continue
-                        if (w<(0.15*DISPLAY_WIDTH) and ((x1<(0.01*DISPLAY_WIDTH)) or (x2>(0.99*DISPLAY_WIDTH)))):
-                            continue
-
-                        length = max(w,h)/2
-                        cx = (x1+x2)/2
-                        cy = (y1+y2)/2
-                        ratio_num = 1.26*length
-
-                        x1_kp = int(max(0,cx-ratio_num))
-                        y1_kp = int(max(0,cy-ratio_num))
-                        x2_kp = int(min(DISPLAY_WIDTH-1, cx+ratio_num))
-                        y2_kp = int(min(DISPLAY_HEIGHT-1, cy+ratio_num))
-                        w_kp = int(x2_kp - x1_kp + 1)
-                        h_kp = int(y2_kp - y1_kp + 1)
-
-                        hk_results = hk_kpu_run(kpu_hand_keypoint_detect,rgb888p_img, x1_kp, y1_kp, w_kp, h_kp)     # 执行手掌关键点检测 kpu 运行 以及 后处理过程
-
-                        draw_img.draw_rectangle(x1, y1, w, h, color=(255, 0, 255, 0))                               # 将得到的手掌检测结果 绘制到 display
-                        display_draw(hk_results[0], x1_kp, y1_kp, w_kp, h_kp)                                       # 将得到的手掌关键点检测结果 绘制到 display
-
-                camera_release_image(CAM_DEV_ID_0,rgb888p_img)         # camera 释放图像
+                camera_release_image(CAM_DEV_ID_0,rgb888p_img)          # camera 释放图像
                 rgb888p_img = None
-                #gc.collect()
-            draw_img.copy_to(osd_img)
-            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+                if (count>10):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
+
     except Exception as e:
         print(f"An error occurred during buffer used: {e}")
     finally:
@@ -8752,8 +9109,7 @@ def hand_keypoint_detect_inference():
 
         camera_stop(CAM_DEV_ID_0)                                       # 停止 camera
         display_deinit()                                                # 释放 display
-        hd_kpu_deinit(kpu_hand_detect)                                  # 释放手掌检测 kpu
-        hk_kpu_deinit(kpu_hand_keypoint_detect)                         # 释放手掌关键点检测 kpu
+        kpu_deinit(kpu_hand_detect)                                     # 释放 kpu
         gc.collect()
         ret = media_deinit()                                            # 释放 整个media
         if ret:
@@ -8764,7 +9120,7 @@ def hand_keypoint_detect_inference():
     return 0
 
 if __name__ == '__main__':
-    hand_keypoint_detect_inference()
+    hand_detect_inference()
 ```
 
 ### 9. 静态手势识别
@@ -8790,7 +9146,7 @@ DISPLAY_HEIGHT = 1080
 
 ##ai原图分辨率输入
 OUT_RGB888P_WIDTH = ALIGN_UP(1920, 16)
-OUT_RGB888P_HEIGH = 1080
+OUT_RGB888P_HEIGHT = 1080
 
 #--------for hand detection----------
 #kmodel输入shape
@@ -8800,13 +9156,13 @@ hd_kmodel_input_shape = (1,3,512,512)                           # 手掌检测km
 confidence_threshold = 0.2                                      # 手掌检测阈值，用于过滤roi
 nms_threshold = 0.5                                             # 手掌检测框阈值，用于过滤重复roi
 hd_kmodel_frame_size = [512,512]                                # 手掌检测输入图片尺寸
-hd_frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGH]           # 手掌检测直接输入图片尺寸
+hd_frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGHT]          # 手掌检测直接输入图片尺寸
 strides = [8,16,32]                                             # 输出特征图的尺寸与输入图片尺寸的比
 num_classes = 1                                                 # 手掌检测模型输出类别数
 nms_option = False                                              # 是否所有检测框一起做NMS，False则按照不同的类分别应用NMS
 
 root_dir = '/sdcard/app/tests/'
-hd_kmodel_file = root_dir + 'kmodel/hand_det.kmodel'      # 手掌检测kmodel文件的路径
+hd_kmodel_file = root_dir + 'kmodel/hand_det.kmodel'            # 手掌检测kmodel文件的路径
 anchors = [26,27, 53,52, 75,71, 80,99, 106,82, 99,134, 140,113, 161,172, 245,276]   #anchor设置
 
 #--------for hand recognition----------
@@ -8817,7 +9173,7 @@ hr_kmodel_input_shape = (1,3,224,224)                           # 手势识别km
 hr_kmodel_frame_size = [224,224]                                # 手势识别输入图片尺寸
 labels = ["gun","other","yeah","five"]                          # 模型输出类别名称
 
-hr_kmodel_file = root_dir + "kmodel/hand_reco.kmodel"     # 手势识别kmodel文件的路径
+hr_kmodel_file = root_dir + "kmodel/hand_reco.kmodel"           # 手势识别kmodel文件的路径
 
 debug_mode = 0                                                  # debug模式 大于0（调试）、 反之 （不调试）
 
@@ -8851,7 +9207,7 @@ def hd_ai2d_init():
         global hd_ai2d_output_tensor
         # 计算padding值
         ori_w = OUT_RGB888P_WIDTH
-        ori_h = OUT_RGB888P_HEIGH
+        ori_h = OUT_RGB888P_HEIGHT
         width = hd_kmodel_frame_size[0]
         height = hd_kmodel_frame_size[1]
         ratiow = float(width) / ori_w
@@ -8869,21 +9225,20 @@ def hd_ai2d_init():
         left = int(round(dw - 0.1))
         right = int(round(dw - 0.1))
 
-        # init kpu and load kmodel
         hd_ai2d = nn.ai2d()
         hd_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
                                        nn.ai2d_format.NCHW_FMT,
                                        np.uint8, np.uint8)
         hd_ai2d.set_pad_param(True, [0,0,0,0,top,bottom,left,right], 0, [114,114,114])
         hd_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
-        hd_ai2d_builder = hd_ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], [1,3,height,width])
+        hd_ai2d_builder = hd_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,height,width])
         data = np.ones(hd_kmodel_input_shape, dtype=np.uint8)
         hd_ai2d_output_tensor = nn.from_numpy(data)
 
 # 手掌检测 ai2d 运行
 def hd_ai2d_run(rgb888p_img):
     with ScopedTiming("hd_ai2d_run",debug_mode > 0):
-        global hd_ai2d_input_tensor,hd_ai2d_output_tensor
+        global hd_ai2d_input_tensor, hd_ai2d_output_tensor, hd_ai2d_builder
         hd_ai2d_input = rgb888p_img.to_numpy_ref()
         hd_ai2d_input_tensor = nn.from_numpy(hd_ai2d_input)
 
@@ -8948,10 +9303,11 @@ def hd_kpu_run(kpu_obj,rgb888p_img):
 # 手掌检测 kpu 释放内存
 def hd_kpu_deinit(kpu_obj):
     with ScopedTiming("hd_kpu_deinit",debug_mode > 0):
-        global hd_ai2d, hd_ai2d_output_tensor
+        global hd_ai2d, hd_ai2d_output_tensor, hd_ai2d_builder
         del kpu_obj
         del hd_ai2d
         del hd_ai2d_output_tensor
+        del hd_ai2d_builder
 
 #-------hand recognition--------:
 # 手势识别 ai2d 初始化
@@ -8976,14 +9332,15 @@ def hr_ai2d_run(rgb888p_img, x, y, w, h):
         hr_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
 
         global hr_ai2d_builder
-        hr_ai2d_builder = hr_ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], [1,3,hr_kmodel_frame_size[1],hr_kmodel_frame_size[0]])
+        hr_ai2d_builder = hr_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,hr_kmodel_frame_size[1],hr_kmodel_frame_size[0]])
         hr_ai2d_builder.run(hr_ai2d_input_tensor, hr_ai2d_output_tensor)
 
 # 手势识别 ai2d 释放内存
 def hr_ai2d_release():
     with ScopedTiming("hr_ai2d_release",debug_mode > 0):
-        global hr_ai2d_input_tensor
+        global hr_ai2d_input_tensor, hr_ai2d_builder
         del hr_ai2d_input_tensor
+        del hr_ai2d_builder
 
 # 手势识别 kpu 初始化
 def hr_kpu_init(hr_kmodel_file):
@@ -9058,7 +9415,7 @@ def hr_kpu_deinit(kpu_obj):
         del hr_ai2d_output_tensor
 
 #media_utils.py
-global draw_img,osd_img,masks                               #for display 定义全局 作图image对象
+global draw_img,osd_img                                     #for display 定义全局 作图image对象
 global buffer,media_source,media_sink                       #for media   定义 media 程序中的中间存储对象
 
 #for display 初始化
@@ -9080,7 +9437,7 @@ def camera_init(dev_id):
     camera.set_outfmt(dev_id, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
 
     # set chn2 output rgb88planar
-    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGH)
+    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGHT)
     camera.set_outfmt(dev_id, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
 
 # camera 开启
@@ -9155,6 +9512,7 @@ def hand_recognition_inference():
             return ret
 
         camera_start(CAM_DEV_ID_0)
+        count = 0
         while True:
             with ScopedTiming("total",1):
                 rgb888p_img = camera_read(CAM_DEV_ID_0)                 # 读取一帧图片
@@ -9166,25 +9524,25 @@ def hand_recognition_inference():
 
                 # for rgb888planar
                 if rgb888p_img.format() == image.RGBP888:
-                    dets = hd_kpu_run(kpu_hand_detect,rgb888p_img)                      # 执行手掌检测 kpu 运行 以及 后处理过程
+                    dets = hd_kpu_run(kpu_hand_detect,rgb888p_img)                                                  # 执行手掌检测 kpu 运行 以及 后处理过程
                     draw_img.clear()
 
                     for det_box in dets:
                         x1, y1, x2, y2 = det_box[2],det_box[3],det_box[4],det_box[5]
-                        w = int(float(x2 - x1) * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
-                        h = int(float(y2 - y1) * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH)
+                        w = int(x2 - x1)
+                        h = int(y2 - y1)
 
-                        x1 = int(x1 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
-                        y1 = int(y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH)
-                        x2 = int(x2 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
-                        y2 = int(y2 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH)
+                        if (h<(0.1*OUT_RGB888P_HEIGHT)):
+                            continue
+                        if (w<(0.25*OUT_RGB888P_WIDTH) and ((x1<(0.03*OUT_RGB888P_WIDTH)) or (x2>(0.97*OUT_RGB888P_WIDTH)))):
+                            continue
+                        if (w<(0.15*OUT_RGB888P_WIDTH) and ((x1<(0.01*OUT_RGB888P_WIDTH)) or (x2>(0.99*OUT_RGB888P_WIDTH)))):
+                            continue
 
-                        if (h<(0.1*DISPLAY_HEIGHT)):
-                            continue
-                        if (w<(0.25*DISPLAY_WIDTH) and ((x1<(0.03*DISPLAY_WIDTH)) or (x2>(0.97*DISPLAY_WIDTH)))):
-                            continue
-                        if (w<(0.15*DISPLAY_WIDTH) and ((x1<(0.01*DISPLAY_WIDTH)) or (x2>(0.99*DISPLAY_WIDTH)))):
-                            continue
+                        w_det = int(float(x2 - x1) * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
+                        h_det = int(float(y2 - y1) * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
+                        x_det = int(x1*DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
+                        y_det = int(y1*DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
 
                         length = max(w,h)/2
                         cx = (x1+x2)/2
@@ -9193,19 +9551,23 @@ def hand_recognition_inference():
 
                         x1_kp = int(max(0,cx-ratio_num))
                         y1_kp = int(max(0,cy-ratio_num))
-                        x2_kp = int(min(DISPLAY_WIDTH-1, cx+ratio_num))
-                        y2_kp = int(min(DISPLAY_HEIGHT-1, cy+ratio_num))
+                        x2_kp = int(min(OUT_RGB888P_WIDTH-1, cx+ratio_num))
+                        y2_kp = int(min(OUT_RGB888P_HEIGHT-1, cy+ratio_num))
                         w_kp = int(x2_kp - x1_kp + 1)
                         h_kp = int(y2_kp - y1_kp + 1)
 
-                        hr_results = hr_kpu_run(kpu_hand_recognition,rgb888p_img, x1_kp, y1_kp, w_kp, h_kp)     # 执行手势识别 kpu 运行 以及 后处理过程
+                        hr_results = hr_kpu_run(kpu_hand_recognition,rgb888p_img, x1_kp, y1_kp, w_kp, h_kp)          # 执行手势识别 kpu 运行 以及 后处理过程
+                        draw_img.draw_rectangle(x_det, y_det, w_det, h_det, color=(255, 0, 255, 0), thickness = 2)   # 将得到的手掌检测结果 绘制到 display
+                        draw_img.draw_string( x_det, y_det-50, hr_results, color=(255,0, 255, 0), scale=4)           # 将得到的手势识别结果 绘制到 display
 
-                        draw_img.draw_rectangle(x1, y1, w, h, color=(255, 0, 255, 0))                           # 将得到的检测结果 绘制到 display
-                        draw_img.draw_string( x1 , y1-50, hr_results, color=(255,0, 255, 0), scale=4)           # 将得到的识别结果 绘制到 display
-
-                camera_release_image(CAM_DEV_ID_0,rgb888p_img)         # camera 释放图像
+                camera_release_image(CAM_DEV_ID_0,rgb888p_img)          # camera 释放图像
                 rgb888p_img = None
-                #gc.collect()
+                if (count>10):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
+
             draw_img.copy_to(osd_img)
             display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
     except Exception as e:
@@ -9453,11 +9815,10 @@ def fd_kpu_run(kpu_obj,rgb888p_img):
     else:
         return post_ret[0]          #0:det,1:landm,2:score
 
-def fd_kpu_deinit(kpu_obj):
+def fd_kpu_deinit():
     # kpu释放
     with ScopedTiming("fd_kpu_deinit",debug_mode > 0):
         global fd_ai2d, fd_ai2d_output_tensor
-        del kpu_obj               #删除人脸检测kpu_obj变量，释放对它所引用对象的内存引用
         del fd_ai2d               #删除人脸检测ai2d变量，释放对它所引用对象的内存引用
         del fd_ai2d_output_tensor #删除人脸检测ai2d_output_tensor变量，释放对它所引用对象的内存引用
 
@@ -9576,11 +9937,10 @@ def fm_kpu_run(kpu_obj,rgb888p_img,det):
     param = fm_kpu_post_process(param)
     return param
 
-def fm_kpu_deinit(kpu_obj):
+def fm_kpu_deinit():
     # 人脸mesh kpu释放
     with ScopedTiming("fm_kpu_deinit",debug_mode > 0):
         global fm_ai2d,fm_ai2d_output_tensor
-        del kpu_obj               # 删除kpu_obj变量，释放对它所引用对象的内存引用
         del fm_ai2d               # 删除fm_ai2d变量，释放对它所引用对象的内存引用
         del fm_ai2d_output_tensor # 删除fm_ai2d_output_tensor变量，释放对它所引用对象的内存引用
 
@@ -9660,12 +10020,6 @@ def fmpost_kpu_run(kpu_obj,param):
     global roi
     fmpost_kpu_post_process(roi)
     return
-
-def fmpost_kpu_deinit(kpu_obj):
-    # face mesh post模型释放
-    with ScopedTiming("fm_kpu_deinit",debug_mode > 0):
-        del kpu_obj
-
 #********************for media_utils.py********************
 global draw_img_ulab,draw_img,osd_img                       #for display
 global buffer,media_source,media_sink                       #for media
@@ -9796,6 +10150,7 @@ def face_mesh_inference():
         # 启动camera
         camera_start(CAM_DEV_ID_0)
         time.sleep(5)
+        gc_count = 0
         while True:
             with ScopedTiming("total",1):
                 # （1）读取一帧图像
@@ -9823,8 +10178,11 @@ def face_mesh_inference():
                 # （4）释放当前帧
                 camera_release_image(CAM_DEV_ID_0,rgb888p_img)
                 rgb888p_img = None
-                #with ScopedTiming("gc collect", debug_mode > 0):
-                    #gc.collect()
+                if gc_count > 5:
+                    gc.collect()
+                    gc_count = 0
+                else:
+                    gc_count += 1
     except Exception as e:
         # 捕捉运行运行中异常，并打印错误
         print(f"An error occurred during buffer used: {e}")
@@ -9839,9 +10197,13 @@ def face_mesh_inference():
         # 释放显示资源
         display_deinit()
         # 释放kpu资源
-        fd_kpu_deinit(kpu_face_detect)
-        fm_kpu_deinit(kpu_face_mesh)
-        fmpost_kpu_deinit(kpu_face_mesh_post)
+        fd_kpu_deinit()
+        fm_kpu_deinit()
+        global current_kmodel_obj
+        del current_kmodel_obj
+        del kpu_face_detect
+        del kpu_face_mesh
+        del kpu_face_mesh_post
         # 垃圾回收
         gc.collect()
         time.sleep(1)
@@ -9856,4 +10218,3732 @@ def face_mesh_inference():
 
 if __name__ == '__main__':
     face_mesh_inference()
+```
+
+### 11.注视估计
+
+```python
+import ulab.numpy as np                  # 类似python numpy操作，但也会有一些接口不同
+import nncase_runtime as nn              # nncase运行模块，封装了kpu（kmodel推理）和ai2d（图片预处理加速）操作
+from media.camera import *               # 摄像头模块
+from media.display import *              # 显示模块
+from media.media import *                # 软件抽象模块，主要封装媒体数据链路以及媒体缓冲区
+import aidemo                            # aidemo模块，封装ai demo相关后处理、画图操作
+import image                             # 图像模块，主要用于读取、图像绘制元素（框、点等）等操作
+import time                              # 时间统计
+import gc                                # 垃圾回收模块
+import os                                # 操作系统接口模块
+import math                              # 数学模块
+
+
+#********************for config.py********************
+# display分辨率
+DISPLAY_WIDTH = ALIGN_UP(1920, 16)                   # 显示宽度要求16位对齐
+DISPLAY_HEIGHT = 1080
+
+# ai原图分辨率，sensor默认出图为16:9，若需不形变原图，最好按照16:9比例设置宽高
+OUT_RGB888P_WIDTH = ALIGN_UP(1920, 16)               # ai原图宽度要求16位对齐
+OUT_RGB888P_HEIGH = 1080
+
+# kmodel参数设置
+# 人脸检测kmodel输入shape
+fd_kmodel_input_shape = (1,3,320,320)
+# 注视估计kmodel输入shape
+feg_kmodel_input_shape = (1,3,448,448)
+# ai原图padding
+rgb_mean = [104,117,123]
+
+#人脸检测kmodel其它参数设置
+confidence_threshold = 0.5               # 人脸检测阈值
+top_k = 5000
+nms_threshold = 0.2
+keep_top_k = 750
+vis_thres = 0.5
+variance = [0.1, 0.2]
+anchor_len = 4200
+score_dim = 2
+det_dim = 4
+keypoint_dim = 10
+
+# 文件配置
+# 人脸检测kmodel
+root_dir = '/sdcard/app/tests/'
+fd_kmodel_file = root_dir + 'kmodel/face_detection_320.kmodel'
+# 注视估计kmodel
+fr_kmodel_file = root_dir + 'kmodel/eye_gaze.kmodel'
+# anchor文件
+anchors_path = root_dir + 'utils/prior_data_320.bin'
+# 调试模型，0：不调试，>0：打印对应级别调试信息
+debug_mode = 0
+
+#********************for scoped_timing.py********************
+# 时间统计类
+class ScopedTiming:
+    def __init__(self, info="", enable_profile=True):
+        self.info = info
+        self.enable_profile = enable_profile
+
+    def __enter__(self):
+        if self.enable_profile:
+            self.start_time = time.time_ns()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.enable_profile:
+            elapsed_time = time.time_ns() - self.start_time
+            print(f"{self.info} took {elapsed_time / 1000000:.2f} ms")
+
+#********************for ai_utils.py********************
+global current_kmodel_obj #当前kpu对象
+# fd_ai2d：               人脸检测ai2d实例
+# fd_ai2d_input_tensor：  人脸检测ai2d输入
+# fd_ai2d_output_tensor： 人脸检测ai2d输入
+# fd_ai2d_builder：       根据人脸检测ai2d参数，构建的人脸检测ai2d_builder对象
+global fd_ai2d,fd_ai2d_input_tensor,fd_ai2d_output_tensor,fd_ai2d_builder
+# feg_ai2d：              注视估计ai2d实例
+# feg_ai2d_input_tensor： 注视估计ai2d输入
+# feg_ai2d_output_tensor：注视估计ai2d输入
+# feg_ai2d_builder：      根据注视估计ai2d参数，构建的注视估计ai2d_builder对象
+global feg_ai2d,feg_ai2d_input_tensor,feg_ai2d_output_tensor,feg_ai2d_builder
+global matrix_dst         #人脸仿射变换矩阵
+
+#读取anchor文件，为人脸检测后处理做准备
+print('anchors_path:',anchors_path)
+prior_data = np.fromfile(anchors_path, dtype=np.float)
+prior_data = prior_data.reshape((anchor_len,det_dim))
+
+def get_pad_one_side_param():
+    # 右padding或下padding，获取padding参数
+    dst_w = fd_kmodel_input_shape[3]                         # kmodel输入宽（w）
+    dst_h = fd_kmodel_input_shape[2]                          # kmodel输入高（h）
+
+    # OUT_RGB888P_WIDTH：原图宽（w）
+    # OUT_RGB888P_HEIGH：原图高（h）
+    # 计算最小的缩放比例，等比例缩放
+    ratio_w = dst_w / OUT_RGB888P_WIDTH
+    ratio_h = dst_h / OUT_RGB888P_HEIGH
+    if ratio_w < ratio_h:
+        ratio = ratio_w
+    else:
+        ratio = ratio_h
+    # 计算经过缩放后的新宽和新高
+    new_w = (int)(ratio * OUT_RGB888P_WIDTH)
+    new_h = (int)(ratio * OUT_RGB888P_HEIGH)
+
+    # 计算需要添加的padding，以使得kmodel输入的宽高和原图一致
+    dw = (dst_w - new_w) / 2
+    dh = (dst_h - new_h) / 2
+    # 四舍五入，确保padding是整数
+    top = (int)(round(0))
+    bottom = (int)(round(dh * 2 + 0.1))
+    left = (int)(round(0))
+    right = (int)(round(dw * 2 - 0.1))
+    return [0, 0, 0, 0, top, bottom, left, right]
+
+def fd_ai2d_init():
+    # 人脸检测模型ai2d初始化
+    with ScopedTiming("fd_ai2d_init",debug_mode > 0):
+        # （1）创建人脸检测ai2d对象
+        global fd_ai2d
+        fd_ai2d = nn.ai2d()
+        # （2）设置人脸检测ai2d参数
+        fd_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.NCHW_FMT,
+                                       np.uint8, np.uint8)
+        fd_ai2d.set_pad_param(True, get_pad_one_side_param(), 0, rgb_mean)
+        fd_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
+
+        #（3）人脸检测ai2d_builder，根据人脸检测ai2d参数、输入输出大小创建ai2d_builder对象
+        global fd_ai2d_builder
+        fd_ai2d_builder = fd_ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], fd_kmodel_input_shape)
+
+        #（4）创建人脸检测ai2d_output_tensor，用于保存人脸检测ai2d输出
+        global fd_ai2d_output_tensor
+        data = np.ones(fd_kmodel_input_shape, dtype=np.uint8)
+        fd_ai2d_output_tensor = nn.from_numpy(data)
+
+def fd_ai2d_run(rgb888p_img):
+    # 根据人脸检测ai2d参数，对原图rgb888p_img进行预处理
+    with ScopedTiming("fd_ai2d_run",debug_mode > 0):
+        global fd_ai2d_input_tensor,fd_ai2d_output_tensor,fd_ai2d_builder
+        # （1）根据原图构建ai2d_input_tensor对象
+        ai2d_input = rgb888p_img.to_numpy_ref()
+        fd_ai2d_input_tensor = nn.from_numpy(ai2d_input)
+        # （2）运行人脸检测ai2d_builder，将结果保存到人脸检测ai2d_output_tensor中
+        fd_ai2d_builder.run(fd_ai2d_input_tensor, fd_ai2d_output_tensor)
+
+def fd_ai2d_release():
+    # 释放人脸检测ai2d_input_tensor
+    with ScopedTiming("fd_ai2d_release",debug_mode > 0):
+        global fd_ai2d_input_tensor
+        del fd_ai2d_input_tensor
+
+
+def fd_kpu_init(kmodel_file):
+    # 初始化人脸检测kpu对象，并加载kmodel
+    with ScopedTiming("fd_kpu_init",debug_mode > 0):
+        # 初始化人脸检测kpu对象
+        kpu_obj = nn.kpu()
+        # 加载人脸检测kmodel
+        kpu_obj.load_kmodel(kmodel_file)
+        # 初始化人脸检测ai2d
+        fd_ai2d_init()
+        return kpu_obj
+
+def fd_kpu_pre_process(rgb888p_img):
+    # 设置人脸检测kpu输入
+    # 使用人脸检测ai2d对原图进行预处理（padding，resize）
+    fd_ai2d_run(rgb888p_img)
+    with ScopedTiming("fd_kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,fd_ai2d_output_tensor
+        # 设置人脸检测kpu输入
+        current_kmodel_obj.set_input_tensor(0, fd_ai2d_output_tensor)
+
+def fd_kpu_get_output():
+    # 获取人脸检测kpu输出
+    with ScopedTiming("fd_kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj
+        # 获取模型输出，并将结果转换为numpy，以便进行人脸检测后处理
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+            del data
+            results.append(result)
+        return results
+
+def fd_kpu_run(kpu_obj,rgb888p_img):
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # （1）原图预处理，并设置模型输入
+    fd_kpu_pre_process(rgb888p_img)
+    # （2）人脸检测kpu推理
+    with ScopedTiming("fd kpu_run",debug_mode > 0):
+        kpu_obj.run()
+    # （3）释放人脸检测ai2d资源
+    fd_ai2d_release()
+    # （4）获取人俩检测kpu输出
+    results = fd_kpu_get_output()
+    # （5）人脸检测kpu结果后处理
+    with ScopedTiming("fd kpu_post",debug_mode > 0):
+        post_ret = aidemo.face_det_post_process(confidence_threshold,nms_threshold,fd_kmodel_input_shape[2],prior_data,
+                [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGH],results)
+    # （6）返回人脸检测框
+    if len(post_ret)==0:
+        return post_ret
+    else:
+        return post_ret[0]          #0:det,1:landm,2:score
+
+def fd_kpu_deinit():
+    # kpu释放
+    with ScopedTiming("fd_kpu_deinit",debug_mode > 0):
+        global fd_ai2d, fd_ai2d_output_tensor
+        del fd_ai2d               #删除人脸检测ai2d变量，释放对它所引用对象的内存引用
+        del fd_ai2d_output_tensor #删除人脸检测ai2d_output_tensor变量，释放对它所引用对象的内存引用
+
+###############for face recognition###############
+def feg_ai2d_init():
+    # 注视估计ai2d初始化
+    with ScopedTiming("feg_ai2d_init",debug_mode > 0):
+        # （1）创建注视估计ai2d对象
+        global feg_ai2d
+        feg_ai2d = nn.ai2d()
+
+        # （2）创建注视估计ai2d_output_tensor对象，用于存放ai2d输出
+        global feg_ai2d_output_tensor
+        data = np.ones(feg_kmodel_input_shape, dtype=np.uint8)
+        feg_ai2d_output_tensor = nn.from_numpy(data)
+
+def feg_ai2d_run(rgb888p_img,det):
+    # 注视估计ai2d推理
+    with ScopedTiming("feg_ai2d_run",debug_mode > 0):
+        global feg_ai2d,feg_ai2d_input_tensor,feg_ai2d_output_tensor
+        #（1）根据原图ai2d_input_tensor对象
+        ai2d_input = rgb888p_img.to_numpy_ref()
+        feg_ai2d_input_tensor = nn.from_numpy(ai2d_input)
+
+        # （2）根据新的det设置新的注视估计ai2d参数
+        feg_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.NCHW_FMT,
+                                       np.uint8, np.uint8)
+
+        x, y, w, h = map(lambda x: int(round(x, 0)), det[:4])
+        feg_ai2d.set_crop_param(True,x,y,w,h)
+        feg_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
+
+        # （3）根据新的注视估计ai2d参数，构建注视估计ai2d_builder
+        global feg_ai2d_builder
+        feg_ai2d_builder = feg_ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], feg_kmodel_input_shape)
+        # （4）推理注视估计ai2d，将预处理的结果保存到feg_ai2d_output_tensor
+        feg_ai2d_builder.run(feg_ai2d_input_tensor, feg_ai2d_output_tensor)
+
+def feg_ai2d_release():
+    # 释放注视估计ai2d_input_tensor、ai2d_builder
+    with ScopedTiming("feg_ai2d_release",debug_mode > 0):
+        global feg_ai2d_input_tensor,feg_ai2d_builder
+        del feg_ai2d_input_tensor
+        del feg_ai2d_builder
+
+def feg_kpu_init(kmodel_file):
+    # 注视估计kpu初始化
+    with ScopedTiming("feg_kpu_init",debug_mode > 0):
+        # 初始化注视估计kpu对象
+        kpu_obj = nn.kpu()
+        # 加载注视估计kmodel
+        kpu_obj.load_kmodel(kmodel_file)
+        # 初始化注视估计ai2d
+        feg_ai2d_init()
+        return kpu_obj
+
+def feg_kpu_pre_process(rgb888p_img,det):
+    # 注视估计kpu预处理
+    # 注视估计ai2d推理，根据det对原图进行预处理
+    feg_ai2d_run(rgb888p_img,det)
+    with ScopedTiming("feg_kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,feg_ai2d_output_tensor
+        # 将注视估计ai2d输出设置为注视估计kpu输入
+        current_kmodel_obj.set_input_tensor(0, feg_ai2d_output_tensor)
+
+def feg_kpu_get_output():
+    with ScopedTiming("feg_kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj
+        # 获取注视估计kpu输出
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+            del data
+            results.append(result)
+        return results
+
+def feg_kpu_post_process(results):
+    # 注视估计kpu推理结果后处理
+    with ScopedTiming("feg_kpu_post_process",debug_mode > 0):
+        post_ret = aidemo.eye_gaze_post_process(results)
+    return post_ret[0],post_ret[1]
+
+def feg_kpu_run(kpu_obj,rgb888p_img,det):
+    # 注视估计kpu推理
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # （1）注视估计kpu预处理，设置kpu输入
+    feg_kpu_pre_process(rgb888p_img,det)
+    # （2）注视估计kpu推理
+    with ScopedTiming("feg_kpu_run",debug_mode > 0):
+        kpu_obj.run()
+    # （3）释放注视估计ai2d
+    feg_ai2d_release()
+    # （4）获取注视估计kpu输出
+    results = feg_kpu_get_output()
+    # （5）注视估计后处理
+    pitch,yaw = feg_kpu_post_process(results)
+    return pitch,yaw
+
+def feg_kpu_deinit():
+    # 注视估计kpu释放
+    with ScopedTiming("feg_kpu_deinit",debug_mode > 0):
+        global feg_ai2d,feg_ai2d_output_tensor
+        del feg_ai2d               # 删除feg_ai2d变量，释放对它所引用对象的内存引用
+        del feg_ai2d_output_tensor # 删除feg_ai2d_output_tensor变量，释放对它所引用对象的内存引用
+
+#********************for media_utils.py********************
+global draw_img_ulab,draw_img,osd_img                       #for display
+global buffer,media_source,media_sink                       #for media
+
+# for display，已经封装好，无需自己再实现，直接调用即可，详细解析请查看1.6.2
+def display_init():
+    # 设置使用hdmi进行显示
+    display.init(LT9611_1920X1080_30FPS)
+    display.set_plane(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, PIXEL_FORMAT_YVU_PLANAR_420, DISPLAY_MIRROR_NONE, DISPLAY_CHN_VIDEO1)
+
+def display_deinit():
+    # 释放显示资源
+    display.deinit()
+
+def display_draw(dets,gaze_results):
+    # 在显示器画人脸轮廓
+    with ScopedTiming("display_draw",debug_mode >0):
+        global draw_img_ulab,draw_img,osd_img
+        if dets:
+            draw_img.clear()
+            for det,gaze_ret in zip(dets,gaze_results):
+                pitch , yaw = gaze_ret
+                length = DISPLAY_WIDTH / 2
+                x, y, w, h = map(lambda x: int(round(x, 0)), det[:4])
+                x = x * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
+                y = y * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH
+                w = w * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
+                h = h * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH
+                center_x = (x + w / 2.0)
+                center_y = (y + h / 2.0)
+                dx = -length * math.sin(pitch) * math.cos(yaw)
+                target_x = int(center_x + dx)
+                dy = -length * math.sin(yaw)
+                target_y = int(center_y + dy)
+
+                draw_img.draw_arrow(int(center_x), int(center_y), target_x, target_y, color = (255,255,0,0), size = 30, thickness = 2)
+
+            # （4）将轮廓结果拷贝到osd
+            draw_img.copy_to(osd_img)
+            # （5）将osd显示到屏幕
+            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+        else:
+            # （1）清空用来画框的图像
+            draw_img.clear()
+            # （2）清空osd
+            draw_img.copy_to(osd_img)
+            # （3）显示透明图层
+            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+
+#for camera，已经封装好，无需自己再实现，直接调用即可，详细解析请查看1.6.1
+def camera_init(dev_id):
+    # camera初始化
+    camera.sensor_init(dev_id, CAM_DEFAULT_SENSOR)
+
+    # set chn0 output yuv420sp
+    camera.set_outsize(dev_id, CAM_CHN_ID_0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
+
+    # set chn2 output rgb88planar
+    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGH)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
+
+def camera_start(dev_id):
+    # camera启动
+    camera.start_stream(dev_id)
+
+def camera_read(dev_id):
+    # 读取一帧图像
+    with ScopedTiming("camera_read",debug_mode >0):
+        rgb888p_img = camera.capture_image(dev_id, CAM_CHN_ID_2)
+        return rgb888p_img
+
+def camera_release_image(dev_id,rgb888p_img):
+    # 释放一帧图像
+    with ScopedTiming("camera_release_image",debug_mode >0):
+        camera.release_image(dev_id, CAM_CHN_ID_2, rgb888p_img)
+
+def camera_stop(dev_id):
+    # 停止camera
+    camera.stop_stream(dev_id)
+
+#for media，已经封装好，无需自己再实现，直接调用即可，详细解析请查看1.6.3
+def media_init():
+    # meida初始化
+    config = k_vb_config()
+    config.max_pool_cnt = 1
+    config.comm_pool[0].blk_size = 4 * DISPLAY_WIDTH * DISPLAY_HEIGHT
+    config.comm_pool[0].blk_cnt = 1
+    config.comm_pool[0].mode = VB_REMAP_MODE_NOCACHE
+
+    ret = media.buffer_config(config)
+
+    global media_source, media_sink
+    media_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
+    media_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_VIDEO1)
+    media.create_link(media_source, media_sink)
+
+    # 初始化多媒体buffer
+    ret = media.buffer_init()
+    if ret:
+        return ret
+    global buffer, draw_img_ulab,draw_img, osd_img
+    buffer = media.request_buffer(4 * DISPLAY_WIDTH * DISPLAY_HEIGHT)
+    # 用于画框
+    draw_img_ulab = np.zeros((DISPLAY_HEIGHT,DISPLAY_WIDTH,4),dtype=np.uint8)
+    draw_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, alloc=image.ALLOC_REF,data = draw_img_ulab)
+    # 用于拷贝画框结果，防止画框过程中发生buffer搬运
+    osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, poolid=buffer.pool_id, alloc=image.ALLOC_VB,
+                          phyaddr=buffer.phys_addr, virtaddr=buffer.virt_addr)
+    return ret
+
+def media_deinit():
+    # meida资源释放
+    global buffer,media_source, media_sink
+    media.release_buffer(buffer)
+    media.destroy_link(media_source, media_sink)
+
+    ret = media.buffer_deinit()
+    return ret
+
+#********************for face_detect.py********************
+def eye_gaze_inference():
+    print("eye_gaze_test start")
+    # 人脸检测kpu初始化
+    kpu_face_detect = fd_kpu_init(fd_kmodel_file)
+    # 注视估计kpu初始化
+    kpu_eye_gaze = feg_kpu_init(fr_kmodel_file)
+    # camera初始化
+    camera_init(CAM_DEV_ID_0)
+    # 显示初始化
+    display_init()
+
+    rgb888p_img = None
+    # 注意：将一定要将一下过程包在try中，用于保证程序停止后，资源释放完毕；确保下次程序仍能正常运行
+    try:
+        # 注意：媒体初始化（注：媒体初始化必须在camera_start之前，确保media缓冲区已配置完全）
+        ret = media_init()
+        if ret:
+            print("face_detect_test, buffer init failed")
+            return ret
+
+        # 启动camera
+        camera_start(CAM_DEV_ID_0)
+        time.sleep(5)
+        while True:
+            with ScopedTiming("total",1):
+                # （1）读取一帧图像
+                rgb888p_img = camera_read(CAM_DEV_ID_0)
+                # （2）若读取失败，释放当前帧
+                if rgb888p_img == -1:
+                    print("face_detect_test, capture_image failed")
+                    camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+                    rgb888p_img = None
+                    continue
+                # （3）若读取成功，推理当前帧
+                if rgb888p_img.format() == image.RGBP888:
+                    # （3.1）推理当前图像，并获取人脸检测结果
+                    dets = fd_kpu_run(kpu_face_detect,rgb888p_img)
+                    # （3.2）针对每个人脸框，推理得到对应注视估计
+                    gaze_results = []
+                    for det in dets:
+                        pitch ,yaw = feg_kpu_run(kpu_eye_gaze,rgb888p_img,det)
+                        gaze_results.append([pitch ,yaw])
+                    # （3.3）将注视估计画到屏幕上
+                    display_draw(dets,gaze_results)
+
+                # （4）释放当前帧
+                camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+                rgb888p_img = None
+                with ScopedTiming("gc collect", debug_mode > 0):
+                    gc.collect()                                   #2.00 ms
+
+    except Exception as e:
+        # 捕捉运行运行中异常，并打印错误
+        print(f"An error occurred during buffer used: {e}")
+    finally:
+        # 释放当前帧
+        if rgb888p_img is not None:
+            #先release掉申请的内存再stop
+            camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+
+        # 停止camera
+        camera_stop(CAM_DEV_ID_0)
+        # 释放显示资源
+        display_deinit()
+        # 释放kpu资源
+        fd_kpu_deinit()
+        feg_kpu_deinit()
+        global current_kmodel_obj
+        del current_kmodel_obj
+        del kpu_face_detect
+        del kpu_eye_gaze
+        # 垃圾回收
+        gc.collect()
+        time.sleep(1)
+        # 释放媒体资源
+        ret = media_deinit()
+        if ret:
+            print("eye_gaze_test, buffer_deinit failed")
+            return ret
+
+    print("eye_gaze_test end")
+    return 0
+
+if __name__ == '__main__':
+    eye_gaze_inference()
+```
+
+### 12.动态手势识别
+
+```python
+import aicube                   #aicube模块，封装检测分割等任务相关后处理
+from media.camera import *      #摄像头模块
+from media.display import *     #显示模块
+from media.media import *       #软件抽象模块，主要封装媒体数据链路以及媒体缓冲区
+
+import nncase_runtime as nn     #nncase运行模块，封装了kpu（kmodel推理）和ai2d（图片预处理加速）操作
+import ulab.numpy as np         #类似python numpy操作，但也会有一些接口不同
+
+import time                     #时间统计
+import image                    #图像模块，主要用于读取、图像绘制元素（框、点等）等操作
+
+import gc                       #垃圾回收模块
+
+##config.py
+#display分辨率
+DISPLAY_WIDTH = ALIGN_UP(1920, 16)
+DISPLAY_HEIGHT = 1080
+
+##ai原图分辨率输入
+OUT_RGB888P_WIDTH = ALIGN_UP(1920, 16)
+OUT_RGB888P_HEIGHT = 1080
+
+root_dir = '/sdcard/app/tests/'
+
+#--------for hand detection----------
+#kmodel输入shape
+hd_kmodel_input_shape = (1,3,512,512)                               # 手掌检测kmodel输入分辨率
+
+#kmodel相关参数设置
+confidence_threshold = 0.2                                          # 手掌检测阈值，用于过滤roi
+nms_threshold = 0.5                                                 # 手掌检测框阈值，用于过滤重复roi
+hd_kmodel_frame_size = [512,512]                                    # 手掌检测输入图片尺寸
+hd_frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGHT]              # 手掌检测直接输入图片尺寸
+strides = [8,16,32]                                                 # 输出特征图的尺寸与输入图片尺寸的比
+num_classes = 1                                                     # 手掌检测模型输出类别数
+nms_option = False                                                  # 是否所有检测框一起做NMS，False则按照不同的类分别应用NMS
+
+hd_kmodel_file = root_dir + 'kmodel/hand_det.kmodel'                # 手掌检测kmodel文件的路径
+anchors = [26,27, 53,52, 75,71, 80,99, 106,82, 99,134, 140,113, 161,172, 245,276]   #anchor设置
+
+#--------for hand keypoint detection----------
+#kmodel输入shape
+hk_kmodel_input_shape = (1,3,256,256)                               # 手掌关键点检测kmodel输入分辨率
+
+#kmodel相关参数设置
+hk_kmodel_frame_size = [256,256]                                    # 手掌关键点检测输入图片尺寸
+hk_kmodel_file = root_dir + 'kmodel/handkp_det.kmodel'              # 手掌关键点检测kmodel文件的路径
+
+#--------for hand gesture----------
+#kmodel输入shape
+gesture_kmodel_input_shape = [[1, 3, 224, 224],                     # 动态手势识别kmodel输入分辨率
+                            [1,3,56,56],
+                            [1,4,28,28],
+                            [1,4,28,28],
+                            [1,8,14,14],
+                            [1,8,14,14],
+                            [1,8,14,14],
+                            [1,12,14,14],
+                            [1,12,14,14],
+                            [1,20,7,7],
+                            [1,20,7,7]]
+
+#kmodel相关参数设置
+resize_shape = 256
+mean_values = np.array([0.485, 0.456, 0.406]).reshape((3,1,1))      # 动态手势识别预处理均值
+std_values = np.array([0.229, 0.224, 0.225]).reshape((3,1,1))       # 动态手势识别预处理方差
+gesture_kmodel_frame_size = [224,224]                               # 动态手势识别输入图片尺寸
+
+gesture_kmodel_file = root_dir + 'kmodel/gesture.kmodel'            # 动态手势识别kmodel文件的路径
+
+shang_bin = root_dir + "utils/shang.bin"                            # 动态手势识别屏幕坐上角标志状态文件的路径
+xia_bin = root_dir + "utils/xia.bin"                                # 动态手势识别屏幕坐上角标志状态文件的路径
+zuo_bin = root_dir + "utils/zuo.bin"                                # 动态手势识别屏幕坐上角标志状态文件的路径
+you_bin = root_dir + "utils/you.bin"                                # 动态手势识别屏幕坐上角标志状态文件的路径
+
+bin_width = 150                                                     # 动态手势识别屏幕坐上角标志状态文件的短边尺寸
+bin_height = 216                                                    # 动态手势识别屏幕坐上角标志状态文件的长边尺寸
+shang_argb = np.fromfile(shang_bin, dtype=np.uint8)
+shang_argb = shang_argb.reshape((bin_height, bin_width, 4))
+xia_argb = np.fromfile(xia_bin, dtype=np.uint8)
+xia_argb = xia_argb.reshape((bin_height, bin_width, 4))
+zuo_argb = np.fromfile(zuo_bin, dtype=np.uint8)
+zuo_argb = zuo_argb.reshape((bin_width, bin_height, 4))
+you_argb = np.fromfile(you_bin, dtype=np.uint8)
+you_argb = you_argb.reshape((bin_width, bin_height, 4))
+
+TRIGGER = 0                                                         # 动态手势识别应用的结果状态
+MIDDLE = 1
+UP = 2
+DOWN = 3
+LEFT = 4
+RIGHT = 5
+
+max_hist_len = 20                                                   # 最多存储多少帧的结果
+
+debug_mode = 0                                                      # debug模式 大于0（调试）、 反之 （不调试）
+
+#scoped_timing.py 用于debug模式输出程序块运行时间
+class ScopedTiming:
+    def __init__(self, info="", enable_profile=True):
+        self.info = info
+        self.enable_profile = enable_profile
+
+    def __enter__(self):
+        if self.enable_profile:
+            self.start_time = time.time_ns()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.enable_profile:
+            elapsed_time = time.time_ns() - self.start_time
+            print(f"{self.info} took {elapsed_time / 1000000:.2f} ms")
+
+#ai_utils.py
+global current_kmodel_obj                                                                                                     # 定义全局的 kpu 对象
+global hd_ai2d,hd_ai2d_input_tensor,hd_ai2d_output_tensor,hd_ai2d_builder                                                     # 定义手掌检测全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
+global hk_ai2d,hk_ai2d_input_tensor,hk_ai2d_output_tensor,hk_ai2d_builder                                                     # 定义手掌关键点检测全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
+global gesture_ai2d_resize, gesture_ai2d_resize_builder, gesture_ai2d_crop, gesture_ai2d_crop_builder                         # 定义动态手势识别全局 ai2d 对象，以及 builder
+global gesture_ai2d_input_tensor, gesture_kpu_input_tensors, gesture_ai2d_middle_output_tensor, gesture_ai2d_output_tensor    # 定义动态手势识别全局 ai2d 的输入、输出
+
+#-------hand detect--------:
+# 手掌检测ai2d 初始化
+def hd_ai2d_init():
+    with ScopedTiming("hd_ai2d_init",debug_mode > 0):
+        global hd_ai2d
+        global hd_ai2d_builder
+        global hd_ai2d_output_tensor
+        # 计算padding值
+        ori_w = OUT_RGB888P_WIDTH
+        ori_h = OUT_RGB888P_HEIGHT
+        width = hd_kmodel_frame_size[0]
+        height = hd_kmodel_frame_size[1]
+        ratiow = float(width) / ori_w
+        ratioh = float(height) / ori_h
+        if ratiow < ratioh:
+            ratio = ratiow
+        else:
+            ratio = ratioh
+        new_w = int(ratio * ori_w)
+        new_h = int(ratio * ori_h)
+        dw = float(width - new_w) / 2
+        dh = float(height - new_h) / 2
+        top = int(round(dh - 0.1))
+        bottom = int(round(dh + 0.1))
+        left = int(round(dw - 0.1))
+        right = int(round(dw - 0.1))
+
+        hd_ai2d = nn.ai2d()
+        hd_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.NCHW_FMT,
+                                       np.uint8, np.uint8)
+        hd_ai2d.set_pad_param(True, [0,0,0,0,top,bottom,left,right], 0, [114,114,114])
+        hd_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+        hd_ai2d_builder = hd_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,height,width])
+
+        data = np.ones(hd_kmodel_input_shape, dtype=np.uint8)
+        hd_ai2d_output_tensor = nn.from_numpy(data)
+
+# 手掌检测 ai2d 运行
+def hd_ai2d_run(rgb888p_img):
+    with ScopedTiming("hd_ai2d_run",debug_mode > 0):
+        global hd_ai2d_input_tensor,hd_ai2d_output_tensor, hd_ai2d_builder
+        hd_ai2d_input = rgb888p_img.to_numpy_ref()
+        hd_ai2d_input_tensor = nn.from_numpy(hd_ai2d_input)
+
+        hd_ai2d_builder.run(hd_ai2d_input_tensor, hd_ai2d_output_tensor)
+
+# 手掌检测 ai2d 释放内存
+def hd_ai2d_release():
+    with ScopedTiming("hd_ai2d_release",debug_mode > 0):
+        global hd_ai2d_input_tensor
+        del hd_ai2d_input_tensor
+
+# 手掌检测 kpu 初始化
+def hd_kpu_init(hd_kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("hd_kpu_init",debug_mode > 0):
+        hd_kpu_obj = nn.kpu()
+        hd_kpu_obj.load_kmodel(hd_kmodel_file)
+
+        hd_ai2d_init()
+        return hd_kpu_obj
+
+# 手掌检测 kpu 输入预处理
+def hd_kpu_pre_process(rgb888p_img):
+    hd_ai2d_run(rgb888p_img)
+    with ScopedTiming("hd_kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,hd_ai2d_output_tensor
+        # set kpu input
+        current_kmodel_obj.set_input_tensor(0, hd_ai2d_output_tensor)
+
+# 手掌检测 kpu 获得 kmodel 输出
+def hd_kpu_get_output():
+    with ScopedTiming("hd_kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+            result = result.reshape((result.shape[0]*result.shape[1]*result.shape[2]*result.shape[3]))
+            tmp2 = result.copy()
+            del result
+            results.append(tmp2)
+        return results
+
+# 手掌检测 kpu 运行
+def hd_kpu_run(kpu_obj,rgb888p_img):
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # (1)原图预处理，并设置模型输入
+    hd_kpu_pre_process(rgb888p_img)
+    # (2)手掌检测 kpu 运行
+    with ScopedTiming("hd_kpu_run",debug_mode > 0):
+        current_kmodel_obj.run()
+    # (3)释放手掌检测 ai2d 资源
+    hd_ai2d_release()
+    # (4)获取手掌检测 kpu 输出
+    results = hd_kpu_get_output()
+    # (5)手掌检测 kpu 结果后处理
+    dets = aicube.anchorbasedet_post_process( results[0], results[1], results[2], hd_kmodel_frame_size, hd_frame_size, strides, num_classes, confidence_threshold, nms_threshold, anchors, nms_option)  # kpu结果后处理
+    # (6)返回手掌检测结果
+    return dets
+
+# 手掌检测 kpu 释放内存
+def hd_kpu_deinit(kpu_obj):
+    with ScopedTiming("hd_kpu_deinit",debug_mode > 0):
+        global hd_ai2d, hd_ai2d_output_tensor, hd_ai2d_builder
+        del kpu_obj
+        del hd_ai2d
+        del hd_ai2d_output_tensor
+        del hd_ai2d_builder
+
+#-------hand keypoint detection------:
+# 手掌关键点检测 ai2d 初始化
+def hk_ai2d_init():
+    with ScopedTiming("hk_ai2d_init",debug_mode > 0):
+        global hk_ai2d, hk_ai2d_output_tensor
+        hk_ai2d = nn.ai2d()
+        hk_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.NCHW_FMT,
+                                       np.uint8, np.uint8)
+        data = np.ones(hk_kmodel_input_shape, dtype=np.uint8)
+        hk_ai2d_output_tensor = nn.from_numpy(data)
+
+# 手掌关键点检测 ai2d 运行
+def hk_ai2d_run(rgb888p_img, x, y, w, h):
+    with ScopedTiming("hk_ai2d_run",debug_mode > 0):
+        global hk_ai2d,hk_ai2d_input_tensor,hk_ai2d_output_tensor
+        hk_ai2d_input = rgb888p_img.to_numpy_ref()
+        hk_ai2d_input_tensor = nn.from_numpy(hk_ai2d_input)
+
+        hk_ai2d.set_crop_param(True, x, y, w, h)
+        hk_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+
+        global hk_ai2d_builder
+        hk_ai2d_builder = hk_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,hk_kmodel_frame_size[1],hk_kmodel_frame_size[0]])
+        hk_ai2d_builder.run(hk_ai2d_input_tensor, hk_ai2d_output_tensor)
+
+# 手掌关键点检测 ai2d 释放内存
+def hk_ai2d_release():
+    with ScopedTiming("hk_ai2d_release",debug_mode > 0):
+        global hk_ai2d_input_tensor, hk_ai2d_builder
+        del hk_ai2d_input_tensor
+        del hk_ai2d_builder
+
+# 手掌关键点检测 kpu 初始化
+def hk_kpu_init(hk_kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("hk_kpu_init",debug_mode > 0):
+        hk_kpu_obj = nn.kpu()
+        hk_kpu_obj.load_kmodel(hk_kmodel_file)
+
+        hk_ai2d_init()
+        return hk_kpu_obj
+
+# 手掌关键点检测 kpu 输入预处理
+def hk_kpu_pre_process(rgb888p_img, x, y, w, h):
+    hk_ai2d_run(rgb888p_img, x, y, w, h)
+    with ScopedTiming("hk_kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,hk_ai2d_output_tensor
+        # set kpu input
+        current_kmodel_obj.set_input_tensor(0, hk_ai2d_output_tensor)
+
+# 手掌关键点检测 kpu 获得 kmodel 输出
+def hk_kpu_get_output():
+    with ScopedTiming("hk_kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+
+            result = result.reshape((result.shape[0]*result.shape[1]))
+            tmp2 = result.copy()
+            del result
+            results.append(tmp2)
+        return results
+
+# 手掌关键点检测 kpu 输出后处理
+def hk_kpu_post_process(results, x, y, w, h):
+    results_show = np.zeros(results.shape,dtype=np.int16)
+    results_show[0::2] = results[0::2] * w + x
+    results_show[1::2] = results[1::2] * h + y
+    return results_show
+
+# 手掌关键点检测 kpu 运行
+def hk_kpu_run(kpu_obj,rgb888p_img, x, y, w, h):
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # (1)原图预处理，并设置模型输入
+    hk_kpu_pre_process(rgb888p_img, x, y, w, h)
+    # (2)手掌关键点检测 kpu 运行
+    with ScopedTiming("hk_kpu_run",debug_mode > 0):
+        current_kmodel_obj.run()
+    # (3)释放手掌关键点检测 ai2d 资源
+    hk_ai2d_release()
+    # (4)获取手掌关键点检测 kpu 输出
+    results = hk_kpu_get_output()
+    # (5)手掌关键点检测 kpu 结果后处理
+    result = hk_kpu_post_process(results[0],x,y,w,h)
+    # (6)返回手掌关键点检测结果
+    return result
+
+# 手掌关键点检测 kpu 释放内存
+def hk_kpu_deinit(kpu_obj):
+    with ScopedTiming("hk_kpu_deinit",debug_mode > 0):
+        global hk_ai2d, hk_ai2d_output_tensor
+        del kpu_obj
+        del hk_ai2d
+        del hk_ai2d_output_tensor
+
+# 求两个vector之间的夹角
+def hk_vector_2d_angle(v1,v2):
+    with ScopedTiming("hk_vector_2d_angle",debug_mode > 0):
+        v1_x = v1[0]
+        v1_y = v1[1]
+        v2_x = v2[0]
+        v2_y = v2[1]
+        v1_norm = np.sqrt(v1_x * v1_x+ v1_y * v1_y)
+        v2_norm = np.sqrt(v2_x * v2_x + v2_y * v2_y)
+        dot_product = v1_x * v2_x + v1_y * v2_y
+        cos_angle = dot_product/(v1_norm*v2_norm)
+        angle = np.acos(cos_angle)*180/np.pi
+        return angle
+
+# 根据手掌关键点检测结果判断手势类别
+def hk_gesture(results):
+    with ScopedTiming("hk_gesture",debug_mode > 0):
+        angle_list = []
+        for i in range(5):
+            angle = hk_vector_2d_angle([(results[0]-results[i*8+4]), (results[1]-results[i*8+5])],[(results[i*8+6]-results[i*8+8]),(results[i*8+7]-results[i*8+9])])
+            angle_list.append(angle)
+
+        thr_angle = 65.
+        thr_angle_thumb = 53.
+        thr_angle_s = 49.
+        gesture_str = None
+        if 65535. not in angle_list:
+            if (angle_list[0]>thr_angle_thumb)  and (angle_list[1]>thr_angle) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]>thr_angle):
+                gesture_str = "fist"
+            elif (angle_list[0]<thr_angle_s)  and (angle_list[1]<thr_angle_s) and (angle_list[2]<thr_angle_s) and (angle_list[3]<thr_angle_s) and (angle_list[4]<thr_angle_s):
+                gesture_str = "five"
+            elif (angle_list[0]<thr_angle_s)  and (angle_list[1]<thr_angle_s) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]>thr_angle):
+                gesture_str = "gun"
+            elif (angle_list[0]<thr_angle_s)  and (angle_list[1]<thr_angle_s) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]<thr_angle_s):
+                gesture_str = "love"
+            elif (angle_list[0]>5)  and (angle_list[1]<thr_angle_s) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]>thr_angle):
+                gesture_str = "one"
+            elif (angle_list[0]<thr_angle_s)  and (angle_list[1]>thr_angle) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]<thr_angle_s):
+                gesture_str = "six"
+            elif (angle_list[0]>thr_angle_thumb)  and (angle_list[1]<thr_angle_s) and (angle_list[2]<thr_angle_s) and (angle_list[3]<thr_angle_s) and (angle_list[4]>thr_angle):
+                gesture_str = "three"
+            elif (angle_list[0]<thr_angle_s)  and (angle_list[1]>thr_angle) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]>thr_angle):
+                gesture_str = "thumbUp"
+            elif (angle_list[0]>thr_angle_thumb)  and (angle_list[1]<thr_angle_s) and (angle_list[2]<thr_angle_s) and (angle_list[3]>thr_angle) and (angle_list[4]>thr_angle):
+                gesture_str = "yeah"
+
+        return gesture_str
+
+#-------dynamic gesture--------:
+# 动态手势识别 ai2d 初始化
+def gesture_ai2d_init(kpu_obj, resize_shape):
+    with ScopedTiming("gesture_ai2d_init",debug_mode > 0):
+        global gesture_ai2d_resize, gesture_ai2d_resize_builder
+        global gesture_ai2d_crop, gesture_ai2d_crop_builder
+        global gesture_ai2d_middle_output_tensor, gesture_ai2d_output_tensor
+
+        ori_w = OUT_RGB888P_WIDTH
+        ori_h = OUT_RGB888P_HEIGHT
+        width = gesture_kmodel_frame_size[0]
+        height = gesture_kmodel_frame_size[1]
+        ratiow = float(resize_shape) / ori_w
+        ratioh = float(resize_shape) / ori_h
+        if ratiow < ratioh:
+            ratio = ratioh
+        else:
+            ratio = ratiow
+        new_w = int(ratio * ori_w)
+        new_h = int(ratio * ori_h)
+
+        top = int((new_h-height)/2)
+        left = int((new_w-width)/2)
+
+        gesture_ai2d_resize = nn.ai2d()
+        gesture_ai2d_resize.set_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
+        gesture_ai2d_resize.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
+        gesture_ai2d_resize_builder = gesture_ai2d_resize.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,new_h,new_w])
+
+        gesture_ai2d_crop = nn.ai2d()
+        gesture_ai2d_crop.set_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
+        gesture_ai2d_crop.set_crop_param(True, left, top, width, height)
+        gesture_ai2d_crop_builder = gesture_ai2d_crop.build([1,3,new_h,new_w], [1,3,height,width])
+
+        global gesture_kpu_input_tensor, gesture_kpu_input_tensors, current_kmodel_obj
+        current_kmodel_obj = kpu_obj
+        gesture_kpu_input_tensors = []
+        for i in range(current_kmodel_obj.inputs_size()):
+            data = np.zeros(gesture_kmodel_input_shape[i], dtype=np.float)
+            gesture_kpu_input_tensor = nn.from_numpy(data)
+            gesture_kpu_input_tensors.append(gesture_kpu_input_tensor)
+
+        data = np.ones(gesture_kmodel_input_shape[0], dtype=np.uint8)
+        gesture_ai2d_output_tensor = nn.from_numpy(data)
+
+        global data_float
+        data_float = np.ones(gesture_kmodel_input_shape[0], dtype=np.float)
+
+        data_middle = np.ones((1,3,new_h,new_w), dtype=np.uint8)
+        gesture_ai2d_middle_output_tensor = nn.from_numpy(data_middle)
+
+def gesture_ai2d_run(rgb888p_img):
+    with ScopedTiming("gesture_ai2d_run",debug_mode > 0):
+        global gesture_ai2d_input_tensor, gesture_kpu_input_tensors, gesture_ai2d_middle_output_tensor, gesture_ai2d_output_tensor
+        global gesture_ai2d_resize_builder, gesture_ai2d_crop_builder
+
+        gesture_ai2d_input = rgb888p_img.to_numpy_ref()
+        gesture_ai2d_input_tensor = nn.from_numpy(gesture_ai2d_input)
+
+        gesture_ai2d_resize_builder.run(gesture_ai2d_input_tensor, gesture_ai2d_middle_output_tensor)
+        gesture_ai2d_crop_builder.run(gesture_ai2d_middle_output_tensor, gesture_ai2d_output_tensor)
+
+        result = gesture_ai2d_output_tensor.to_numpy()
+        global data_float
+        data_float[0] = result[0].copy()
+        data_float[0] = (data_float[0]*1.0/255 -mean_values)/std_values
+        tmp = nn.from_numpy(data_float)
+        gesture_kpu_input_tensors[0] = tmp
+
+# 动态手势识别 ai2d 释放内存
+def gesture_ai2d_release():
+    with ScopedTiming("gesture_ai2d_release",debug_mode > 0):
+        global gesture_ai2d_input_tensor
+        del gesture_ai2d_input_tensor
+
+# 动态手势识别 kpu 初始化
+def gesture_kpu_init(gesture_kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("gesture_kpu_init",debug_mode > 0):
+        gesture_kpu_obj = nn.kpu()
+        gesture_kpu_obj.load_kmodel(gesture_kmodel_file)
+        gesture_ai2d_init(gesture_kpu_obj, resize_shape)
+        return gesture_kpu_obj
+
+# 动态手势识别 kpu 输入预处理
+def gesture_kpu_pre_process(rgb888p_img):
+    gesture_ai2d_run(rgb888p_img)
+    with ScopedTiming("gesture_kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,gesture_kpu_input_tensors
+        # set kpu input
+        for i in range(current_kmodel_obj.inputs_size()):
+            current_kmodel_obj.set_input_tensor(i, gesture_kpu_input_tensors[i])
+
+# 动态手势识别 kpu 获得 kmodel 输出
+def gesture_kpu_get_output():
+    with ScopedTiming("gesture_kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj, gesture_kpu_input_tensors
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            if (i==0):
+                result = data.to_numpy()
+                tmp2 = result.copy()
+            else:
+                gesture_kpu_input_tensors[i] = data
+        return tmp2
+
+# 动态手势识别结果处理
+def gesture_process_output(pred,history):
+    if (pred == 7 or pred == 8 or pred == 21 or pred == 22 or pred == 3 ):
+        pred = history[-1]
+    if (pred == 0 or pred == 4 or pred == 6 or pred == 9 or pred == 14 or pred == 1 or pred == 19 or pred == 20 or pred == 23 or pred == 24) :
+        pred = history[-1]
+    if (pred == 0) :
+        pred = 2
+    if (pred != history[-1]) :
+        if (len(history)>= 2) :
+            if (history[-1] != history[len(history)-2]) :
+                pred = history[-1]
+    history.append(pred)
+    if (len(history) > max_hist_len) :
+        history = history[-max_hist_len:]
+    return history[-1]
+
+# 动态手势识别结果后处理
+def gesture_kpu_post_process(results, his_logit, history):
+    with ScopedTiming("gesture_kpu_post_process",debug_mode > 0):
+        his_logit.append(results[0])
+        avg_logit = sum(np.array(his_logit))
+        idx_ = np.argmax(avg_logit)
+
+        idx = gesture_process_output(idx_, history)
+        if (idx_ != idx):
+            his_logit_last = his_logit[-1]
+            his_logit = []
+            his_logit.append(his_logit_last)
+        return idx, avg_logit
+
+# 动态手势识别 kpu 运行
+def gesture_kpu_run(kpu_obj,rgb888p_img, his_logit, history):
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # (1)原图预处理，并设置模型输入
+    gesture_kpu_pre_process(rgb888p_img)
+    # (2)动态手势识别 kpu 运行
+    with ScopedTiming("gesture_kpu_run",debug_mode > 0):
+        current_kmodel_obj.run()
+    # (3)释放动态手势识别 ai2d 资源
+    gesture_ai2d_release()
+    # (4)获取动态手势识别 kpu 输出
+    results = gesture_kpu_get_output()
+    # (5)动态手势识别 kpu 结果后处理
+    result,  avg_logit= gesture_kpu_post_process(results,his_logit, history)
+    # (6)返回动态手势识别结果
+    return result, avg_logit
+
+def gesture_kpu_deinit(kpu_obj):
+    with ScopedTiming("gesture_kpu_deinit",debug_mode > 0):
+        global gesture_ai2d_resize, gesture_ai2d_middle_output_tensor
+        global gesture_ai2d_crop, gesture_ai2d_output_tensor
+        global gesture_kpu_input_tensors
+        global gesture_ai2d_resize_builder, gesture_ai2d_crop_builder
+        del kpu_obj
+        del gesture_ai2d_resize
+        del gesture_ai2d_middle_output_tensor
+        del gesture_ai2d_crop
+        del gesture_ai2d_output_tensor
+
+        del gesture_kpu_input_tensors
+        del gesture_ai2d_resize_builder
+        del gesture_ai2d_crop_builder
+
+#media_utils.py
+global draw_img,osd_img,draw_numpy                          #for display 定义全局 作图image对象
+global buffer,media_source,media_sink                       #for media   定义 media 程序中的中间存储对象
+
+#for display 初始化
+def display_init():
+    # use hdmi for display
+    display.init(LT9611_1920X1080_30FPS)
+    display.set_plane(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, PIXEL_FORMAT_YVU_PLANAR_420, DISPLAY_MIRROR_NONE, DISPLAY_CHN_VIDEO1)
+
+# display 释放内存
+def display_deinit():
+    display.deinit()
+
+#for camera 初始化
+def camera_init(dev_id):
+    camera.sensor_init(dev_id, CAM_DEFAULT_SENSOR)
+
+    # set chn0 output yuv420sp
+    camera.set_outsize(dev_id, CAM_CHN_ID_0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
+
+    # set chn2 output rgb88planar
+    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
+
+# camera 开启
+def camera_start(dev_id):
+    camera.start_stream(dev_id)
+
+# camera 读取图像
+def camera_read(dev_id):
+    with ScopedTiming("camera_read",debug_mode >0):
+        rgb888p_img = camera.capture_image(dev_id, CAM_CHN_ID_2)
+        return rgb888p_img
+
+# camera 图像释放
+def camera_release_image(dev_id,rgb888p_img):
+    with ScopedTiming("camera_release_image",debug_mode >0):
+        camera.release_image(dev_id, CAM_CHN_ID_2, rgb888p_img)
+
+# camera 结束
+def camera_stop(dev_id):
+    camera.stop_stream(dev_id)
+
+#for media 初始化
+def media_init():
+    config = k_vb_config()
+    config.max_pool_cnt = 1
+    config.comm_pool[0].blk_size = 4 * DISPLAY_WIDTH * DISPLAY_HEIGHT
+    config.comm_pool[0].blk_cnt = 1
+    config.comm_pool[0].mode = VB_REMAP_MODE_NOCACHE
+
+    ret = media.buffer_config(config)
+
+    global media_source, media_sink
+    media_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
+    media_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_VIDEO1)
+    media.create_link(media_source, media_sink)
+
+    # 初始化多媒体buffer
+    ret = media.buffer_init()
+    if ret:
+        return ret
+    global buffer, draw_img, osd_img, draw_numpy
+    buffer = media.request_buffer(4 * DISPLAY_WIDTH * DISPLAY_HEIGHT)
+    # 图层1，用于画框
+    draw_numpy = np.zeros((DISPLAY_HEIGHT, DISPLAY_WIDTH,4), dtype=np.uint8)
+    draw_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, alloc=image.ALLOC_REF,data=draw_numpy)
+    # 图层2，用于拷贝画框结果，防止画框过程中发生buffer搬运
+    osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, poolid=buffer.pool_id, alloc=image.ALLOC_VB,
+                          phyaddr=buffer.phys_addr, virtaddr=buffer.virt_addr)
+    return ret
+
+# media 释放内存
+def media_deinit():
+    global buffer,media_source, media_sink
+    media.release_buffer(buffer)
+    media.destroy_link(media_source, media_sink)
+
+    ret = media.buffer_deinit()
+    return ret
+
+#**********for dynamic_gesture.py**********
+def dynamic_gesture_inference():
+    print("dynamic_gesture_test start")
+    cur_state = TRIGGER
+    pre_state = TRIGGER
+    draw_state = TRIGGER
+
+    kpu_hand_detect = hd_kpu_init(hd_kmodel_file)                       # 创建手掌检测的 kpu 对象
+    kpu_hand_keypoint_detect = hk_kpu_init(hk_kmodel_file)              # 创建手掌关键点检测的 kpu 对象
+    kpu_dynamic_gesture = gesture_kpu_init(gesture_kmodel_file)         # 创建动态手势识别的 kpu 对象
+    camera_init(CAM_DEV_ID_0)                                           # 初始化 camera
+    display_init()                                                      # 初始化 display
+
+    rgb888p_img = None
+    try:
+        ret = media_init()
+        if ret:
+            print("dynamic_gesture, buffer init failed")
+            return ret
+
+        camera_start(CAM_DEV_ID_0)
+        vec_flag = []
+        his_logit = []
+        history = [2]
+        s_start = time.time_ns()
+
+        count = 0
+        while True:
+            with ScopedTiming("total",1):
+                rgb888p_img = camera_read(CAM_DEV_ID_0)                 # 读取一帧图片
+                if rgb888p_img == -1:
+                    print("dynamic_gesture, capture_image failed")
+                    camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+                    rgb888p_img = None
+                    continue
+
+                # for rgb888planar
+                if rgb888p_img.format() == image.RGBP888:
+                    draw_img.clear()
+                    if (cur_state == TRIGGER):
+                        with ScopedTiming("trigger time", debug_mode > 0):
+                            dets = hd_kpu_run(kpu_hand_detect,rgb888p_img)                                                  # 执行手掌检测 kpu 运行 以及 后处理过程
+
+                            for det_box in dets:
+                                x1, y1, x2, y2 = int(det_box[2]),int(det_box[3]),int(det_box[4]),int(det_box[5])
+                                w = int(x2 - x1)
+                                h = int(y2 - y1)
+
+                                if (h<(0.1*OUT_RGB888P_HEIGHT)):
+                                    continue
+                                if (w<(0.25*OUT_RGB888P_WIDTH) and ((x1<(0.03*OUT_RGB888P_WIDTH)) or (x2>(0.97*OUT_RGB888P_WIDTH)))):
+                                    continue
+                                if (w<(0.15*OUT_RGB888P_WIDTH) and ((x1<(0.01*OUT_RGB888P_WIDTH)) or (x2>(0.99*OUT_RGB888P_WIDTH)))):
+                                    continue
+
+                                length = max(w,h)/2
+                                cx = (x1+x2)/2
+                                cy = (y1+y2)/2
+                                ratio_num = 1.26*length
+
+                                x1_kp = int(max(0,cx-ratio_num))
+                                y1_kp = int(max(0,cy-ratio_num))
+                                x2_kp = int(min(OUT_RGB888P_WIDTH-1, cx+ratio_num))
+                                y2_kp = int(min(OUT_RGB888P_HEIGHT-1, cy+ratio_num))
+                                w_kp = int(x2_kp - x1_kp + 1)
+                                h_kp = int(y2_kp - y1_kp + 1)
+
+                                hk_results = hk_kpu_run(kpu_hand_keypoint_detect,rgb888p_img, x1_kp, y1_kp, w_kp, h_kp)     # 执行手掌关键点检测 kpu 运行 以及 后处理过程
+                                gesture = hk_gesture(hk_results)                                                            # 根据关键点检测结果判断手势类别
+
+                                if ((gesture == "five") or (gesture == "yeah")):
+                                    v_x = hk_results[24]-hk_results[0]
+                                    v_y = hk_results[25]-hk_results[1]
+                                    angle = hk_vector_2d_angle([v_x,v_y],[1.0,0.0])                                         # 计算手指（中指）的朝向
+
+                                    if (v_y>0):
+                                        angle = 360-angle
+
+                                    if ((70.0<=angle) and (angle<110.0)):                                                   # 手指向上
+                                        if ((pre_state != UP) or (pre_state != MIDDLE)):
+                                            vec_flag.append(pre_state)
+                                        if ((len(vec_flag)>10)or(pre_state == UP) or (pre_state == MIDDLE) or(pre_state == TRIGGER)):
+                                            draw_numpy[:bin_height,:bin_width,:] = shang_argb
+                                            cur_state = UP
+
+                                    elif ((110.0<=angle) and (angle<225.0)):                                                # 手指向右(实际方向)
+                                        if (pre_state != RIGHT):
+                                            vec_flag.append(pre_state)
+                                        if ((len(vec_flag)>10)or(pre_state == RIGHT)or(pre_state == TRIGGER)):
+                                            draw_numpy[:bin_width,:bin_height,:] = you_argb
+                                            cur_state = RIGHT
+
+                                    elif((225.0<=angle) and (angle<315.0)):                                                 # 手指向下
+                                        if (pre_state != DOWN):
+                                            vec_flag.append(pre_state)
+                                        if ((len(vec_flag)>10)or(pre_state == DOWN)or(pre_state == TRIGGER)):
+                                            draw_numpy[:bin_height,:bin_width,:] = xia_argb
+                                            cur_state = DOWN
+
+                                    else:                                                                                   # 手指向左(实际方向)
+                                        if (pre_state != LEFT):
+                                            vec_flag.append(pre_state)
+                                        if ((len(vec_flag)>10)or(pre_state == LEFT)or(pre_state == TRIGGER)):
+                                            draw_numpy[:bin_width,:bin_height,:] = zuo_argb
+                                            cur_state = LEFT
+
+                                    m_start = time.time_ns()
+                            his_logit = []
+                    else:
+                        with ScopedTiming("swip time",debug_mode > 0):
+                            idx, avg_logit = gesture_kpu_run(kpu_dynamic_gesture,rgb888p_img, his_logit, history)           # 执行动态手势识别 kpu 运行 以及 后处理过程
+                            if (cur_state == UP):
+                                draw_numpy[:bin_height,:bin_width,:] = shang_argb
+                                if ((idx==15) or (idx==10)):
+                                    vec_flag.clear()
+                                    if (((avg_logit[idx] >= 0.7) and (len(his_logit) >= 2)) or ((avg_logit[idx] >= 0.3) and (len(his_logit) >= 4))):
+                                        s_start = time.time_ns()
+                                        cur_state = TRIGGER
+                                        draw_state = DOWN
+                                        history = [2]
+                                    pre_state = UP
+                                elif ((idx==25)or(idx==26)) :
+                                    vec_flag.clear()
+                                    if (((avg_logit[idx] >= 0.4) and (len(his_logit) >= 2)) or ((avg_logit[idx] >= 0.3) and (len(his_logit) >= 3))):
+                                        s_start = time.time_ns()
+                                        cur_state = TRIGGER
+                                        draw_state = MIDDLE
+                                        history = [2]
+                                    pre_state = MIDDLE
+                                else:
+                                    his_logit.clear()
+                            elif (cur_state == RIGHT):
+                                draw_numpy[:bin_width,:bin_height,:] = you_argb
+                                if  ((idx==16)or(idx==11)) :
+                                    vec_flag.clear()
+                                    if (((avg_logit[idx] >= 0.4) and (len(his_logit) >= 2)) or ((avg_logit[idx] >= 0.3) and (len(his_logit) >= 3))):
+                                        s_start = time.time_ns()
+                                        cur_state = TRIGGER
+                                        draw_state = RIGHT
+                                        history = [2]
+                                    pre_state = RIGHT
+                                else:
+                                    his_logit.clear()
+                            elif (cur_state == DOWN):
+                                draw_numpy[:bin_height,:bin_width,:] = xia_argb
+                                if  ((idx==18)or(idx==13)):
+                                    vec_flag.clear()
+                                    if (((avg_logit[idx] >= 0.4) and (len(his_logit) >= 2)) or ((avg_logit[idx] >= 0.3) and (len(his_logit) >= 3))):
+                                        s_start = time.time_ns()
+                                        cur_state = TRIGGER
+                                        draw_state = UP
+                                        history = [2]
+                                    pre_state = DOWN
+                                else:
+                                    his_logit.clear()
+                            elif (cur_state == LEFT):
+                                draw_numpy[:bin_width,:bin_height,:] = zuo_argb
+                                if ((idx==17)or(idx==12)):
+                                    vec_flag.clear()
+                                    if (((avg_logit[idx] >= 0.4) and (len(his_logit) >= 2)) or ((avg_logit[idx] >= 0.3) and (len(his_logit) >= 3))):
+                                        s_start = time.time_ns()
+                                        cur_state = TRIGGER
+                                        draw_state = LEFT
+                                        history = [2]
+                                    pre_state = LEFT
+                                else:
+                                    his_logit.clear()
+
+                        elapsed_time = round((time.time_ns() - m_start)/1000000)
+
+                        if ((cur_state != TRIGGER) and (elapsed_time>2000)):
+                            cur_state = TRIGGER
+                            pre_state = TRIGGER
+
+                    elapsed_ms_show = round((time.time_ns()-s_start)/1000000)
+                    if (elapsed_ms_show<1000):
+                        if (draw_state == UP):
+                            draw_img.draw_arrow(1068,330,1068,130, (255,170,190,230), thickness=13)                             # 判断为向上挥动时，画一个向上的箭头
+                        elif (draw_state == RIGHT):
+                            draw_img.draw_arrow(1290,540,1536,540, (255,170,190,230), thickness=13)                             # 判断为向右挥动时，画一个向右的箭头
+                        elif (draw_state == DOWN):
+                            draw_img.draw_arrow(1068,750,1068,950, (255,170,190,230), thickness=13)                             # 判断为向下挥动时，画一个向下的箭头
+                        elif (draw_state == LEFT):
+                            draw_img.draw_arrow(846,540,600,540, (255,170,190,230), thickness=13)                               # 判断为向左挥动时，画一个向左的箭头
+                        elif (draw_state == MIDDLE):
+                            draw_img.draw_circle(1068,540,100, (255,170,190,230), thickness=2, fill=True)                       # 判断为五指捏合手势时，画一个实心圆
+                    else:
+                        draw_state = TRIGGER
+
+                camera_release_image(CAM_DEV_ID_0,rgb888p_img)         # camera 释放图像
+                rgb888p_img = None
+                if (count>5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
+
+            draw_img.copy_to(osd_img)
+            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+    except Exception as e:
+        print(f"An error occurred during buffer used: {e}")
+    finally:
+        if rgb888p_img is not None:
+            #先release掉申请的内存再stop
+            camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+
+        camera_stop(CAM_DEV_ID_0)                                       # 停止 camera
+        display_deinit()                                                # 释放 display
+        hd_kpu_deinit(kpu_hand_detect)                                  # 释放手掌检测 kpu
+        hk_kpu_deinit(kpu_hand_keypoint_detect)                         # 释放手掌关键点检测 kpu
+        gesture_kpu_deinit(kpu_dynamic_gesture)                         # 释放动态手势识别 kpu
+
+        gc.collect()
+        ret = media_deinit()                                            # 释放 整个media
+        if ret:
+            print("dynamic_gesture, buffer_deinit failed")
+            return ret
+
+    print("dynamic_gesture_test end")
+    return 0
+
+if __name__ == '__main__':
+    dynamic_gesture_inference()
+```
+
+### 13.单目标跟踪
+
+```python
+import ulab.numpy as np             #类似python numpy操作，但也会有一些接口不同
+import nncase_runtime as nn         #nncase运行模块，封装了kpu（kmodel推理）和ai2d（图片预处理加速）操作
+from media.camera import *          #摄像头模块
+from media.display import *         #显示模块
+from media.media import *           #软件抽象模块，主要封装媒体数据链路以及媒体缓冲区
+import image                        #图像模块，主要用于读取、图像绘制元素（框、点等）等操作
+import time                         #时间统计
+import gc                           #垃圾回收模块
+import aidemo                       #aidemo模块，封装ai demo相关后处理、画图操作
+
+##config.py
+#display分辨率
+DISPLAY_WIDTH = ALIGN_UP(1920, 16)
+DISPLAY_HEIGHT = 1080
+
+#ai原图分辨率输入
+OUT_RGB888P_WIDTH = ALIGN_UP(1280, 16)
+OUT_RGB888P_HEIGHT = 720
+
+#单目标跟踪 kmodel 输入 shape
+crop_kmodel_input_shape = (1,3,127,127)
+src_kmodel_input_shape = (1,3,255,255)
+
+
+#单目标跟踪 相关参数设置
+head_thresh = 0.1                                           #单目标跟踪分数阈值
+CONTEXT_AMOUNT = 0.5                                        #跟踪框宽、高调整系数
+rgb_mean = [114,114,114]                                    #padding颜色值
+ratio_src_crop = float(src_kmodel_input_shape[2])/float(crop_kmodel_input_shape[2])     #src模型和crop模型输入比值
+track_x1 = float(300)                                       #起始跟踪目标框左上角点x
+track_y1 = float(300)                                       #起始跟踪目标框左上角点y
+track_w = float(100)                                        #起始跟踪目标框w
+track_h = float(100)                                        #起始跟踪目标框h
+
+
+#文件配置
+root_dir = '/sdcard/app/tests/'
+crop_kmodel_file = root_dir + 'kmodel/cropped_test127.kmodel'                               #单目标跟踪 crop kmodel 文件路径
+src_kmodel_file = root_dir + 'kmodel/nanotrack_backbone_sim.kmodel'                         #单目标跟踪 src kmodel 文件路径
+track_kmodel_file = root_dir + 'kmodel/nanotracker_head_calib_k230.kmodel'                  #单目标跟踪 head kmodel 文件路径
+
+debug_mode = 0                                                                              # debug模式 大于0（调试）、 反之 （不调试）
+
+#scoped_timing.py 用于debug模式输出程序块运行时间
+class ScopedTiming:
+    def __init__(self, info="", enable_profile=True):
+        self.info = info
+        self.enable_profile = enable_profile
+
+    def __enter__(self):
+        if self.enable_profile:
+            self.start_time = time.time_ns()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.enable_profile:
+            elapsed_time = time.time_ns() - self.start_time
+            print(f"{self.info} took {elapsed_time / 1000000:.2f} ms")
+
+
+#ai_utils.py
+global crop_current_kmodel_obj,src_current_kmodel_obj,track_current_kmodel_obj                          # 定义全局的 kpu 对象
+global crop_ai2d,crop_ai2d_input_tensor,crop_ai2d_output_tensor,crop_ai2d_builder                       # 对应crop模型： ai2d 对象 ，并且定义 ai2d 的输入、输出 以及 builder
+global crop_pad_ai2d,crop_pad_ai2d_input_tensor,crop_pad_ai2d_output_tensor,crop_pad_ai2d_builder       # 对应crop模型： ai2d 对象 ，并且定义 ai2d 的输入、输出 以及 builder
+global src_ai2d,src_ai2d_input_tensor,src_ai2d_output_tensor,src_ai2d_builder                           # 对应src模型： ai2d 对象 ，并且定义 ai2d 的输入、输出 以及 builder
+global src_pad_ai2d,src_pad_ai2d_input_tensor,src_pad_ai2d_output_tensor,src_pad_ai2d_builder           # 对应src模型： ai2d 对象 ，并且定义 ai2d 的输入、输出 以及 builder
+global track_kpu_input_0,track_kpu_input_1                                                              # 对应head模型： 两个输入
+
+
+# 单目标跟踪的后处理
+def track_kpu_post_process(output_data,center_xy_wh):
+    with ScopedTiming("track_kpu_post_process", debug_mode > 0):
+        det = aidemo.nanotracker_postprocess(output_data[0],output_data[1],[OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH],head_thresh,center_xy_wh,crop_kmodel_input_shape[2],CONTEXT_AMOUNT)
+        return det
+
+# 单目标跟踪 对应crop模型的 ai2d 初始化
+def crop_ai2d_init():
+    with ScopedTiming("crop_ai2d_init",debug_mode > 0):
+        global crop_ai2d, crop_pad_ai2d
+        crop_ai2d = nn.ai2d()
+        crop_pad_ai2d = nn.ai2d()
+
+        crop_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
+        crop_pad_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
+
+        crop_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+        crop_pad_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
+
+        global crop_ai2d_out_tensor
+        data = np.ones(crop_kmodel_input_shape, dtype=np.uint8)
+        crop_ai2d_out_tensor = nn.from_numpy(data)
+
+# 单目标跟踪 对应crop模型的 ai2d 运行
+def crop_ai2d_run(rgb888p_img,center_xy_wh):
+    with ScopedTiming("crop_ai2d_run",debug_mode > 0):
+        global crop_ai2d, crop_pad_ai2d
+        global crop_ai2d_input_tensor,crop_ai2d_out_tensor,crop_ai2d_builder
+        global crop_pad_ai2d_input_tensor,crop_pad_ai2d_out_tensor,crop_pad_ai2d_builder
+
+        s_z = round(np.sqrt((center_xy_wh[2] + CONTEXT_AMOUNT * (center_xy_wh[2] + center_xy_wh[3])) * (center_xy_wh[3] + CONTEXT_AMOUNT * (center_xy_wh[2] + center_xy_wh[3]))))
+        c = (s_z + 1) / 2
+        context_xmin = np.floor(center_xy_wh[0] - c + 0.5)
+        context_xmax = int(context_xmin + s_z - 1)
+        context_ymin = np.floor(center_xy_wh[1] - c + 0.5)
+        context_ymax = int(context_ymin + s_z - 1)
+
+        left_pad = int(max(0, -context_xmin))
+        top_pad = int(max(0, -context_ymin))
+        right_pad = int(max(0, int(context_xmax - OUT_RGB888P_WIDTH + 1)))
+        bottom_pad = int(max(0, int(context_ymax - OUT_RGB888P_HEIGHT + 1)))
+        context_xmin = context_xmin + left_pad
+        context_xmax = context_xmax + left_pad
+        context_ymin = context_ymin + top_pad
+        context_ymax = context_ymax + top_pad
+
+        if (left_pad != 0 or right_pad != 0 or top_pad != 0 or bottom_pad != 0):
+            crop_pad_ai2d.set_pad_param(True, [0, 0, 0, 0, top_pad, bottom_pad, left_pad, right_pad], 0, rgb_mean)
+            crop_pad_ai2d_builder = crop_pad_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1, 3, OUT_RGB888P_HEIGHT + top_pad + bottom_pad, OUT_RGB888P_WIDTH + left_pad + right_pad])
+            crop_pad_ai2d_input = rgb888p_img.to_numpy_ref()
+            crop_pad_ai2d_input_tensor = nn.from_numpy(crop_pad_ai2d_input)
+            crop_pad_ai2d_output = np.ones([1, 3, OUT_RGB888P_HEIGHT + top_pad + bottom_pad, OUT_RGB888P_WIDTH + left_pad + right_pad], dtype=np.uint8)
+            crop_pad_ai2d_out_tensor = nn.from_numpy(crop_pad_ai2d_output)
+            crop_pad_ai2d_builder.run(crop_pad_ai2d_input_tensor, crop_pad_ai2d_out_tensor)
+
+            crop_ai2d.set_crop_param(True, int(context_xmin), int(context_ymin), int(context_xmax - context_xmin + 1), int(context_ymax - context_ymin + 1))
+            crop_ai2d_builder = crop_ai2d.build([1, 3, OUT_RGB888P_HEIGHT + top_pad + bottom_pad, OUT_RGB888P_WIDTH + left_pad + right_pad], crop_kmodel_input_shape)
+            crop_ai2d_input_tensor = crop_pad_ai2d_out_tensor
+            crop_ai2d_builder.run(crop_ai2d_input_tensor, crop_ai2d_out_tensor)
+            del crop_pad_ai2d_input_tensor
+            del crop_pad_ai2d_out_tensor
+            del crop_pad_ai2d_builder
+        else:
+            crop_ai2d.set_crop_param(True, int(center_xy_wh[0] - s_z/2.0), int(center_xy_wh[1] - s_z/2.0), int(s_z), int(s_z))
+            crop_ai2d_builder = crop_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], crop_kmodel_input_shape)
+            crop_ai2d_input = rgb888p_img.to_numpy_ref()
+            crop_ai2d_input_tensor = nn.from_numpy(crop_ai2d_input)
+            crop_ai2d_builder.run(crop_ai2d_input_tensor, crop_ai2d_out_tensor)
+
+# 单目标跟踪 对应crop模型的 ai2d 释放
+def crop_ai2d_release():
+    with ScopedTiming("crop_ai2d_release",debug_mode > 0):
+        global crop_ai2d_input_tensor,crop_ai2d_builder
+        del crop_ai2d_input_tensor
+        del crop_ai2d_builder
+
+
+# 单目标跟踪 对应src模型的 ai2d 初始化
+def src_ai2d_init():
+    with ScopedTiming("src_ai2d_init",debug_mode > 0):
+        global src_ai2d, src_pad_ai2d
+        src_ai2d = nn.ai2d()
+        src_pad_ai2d = nn.ai2d()
+
+        src_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
+        src_pad_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
+
+        src_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+        src_pad_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
+
+        global src_ai2d_out_tensor
+        data = np.ones(src_kmodel_input_shape, dtype=np.uint8)
+        src_ai2d_out_tensor = nn.from_numpy(data)
+
+# 单目标跟踪 对应src模型的 ai2d 运行
+def src_ai2d_run(rgb888p_img,center_xy_wh):
+    with ScopedTiming("src_ai2d_run",debug_mode > 0):
+        global src_ai2d, src_pad_ai2d
+        global src_ai2d_input_tensor,src_ai2d_out_tensor,src_ai2d_builder
+        global src_pad_ai2d_input_tensor,src_pad_ai2d_out_tensor,src_pad_ai2d_builder
+
+        s_z = round(np.sqrt((center_xy_wh[2] + CONTEXT_AMOUNT * (center_xy_wh[2] + center_xy_wh[3])) * (center_xy_wh[3] + CONTEXT_AMOUNT * (center_xy_wh[2] + center_xy_wh[3])))) * ratio_src_crop
+        c = (s_z + 1) / 2
+        context_xmin = np.floor(center_xy_wh[0] - c + 0.5)
+        context_xmax = int(context_xmin + s_z - 1)
+        context_ymin = np.floor(center_xy_wh[1] - c + 0.5)
+        context_ymax = int(context_ymin + s_z - 1)
+
+        left_pad = int(max(0, -context_xmin))
+        top_pad = int(max(0, -context_ymin))
+        right_pad = int(max(0, int(context_xmax - OUT_RGB888P_WIDTH + 1)))
+        bottom_pad = int(max(0, int(context_ymax - OUT_RGB888P_HEIGHT + 1)))
+        context_xmin = context_xmin + left_pad
+        context_xmax = context_xmax + left_pad
+        context_ymin = context_ymin + top_pad
+        context_ymax = context_ymax + top_pad
+
+        if (left_pad != 0 or right_pad != 0 or top_pad != 0 or bottom_pad != 0):
+            src_pad_ai2d.set_pad_param(True, [0, 0, 0, 0, top_pad, bottom_pad, left_pad, right_pad], 0, rgb_mean)
+            src_pad_ai2d_builder = src_pad_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1, 3, OUT_RGB888P_HEIGHT + top_pad + bottom_pad, OUT_RGB888P_WIDTH + left_pad + right_pad])
+            src_pad_ai2d_input = rgb888p_img.to_numpy_ref()
+            src_pad_ai2d_input_tensor = nn.from_numpy(src_pad_ai2d_input)
+            src_pad_ai2d_output = np.ones([1, 3, OUT_RGB888P_HEIGHT + top_pad + bottom_pad, OUT_RGB888P_WIDTH + left_pad + right_pad], dtype=np.uint8)
+            src_pad_ai2d_out_tensor = nn.from_numpy(src_pad_ai2d_output)
+            src_pad_ai2d_builder.run(src_pad_ai2d_input_tensor, src_pad_ai2d_out_tensor)
+
+            src_ai2d.set_crop_param(True, int(context_xmin), int(context_ymin), int(context_xmax - context_xmin + 1), int(context_ymax - context_ymin + 1))
+            src_ai2d_builder = src_ai2d.build([1, 3, OUT_RGB888P_HEIGHT + top_pad + bottom_pad, OUT_RGB888P_WIDTH + left_pad + right_pad], src_kmodel_input_shape)
+            src_ai2d_input_tensor = src_pad_ai2d_out_tensor
+            src_ai2d_builder.run(src_ai2d_input_tensor, src_ai2d_out_tensor)
+            del src_pad_ai2d_input_tensor
+            del src_pad_ai2d_out_tensor
+            del src_pad_ai2d_builder
+        else:
+            src_ai2d.set_crop_param(True, int(center_xy_wh[0] - s_z/2.0), int(center_xy_wh[1] - s_z/2.0), int(s_z), int(s_z))
+            src_ai2d_builder = src_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], src_kmodel_input_shape)
+            src_ai2d_input = rgb888p_img.to_numpy_ref()
+            src_ai2d_input_tensor = nn.from_numpy(src_ai2d_input)
+            src_ai2d_builder.run(src_ai2d_input_tensor, src_ai2d_out_tensor)
+
+# 单目标跟踪 对应src模型的 ai2d 释放
+def src_ai2d_release():
+    with ScopedTiming("src_ai2d_release",debug_mode > 0):
+        global src_ai2d_input_tensor,src_ai2d_builder
+        del src_ai2d_input_tensor
+        del src_ai2d_builder
+
+
+# 单目标跟踪 crop kpu 初始化
+def crop_kpu_init(kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("crop_kpu_init",debug_mode > 0):
+        kpu_obj = nn.kpu()
+        kpu_obj.load_kmodel(kmodel_file)
+
+        crop_ai2d_init()
+        return kpu_obj
+
+# 单目标跟踪 crop kpu 输入预处理
+def crop_kpu_pre_process(rgb888p_img,center_xy_wh):
+    crop_ai2d_run(rgb888p_img,center_xy_wh)
+    with ScopedTiming("crop_kpu_pre_process",debug_mode > 0):
+        global crop_current_kmodel_obj,crop_ai2d_out_tensor
+        # set kpu input
+        crop_current_kmodel_obj.set_input_tensor(0, crop_ai2d_out_tensor)
+
+# 单目标跟踪 crop kpu 获取输出
+def crop_kpu_get_output():
+    with ScopedTiming("crop_kpu_get_output",debug_mode > 0):
+        global crop_current_kmodel_obj
+        data = crop_current_kmodel_obj.get_output_tensor(0)
+        result = data.to_numpy()
+        del data
+        return result
+
+# 单目标跟踪 crop kpu 运行
+def crop_kpu_run(kpu_obj,rgb888p_img,center_xy_wh):
+    global crop_current_kmodel_obj
+    crop_current_kmodel_obj = kpu_obj
+    # (1) 原图预处理，并设置模型输入
+    crop_kpu_pre_process(rgb888p_img,center_xy_wh)
+    # (2) kpu 运行
+    with ScopedTiming("crop_kpu_run",debug_mode > 0):
+        kpu_obj.run()
+    # (3) 释放ai2d资源
+    crop_ai2d_release()
+    # (4) 获取kpu输出
+    result = crop_kpu_get_output()
+    # 返回 crop kpu 的输出
+    return result
+
+# 单目标跟踪 crop kpu 释放
+def crop_kpu_deinit(kpu_obj):
+    with ScopedTiming("crop_kpu_deinit",debug_mode > 0):
+        global crop_ai2d, crop_pad_ai2d, crop_ai2d_out_tensor
+        del kpu_obj
+        del crop_ai2d
+        del crop_pad_ai2d
+        del crop_ai2d_out_tensor
+
+# 单目标跟踪 src kpu 初始化
+def src_kpu_init(kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("src_kpu_init",debug_mode > 0):
+        kpu_obj = nn.kpu()
+        kpu_obj.load_kmodel(kmodel_file)
+
+        src_ai2d_init()
+        return kpu_obj
+
+# 单目标跟踪 src kpu 输入预处理
+def src_kpu_pre_process(rgb888p_img,center_xy_wh):
+    src_ai2d_run(rgb888p_img,center_xy_wh)
+    with ScopedTiming("src_kpu_pre_process",debug_mode > 0):
+        global src_current_kmodel_obj,src_ai2d_out_tensor
+        # set kpu input
+        src_current_kmodel_obj.set_input_tensor(0, src_ai2d_out_tensor)
+
+# 单目标跟踪 src kpu 获取输出
+def src_kpu_get_output():
+    with ScopedTiming("src_kpu_get_output",debug_mode > 0):
+        global src_current_kmodel_obj
+        data = src_current_kmodel_obj.get_output_tensor(0)
+        result = data.to_numpy()
+        del data
+        return result
+
+# 单目标跟踪 src kpu 运行
+def src_kpu_run(kpu_obj,rgb888p_img,center_xy_wh):
+    global src_current_kmodel_obj
+    src_current_kmodel_obj = kpu_obj
+    # (1) 原图预处理，并设置模型输入
+    src_kpu_pre_process(rgb888p_img,center_xy_wh)
+    # (2) kpu 运行
+    with ScopedTiming("src_kpu_run",debug_mode > 0):
+        kpu_obj.run()
+    # (3) 释放ai2d资源
+    src_ai2d_release()
+    # (4) 获取kpu输出
+    result = src_kpu_get_output()
+    # 返回 src kpu 的输出
+    return result
+
+# 单目标跟踪 src kpu 释放
+def src_kpu_deinit(kpu_obj):
+    with ScopedTiming("src_kpu_deinit",debug_mode > 0):
+        global src_ai2d, src_pad_ai2d, src_ai2d_out_tensor
+        del kpu_obj
+        del src_ai2d
+        del src_pad_ai2d
+        del src_ai2d_out_tensor
+
+# 单目标跟踪 track kpu 初始化
+def track_kpu_init(kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("track_kpu_init",debug_mode > 0):
+        kpu_obj = nn.kpu()
+        kpu_obj.load_kmodel(kmodel_file)
+        return kpu_obj
+
+# 单目标跟踪 track kpu 输入预处理
+def track_kpu_pre_process():
+    with ScopedTiming("track_kpu_pre_process",debug_mode > 0):
+        global track_current_kmodel_obj,track_kpu_input_0,track_kpu_input_1
+        # set kpu input
+        track_current_kmodel_obj.set_input_tensor(0, track_kpu_input_0)
+        track_current_kmodel_obj.set_input_tensor(1, track_kpu_input_1)
+
+# 单目标跟踪 track kpu 获取输出
+def track_kpu_get_output():
+    with ScopedTiming("track_kpu_get_output",debug_mode > 0):
+        global track_current_kmodel_obj
+        results = []
+        for i in range(track_current_kmodel_obj.outputs_size()):
+            data = track_current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+            del data
+            results.append(result)
+        return results
+
+# 单目标跟踪 track kpu 运行
+def track_kpu_run(kpu_obj,center_xy_wh):
+    global track_current_kmodel_obj,track_kpu_input_1
+    track_current_kmodel_obj = kpu_obj
+    # (1) 原图预处理，并设置模型输入
+    track_kpu_pre_process()
+    # (2) kpu 运行
+    with ScopedTiming("track_kpu_run",debug_mode > 0):
+        kpu_obj.run()
+
+    del track_kpu_input_1
+    # (4) 获取kpu输出
+    results = track_kpu_get_output()
+    # (5) track 后处理
+    det = track_kpu_post_process(results,center_xy_wh)
+    # 返回 跟踪的结果
+    return det
+
+# 单目标跟踪 track kpu 释放
+def track_kpu_deinit(kpu_obj):
+    with ScopedTiming("track_kpu_deinit",debug_mode > 0):
+        global track_kpu_input_0
+        del kpu_obj
+        del track_kpu_input_0
+
+
+#media_utils.py
+global draw_img,osd_img                                     #for display 定义全局 作图image对象
+global buffer,media_source,media_sink                       #for media   定义 media 程序中的中间存储对象
+
+#for display 初始化
+def display_init():
+    # use hdmi for display
+    display.init(LT9611_1920X1080_30FPS)
+    display.set_plane(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, PIXEL_FORMAT_YVU_PLANAR_420, DISPLAY_MIRROR_NONE, DISPLAY_CHN_VIDEO1)
+
+# display 释放内存
+def display_deinit():
+    display.deinit()
+
+
+#for camera 初始化
+def camera_init(dev_id):
+    camera.sensor_init(dev_id, CAM_DEFAULT_SENSOR)
+
+    # set chn0 output yuv420sp
+    camera.set_outsize(dev_id, CAM_CHN_ID_0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
+
+    # set chn2 output rgb88planar
+    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_2, PIXEL_FORMAT_BGR_888_PLANAR)
+
+# camera 开启
+def camera_start(dev_id):
+    camera.start_stream(dev_id)
+
+# camera 读取图像
+def camera_read(dev_id):
+    with ScopedTiming("camera_read",debug_mode >0):
+        rgb888p_img = camera.capture_image(dev_id, CAM_CHN_ID_2)
+        return rgb888p_img
+
+# camera 图像释放
+def camera_release_image(dev_id,rgb888p_img):
+    with ScopedTiming("camera_release_image",debug_mode >0):
+        camera.release_image(dev_id, CAM_CHN_ID_2, rgb888p_img)
+
+# camera 结束
+def camera_stop(dev_id):
+    camera.stop_stream(dev_id)
+
+#for media 初始化
+def media_init():
+    config = k_vb_config()
+    config.max_pool_cnt = 1
+    config.comm_pool[0].blk_size = 4 * DISPLAY_WIDTH * DISPLAY_HEIGHT
+    config.comm_pool[0].blk_cnt = 1
+    config.comm_pool[0].mode = VB_REMAP_MODE_NOCACHE
+
+    ret = media.buffer_config(config)
+
+    global media_source, media_sink
+    media_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
+    media_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_VIDEO1)
+    media.create_link(media_source, media_sink)
+
+    # 初始化多媒体buffer
+    ret = media.buffer_init()
+    if ret:
+        return ret
+    global buffer, draw_img, osd_img
+    buffer = media.request_buffer(4 * DISPLAY_WIDTH * DISPLAY_HEIGHT)
+    # 图层1，用于画框
+    draw_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, alloc=image.ALLOC_MPGC)
+    # 图层2，用于拷贝画框结果，防止画框过程中发生buffer搬运
+    osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, poolid=buffer.pool_id, alloc=image.ALLOC_VB,
+                          phyaddr=buffer.phys_addr, virtaddr=buffer.virt_addr)
+    return ret
+
+# media 释放内存
+def media_deinit():
+    global buffer,media_source, media_sink
+    media.release_buffer(buffer)
+    media.destroy_link(media_source, media_sink)
+
+    ret = media.buffer_deinit()
+    return ret
+
+
+#**********for nanotracker.py**********
+def nanotracker_inference():
+    print("nanotracker start")
+    kpu_crop = crop_kpu_init(crop_kmodel_file)                  # 创建单目标跟踪 crop kpu 对象
+    kpu_src = src_kpu_init(src_kmodel_file)                     # 创建单目标跟踪 src kpu 对象
+    kpu_track = track_kpu_init(track_kmodel_file)               # 创建单目标跟踪 track kpu 对象
+    camera_init(CAM_DEV_ID_0)                                   # 初始化 camera
+    display_init()                                              # 初始化 display
+
+    rgb888p_img = None
+    try:
+        ret = media_init()
+        if ret:
+            print("nanotracker, buffer init failed")
+            return ret
+
+        camera_start(CAM_DEV_ID_0)
+        time.sleep(5)
+
+        run_bool = True
+        if (track_x1 < 50 or track_y1 < 50 or track_x1+track_w >= OUT_RGB888P_WIDTH-50 or track_y1+track_h >= OUT_RGB888P_HEIGHT-50):
+            print("**剪切范围超出图像范围**")
+            run_bool = False
+
+        track_mean_x = track_x1 + track_w / 2.0
+        track_mean_y = track_y1 + track_h / 2.0
+        draw_mean_w = int(track_w / OUT_RGB888P_WIDTH * DISPLAY_WIDTH)
+        draw_mean_h = int(track_h / OUT_RGB888P_HEIGHT * DISPLAY_HEIGHT)
+        draw_mean_x = int(track_mean_x / OUT_RGB888P_WIDTH * DISPLAY_WIDTH - draw_mean_w / 2.0)
+        draw_mean_y = int(track_mean_y / OUT_RGB888P_HEIGHT * DISPLAY_HEIGHT - draw_mean_h / 2.0)
+        track_w_src = track_w
+        track_h_src = track_h
+
+        center_xy_wh = [track_mean_x,track_mean_y,track_w_src,track_h_src]
+        center_xy_wh_tmp = [track_mean_x,track_mean_y,track_w_src,track_h_src]
+
+        seconds = 8
+        endtime = time.time() + seconds
+        enter_init = True
+
+        track_boxes = [track_x1,track_y1,track_w,track_h,1]
+        track_boxes_tmp = np.array([track_x1,track_y1,track_w,track_h,1])
+        global draw_img,osd_img
+
+        count = 0
+        while run_bool:
+            with ScopedTiming("total",1):
+                rgb888p_img = camera_read(CAM_DEV_ID_0)                 # 读取一帧图片
+                if rgb888p_img == -1:
+                    print("nanotrakcer, capture_image failed")
+                    camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+                    rgb888p_img = None
+                    continue
+
+                # for rgb888planar
+                if rgb888p_img.format() == image.RGBP888:
+                    nowtime = time.time()
+                    draw_img.clear()
+                    if (enter_init and nowtime <= endtime):
+                        print("倒计时: " + str(endtime - nowtime) + " 秒")
+                        draw_img.draw_rectangle(draw_mean_x , draw_mean_y , draw_mean_w , draw_mean_h , color=(255, 0, 255, 0),thickness = 4)
+                        print(" >>>>>> get trackWindow <<<<<<<<")
+                        global track_kpu_input_0
+                        track_kpu_input_0 = nn.from_numpy(crop_kpu_run(kpu_crop,rgb888p_img,center_xy_wh))
+
+                        time.sleep(1)
+                        if (nowtime > endtime):
+                            print(">>>>>>>  Play  <<<<<<<")
+                            enter_init = False
+                    else:
+                        global track_kpu_input_1
+                        track_kpu_input_1 = nn.from_numpy(src_kpu_run(kpu_src,rgb888p_img,center_xy_wh))
+                        det = track_kpu_run(kpu_track,center_xy_wh)
+                        track_boxes = det[0]
+                        center_xy_wh = det[1]
+                        track_bool = True
+                        if (len(track_boxes) != 0):
+                            track_bool = track_boxes[0] > 10 and track_boxes[1] > 10 and track_boxes[0] + track_boxes[2] < OUT_RGB888P_WIDTH - 10 and track_boxes[1] + track_boxes[3] < OUT_RGB888P_HEIGHT - 10
+                        else:
+                            track_bool = False
+
+                        if (len(center_xy_wh) != 0):
+                            track_bool = track_bool and center_xy_wh[2] * center_xy_wh[3] < 40000
+                        else:
+                            track_bool = False
+
+                        if (track_bool):
+                            center_xy_wh_tmp = center_xy_wh
+                            track_boxes_tmp = track_boxes
+                            x1 = int(float(track_boxes[0]) * DISPLAY_WIDTH / OUT_RGB888P_WIDTH)
+                            y1 = int(float(track_boxes[1]) * DISPLAY_HEIGHT / OUT_RGB888P_HEIGHT)
+                            w = int(float(track_boxes[2]) * DISPLAY_WIDTH / OUT_RGB888P_WIDTH)
+                            h = int(float(track_boxes[3]) * DISPLAY_HEIGHT / OUT_RGB888P_HEIGHT)
+                            draw_img.draw_rectangle(x1, y1, w, h, color=(255, 255, 0, 0),thickness = 4)
+                        else:
+                            center_xy_wh = center_xy_wh_tmp
+                            track_boxes = track_boxes_tmp
+                            x1 = int(float(track_boxes[0]) * DISPLAY_WIDTH / OUT_RGB888P_WIDTH)
+                            y1 = int(float(track_boxes[1]) * DISPLAY_HEIGHT / OUT_RGB888P_HEIGHT)
+                            w = int(float(track_boxes[2]) * DISPLAY_WIDTH / OUT_RGB888P_WIDTH)
+                            h = int(float(track_boxes[3]) * DISPLAY_HEIGHT / OUT_RGB888P_HEIGHT)
+                            draw_img.draw_rectangle(x1, y1, w, h, color=(255, 255, 0, 0),thickness = 4)
+                            draw_img.draw_string( x1 , y1-50, "Step away from the camera, please !" , color=(255, 255 ,0 , 0), scale=4, thickness = 1)
+                            draw_img.draw_string( x1 , y1-100, "Near the center, please !" , color=(255, 255 ,0 , 0), scale=4, thickness = 1)
+
+
+                    draw_img.copy_to(osd_img)
+                    display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+
+                camera_release_image(CAM_DEV_ID_0,rgb888p_img)                      # camera 释放图像
+                rgb888p_img = None
+
+                if (count > 5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
+    except Exception as e:
+        print(f"An error occurred during buffer used: {e}")
+    finally:
+        if rgb888p_img is not None:
+            #先release掉申请的内存再stop
+            camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+
+        camera_stop(CAM_DEV_ID_0)                                                   # 停止 camera
+        display_deinit()                                                            # 释放 display
+        crop_kpu_deinit(kpu_crop)                                                   # 释放 单目标跟踪 crop kpu
+        src_kpu_deinit(kpu_src)                                                     # 释放 单目标跟踪 src kpu
+        track_kpu_deinit(kpu_track)                                                 # 释放 单目标跟踪 track kpu
+        gc.collect()
+        time.sleep(1)
+        ret = media_deinit()                                                        # 释放 整个media
+        if ret:
+            print("nanotracker, buffer_deinit failed")
+            return ret
+
+    print("nanotracker end")
+    return 0
+
+if __name__ == '__main__':
+    nanotracker_inference()
+```
+
+### 14.隔空放大
+
+```python
+import aicube                   #aicube模块，封装检测分割等任务相关后处理
+from media.camera import *      #摄像头模块
+from media.display import *     #显示模块
+from media.media import *       #软件抽象模块，主要封装媒体数据链路以及媒体缓冲区
+
+import nncase_runtime as nn     #nncase运行模块，封装了kpu（kmodel推理）和ai2d（图片预处理加速）操作
+import ulab.numpy as np         #类似python numpy操作，但也会有一些接口不同
+
+import time                     #时间统计
+import image                    #图像模块，主要用于读取、图像绘制元素（框、点等）等操作
+
+import gc                       #垃圾回收模块
+
+##config.py
+#display分辨率
+DISPLAY_WIDTH = ALIGN_UP(1920, 16)
+DISPLAY_HEIGHT = 1080
+
+##ai原图分辨率输入
+OUT_RGB888P_WIDTH = ALIGN_UP(1920, 16)
+OUT_RGB888P_HEIGHT = 1080
+
+#--------for hand detection----------
+#kmodel输入shape
+hd_kmodel_input_shape = (1,3,512,512)                           # 手掌检测kmodel输入分辨率
+
+#kmodel相关参数设置
+confidence_threshold = 0.2                                      # 手掌检测阈值，用于过滤roi
+nms_threshold = 0.5                                             # 手掌检测框阈值，用于过滤重复roi
+hd_kmodel_frame_size = [512,512]                                # 手掌检测输入图片尺寸
+hd_frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGHT]           # 手掌检测直接输入图片尺寸
+strides = [8,16,32]                                             # 输出特征图的尺寸与输入图片尺寸的比
+num_classes = 1                                                 # 手掌检测模型输出类别数
+nms_option = False                                              # 是否所有检测框一起做NMS，False则按照不同的类分别应用NMS
+
+root_dir = '/sdcard/app/tests/'
+hd_kmodel_file = root_dir + "kmodel/hand_det.kmodel"      # 手掌检测kmodel文件的路径
+anchors = [26,27, 53,52, 75,71, 80,99, 106,82, 99,134, 140,113, 161,172, 245,276]   #anchor设置
+
+#--------for hand keypoint detection----------
+#kmodel输入shape
+hk_kmodel_input_shape = (1,3,256,256)                           # 手掌关键点检测kmodel输入分辨率
+
+#kmodel相关参数设置
+hk_kmodel_frame_size = [256,256]                                # 手掌关键点检测输入图片尺寸
+hk_kmodel_file = root_dir + 'kmodel/handkp_det.kmodel'    # 手掌关键点检测kmodel文件的路径
+
+debug_mode = 0                                                  # debug模式 大于0（调试）、 反之 （不调试）
+
+#scoped_timing.py 用于debug模式输出程序块运行时间
+class ScopedTiming:
+    def __init__(self, info="", enable_profile=True):
+        self.info = info
+        self.enable_profile = enable_profile
+
+    def __enter__(self):
+        if self.enable_profile:
+            self.start_time = time.time_ns()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.enable_profile:
+            elapsed_time = time.time_ns() - self.start_time
+            print(f"{self.info} took {elapsed_time / 1000000:.2f} ms")
+
+#ai_utils.py
+global current_kmodel_obj                                                   # 定义全局的 kpu 对象
+global hd_ai2d,hd_ai2d_input_tensor,hd_ai2d_output_tensor,hd_ai2d_builder   # 定义手掌检测全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
+global hk_ai2d,hk_ai2d_input_tensor,hk_ai2d_output_tensor,hk_ai2d_builder   # 定义手掌关键点检测全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
+global space_ai2d,space_ai2d_input_tensor,space_ai2d_output_tensor,space_ai2d_builder,space_draw_ai2d_release    # 定义缩放剪切图像全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
+
+
+#-------hand detect--------:
+# 手掌检测ai2d 初始化
+def hd_ai2d_init():
+    with ScopedTiming("hd_ai2d_init",debug_mode > 0):
+        global hd_ai2d
+        global hd_ai2d_builder
+        global hd_ai2d_output_tensor
+        # 计算padding值
+        ori_w = OUT_RGB888P_WIDTH
+        ori_h = OUT_RGB888P_HEIGHT
+        width = hd_kmodel_frame_size[0]
+        height = hd_kmodel_frame_size[1]
+        ratiow = float(width) / ori_w
+        ratioh = float(height) / ori_h
+        if ratiow < ratioh:
+            ratio = ratiow
+        else:
+            ratio = ratioh
+        new_w = int(ratio * ori_w)
+        new_h = int(ratio * ori_h)
+        dw = float(width - new_w) / 2
+        dh = float(height - new_h) / 2
+        top = int(round(dh - 0.1))
+        bottom = int(round(dh + 0.1))
+        left = int(round(dw - 0.1))
+        right = int(round(dw - 0.1))
+
+        # init kpu and load kmodel
+        hd_ai2d = nn.ai2d()
+        hd_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.NCHW_FMT,
+                                       np.uint8, np.uint8)
+        hd_ai2d.set_pad_param(True, [0,0,0,0,top,bottom,left,right], 0, [114,114,114])
+        hd_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+        hd_ai2d_builder = hd_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,height,width])
+        data = np.ones(hd_kmodel_input_shape, dtype=np.uint8)
+        hd_ai2d_output_tensor = nn.from_numpy(data)
+
+# 手掌检测 ai2d 运行
+def hd_ai2d_run(rgb888p_img):
+    with ScopedTiming("hd_ai2d_run",debug_mode > 0):
+        global hd_ai2d_input_tensor,hd_ai2d_output_tensor,hd_ai2d_builder
+        hd_ai2d_input = rgb888p_img.to_numpy_ref()
+        hd_ai2d_input_tensor = nn.from_numpy(hd_ai2d_input)
+
+        hd_ai2d_builder.run(hd_ai2d_input_tensor, hd_ai2d_output_tensor)
+
+# 手掌检测 ai2d 释放内存
+def hd_ai2d_release():
+    with ScopedTiming("hd_ai2d_release",debug_mode > 0):
+        global hd_ai2d_input_tensor
+        del hd_ai2d_input_tensor
+
+# 手掌检测 kpu 初始化
+def hd_kpu_init(hd_kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("hd_kpu_init",debug_mode > 0):
+        hd_kpu_obj = nn.kpu()
+        hd_kpu_obj.load_kmodel(hd_kmodel_file)
+
+        hd_ai2d_init()
+        return hd_kpu_obj
+
+# 手掌检测 kpu 输入预处理
+def hd_kpu_pre_process(rgb888p_img):
+    hd_ai2d_run(rgb888p_img)
+    with ScopedTiming("hd_kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,hd_ai2d_output_tensor
+        # set kpu input
+        current_kmodel_obj.set_input_tensor(0, hd_ai2d_output_tensor)
+
+# 手掌检测 kpu 获得 kmodel 输出
+def hd_kpu_get_output():
+    with ScopedTiming("hd_kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+            result = result.reshape((result.shape[0]*result.shape[1]*result.shape[2]*result.shape[3]))
+            tmp2 = result.copy()
+            del result
+            results.append(tmp2)
+        return results
+
+# 手掌检测 kpu 运行
+def hd_kpu_run(kpu_obj,rgb888p_img):
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # (1)原图预处理，并设置模型输入
+    hd_kpu_pre_process(rgb888p_img)
+     # (2)手掌检测 kpu 运行
+    with ScopedTiming("hd_kpu_run",debug_mode > 0):
+        current_kmodel_obj.run()
+    # (3)释放手掌检测 ai2d 资源
+    hd_ai2d_release()
+    # (4)获取手掌检测 kpu 输出
+    results = hd_kpu_get_output()
+    # (5)手掌检测 kpu 结果后处理
+    dets = aicube.anchorbasedet_post_process( results[0], results[1], results[2], hd_kmodel_frame_size, hd_frame_size, strides, num_classes, confidence_threshold, nms_threshold, anchors, nms_option)
+    # (6)返回手掌检测结果
+    return dets
+
+# 手掌检测 kpu 释放内存
+def hd_kpu_deinit(kpu_obj):
+    with ScopedTiming("hd_kpu_deinit",debug_mode > 0):
+        global hd_ai2d, hd_ai2d_output_tensor,hd_ai2d_builder
+        del kpu_obj
+        del hd_ai2d
+        del hd_ai2d_builder
+        del hd_ai2d_output_tensor
+
+#-------hand keypoint detection------:
+# 手掌关键点检测 ai2d 初始化
+def hk_ai2d_init():
+    with ScopedTiming("hk_ai2d_init",debug_mode > 0):
+        global hk_ai2d, hk_ai2d_output_tensor
+        hk_ai2d = nn.ai2d()
+        hk_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.NCHW_FMT,
+                                       np.uint8, np.uint8)
+        data = np.ones(hk_kmodel_input_shape, dtype=np.uint8)
+        hk_ai2d_output_tensor = nn.from_numpy(data)
+
+# 手掌关键点检测 ai2d 运行
+def hk_ai2d_run(rgb888p_img, x, y, w, h):
+    with ScopedTiming("hk_ai2d_run",debug_mode > 0):
+        global hk_ai2d,hk_ai2d_input_tensor,hk_ai2d_output_tensor
+        hk_ai2d_input = rgb888p_img.to_numpy_ref()
+        hk_ai2d_input_tensor = nn.from_numpy(hk_ai2d_input)
+
+        hk_ai2d.set_crop_param(True, x, y, w, h)
+        hk_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+
+        global hk_ai2d_builder
+        hk_ai2d_builder = hk_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,hk_kmodel_frame_size[1],hk_kmodel_frame_size[0]])
+        hk_ai2d_builder.run(hk_ai2d_input_tensor, hk_ai2d_output_tensor)
+
+# 手掌关键点检测 ai2d 释放内存
+def hk_ai2d_release():
+    with ScopedTiming("hk_ai2d_release",debug_mode > 0):
+        global hk_ai2d_input_tensor,hk_ai2d_builder
+        del hk_ai2d_input_tensor
+        del hk_ai2d_builder
+
+# 手掌关键点检测 kpu 初始化
+def hk_kpu_init(hk_kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("hk_kpu_init",debug_mode > 0):
+        hk_kpu_obj = nn.kpu()
+        hk_kpu_obj.load_kmodel(hk_kmodel_file)
+
+        hk_ai2d_init()
+        return hk_kpu_obj
+
+# 手掌关键点检测 kpu 输入预处理
+def hk_kpu_pre_process(rgb888p_img, x, y, w, h):
+    hk_ai2d_run(rgb888p_img, x, y, w, h)
+    with ScopedTiming("hk_kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,hk_ai2d_output_tensor
+        # set kpu input
+        current_kmodel_obj.set_input_tensor(0, hk_ai2d_output_tensor)
+
+# 手掌关键点检测 kpu 获得 kmodel 输出
+def hk_kpu_get_output():
+    with ScopedTiming("hk_kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+
+            result = result.reshape((result.shape[0]*result.shape[1]))
+            tmp2 = result.copy()
+            del result
+            results.append(tmp2)
+        return results
+
+# 手掌关键点检测 kpu 运行
+def hk_kpu_run(kpu_obj,rgb888p_img, x, y, w, h):
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # (1)原图预处理，并设置模型输入
+    hk_kpu_pre_process(rgb888p_img, x, y, w, h)
+    # (2)手掌关键点检测 kpu 运行
+    with ScopedTiming("hk_kpu_run",debug_mode > 0):
+        current_kmodel_obj.run()
+    # (3)释放手掌关键点检测 ai2d 资源
+    hk_ai2d_release()
+    # (4)获取手掌关键点检测 kpu 输出
+    results = hk_kpu_get_output()
+    # (5)返回手掌关键点检测结果
+    return results
+
+# 手掌关键点检测 kpu 释放内存
+def hk_kpu_deinit(kpu_obj):
+    with ScopedTiming("hk_kpu_deinit",debug_mode > 0):
+        global hk_ai2d, hk_ai2d_output_tensor
+        del kpu_obj
+        del hk_ai2d
+        del hk_ai2d_output_tensor
+
+# 隔空缩放剪切 ai2d 初始化
+def space_ai2d_init():
+    with ScopedTiming("space_ai2d_init",debug_mode > 0):
+        global space_ai2d
+        space_ai2d = nn.ai2d()
+        space_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.RGB_packed,
+                                       np.uint8, np.uint8)
+
+# 隔空缩放剪切 ai2d 运行
+def space_ai2d_run(rgb888p_img, x, y, w, h, out_w, out_h):
+    with ScopedTiming("space_ai2d_run",debug_mode > 0):
+        global space_ai2d,space_ai2d_input_tensor,space_ai2d_output_tensor,space_draw_ai2d_release
+        space_draw_ai2d_release = True
+        space_ai2d_input = rgb888p_img.to_numpy_ref()
+        space_ai2d_input_tensor = nn.from_numpy(space_ai2d_input)
+
+        space_ai2d.set_crop_param(True, x, y, w, h)
+        space_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+
+        data = np.ones((1,out_h, out_w,3), dtype=np.uint8)
+        space_ai2d_output_tensor = nn.from_numpy(data)
+
+        global space_ai2d_builder
+        space_ai2d_builder = space_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,out_h, out_w,3])
+        space_ai2d_builder.run(space_ai2d_input_tensor, space_ai2d_output_tensor)
+
+        space_np_out = space_ai2d_output_tensor.to_numpy()
+        return space_np_out
+
+# 隔空缩放剪切 ai2d 释放内存
+def space_ai2d_release(re_ai2d):
+    with ScopedTiming("space_ai2d_release",debug_mode > 0):
+        global space_ai2d_input_tensor,space_ai2d_output_tensor,space_ai2d_builder,space_draw_ai2d_release,space_ai2d
+        if (space_draw_ai2d_release):
+            del space_ai2d_input_tensor
+            del space_ai2d_output_tensor
+            del space_ai2d_builder
+            space_draw_ai2d_release = False
+        if (re_ai2d):
+            del space_ai2d
+
+#media_utils.py
+global draw_img,osd_img,masks                               #for display 定义全局 作图image对象
+global buffer,media_source,media_sink                       #for media   定义 media 程序中的中间存储对象
+
+#for display 初始化
+def display_init():
+    # use hdmi for display
+    display.init(LT9611_1920X1080_30FPS)
+    display.set_plane(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, PIXEL_FORMAT_YVU_PLANAR_420, DISPLAY_MIRROR_NONE, DISPLAY_CHN_VIDEO1)
+
+# display 释放内存
+def display_deinit():
+    display.deinit()
+
+#for camera 初始化
+def camera_init(dev_id):
+    camera.sensor_init(dev_id, CAM_DEFAULT_SENSOR)
+
+    # set chn0 output yuv420sp
+    camera.set_outsize(dev_id, CAM_CHN_ID_0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
+
+    # set chn2 output rgb88planar
+    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
+
+# camera 开启
+def camera_start(dev_id):
+    camera.start_stream(dev_id)
+
+# camera 读取图像
+def camera_read(dev_id):
+    with ScopedTiming("camera_read",debug_mode >0):
+        rgb888p_img = camera.capture_image(dev_id, CAM_CHN_ID_2)
+        return rgb888p_img
+
+# camera 图像释放
+def camera_release_image(dev_id,rgb888p_img):
+    with ScopedTiming("camera_release_image",debug_mode >0):
+        camera.release_image(dev_id, CAM_CHN_ID_2, rgb888p_img)
+
+# camera 结束
+def camera_stop(dev_id):
+    camera.stop_stream(dev_id)
+
+#for media 初始化
+def media_init():
+    config = k_vb_config()
+    config.max_pool_cnt = 1
+    config.comm_pool[0].blk_size = 4 * DISPLAY_WIDTH * DISPLAY_HEIGHT
+    config.comm_pool[0].blk_cnt = 1
+    config.comm_pool[0].mode = VB_REMAP_MODE_NOCACHE
+
+    ret = media.buffer_config(config)
+
+    global media_source, media_sink
+    media_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
+    media_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_VIDEO1)
+    media.create_link(media_source, media_sink)
+
+    # 初始化多媒体buffer
+    ret = media.buffer_init()
+    if ret:
+        return ret
+    global buffer, draw_img, osd_img, masks
+    buffer = media.request_buffer(4 * DISPLAY_WIDTH * DISPLAY_HEIGHT)
+    # 图层1，用于画框
+    masks = np.zeros((DISPLAY_HEIGHT,DISPLAY_WIDTH,4),dtype=np.uint8)
+    draw_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888,alloc=image.ALLOC_REF,data=masks)
+    # 图层2，用于拷贝画框结果，防止画框过程中发生buffer搬运
+    osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, poolid=buffer.pool_id, alloc=image.ALLOC_VB,
+                          phyaddr=buffer.phys_addr, virtaddr=buffer.virt_addr)
+    return ret
+
+# media 释放内存
+def media_deinit():
+    global buffer,media_source, media_sink
+    media.release_buffer(buffer)
+    media.destroy_link(media_source, media_sink)
+
+    ret = media.buffer_deinit()
+    return ret
+
+#**********for space_resize.py**********
+def space_resize_inference():
+    print("space_resize start")
+    kpu_hand_detect = hd_kpu_init(hd_kmodel_file)                       # 创建手掌检测的 kpu 对象
+    kpu_hand_keypoint_detect = hk_kpu_init(hk_kmodel_file)              # 创建手掌关键点检测的 kpu 对象
+    camera_init(CAM_DEV_ID_0)                                           # 初始化 camera
+    display_init()                                                      # 初始化 display
+    space_ai2d_init()                                                   # 初始化 隔空缩放剪切 ai2d 对象
+
+    rgb888p_img = None
+    try:
+        ret = media_init()
+        if ret:
+            print("space_resize, buffer init failed")
+            return ret
+
+        camera_start(CAM_DEV_ID_0)
+
+        global draw_img,osd_img
+        first_start = True                                              # 首次手掌入镜参数
+        two_point_left_x = 0                                            # 中指食指包括范围 x
+        two_point_top_y = 0                                             # 中指食指包括范围 y
+        two_point_mean_w = 0                                            # 中指食指首次入镜包括范围 w
+        two_point_mean_h = 0                                            # 中指食指首次入镜包括范围 h
+        two_point_crop_w = 0                                            # 中指食指包括范围 w
+        two_point_crop_h = 0                                            # 中指食指包括范围 h
+        osd_plot_x = 0                                                  # osd 画缩放图起始点 x
+        osd_plot_y = 0                                                  # osd 画缩放图起始点 y
+        ori_new_ratio = 0                                               # 缩放比例
+        new_resize_w = 0                                                # 缩放后 w
+        new_resize_h = 0                                                # 缩放后 h
+        crop_area = 0                                                   # 剪切区域
+        rect_frame_x = 0                                                # osd绘画起始点 x
+        rect_frame_y = 0                                                # osd绘画起始点 y
+
+        count = 0
+        while True:
+            with ScopedTiming("total",1):
+                rgb888p_img = camera_read(CAM_DEV_ID_0)                 # 读取一帧图片
+                if rgb888p_img == -1:
+                    print("space_resize, capture_image failed")
+                    #camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+                    rgb888p_img = None
+                    continue
+
+                # for rgb888planar
+                if rgb888p_img.format() == image.RGBP888:
+                    two_point = np.zeros((4),dtype=np.int16)
+                    dets_no_pro = hd_kpu_run(kpu_hand_detect,rgb888p_img)                      # 执行手掌检测 kpu 运行 以及 后处理过程
+                    draw_img.clear()
+
+                    dets = []
+                    for det_box in dets_no_pro:
+                        if det_box[4] < OUT_RGB888P_WIDTH - 10 :
+                            dets.append(det_box)
+
+                    if (len(dets)==1):
+                        for det_box in dets:
+                            x1, y1, x2, y2 = int(det_box[2]),int(det_box[3]),int(det_box[4]),int(det_box[5])
+                            w = int(x2 - x1)
+                            h = int(y2 - y1)
+
+                            if (h<(0.1*OUT_RGB888P_HEIGHT)):
+                                continue
+                            if (w<(0.25*OUT_RGB888P_WIDTH) and ((x1<(0.03*OUT_RGB888P_WIDTH)) or (x2>(0.97*OUT_RGB888P_WIDTH)))):
+                                continue
+                            if (w<(0.15*OUT_RGB888P_WIDTH) and ((x1<(0.01*OUT_RGB888P_WIDTH)) or (x2>(0.99*OUT_RGB888P_WIDTH)))):
+                                continue
+
+                            length = max(w,h)/2
+                            cx = (x1+x2)/2
+                            cy = (y1+y2)/2
+                            ratio_num = 1.26*length
+
+                            x1_kp = int(max(0,cx-ratio_num))
+                            y1_kp = int(max(0,cy-ratio_num))
+                            x2_kp = int(min(OUT_RGB888P_WIDTH-1, cx+ratio_num))
+                            y2_kp = int(min(OUT_RGB888P_HEIGHT-1, cy+ratio_num))
+                            w_kp = int(x2_kp - x1_kp + 1)
+                            h_kp = int(y2_kp - y1_kp + 1)
+
+                            hk_results = hk_kpu_run(kpu_hand_keypoint_detect,rgb888p_img, x1_kp, y1_kp, w_kp, h_kp)     # 执行手掌关键点检测 kpu 运行 以及 后处理过程
+
+                            results_show = np.zeros(hk_results[0].shape,dtype=np.int16)
+                            results_show[0::2] = hk_results[0][0::2] * w_kp + x1_kp
+                            results_show[1::2] = hk_results[0][1::2] * h_kp + y1_kp
+
+                            two_point[0] = results_show[8]
+                            two_point[1] = results_show[9]
+                            two_point[2] = results_show[16+8]
+                            two_point[3] = results_show[16+9]
+
+                        if (first_start):
+                            if (two_point[0] > 0 and two_point[0] < OUT_RGB888P_WIDTH and two_point[2] > 0 and two_point[2] < OUT_RGB888P_WIDTH and two_point[1] > 0 and two_point[1] < OUT_RGB888P_HEIGHT and two_point[3] > 0 and two_point[3] < OUT_RGB888P_HEIGHT):
+                                two_point_mean_w = np.sqrt(pow(two_point[0] - two_point[2],2) + pow(two_point[1] - two_point[3],2))*0.8
+                                two_point_mean_h = np.sqrt(pow(two_point[0] - two_point[2],2) + pow(two_point[1] - two_point[3],2))*0.8
+                                first_start = False
+                        else:
+                            two_point_left_x = int(max((two_point[0] + two_point[2]) / 2 - two_point_mean_w / 2, 0))
+                            two_point_top_y = int(max((two_point[1] + two_point[3]) / 2 - two_point_mean_h / 2, 0))
+                            two_point_crop_w = int(min(min((two_point[0] + two_point[2]) / 2 - two_point_mean_w / 2 + two_point_mean_w , two_point_mean_w), OUT_RGB888P_WIDTH - ((two_point[0] + two_point[2]) / 2 - two_point_mean_w / 2)))
+                            two_point_crop_h = int(min(min((two_point[1] + two_point[3]) / 2 - two_point_mean_h / 2 + two_point_mean_h , two_point_mean_h), OUT_RGB888P_HEIGHT - ((two_point[1] + two_point[3]) / 2 - two_point_mean_h / 2)))
+
+                            ori_new_ratio = np.sqrt(pow((two_point[0] - two_point[2]),2) + pow((two_point[1] - two_point[3]),2))*0.8 / two_point_mean_w
+
+                            new_resize_w = min(int(two_point_crop_w * ori_new_ratio / OUT_RGB888P_WIDTH * DISPLAY_WIDTH),600)
+                            new_resize_h = min(int(two_point_crop_h * ori_new_ratio / OUT_RGB888P_HEIGHT * DISPLAY_HEIGHT),600)
+
+                            rect_frame_x = int(two_point_left_x * 1.0 / OUT_RGB888P_WIDTH * DISPLAY_WIDTH)
+                            rect_frame_y = int(two_point_top_y * 1.0 / OUT_RGB888P_HEIGHT * DISPLAY_HEIGHT)
+
+                            draw_w = min(new_resize_w,DISPLAY_WIDTH-rect_frame_x-1)
+                            draw_h = min(new_resize_h,DISPLAY_HEIGHT-rect_frame_y-1)
+
+                            space_np_out = space_ai2d_run(rgb888p_img, two_point_left_x, two_point_top_y, two_point_crop_w, two_point_crop_h, new_resize_w, new_resize_h)      # 运行 隔空缩放检测 ai2d
+                            global masks
+                            masks[rect_frame_y:rect_frame_y + draw_h,rect_frame_x:rect_frame_x + draw_w,3] = 255
+                            masks[rect_frame_y:rect_frame_y + draw_h,rect_frame_x:rect_frame_x + draw_w,0:3] = space_np_out[0][0:draw_h,0:draw_w,::-1]
+                            space_ai2d_release(False)                       # 释放 隔空缩放检测 ai2d 相关对象
+
+
+                            draw_img.draw_rectangle(rect_frame_x, rect_frame_y, new_resize_w, new_resize_h, color=(255, 0, 255, 0),thickness = 4)
+                    else:
+                        draw_img.draw_string( 300 , 500, "Must have one hand !", color=(255,255,0,0), scale=7)
+                        first_start = True
+
+                camera_release_image(CAM_DEV_ID_0,rgb888p_img)         # camera 释放图像
+                rgb888p_img = None
+
+                if (count > 5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
+
+                draw_img.copy_to(osd_img)
+                display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+    except Exception as e:
+        print(f"An error occurred during buffer used: {e}")
+    finally:
+        if rgb888p_img is not None:
+            #先release掉申请的内存再stop
+            camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+
+        camera_stop(CAM_DEV_ID_0)                                       # 停止 camera
+        display_deinit()                                                # 释放 display
+        space_ai2d_release(True)                                        # 释放 隔空缩放检测 ai2d 相关对象
+        hd_kpu_deinit(kpu_hand_detect)                                  # 释放手掌检测 kpu
+        hk_kpu_deinit(kpu_hand_keypoint_detect)                         # 释放手掌关键点检测 kpu
+        gc.collect()
+        ret = media_deinit()                                            # 释放 整个media
+        if ret:
+            print("space_resize, buffer_deinit failed")
+            return ret
+
+    print("space_resize end")
+    return 0
+
+if __name__ == '__main__':
+    space_resize_inference()
+```
+
+### 15.拼图游戏
+
+```python
+import aicube                   #aicube模块，封装检测分割等任务相关后处理
+from media.camera import *      #摄像头模块
+from media.display import *     #显示模块
+from media.media import *       #软件抽象模块，主要封装媒体数据链路以及媒体缓冲区
+
+import nncase_runtime as nn     #nncase运行模块，封装了kpu（kmodel推理）和ai2d（图片预处理加速）操作
+import ulab.numpy as np         #类似python numpy操作，但也会有一些接口不同
+
+import time                     #时间统计
+import image                    #图像模块，主要用于读取、图像绘制元素（框、点等）等操作
+
+import gc                       #垃圾回收模块
+import random
+
+##config.py
+#display分辨率
+DISPLAY_WIDTH = ALIGN_UP(1920, 16)
+DISPLAY_HEIGHT = 1080
+
+##ai原图分辨率输入
+OUT_RGB888P_WIDTH = ALIGN_UP(1920, 16)
+OUT_RGB888P_HEIGHT = 1080
+
+#--------for hand detection----------
+#kmodel输入shape
+hd_kmodel_input_shape = (1,3,512,512)                           # 手掌检测kmodel输入分辨率
+
+#kmodel相关参数设置
+confidence_threshold = 0.2                                      # 手掌检测阈值，用于过滤roi
+nms_threshold = 0.5                                             # 手掌检测框阈值，用于过滤重复roi
+hd_kmodel_frame_size = [512,512]                                # 手掌检测输入图片尺寸
+hd_frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGHT]           # 手掌检测直接输入图片尺寸
+strides = [8,16,32]                                             # 输出特征图的尺寸与输入图片尺寸的比
+num_classes = 1                                                 # 手掌检测模型输出类别数
+nms_option = False                                              # 是否所有检测框一起做NMS，False则按照不同的类分别应用NMS
+
+level = 3                                                       # 游戏级别 目前只支持设置为 3
+
+
+root_dir = '/sdcard/app/tests/'
+hd_kmodel_file = root_dir + "kmodel/hand_det.kmodel"      # 手掌检测kmodel文件的路径
+anchors = [26,27, 53,52, 75,71, 80,99, 106,82, 99,134, 140,113, 161,172, 245,276]   #anchor设置
+
+#--------for hand keypoint detection----------
+#kmodel输入shape
+hk_kmodel_input_shape = (1,3,256,256)                           # 手掌关键点检测kmodel输入分辨率
+
+#kmodel相关参数设置
+hk_kmodel_frame_size = [256,256]                                # 手掌关键点检测输入图片尺寸
+hk_kmodel_file = root_dir + 'kmodel/handkp_det.kmodel'    # 手掌关键点检测kmodel文件的路径
+
+debug_mode = 0                                                  # debug模式 大于0（调试）、 反之 （不调试）
+
+#scoped_timing.py 用于debug模式输出程序块运行时间
+class ScopedTiming:
+    def __init__(self, info="", enable_profile=True):
+        self.info = info
+        self.enable_profile = enable_profile
+
+    def __enter__(self):
+        if self.enable_profile:
+            self.start_time = time.time_ns()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.enable_profile:
+            elapsed_time = time.time_ns() - self.start_time
+            print(f"{self.info} took {elapsed_time / 1000000:.2f} ms")
+
+#ai_utils.py
+global current_kmodel_obj                                                   # 定义全局的 kpu 对象
+global hd_ai2d,hd_ai2d_input_tensor,hd_ai2d_output_tensor,hd_ai2d_builder   # 定义手掌检测全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
+global hk_ai2d,hk_ai2d_input_tensor,hk_ai2d_output_tensor,hk_ai2d_builder   # 定义手掌关键点检测全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
+
+
+#-------hand detect--------:
+# 手掌检测ai2d 初始化
+def hd_ai2d_init():
+    with ScopedTiming("hd_ai2d_init",debug_mode > 0):
+        global hd_ai2d
+        global hd_ai2d_builder
+        global hd_ai2d_output_tensor
+        # 计算padding值
+        ori_w = OUT_RGB888P_WIDTH
+        ori_h = OUT_RGB888P_HEIGHT
+        width = hd_kmodel_frame_size[0]
+        height = hd_kmodel_frame_size[1]
+        ratiow = float(width) / ori_w
+        ratioh = float(height) / ori_h
+        if ratiow < ratioh:
+            ratio = ratiow
+        else:
+            ratio = ratioh
+        new_w = int(ratio * ori_w)
+        new_h = int(ratio * ori_h)
+        dw = float(width - new_w) / 2
+        dh = float(height - new_h) / 2
+        top = int(round(dh - 0.1))
+        bottom = int(round(dh + 0.1))
+        left = int(round(dw - 0.1))
+        right = int(round(dw - 0.1))
+
+        # init kpu and load kmodel
+        hd_ai2d = nn.ai2d()
+        hd_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.NCHW_FMT,
+                                       np.uint8, np.uint8)
+        hd_ai2d.set_pad_param(True, [0,0,0,0,top,bottom,left,right], 0, [114,114,114])
+        hd_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+        hd_ai2d_builder = hd_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,height,width])
+        data = np.ones(hd_kmodel_input_shape, dtype=np.uint8)
+        hd_ai2d_output_tensor = nn.from_numpy(data)
+
+# 手掌检测 ai2d 运行
+def hd_ai2d_run(rgb888p_img):
+    with ScopedTiming("hd_ai2d_run",debug_mode > 0):
+        global hd_ai2d_input_tensor,hd_ai2d_output_tensor,hd_ai2d_builder
+        hd_ai2d_input = rgb888p_img.to_numpy_ref()
+        hd_ai2d_input_tensor = nn.from_numpy(hd_ai2d_input)
+
+        hd_ai2d_builder.run(hd_ai2d_input_tensor, hd_ai2d_output_tensor)
+
+# 手掌检测 ai2d 释放内存
+def hd_ai2d_release():
+    with ScopedTiming("hd_ai2d_release",debug_mode > 0):
+        global hd_ai2d_input_tensor
+        del hd_ai2d_input_tensor
+
+# 手掌检测 kpu 初始化
+def hd_kpu_init(hd_kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("hd_kpu_init",debug_mode > 0):
+        hd_kpu_obj = nn.kpu()
+        hd_kpu_obj.load_kmodel(hd_kmodel_file)
+
+        hd_ai2d_init()
+        return hd_kpu_obj
+
+# 手掌检测 kpu 输入预处理
+def hd_kpu_pre_process(rgb888p_img):
+    hd_ai2d_run(rgb888p_img)
+    with ScopedTiming("hd_kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,hd_ai2d_output_tensor
+        # set kpu input
+        current_kmodel_obj.set_input_tensor(0, hd_ai2d_output_tensor)
+
+# 手掌检测 kpu 获得 kmodel 输出
+def hd_kpu_get_output():
+    with ScopedTiming("hd_kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+            result = result.reshape((result.shape[0]*result.shape[1]*result.shape[2]*result.shape[3]))
+            tmp2 = result.copy()
+            del result
+            results.append(tmp2)
+        return results
+
+# 手掌检测 kpu 运行
+def hd_kpu_run(kpu_obj,rgb888p_img):
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # (1)原图预处理，并设置模型输入
+    hd_kpu_pre_process(rgb888p_img)
+     # (2)手掌检测 kpu 运行
+    with ScopedTiming("hd_kpu_run",debug_mode > 0):
+        current_kmodel_obj.run()
+    # (3)释放手掌检测 ai2d 资源
+    hd_ai2d_release()
+    # (4)获取手掌检测 kpu 输出
+    results = hd_kpu_get_output()
+    # (5)手掌检测 kpu 结果后处理
+    dets = aicube.anchorbasedet_post_process( results[0], results[1], results[2], hd_kmodel_frame_size, hd_frame_size, strides, num_classes, confidence_threshold, nms_threshold, anchors, nms_option)
+    # (6)返回手掌检测结果
+    return dets
+
+# 手掌检测 kpu 释放内存
+def hd_kpu_deinit(kpu_obj):
+    with ScopedTiming("hd_kpu_deinit",debug_mode > 0):
+        global hd_ai2d, hd_ai2d_output_tensor,hd_ai2d_builder
+        del kpu_obj
+        del hd_ai2d
+        del hd_ai2d_builder
+        del hd_ai2d_output_tensor
+
+#-------hand keypoint detection------:
+# 手掌关键点检测 ai2d 初始化
+def hk_ai2d_init():
+    with ScopedTiming("hk_ai2d_init",debug_mode > 0):
+        global hk_ai2d, hk_ai2d_output_tensor
+        hk_ai2d = nn.ai2d()
+        hk_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.NCHW_FMT,
+                                       np.uint8, np.uint8)
+        data = np.ones(hk_kmodel_input_shape, dtype=np.uint8)
+        hk_ai2d_output_tensor = nn.from_numpy(data)
+
+# 手掌关键点检测 ai2d 运行
+def hk_ai2d_run(rgb888p_img, x, y, w, h):
+    with ScopedTiming("hk_ai2d_run",debug_mode > 0):
+        global hk_ai2d,hk_ai2d_input_tensor,hk_ai2d_output_tensor
+        hk_ai2d_input = rgb888p_img.to_numpy_ref()
+        hk_ai2d_input_tensor = nn.from_numpy(hk_ai2d_input)
+
+        hk_ai2d.set_crop_param(True, x, y, w, h)
+        hk_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+
+        global hk_ai2d_builder
+        hk_ai2d_builder = hk_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,hk_kmodel_frame_size[1],hk_kmodel_frame_size[0]])
+        hk_ai2d_builder.run(hk_ai2d_input_tensor, hk_ai2d_output_tensor)
+
+# 手掌关键点检测 ai2d 释放内存
+def hk_ai2d_release():
+    with ScopedTiming("hk_ai2d_release",debug_mode > 0):
+        global hk_ai2d_input_tensor,hk_ai2d_builder
+        del hk_ai2d_input_tensor
+        del hk_ai2d_builder
+
+# 手掌关键点检测 kpu 初始化
+def hk_kpu_init(hk_kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("hk_kpu_init",debug_mode > 0):
+        hk_kpu_obj = nn.kpu()
+        hk_kpu_obj.load_kmodel(hk_kmodel_file)
+
+        hk_ai2d_init()
+        return hk_kpu_obj
+
+# 手掌关键点检测 kpu 输入预处理
+def hk_kpu_pre_process(rgb888p_img, x, y, w, h):
+    hk_ai2d_run(rgb888p_img, x, y, w, h)
+    with ScopedTiming("hk_kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,hk_ai2d_output_tensor
+        # set kpu input
+        current_kmodel_obj.set_input_tensor(0, hk_ai2d_output_tensor)
+
+# 手掌关键点检测 kpu 获得 kmodel 输出
+def hk_kpu_get_output():
+    with ScopedTiming("hk_kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+
+            result = result.reshape((result.shape[0]*result.shape[1]))
+            tmp2 = result.copy()
+            del result
+            results.append(tmp2)
+        return results
+
+# 手掌关键点检测 kpu 运行
+def hk_kpu_run(kpu_obj,rgb888p_img, x, y, w, h):
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # (1)原图预处理，并设置模型输入
+    hk_kpu_pre_process(rgb888p_img, x, y, w, h)
+    # (2)手掌关键点检测 kpu 运行
+    with ScopedTiming("hk_kpu_run",debug_mode > 0):
+        current_kmodel_obj.run()
+    # (3)释放手掌关键点检测 ai2d 资源
+    hk_ai2d_release()
+    # (4)获取手掌关键点检测 kpu 输出
+    results = hk_kpu_get_output()
+    # (5)返回手掌关键点检测结果
+    return results
+
+# 手掌关键点检测 kpu 释放内存
+def hk_kpu_deinit(kpu_obj):
+    with ScopedTiming("hk_kpu_deinit",debug_mode > 0):
+        global hk_ai2d, hk_ai2d_output_tensor
+        del kpu_obj
+        del hk_ai2d
+        del hk_ai2d_output_tensor
+
+# 隔空缩放剪切 ai2d 初始化
+def space_ai2d_init():
+    with ScopedTiming("space_ai2d_init",debug_mode > 0):
+        global space_ai2d
+        space_ai2d = nn.ai2d()
+        space_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.RGB_packed,
+                                       np.uint8, np.uint8)
+
+# 隔空缩放剪切 ai2d 运行
+def space_ai2d_run(rgb888p_img, x, y, w, h, out_w, out_h):
+    with ScopedTiming("space_ai2d_run",debug_mode > 0):
+        global space_ai2d,space_ai2d_input_tensor,space_ai2d_output_tensor,space_draw_ai2d_release
+        space_draw_ai2d_release = True
+        space_ai2d_input = rgb888p_img.to_numpy_ref()
+        space_ai2d_input_tensor = nn.from_numpy(space_ai2d_input)
+
+        space_ai2d.set_crop_param(True, x, y, w, h)
+        space_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+
+        data = np.ones((1,out_h, out_w,3), dtype=np.uint8)
+        space_ai2d_output_tensor = nn.from_numpy(data)
+
+        global space_ai2d_builder
+        space_ai2d_builder = space_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,out_h, out_w,3])
+        space_ai2d_builder.run(space_ai2d_input_tensor, space_ai2d_output_tensor)
+
+        space_np_out = space_ai2d_output_tensor.to_numpy()
+        return space_np_out
+
+# 隔空缩放剪切 ai2d 释放内存
+def space_ai2d_release(re_ai2d):
+    with ScopedTiming("space_ai2d_release",debug_mode > 0):
+        global space_ai2d_input_tensor,space_ai2d_output_tensor,space_ai2d_builder,space_draw_ai2d_release,space_ai2d
+        if (space_draw_ai2d_release):
+            del space_ai2d_input_tensor
+            del space_ai2d_output_tensor
+            del space_ai2d_builder
+            space_draw_ai2d_release = False
+        if (re_ai2d):
+            del space_ai2d
+
+#media_utils.py
+global draw_img,osd_img,masks                               #for display 定义全局 作图image对象
+global buffer,media_source,media_sink                       #for media   定义 media 程序中的中间存储对象
+
+#for display 初始化
+def display_init():
+    # use hdmi for display
+    display.init(LT9611_1920X1080_30FPS)
+    display.set_plane(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, PIXEL_FORMAT_YVU_PLANAR_420, DISPLAY_MIRROR_NONE, DISPLAY_CHN_VIDEO1)
+
+# display 释放内存
+def display_deinit():
+    display.deinit()
+
+#for camera 初始化
+def camera_init(dev_id):
+    camera.sensor_init(dev_id, CAM_DEFAULT_SENSOR)
+
+    # set chn0 output yuv420sp
+    camera.set_outsize(dev_id, CAM_CHN_ID_0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
+
+    # set chn2 output rgb88planar
+    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
+
+# camera 开启
+def camera_start(dev_id):
+    camera.start_stream(dev_id)
+
+# camera 读取图像
+def camera_read(dev_id):
+    with ScopedTiming("camera_read",debug_mode >0):
+        rgb888p_img = camera.capture_image(dev_id, CAM_CHN_ID_2)
+        return rgb888p_img
+
+# camera 图像释放
+def camera_release_image(dev_id,rgb888p_img):
+    with ScopedTiming("camera_release_image",debug_mode >0):
+        camera.release_image(dev_id, CAM_CHN_ID_2, rgb888p_img)
+
+# camera 结束
+def camera_stop(dev_id):
+    camera.stop_stream(dev_id)
+
+#for media 初始化
+def media_init():
+    config = k_vb_config()
+    config.max_pool_cnt = 1
+    config.comm_pool[0].blk_size = 4 * DISPLAY_WIDTH * DISPLAY_HEIGHT
+    config.comm_pool[0].blk_cnt = 1
+    config.comm_pool[0].mode = VB_REMAP_MODE_NOCACHE
+
+    ret = media.buffer_config(config)
+
+    global media_source, media_sink
+    media_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
+    media_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_VIDEO1)
+    media.create_link(media_source, media_sink)
+
+    # 初始化多媒体buffer
+    ret = media.buffer_init()
+    if ret:
+        return ret
+    global buffer, draw_img, osd_img, masks
+    buffer = media.request_buffer(4 * DISPLAY_WIDTH * DISPLAY_HEIGHT)
+    # 图层1，用于画框
+    masks = np.zeros((DISPLAY_HEIGHT,DISPLAY_WIDTH,4),dtype=np.uint8)
+    draw_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888,alloc=image.ALLOC_REF,data=masks)
+    # 图层2，用于拷贝画框结果，防止画框过程中发生buffer搬运
+    osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, poolid=buffer.pool_id, alloc=image.ALLOC_VB,
+                          phyaddr=buffer.phys_addr, virtaddr=buffer.virt_addr)
+    return ret
+
+# media 释放内存
+def media_deinit():
+    global buffer,media_source, media_sink
+    media.release_buffer(buffer)
+    media.destroy_link(media_source, media_sink)
+
+    ret = media.buffer_deinit()
+    return ret
+
+#**********for puzzle_game.py**********
+def puzzle_game_inference():
+    print("puzzle_game_inference start")
+    kpu_hand_detect = hd_kpu_init(hd_kmodel_file)                       # 创建手掌检测的 kpu 对象
+    kpu_hand_keypoint_detect = hk_kpu_init(hk_kmodel_file)              # 创建手掌关键点检测的 kpu 对象
+    camera_init(CAM_DEV_ID_0)                                           # 初始化 camera
+    display_init()                                                      # 初始化 display
+
+    rgb888p_img = None
+    try:
+        ret = media_init()
+        if ret:
+            print("puzzle_game_inference, buffer init failed")
+            return ret
+
+        camera_start(CAM_DEV_ID_0)
+
+        global draw_img,osd_img
+        puzzle_width = DISPLAY_HEIGHT                                   # 设定 拼图宽
+        puzzle_height = DISPLAY_HEIGHT                                  # 设定 拼图高
+        puzzle_ori_width = DISPLAY_WIDTH - puzzle_width - 50            # 设定 原始拼图宽
+        puzzle_ori_height = DISPLAY_WIDTH - puzzle_height - 50          # 设定 原始拼图高
+
+        every_block_width = int(puzzle_width/level)                     # 设定 拼图块宽
+        every_block_height = int(puzzle_height/level)                   # 设定 拼图块高
+        ori_every_block_width = int(puzzle_ori_width/level)             # 设定 原始拼图宽
+        ori_every_block_height = int(puzzle_ori_height/level)           # 设定 原始拼图高
+        ratio_num = every_block_width/360.0                             # 字体比例
+        blank_x = 0                                                     # 空白块 角点x
+        blank_y = 0                                                     # 空白块 角点y
+        direction_vec = [-1,1,-1,1]                                     # 空白块四种移动方向
+
+        exact_division_x = 0                                            # 交换块 角点x
+        exact_division_y = 0                                            # 交换块 角点y
+        distance_tow_points = DISPLAY_WIDTH                             # 两手指距离
+        distance_thred = every_block_width*0.4                          # 两手指距离阈值
+
+        move_mat = np.zeros((every_block_height,every_block_width,4),dtype=np.uint8)
+
+        osd_frame_tmp = np.zeros((DISPLAY_HEIGHT,DISPLAY_WIDTH,4),dtype=np.uint8)
+        osd_frame_tmp_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888,alloc=image.ALLOC_REF,data=osd_frame_tmp)
+        osd_frame_tmp[0:puzzle_height,0:puzzle_width,3] = 127
+        osd_frame_tmp[0:puzzle_height,0:puzzle_width,2] = 130
+        osd_frame_tmp[0:puzzle_height,0:puzzle_width,1] = 150
+        osd_frame_tmp[0:puzzle_height,0:puzzle_width,0] = 100
+        osd_frame_tmp[(1080-puzzle_ori_height)//2:(1080-puzzle_ori_height)//2+puzzle_ori_width,puzzle_width+25:puzzle_width+25+puzzle_ori_height,3] = 127
+        osd_frame_tmp[(1080-puzzle_ori_height)//2:(1080-puzzle_ori_height)//2+puzzle_ori_width,puzzle_width+25:puzzle_width+25+puzzle_ori_height,2] = 130
+        osd_frame_tmp[(1080-puzzle_ori_height)//2:(1080-puzzle_ori_height)//2+puzzle_ori_width,puzzle_width+25:puzzle_width+25+puzzle_ori_height,1] = 150
+        osd_frame_tmp[(1080-puzzle_ori_height)//2:(1080-puzzle_ori_height)//2+puzzle_ori_width,puzzle_width+25:puzzle_width+25+puzzle_ori_height,0] = 100
+        for i in range(level*level):
+            osd_frame_tmp_img.draw_rectangle((i%level)*every_block_width,(i//level)*every_block_height,every_block_width,every_block_height,(255,0,0,0),5)
+            osd_frame_tmp_img.draw_string((i%level)*every_block_width + 55,(i//level)*every_block_height + 45,str(i),(255,0,0,255),30*ratio_num)
+            osd_frame_tmp_img.draw_rectangle(puzzle_width+25 + (i%level)*ori_every_block_width,(1080-puzzle_ori_height)//2 + (i//level)*ori_every_block_height,ori_every_block_width,ori_every_block_height,(255,0,0,0),5)
+            osd_frame_tmp_img.draw_string(puzzle_width+25 + (i%level)*ori_every_block_width + 50,(1080-puzzle_ori_height)//2 + (i//level)*ori_every_block_height + 25,str(i),(255,0,0,255),20*ratio_num)
+        osd_frame_tmp[0:every_block_height,0:every_block_width,3] = 220
+        osd_frame_tmp[0:every_block_height,0:every_block_width,2] = 114
+        osd_frame_tmp[0:every_block_height,0:every_block_width,1] = 114
+        osd_frame_tmp[0:every_block_height,0:every_block_width,0] = 114
+
+        for i in range(level*10):
+            k230_random = int(random.random() * 100) % 4
+            blank_x_tmp = blank_x
+            blank_y_tmp = blank_y
+            if (k230_random < 2):
+                blank_x_tmp = blank_x + direction_vec[k230_random]
+            else:
+                blank_y_tmp = blank_y + direction_vec[k230_random]
+
+            if ((blank_x_tmp >= 0 and blank_x_tmp < level) and (blank_y_tmp >= 0 and blank_y_tmp < level) and (abs(blank_x - blank_x_tmp) <= 1 and abs(blank_y - blank_y_tmp) <= 1)):
+                move_rect = [blank_x_tmp*every_block_width,blank_y_tmp*every_block_height,every_block_width,every_block_height]
+                blank_rect = [blank_x*every_block_width,blank_y*every_block_height,every_block_width,every_block_height]
+
+                move_mat[:] = osd_frame_tmp[move_rect[1]:move_rect[1]+move_rect[3],move_rect[0]:move_rect[0]+move_rect[2],:]
+                osd_frame_tmp[move_rect[1]:move_rect[1]+move_rect[3],move_rect[0]:move_rect[0]+move_rect[2],:] = osd_frame_tmp[blank_rect[1]:blank_rect[1]+blank_rect[3],blank_rect[0]:blank_rect[0]+blank_rect[2],:]
+                osd_frame_tmp[blank_rect[1]:blank_rect[1]+blank_rect[3],blank_rect[0]:blank_rect[0]+blank_rect[2],:] = move_mat[:]
+
+                blank_x = blank_x_tmp
+                blank_y = blank_y_tmp
+
+        count = 0
+        while True:
+            with ScopedTiming("total",1):
+                rgb888p_img = camera_read(CAM_DEV_ID_0)                 # 读取一帧图片
+                if rgb888p_img == -1:
+                    print("puzzle_game_inference, capture_image failed")
+                    camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+                    rgb888p_img = None
+                    continue
+
+                # for rgb888planar
+                if rgb888p_img.format() == image.RGBP888:
+                    two_point = np.zeros((4),dtype=np.int16)
+                    dets_no_pro = hd_kpu_run(kpu_hand_detect,rgb888p_img)                      # 执行手掌检测 kpu 运行 以及 后处理过程
+                    draw_img.clear()
+
+                    osd_frame_tmp_img.copy_to(draw_img)
+
+                    dets = []
+                    for det_box in dets_no_pro:
+                        if det_box[4] < OUT_RGB888P_WIDTH - 10 :
+                            dets.append(det_box)
+
+                    if (len(dets)==1):
+                        for det_box in dets:
+                            x1, y1, x2, y2 = int(det_box[2]),int(det_box[3]),int(det_box[4]),int(det_box[5])
+                            w = int(x2 - x1)
+                            h = int(y2 - y1)
+
+                            if (h<(0.1*OUT_RGB888P_HEIGHT)):
+                                continue
+                            if (w<(0.25*OUT_RGB888P_WIDTH) and ((x1<(0.03*OUT_RGB888P_WIDTH)) or (x2>(0.97*OUT_RGB888P_WIDTH)))):
+                                continue
+                            if (w<(0.15*OUT_RGB888P_WIDTH) and ((x1<(0.01*OUT_RGB888P_WIDTH)) or (x2>(0.99*OUT_RGB888P_WIDTH)))):
+                                continue
+
+                            length = max(w,h)/2
+                            cx = (x1+x2)/2
+                            cy = (y1+y2)/2
+                            ratio_num = 1.26*length
+
+                            x1_kp = int(max(0,cx-ratio_num))
+                            y1_kp = int(max(0,cy-ratio_num))
+                            x2_kp = int(min(OUT_RGB888P_WIDTH-1, cx+ratio_num))
+                            y2_kp = int(min(OUT_RGB888P_HEIGHT-1, cy+ratio_num))
+                            w_kp = int(x2_kp - x1_kp + 1)
+                            h_kp = int(y2_kp - y1_kp + 1)
+
+                            hk_results = hk_kpu_run(kpu_hand_keypoint_detect,rgb888p_img, x1_kp, y1_kp, w_kp, h_kp)     # 执行手掌关键点检测 kpu 运行 以及 后处理过程
+
+                            results_show = np.zeros(hk_results[0].shape,dtype=np.int16)
+                            results_show[0::2] = (hk_results[0][0::2] * w_kp + x1_kp) #* DISPLAY_WIDTH // OUT_RGB888P_WIDTH
+                            results_show[1::2] = (hk_results[0][1::2] * h_kp + y1_kp) #* DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT
+
+                            two_point[0] = results_show[8+8]
+                            two_point[1] = results_show[8+9]
+                            two_point[2] = results_show[16+8]
+                            two_point[3] = results_show[16+9]
+
+                        if (two_point[1] <= OUT_RGB888P_WIDTH):
+                            distance_tow_points = np.sqrt(pow((two_point[0]-two_point[2]),2) + pow((two_point[1] - two_point[3]),2))* 1.0 / OUT_RGB888P_WIDTH * DISPLAY_WIDTH
+                            exact_division_x = int((two_point[0] * 1.0 / OUT_RGB888P_WIDTH * DISPLAY_WIDTH)//every_block_width)
+                            exact_division_y = int((two_point[1] * 1.0 / OUT_RGB888P_HEIGHT * DISPLAY_HEIGHT)//every_block_height)
+
+
+                            if (distance_tow_points < distance_thred and exact_division_x >= 0 and exact_division_x < level and exact_division_y >= 0 and exact_division_y < level):
+                                if (abs(blank_x - exact_division_x) == 1 and abs(blank_y - exact_division_y) == 0):
+                                    move_rect = [exact_division_x*every_block_width,exact_division_y*every_block_height,every_block_width,every_block_height]
+                                    blank_rect = [blank_x*every_block_width,blank_y*every_block_height,every_block_width,every_block_height]
+
+                                    move_mat[:] = osd_frame_tmp[move_rect[1]:move_rect[1]+move_rect[3],move_rect[0]:move_rect[0]+move_rect[2],:]
+                                    osd_frame_tmp[move_rect[1]:move_rect[1]+move_rect[3],move_rect[0]:move_rect[0]+move_rect[2],:] = osd_frame_tmp[blank_rect[1]:blank_rect[1]+blank_rect[3],blank_rect[0]:blank_rect[0]+blank_rect[2],:]
+                                    osd_frame_tmp[blank_rect[1]:blank_rect[1]+blank_rect[3],blank_rect[0]:blank_rect[0]+blank_rect[2],:] = move_mat[:]
+
+                                    blank_x = exact_division_x
+                                elif (abs(blank_y - exact_division_y) == 1 and abs(blank_x - exact_division_x) == 0):
+                                    move_rect = [exact_division_x*every_block_width,exact_division_y*every_block_height,every_block_width,every_block_height]
+                                    blank_rect = [blank_x*every_block_width,blank_y*every_block_height,every_block_width,every_block_height]
+
+                                    move_mat[:] = osd_frame_tmp[move_rect[1]:move_rect[1]+move_rect[3],move_rect[0]:move_rect[0]+move_rect[2],:]
+                                    osd_frame_tmp[move_rect[1]:move_rect[1]+move_rect[3],move_rect[0]:move_rect[0]+move_rect[2],:] = osd_frame_tmp[blank_rect[1]:blank_rect[1]+blank_rect[3],blank_rect[0]:blank_rect[0]+blank_rect[2],:]
+                                    osd_frame_tmp[blank_rect[1]:blank_rect[1]+blank_rect[3],blank_rect[0]:blank_rect[0]+blank_rect[2],:] = move_mat[:]
+
+                                    blank_y = exact_division_y
+
+                                osd_frame_tmp_img.copy_to(draw_img)
+                                x1 = int(two_point[0] * 1.0 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
+                                y1 = int(two_point[1] * 1.0 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
+                                draw_img.draw_circle(x1, y1, 1, color=(255, 0, 255, 255),thickness=4,fill=False)
+                            else:
+                                osd_frame_tmp_img.copy_to(draw_img)
+                                x1 = int(two_point[0] * 1.0 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
+                                y1 = int(two_point[1] * 1.0 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
+                                draw_img.draw_circle(x1, y1, 1, color=(255, 255, 255, 0),thickness=4,fill=False)
+                    else:
+                        draw_img.draw_string( 300 , 500, "Must have one hand !", color=(255,255,0,0), scale=7)
+                        first_start = True
+                camera_release_image(CAM_DEV_ID_0,rgb888p_img)         # camera 释放图像
+                rgb888p_img = None
+
+                if (count > 5):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
+
+            draw_img.copy_to(osd_img)
+            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+    except Exception as e:
+        print(f"An error occurred during buffer used: {e}")
+    finally:
+        if rgb888p_img is not None:
+            #先release掉申请的内存再stop
+            camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+
+        camera_stop(CAM_DEV_ID_0)                                       # 停止 camera
+        display_deinit()                                                # 释放 display
+        hd_kpu_deinit(kpu_hand_detect)                                  # 释放手掌检测 kpu
+        hk_kpu_deinit(kpu_hand_keypoint_detect)                         # 释放手掌关键点检测 kpu
+        gc.collect()
+        ret = media_deinit()                                            # 释放 整个media
+        if ret:
+            print("puzzle_game_inference, buffer_deinit failed")
+            return ret
+
+    print("puzzle_game_inference end")
+    return 0
+
+if __name__ == '__main__':
+    puzzle_game_inference()
+```
+
+### 16.基于关键点的手势识别
+
+```python
+import aicube                   #aicube模块，封装检测分割等任务相关后处理
+from media.camera import *      #摄像头模块
+from media.display import *     #显示模块
+from media.media import *       #软件抽象模块，主要封装媒体数据链路以及媒体缓冲区
+
+import nncase_runtime as nn     #nncase运行模块，封装了kpu（kmodel推理）和ai2d（图片预处理加速）操作
+import ulab.numpy as np         #类似python numpy操作，但也会有一些接口不同
+
+import time                     #时间统计
+import image                    #图像模块，主要用于读取、图像绘制元素（框、点等）等操作
+
+import gc                       #垃圾回收模块
+
+##config.py
+#display分辨率
+DISPLAY_WIDTH = ALIGN_UP(1920, 16)
+DISPLAY_HEIGHT = 1080
+
+##ai原图分辨率输入
+OUT_RGB888P_WIDTH = ALIGN_UP(1920, 16)
+OUT_RGB888P_HEIGHT = 1080
+
+root_dir = '/sdcard/app/tests/'
+
+#--------for hand detection----------
+#kmodel输入shape
+hd_kmodel_input_shape = (1,3,512,512)                               # 手掌检测kmodel输入分辨率
+
+#kmodel相关参数设置
+confidence_threshold = 0.2                                          # 手掌检测阈值，用于过滤roi
+nms_threshold = 0.5                                                 # 手掌检测框阈值，用于过滤重复roi
+hd_kmodel_frame_size = [512,512]                                    # 手掌检测输入图片尺寸
+hd_frame_size = [OUT_RGB888P_WIDTH,OUT_RGB888P_HEIGHT]              # 手掌检测直接输入图片尺寸
+strides = [8,16,32]                                                 # 输出特征图的尺寸与输入图片尺寸的比
+num_classes = 1                                                     # 手掌检测模型输出类别数
+nms_option = False                                                  # 是否所有检测框一起做NMS，False则按照不同的类分别应用NMS
+
+hd_kmodel_file = root_dir + 'kmodel/hand_det.kmodel'                # 手掌检测kmodel文件的路径
+anchors = [26,27, 53,52, 75,71, 80,99, 106,82, 99,134, 140,113, 161,172, 245,276]   #anchor设置
+
+#--------for hand keypoint detection----------
+#kmodel输入shape
+hk_kmodel_input_shape = (1,3,256,256)                               # 手掌关键点检测kmodel输入分辨率
+
+#kmodel相关参数设置
+hk_kmodel_frame_size = [256,256]                                    # 手掌关键点检测输入图片尺寸
+hk_kmodel_file = root_dir + 'kmodel/handkp_det.kmodel'              # 手掌关键点检测kmodel文件的路径
+
+debug_mode = 0                                                      # debug模式 大于0（调试）、 反之 （不调试）
+
+#scoped_timing.py 用于debug模式输出程序块运行时间
+class ScopedTiming:
+    def __init__(self, info="", enable_profile=True):
+        self.info = info
+        self.enable_profile = enable_profile
+
+    def __enter__(self):
+        if self.enable_profile:
+            self.start_time = time.time_ns()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.enable_profile:
+            elapsed_time = time.time_ns() - self.start_time
+            print(f"{self.info} took {elapsed_time / 1000000:.2f} ms")
+
+#ai_utils.py
+global current_kmodel_obj                                                   # 定义全局的 kpu 对象
+global hd_ai2d,hd_ai2d_input_tensor,hd_ai2d_output_tensor,hd_ai2d_builder   # 定义手掌检测全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
+global hk_ai2d,hk_ai2d_input_tensor,hk_ai2d_output_tensor,hk_ai2d_builder   # 定义手掌关键点检测全局 ai2d 对象，并且定义 ai2d 的输入、输出 以及 builder
+
+#-------hand detect--------:
+# 手掌检测ai2d 初始化
+def hd_ai2d_init():
+    with ScopedTiming("hd_ai2d_init",debug_mode > 0):
+        global hd_ai2d
+        global hd_ai2d_builder
+        global hd_ai2d_output_tensor
+        # 计算padding值
+        ori_w = OUT_RGB888P_WIDTH
+        ori_h = OUT_RGB888P_HEIGHT
+        width = hd_kmodel_frame_size[0]
+        height = hd_kmodel_frame_size[1]
+        ratiow = float(width) / ori_w
+        ratioh = float(height) / ori_h
+        if ratiow < ratioh:
+            ratio = ratiow
+        else:
+            ratio = ratioh
+        new_w = int(ratio * ori_w)
+        new_h = int(ratio * ori_h)
+        dw = float(width - new_w) / 2
+        dh = float(height - new_h) / 2
+        top = int(round(dh - 0.1))
+        bottom = int(round(dh + 0.1))
+        left = int(round(dw - 0.1))
+        right = int(round(dw - 0.1))
+
+        hd_ai2d = nn.ai2d()
+        hd_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.NCHW_FMT,
+                                       np.uint8, np.uint8)
+        hd_ai2d.set_pad_param(True, [0,0,0,0,top,bottom,left,right], 0, [114,114,114])
+        hd_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+        hd_ai2d_builder = hd_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,height,width])
+
+        data = np.ones(hd_kmodel_input_shape, dtype=np.uint8)
+        hd_ai2d_output_tensor = nn.from_numpy(data)
+
+# 手掌检测 ai2d 运行
+def hd_ai2d_run(rgb888p_img):
+    with ScopedTiming("hd_ai2d_run",debug_mode > 0):
+        global hd_ai2d_input_tensor,hd_ai2d_output_tensor, hd_ai2d_builder
+        hd_ai2d_input = rgb888p_img.to_numpy_ref()
+        hd_ai2d_input_tensor = nn.from_numpy(hd_ai2d_input)
+
+        hd_ai2d_builder.run(hd_ai2d_input_tensor, hd_ai2d_output_tensor)
+
+# 手掌检测 ai2d 释放内存
+def hd_ai2d_release():
+    with ScopedTiming("hd_ai2d_release",debug_mode > 0):
+        global hd_ai2d_input_tensor
+        del hd_ai2d_input_tensor
+
+# 手掌检测 kpu 初始化
+def hd_kpu_init(hd_kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("hd_kpu_init",debug_mode > 0):
+        hd_kpu_obj = nn.kpu()
+        hd_kpu_obj.load_kmodel(hd_kmodel_file)
+
+        hd_ai2d_init()
+        return hd_kpu_obj
+
+# 手掌检测 kpu 输入预处理
+def hd_kpu_pre_process(rgb888p_img):
+    hd_ai2d_run(rgb888p_img)
+    with ScopedTiming("hd_kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,hd_ai2d_output_tensor
+        # set kpu input
+        current_kmodel_obj.set_input_tensor(0, hd_ai2d_output_tensor)
+
+# 手掌检测 kpu 获得 kmodel 输出
+def hd_kpu_get_output():
+    with ScopedTiming("hd_kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+            result = result.reshape((result.shape[0]*result.shape[1]*result.shape[2]*result.shape[3]))
+            tmp2 = result.copy()
+            del result
+            results.append(tmp2)
+        return results
+
+# 手掌检测 kpu 运行
+def hd_kpu_run(kpu_obj,rgb888p_img):
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # (1)原图预处理，并设置模型输入
+    hd_kpu_pre_process(rgb888p_img)
+    # (2)手掌检测 kpu 运行
+    with ScopedTiming("hd_kpu_run",debug_mode > 0):
+        current_kmodel_obj.run()
+    # (3)释放手掌检测 ai2d 资源
+    hd_ai2d_release()
+    # (4)获取手掌检测 kpu 输出
+    results = hd_kpu_get_output()
+    # (5)手掌检测 kpu 结果后处理
+    dets = aicube.anchorbasedet_post_process( results[0], results[1], results[2], hd_kmodel_frame_size, hd_frame_size, strides, num_classes, confidence_threshold, nms_threshold, anchors, nms_option)  # kpu结果后处理
+    # (6)返回手掌检测结果
+    return dets
+
+# 手掌检测 kpu 释放内存
+def hd_kpu_deinit(kpu_obj):
+    with ScopedTiming("hd_kpu_deinit",debug_mode > 0):
+        global hd_ai2d, hd_ai2d_output_tensor, hd_ai2d_builder
+        del kpu_obj
+        del hd_ai2d
+        del hd_ai2d_output_tensor
+        del hd_ai2d_builder
+
+#-------hand keypoint detection------:
+# 手掌关键点检测 ai2d 初始化
+def hk_ai2d_init():
+    with ScopedTiming("hk_ai2d_init",debug_mode > 0):
+        global hk_ai2d, hk_ai2d_output_tensor
+        hk_ai2d = nn.ai2d()
+        hk_ai2d.set_dtype(nn.ai2d_format.NCHW_FMT,
+                                       nn.ai2d_format.NCHW_FMT,
+                                       np.uint8, np.uint8)
+        data = np.ones(hk_kmodel_input_shape, dtype=np.uint8)
+        hk_ai2d_output_tensor = nn.from_numpy(data)
+
+# 手掌关键点检测 ai2d 运行
+def hk_ai2d_run(rgb888p_img, x, y, w, h):
+    with ScopedTiming("hk_ai2d_run",debug_mode > 0):
+        global hk_ai2d,hk_ai2d_input_tensor,hk_ai2d_output_tensor
+        hk_ai2d_input = rgb888p_img.to_numpy_ref()
+        hk_ai2d_input_tensor = nn.from_numpy(hk_ai2d_input)
+
+        hk_ai2d.set_crop_param(True, x, y, w, h)
+        hk_ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
+
+        global hk_ai2d_builder
+        hk_ai2d_builder = hk_ai2d.build([1,3,OUT_RGB888P_HEIGHT,OUT_RGB888P_WIDTH], [1,3,hk_kmodel_frame_size[1],hk_kmodel_frame_size[0]])
+        hk_ai2d_builder.run(hk_ai2d_input_tensor, hk_ai2d_output_tensor)
+
+# 手掌关键点检测 ai2d 释放内存
+def hk_ai2d_release():
+    with ScopedTiming("hk_ai2d_release",debug_mode > 0):
+        global hk_ai2d_input_tensor, hk_ai2d_builder
+        del hk_ai2d_input_tensor
+        del hk_ai2d_builder
+
+# 手掌关键点检测 kpu 初始化
+def hk_kpu_init(hk_kmodel_file):
+    # init kpu and load kmodel
+    with ScopedTiming("hk_kpu_init",debug_mode > 0):
+        hk_kpu_obj = nn.kpu()
+        hk_kpu_obj.load_kmodel(hk_kmodel_file)
+
+        hk_ai2d_init()
+        return hk_kpu_obj
+
+# 手掌关键点检测 kpu 输入预处理
+def hk_kpu_pre_process(rgb888p_img, x, y, w, h):
+    hk_ai2d_run(rgb888p_img, x, y, w, h)
+    with ScopedTiming("hk_kpu_pre_process",debug_mode > 0):
+        global current_kmodel_obj,hk_ai2d_output_tensor
+        # set kpu input
+        current_kmodel_obj.set_input_tensor(0, hk_ai2d_output_tensor)
+
+# 手掌关键点检测 kpu 获得 kmodel 输出
+def hk_kpu_get_output():
+    with ScopedTiming("hk_kpu_get_output",debug_mode > 0):
+        global current_kmodel_obj
+        results = []
+        for i in range(current_kmodel_obj.outputs_size()):
+            data = current_kmodel_obj.get_output_tensor(i)
+            result = data.to_numpy()
+
+            result = result.reshape((result.shape[0]*result.shape[1]))
+            tmp2 = result.copy()
+            del result
+            results.append(tmp2)
+        return results
+
+# 手掌关键点检测 kpu 输出后处理
+def hk_kpu_post_process(results, x, y, w, h):
+    results_show = np.zeros(results.shape,dtype=np.int16)
+    results_show[0::2] = results[0::2] * w + x
+    results_show[1::2] = results[1::2] * h + y
+    return results_show
+
+# 手掌关键点检测 kpu 运行
+def hk_kpu_run(kpu_obj,rgb888p_img, x, y, w, h):
+    global current_kmodel_obj
+    current_kmodel_obj = kpu_obj
+    # (1)原图预处理，并设置模型输入
+    hk_kpu_pre_process(rgb888p_img, x, y, w, h)
+    # (2)手掌关键点检测 kpu 运行
+    with ScopedTiming("hk_kpu_run",debug_mode > 0):
+        current_kmodel_obj.run()
+    # (3)释放手掌关键点检测 ai2d 资源
+    hk_ai2d_release()
+    # (4)获取手掌关键点检测 kpu 输出
+    results = hk_kpu_get_output()
+    # (5)手掌关键点检测 kpu 结果后处理
+    result = hk_kpu_post_process(results[0],x,y,w,h)
+    # (6)返回手掌关键点检测结果
+    return result
+
+# 手掌关键点检测 kpu 释放内存
+def hk_kpu_deinit(kpu_obj):
+    with ScopedTiming("hk_kpu_deinit",debug_mode > 0):
+        global hk_ai2d, hk_ai2d_output_tensor
+        del kpu_obj
+        del hk_ai2d
+        del hk_ai2d_output_tensor
+
+# 求两个vector之间的夹角
+def hk_vector_2d_angle(v1,v2):
+    with ScopedTiming("hk_vector_2d_angle",debug_mode > 0):
+        v1_x = v1[0]
+        v1_y = v1[1]
+        v2_x = v2[0]
+        v2_y = v2[1]
+        v1_norm = np.sqrt(v1_x * v1_x+ v1_y * v1_y)
+        v2_norm = np.sqrt(v2_x * v2_x + v2_y * v2_y)
+        dot_product = v1_x * v2_x + v1_y * v2_y
+        cos_angle = dot_product/(v1_norm*v2_norm)
+        angle = np.acos(cos_angle)*180/np.pi
+        return angle
+
+# 根据手掌关键点检测结果判断手势类别
+def hk_gesture(results):
+    with ScopedTiming("hk_gesture",debug_mode > 0):
+        angle_list = []
+        for i in range(5):
+            angle = hk_vector_2d_angle([(results[0]-results[i*8+4]), (results[1]-results[i*8+5])],[(results[i*8+6]-results[i*8+8]),(results[i*8+7]-results[i*8+9])])
+            angle_list.append(angle)
+
+        thr_angle = 65.
+        thr_angle_thumb = 53.
+        thr_angle_s = 49.
+        gesture_str = None
+        if 65535. not in angle_list:
+            if (angle_list[0]>thr_angle_thumb)  and (angle_list[1]>thr_angle) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]>thr_angle):
+                gesture_str = "fist"
+            elif (angle_list[0]<thr_angle_s)  and (angle_list[1]<thr_angle_s) and (angle_list[2]<thr_angle_s) and (angle_list[3]<thr_angle_s) and (angle_list[4]<thr_angle_s):
+                gesture_str = "five"
+            elif (angle_list[0]<thr_angle_s)  and (angle_list[1]<thr_angle_s) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]>thr_angle):
+                gesture_str = "gun"
+            elif (angle_list[0]<thr_angle_s)  and (angle_list[1]<thr_angle_s) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]<thr_angle_s):
+                gesture_str = "love"
+            elif (angle_list[0]>5)  and (angle_list[1]<thr_angle_s) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]>thr_angle):
+                gesture_str = "one"
+            elif (angle_list[0]<thr_angle_s)  and (angle_list[1]>thr_angle) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]<thr_angle_s):
+                gesture_str = "six"
+            elif (angle_list[0]>thr_angle_thumb)  and (angle_list[1]<thr_angle_s) and (angle_list[2]<thr_angle_s) and (angle_list[3]<thr_angle_s) and (angle_list[4]>thr_angle):
+                gesture_str = "three"
+            elif (angle_list[0]<thr_angle_s)  and (angle_list[1]>thr_angle) and (angle_list[2]>thr_angle) and (angle_list[3]>thr_angle) and (angle_list[4]>thr_angle):
+                gesture_str = "thumbUp"
+            elif (angle_list[0]>thr_angle_thumb)  and (angle_list[1]<thr_angle_s) and (angle_list[2]<thr_angle_s) and (angle_list[3]>thr_angle) and (angle_list[4]>thr_angle):
+                gesture_str = "yeah"
+
+        return gesture_str
+
+#media_utils.py
+global draw_img,osd_img                                     #for display 定义全局 作图image对象
+global buffer,media_source,media_sink                       #for media   定义 media 程序中的中间存储对象
+
+#for display 初始化
+def display_init():
+    # use hdmi for display
+    display.init(LT9611_1920X1080_30FPS)
+    display.set_plane(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, PIXEL_FORMAT_YVU_PLANAR_420, DISPLAY_MIRROR_NONE, DISPLAY_CHN_VIDEO1)
+
+# display 释放内存
+def display_deinit():
+    display.deinit()
+
+# display 作图过程 标出检测到的21个关键点并用不同颜色的线段连接
+def display_draw(results, x, y, w, h):
+    with ScopedTiming("display_draw",debug_mode >0):
+        global draw_img,osd_img
+
+        if results:
+            results_show = np.zeros(results.shape,dtype=np.int16)
+            results_show[0::2] = results[0::2] * (DISPLAY_WIDTH / OUT_RGB888P_WIDTH)
+            results_show[1::2] = results[1::2] * (DISPLAY_HEIGHT / OUT_RGB888P_HEIGHT)
+
+            for i in range(len(results_show)/2):
+                draw_img.draw_circle(results_show[i*2], results_show[i*2+1], 1, color=(255, 0, 255, 0),fill=False)
+            for i in range(5):
+                j = i*8
+                if i==0:
+                    R = 255; G = 0; B = 0
+                if i==1:
+                    R = 255; G = 0; B = 255
+                if i==2:
+                    R = 255; G = 255; B = 0
+                if i==3:
+                    R = 0; G = 255; B = 0
+                if i==4:
+                    R = 0; G = 0; B = 255
+                draw_img.draw_line(results_show[0], results_show[1], results_show[j+2], results_show[j+3], color=(255,R,G,B), thickness = 3)
+                draw_img.draw_line(results_show[j+2], results_show[j+3], results_show[j+4], results_show[j+5], color=(255,R,G,B), thickness = 3)
+                draw_img.draw_line(results_show[j+4], results_show[j+5], results_show[j+6], results_show[j+7], color=(255,R,G,B), thickness = 3)
+                draw_img.draw_line(results_show[j+6], results_show[j+7], results_show[j+8], results_show[j+9], color=(255,R,G,B), thickness = 3)
+
+
+#for camera 初始化
+def camera_init(dev_id):
+    camera.sensor_init(dev_id, CAM_DEFAULT_SENSOR)
+
+    # set chn0 output yuv420sp
+    camera.set_outsize(dev_id, CAM_CHN_ID_0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
+
+    # set chn2 output rgb88planar
+    camera.set_outsize(dev_id, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGHT)
+    camera.set_outfmt(dev_id, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
+
+# camera 开启
+def camera_start(dev_id):
+    camera.start_stream(dev_id)
+
+# camera 读取图像
+def camera_read(dev_id):
+    with ScopedTiming("camera_read",debug_mode >0):
+        rgb888p_img = camera.capture_image(dev_id, CAM_CHN_ID_2)
+        return rgb888p_img
+
+# camera 图像释放
+def camera_release_image(dev_id,rgb888p_img):
+    with ScopedTiming("camera_release_image",debug_mode >0):
+        camera.release_image(dev_id, CAM_CHN_ID_2, rgb888p_img)
+
+# camera 结束
+def camera_stop(dev_id):
+    camera.stop_stream(dev_id)
+
+#for media 初始化
+def media_init():
+    config = k_vb_config()
+    config.max_pool_cnt = 1
+    config.comm_pool[0].blk_size = 4 * DISPLAY_WIDTH * DISPLAY_HEIGHT
+    config.comm_pool[0].blk_cnt = 1
+    config.comm_pool[0].mode = VB_REMAP_MODE_NOCACHE
+
+    ret = media.buffer_config(config)
+
+    global media_source, media_sink
+    media_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
+    media_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_VIDEO1)
+    media.create_link(media_source, media_sink)
+
+    # 初始化多媒体buffer
+    ret = media.buffer_init()
+    if ret:
+        return ret
+    global buffer, draw_img, osd_img
+    buffer = media.request_buffer(4 * DISPLAY_WIDTH * DISPLAY_HEIGHT)
+    # 图层1，用于画框
+    draw_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, alloc=image.ALLOC_MPGC)
+    # 图层2，用于拷贝画框结果，防止画框过程中发生buffer搬运
+    osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, poolid=buffer.pool_id, alloc=image.ALLOC_VB,
+                          phyaddr=buffer.phys_addr, virtaddr=buffer.virt_addr)
+    return ret
+
+# media 释放内存
+def media_deinit():
+    global buffer,media_source, media_sink
+    media.release_buffer(buffer)
+    media.destroy_link(media_source, media_sink)
+
+    ret = media.buffer_deinit()
+    return ret
+
+#**********for hand_keypoint_class.py**********
+def hand_keypoint_class_inference():
+    print("hand_keypoint_class_test start")
+
+    kpu_hand_detect = hd_kpu_init(hd_kmodel_file)                       # 创建手掌检测的 kpu 对象
+    kpu_hand_keypoint_detect = hk_kpu_init(hk_kmodel_file)              # 创建手掌关键点检测的 kpu 对象
+    camera_init(CAM_DEV_ID_0)                                           # 初始化 camera
+    display_init()                                                      # 初始化 display
+
+    rgb888p_img = None
+    try:
+        ret = media_init()
+        if ret:
+            print("hand_keypoint_class, buffer init failed")
+            return ret
+
+        camera_start(CAM_DEV_ID_0)
+        count = 0
+        while True:
+            with ScopedTiming("total", 1):
+                rgb888p_img = camera_read(CAM_DEV_ID_0)                 # 读取一帧图片
+                if rgb888p_img == -1:
+                    print("hand_keypoint_class, capture_image failed")
+                    camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+                    rgb888p_img = None
+                    continue
+
+                # for rgb888planar
+                if rgb888p_img.format() == image.RGBP888:
+                    draw_img.clear()
+                    dets = hd_kpu_run(kpu_hand_detect,rgb888p_img)                                                                # 执行手掌检测 kpu 运行 以及 后处理过程
+
+                    for det_box in dets:
+                        x1, y1, x2, y2 = det_box[2],det_box[3],det_box[4],det_box[5]
+                        w = int(x2 - x1)
+                        h = int(y2 - y1)
+
+                        if (h<(0.1*OUT_RGB888P_HEIGHT)):
+                            continue
+                        if (w<(0.25*OUT_RGB888P_WIDTH) and ((x1<(0.03*OUT_RGB888P_WIDTH)) or (x2>(0.97*OUT_RGB888P_WIDTH)))):
+                            continue
+                        if (w<(0.15*OUT_RGB888P_WIDTH) and ((x1<(0.01*OUT_RGB888P_WIDTH)) or (x2>(0.99*OUT_RGB888P_WIDTH)))):
+                            continue
+
+                        w_det = int(float(x2 - x1) * DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
+                        h_det = int(float(y2 - y1) * DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
+                        x_det = int(x1*DISPLAY_WIDTH // OUT_RGB888P_WIDTH)
+                        y_det = int(y1*DISPLAY_HEIGHT // OUT_RGB888P_HEIGHT)
+
+                        length = max(w, h)/2
+                        cx = (x1+x2)/2
+                        cy = (y1+y2)/2
+                        ratio_num = 1.26*length
+
+                        x1_kp = int(max(0,cx-ratio_num))
+                        y1_kp = int(max(0,cy-ratio_num))
+                        x2_kp = int(min(OUT_RGB888P_WIDTH-1, cx+ratio_num))
+                        y2_kp = int(min(OUT_RGB888P_HEIGHT-1, cy+ratio_num))
+                        w_kp = int(x2_kp - x1_kp + 1)
+                        h_kp = int(y2_kp - y1_kp + 1)
+
+                        hk_results = hk_kpu_run(kpu_hand_keypoint_detect,rgb888p_img, x1_kp, y1_kp, w_kp, h_kp)                   # 执行手掌关键点检测 kpu 运行 以及 后处理过程
+                        gesture = hk_gesture(hk_results)                                                                          # 根据关键点检测结果判断手势类别
+
+                        draw_img.draw_rectangle(x_det, y_det, w_det, h_det, color=(255, 0, 255, 0), thickness = 2)                # 将得到的手掌检测结果 绘制到 display
+                        display_draw(hk_results, x1_kp, y1_kp, w_kp, h_kp)                                                        # 将得到的手掌关键点检测结果 绘制到 display
+                        draw_img.draw_string( x_det , y_det-50, " " + str(gesture), color=(255,0, 255, 0), scale=4)               # 将根据关键点检测结果判断的手势类别 绘制到 display
+
+                camera_release_image(CAM_DEV_ID_0,rgb888p_img)          # camera 释放图像
+                rgb888p_img = None
+                if (count>10):
+                    gc.collect()
+                    count = 0
+                else:
+                    count += 1
+
+            draw_img.copy_to(osd_img)
+            display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
+    except Exception as e:
+        print(f"An error occurred during buffer used: {e}")
+    finally:
+        if rgb888p_img is not None:
+            #先release掉申请的内存再stop
+            camera_release_image(CAM_DEV_ID_0,rgb888p_img)
+
+        camera_stop(CAM_DEV_ID_0)                                       # 停止 camera
+        display_deinit()                                                # 释放 display
+        hd_kpu_deinit(kpu_hand_detect)                                  # 释放手掌检测 kpu
+        hk_kpu_deinit(kpu_hand_keypoint_detect)                         # 释放手掌关键点检测 kpu
+
+        gc.collect()
+        ret = media_deinit()                                            # 释放 整个media
+        if ret:
+            print("hand_keypoint_class, buffer_deinit failed")
+            return ret
+
+    print("hand_keypoint_class_test end")
+    return 0
+
+if __name__ == '__main__':
+    hand_keypoint_class_inference()
 ```

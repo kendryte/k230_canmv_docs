@@ -59,7 +59,7 @@
 
 ​        K230 CanMV平台Camera模块包括三个独立的能力完全相同的camera设备，每个camera设备均可独立完成图像数据采集捕获处理，并可以同时输出3路图像数据。如下图所示：
 
-![cover](./images/k230-canmv-camera-top.png)
+![cover](../images/k230-canmv-camera-top.png)
 
 sensor 0，sensor 1，sensor 2表示三个图像传感器；Camera Device 0，Camera Device 1，Camera Device 2表示三个camera设备；output channel 0，output channel 1，output channel 2表示camera设备的三个输出通道。三个图像传感器可以通过软件配置映射到不同的camera 设备。
 
