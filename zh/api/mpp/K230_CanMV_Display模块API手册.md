@@ -396,14 +396,14 @@ VO通道
 
 ```python
 
-import display
-import image
+from media.display import * #导入display模块，使用display相关接口
+import image #导入image模块，使用image相关接口
 
-display.init(LT9611_1920X1080_30FPS)
+display.init(LT9611_1920X1080_30FPS) #初始化HDMI显示
 
 img = image.open("test.jpg")
-img.draw_rectangle(20, 20, 80, 80, color=White)
-display.show_image(img, 0, 0, DISPLAY_CHN_OSD2)
+img.draw_rectangle(20, 20, 80, 80, color=White) #画框
+display.show_image(img, 0, 0, DISPLAY_CHN_OSD2) #显示
 
 display.deinit()
 ```

@@ -496,97 +496,134 @@ CAM_OUT_HEIGHT_MIN = 64
 
 ```python
 # 本示例程序包括以下内容：
-# 1. 配置camera设备0同时输出两路图像数据
-# 2. 通道0输出YUV格式用于预览显示，通道1输出RGB888P格式用于KPU做人脸检测
-# 3. 在while循环中持续调用capture_image方法从通道1捕获RGB888P格式的图像数据
-# 4. KPU从捕获数据中检测并输出人脸信息
-# 5. 调用image对象的draw方法根据KPU检测到的人脸信息绘制人脸框
-# 6. 调用display模块的show_image方法将人脸框信息叠加到预览图像之上
+# 1. 配置camera设备0同时输出三路图像数据
+# 2. 通道0输出YUV格式用于预览显示，通道1、2输出RGB888P
+# 3. 抓取三路输出的图像各100张
 #
 
-import kpu
-import display
-import image
-import camera
+from media.camera import * #导入camera模块，使用camera相关接口
+from media.display import * #导入display模块，使用display相关接口
+from media.media import * #导入media模块，使用meida相关接口
+from time import * #导入time模块，使用time相关接口
+import time
+import image #导入image模块，使用image相关接口
 
-CAM_OUTPUT_BUF_NUM = 6
-CAM_INPUT_BUF_NUM = 4
+def canmv_camera_test():
+    print("canmv_camera_test")
 
-out_width = 1080
-out_height = 720
+    #初始化HDMI显示
+    display.init(LT9611_1920X1080_30FPS)
 
-out_width = ALIGN_UP(out_width, 16)
+    #初始化默认sensor配置（OV5647）
+    camera.sensor_init(CAM_DEV_ID_0, CAM_DEFAULT_SENSOR)
+    #camera.sensor_init(CAM_DEV_ID_0, CAM_IMX335_2LANE_1920X1080_30FPS_12BIT_LINEAR)
 
-# 初始化KPU
-interp.Kpu()
+    out_width = 1920
+    out_height = 1080
+    # 设置输出宽度16字节对齐
+    out_width = ALIGN_UP(out_width, 16)
 
-# 初始化LCD显示
-display.init(HX8377_V2_MIPI_4LAN_1080X1920_30FPS)
+    #设置通道0输出尺寸
+    camera.set_outsize(CAM_DEV_ID_0, CAM_CHN_ID_0, out_width, out_height)
+    #设置通道0输出格式
+    camera.set_outfmt(CAM_DEV_ID_0, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
 
-# 初始化sensor配置
-camera.sensor_init(CAM_DEV_ID_0, CAM_DEFAULT_SENSOR)
+    #创建媒体数据源设备
+    media_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
+    #创建媒体数据接收设备
+    media_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_VIDEO1)
+    #创建媒体链路，数据从源设备流到接收设备
+    media.create_link(media_source, media_sink)
+    #设置显示输出平面的属性
+    display.set_plane(0, 0, out_width, out_height, PIXEL_FORMAT_YVU_PLANAR_420, DISPLAY_MIRROR_NONE, DISPLAY_CHN_VIDEO1)
 
-# camera.set_inbufs(CAM_DEV_ID_0, CAM_INPUT_BUF_NUM)
+    out_width = 640
+    out_height = 480
+    out_width = ALIGN_UP(out_width, 16)
 
-###### 配置camera设备0的通道0参数 ######
-camera.set_outbufs(CAM_DEV_ID_0, CAM_CHN_ID_0, CAM_OUTPUT_BUF_NUM)
-camera.set_outsize(CAM_DEV_ID_0, CAM_CHN_ID_0, out_width, out_height)
-camera.set_outfmt(CAM_DEV_ID_0, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
+    #设置通道1输出尺寸
+    camera.set_outsize(CAM_DEV_ID_0, CAM_CHN_ID_1, out_width, out_height)
+    #设置通道1输出格式
+    camera.set_outfmt(CAM_DEV_ID_0, CAM_CHN_ID_1, PIXEL_FORMAT_RGB_888)
 
-###### 配置camera设备0的通道1参数 ######
-camera.set_outbufs(CAM_DEV_ID_0, CAM_CHN_ID_1, CAM_OUTPUT_BUF_NUM)
-camera.set_outsize(CAM_DEV_ID_0, CAM_CHN_ID_1, out_width, out_height)
-camera.set_outfmt(CAM_DEV_ID_0, CAM_CHN_ID_1, PIXEL_FORMAT_BGR_888_PLANAR)
+    #设置通道2输出尺寸
+    camera.set_outsize(CAM_DEV_ID_0, CAM_CHN_ID_2, out_width, out_height)
+    #设置通道2输出格式
+    camera.set_outfmt(CAM_DEV_ID_0, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
 
-# 创建媒体数据链路:camera->display
-meida_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
-meida_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_ID_1)
-media.create_link(meida_source, meida_sink)
+    #初始化媒体缓冲区
+    ret = media.buffer_init()
+    if ret:
+        print("canmv_camera_test, buffer init failed")
+        return ret
 
-# 设置显示图层
-display.set_video_plane(0, 0, out_width, out_height, PIXEL_FORMAT_YVU_PLANAR_420, K_ROTATION_0, K_VO_LAYER1)
+    #启动摄像头数据流
+    camera.start_stream(CAM_DEV_ID_0)
+    time.sleep(15)
 
-# 初始化媒体缓冲区
-media.buffer_init()
+    capture_count = 0
+    while capture_count < 100:
+        time.sleep(1)
+        for dev_num in range(CAM_DEV_ID_MAX):
+            if not camera.cam_dev[dev_num].dev_attr.dev_enable:
+                continue
 
-# 启动camera数据流
-camera.start_stream(CAM_DEV_ID_0)
+            for chn_num in range(CAM_CHN_ID_MAX):
+                if not camera.cam_dev[dev_num].chn_attr[chn_num].chn_enable:
+                    continue
 
-# 以下为获取camera图像并执行人脸检测画框显示的逻辑
-count = 0
-while count < 100:
-    count = count + 1
-    # 从camera 设备0的通道1 捕获一帧图像数据(RGB888_PLANAR)
-    img = camera.capture_image(CAM_DEV_ID_0, CAM_CHN_ID_1)
+                print(f"canmv_camera_test, dev({dev_num}) chn({chn_num}) capture frame.")
+                #从指定设备和通道捕获图像
+                img = camera.capture_image(dev_num, chn_num)
+                if img == -1:
+                    print("camera.capture_image failed")
+                    continue
 
-    # 基于image对象构造用于KPU处理的data对象
-    data = interp.create_tensor(img) # image: datatype, shape, phy_addr
+                if img.format() == image.YUV420:
+                    suffix = "yuv420sp"
+                elif img.format() == image.RGB888:
+                    suffix = "rgb888"
+                elif img.format() == image.RGBP888:
+                    suffix = "rgb888p"
+                else:
+                    suffix = "unkown"
 
-    # 输入data对象
-    interp.set_input_tensor(data)
+                filename = f"/sdcard/dev_{dev_num:02d}_chn_{chn_num:02d}_{img.width()}x{img.height()}_{capture_count:04d}.{suffix}"
+                print("save capture image to file:", filename)
 
-    # KPU执行检测
-    interp.run()
+                with open(filename, "wb") as f:
+                    if f:
+                        img_data = uctypes.bytearray_at(img.virtaddr(), img.size())
+                        # save yuv data to sdcard.
+                        #f.write(img_data)
+                    else:
+                        print(f"capture_image, open dump file failed({filename})")
 
-    #获取人脸检测结果
-    result = interp.get_output_tensor(0) #result: vector? [datatype, shape, addr]
+                time.sleep(1)
+                #释放捕获的图像数据
+                camera.release_image(dev_num, chn_num, img)
 
-    # 根据检测结果创建一个新的image对象
-    img = iamge.draw(result)
+                capture_count += 1
 
-    # 显示包含人脸框信息的image
-    display.show_image(img, display.DISPLAY_CHN_OSD_3)
+    #停止摄像头输出
+    camera.stop_stream(CAM_DEV_ID_0)
 
-# 停止camera数据流
-camera.stop_stream(CAM_DEV_ID_0)
+    #去初始化显示设备
+    display.deinit()
 
-# 关闭显示
-display.deinit()
+    #销毁媒体链路
+    media.destroy_link(media_source, media_sink)
 
-# 销毁camera->display媒体数据链路
-media.destroy_link(meida_source, meida_sink)
+    time.sleep(1)
+    #去初始化媒体缓冲区资源
+    ret = media.buffer_deinit()
+    if ret:
+        print("camera test, media_buffer_deinit failed")
+        return ret
 
-# 去初始化媒体缓冲区
-media.buffer_deinit()
+    print("camera test exit")
+    return 0
 
+
+canmv_camera_test()
 ```

@@ -8,3 +8,4 @@ CanMV 例程讲解
    peripheral.rst
    media.rst
    omv/omv.rst
+   socket_network/network.rst

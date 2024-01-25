@@ -522,3 +522,19 @@ set_affine_param(affine_flag, interp_method, cord_round, bound_ind, bound_val, b
 | bound_val     | uint32_t           | 边界填充值                                                                                                               |
 | bound_smooth  | uint32_t           | 边界平滑0或者1                                                                                                           |
 | M             | list               | 仿射变换矩阵对应的vector，仿射变换为Y=\[a_0, a_1; a_2, a_3\] \cdot  X + \[b_0, b_1\] $, 则  M=[a_0,a_1,b_0,a_2,a_3,b_1 ] |
+
+### 2.5 shrink_memory_pool
+
+【描述】
+
+清理nncase_runtime产生的内存池，释放内存。
+
+【语法】
+
+```Python
+import gc
+import nncase_runtime
+
+gc.collect()
+nncase_runtime.shrink_memory_pool()
+```

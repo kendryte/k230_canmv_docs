@@ -11,3 +11,4 @@
    media/mp4muxer.md
    media/player.md
    media/venc.md
+   lvgl/lvgl.md

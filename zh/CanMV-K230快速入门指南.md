@@ -46,7 +46,7 @@ CanMV-K230开发板默认套件包含以下物品：
 
 2、OV5647摄像头 x 1
 
-3、Type-C数据线 x 1
+3、Type-C数据线 x 1 (micropython需要2根Type-C数据线，请用户自行准备1根)
 
 另外，需要用户准备以下配件：
 
@@ -72,7 +72,7 @@ CanMV-K230开发板默认套件包含以下物品：
 
 - `USB-Enhanced-SERIAL-A CH342（COM80）`为小核linux调试串口
 - `USB-Enhanced-SERIAL-B CH342（COM81）`为大核rt-smart调试串口
-- `USB串行设备（COM75）`为micropython REPL串口 是CanMV-IDE需要连接的串口。
+- `USB串行设备（COM75）`为micropython REPL串口 是CanMV-IDE需要连接的串口。如果没有这个设备，请确定两个USB口都与电脑连接。
 
 ### 3.2.2 linux
 
@@ -80,7 +80,7 @@ Linux串口显示如下：
 
 - `/dev/ttyACM0`为小核linux调试串口
 - `/dev/ttyACM1`为大核rt-smart调试串口
-- `/dev/ttyACM2`为micropython REPL串口 是CanMV-IDE需要连接的串口。
+- `/dev/ttyACM2`为micropython REPL串口 是CanMV-IDE需要连接的串口。如果没有这个设备，请确定两个USB口都与电脑连接。
 
 ## 4 固件获取及烧录
 
@@ -114,7 +114,7 @@ CanMV-K230 固件下载地址： <https://github.com/kendryte/k230_canmv/release
 
 #### 4.2.2 Windows下烧录
 
-Windows下可通过balena Etcher工具对TF卡进行烧录（balena Etcher工具下载地址<https://www.balena.io/etcher/>）。
+Windows下可通过balena Etcher工具对TF卡进行烧录（balena Etcher工具下载地址 `https://www.balena.io/etcher`）。
 
 1）将TF卡插入PC，然后启动balena Etcher工具，点击工具界面的"Flash from file”按钮，选择待烧写的固件。
 
@@ -135,7 +135,7 @@ Windows下可通过balena Etcher工具对TF卡进行烧录（balena Etcher工具
 
 ## 6 启动系统
 
-将烧好固件的TF卡插入CanMV-K230 TF卡插槽，Type-C线连接电脑和板端的POWER口，板子即上电，系统开始启动。
+将烧好固件的TF卡插入CanMV-K230 TF卡插槽，Type-C线连接电脑和板端的POWER口，板子即上电，系统开始启动。注意：这里两个USB口都要连接电脑，否则板子无法与IDE联通。
 ![CanMV-K230-poweron](images/CanMV-K230-poweron.png)
 
 ### 6.1 连接开发板

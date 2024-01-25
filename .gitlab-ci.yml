@@ -10,7 +10,9 @@ variables:
   GITEE_REPO: git@gitee.com:kendryte/k230_canmv_docs.git
 
 default:
-  interruptible: true
+  image: ai.b-bug.org:5000/k230_sdk:latest
+  tags:
+    - k230_sdk
 
 # MR merged
 merge_sync:
@@ -49,7 +51,7 @@ manual_sync:
 markdown-link-check:
   rules:
     # MR job
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
   stage: test
   timeout: 10m
   tags:
@@ -61,14 +63,15 @@ markdown-link-check:
     - pwd
     #- find . -name \*.md -print0 | xargs -0 -n1 markdown-link-check -q
     - git fetch
-    - git diff origin/dev --name-only -z
-    - git diff origin/dev --name-only -z | (grep "\\.md$" || echo zh/CanMV-K230常见问题解答.md) | xargs markdown-link-check
+    - FILELIST=$(git diff origin/dev --name-only -z --diff-filter=AM | grep "\\.md$" || true)
+    - echo $FILELIST
+    - if [ -n "$FILELIST" ]; then echo $FILELIST | xargs markdown-link-check; fi
 
 # new MR open
 markdownlint:
   rules:
     # MR job
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
   stage: test
   timeout: 10m
   image: ai.b-bug.org:5000/markdown:latest
@@ -81,8 +84,9 @@ markdownlint:
     #- markdownlint-cli2 *.md **/*.md **/**/*.md **/**/**/*.md **/**/**/**/*.md
     #- find . -name \*.md -print0 | xargs -0 markdownlint-cli2
     - git fetch
-    - git diff origin/dev --name-only -z
-    - git diff origin/dev --name-only -z | (grep "\\.md$" || echo zh/CanMV-K230常见问题解答.md) | xargs markdownlint-cli2
+    - FILELIST=$(git diff origin/dev --name-only -z --diff-filter=AM | grep "\\.md$" || true)
+    - echo $FILELIST
+    - if [ -n "$FILELIST" ]; then echo $FILELIST | xargs markdownlint-cli2; fi
 
 .setup_env:
   before_script:
@@ -146,8 +150,8 @@ markdownlint:
 build-web-docs:
   stage: build
   rules:
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "dev"
-  image: ai.b-bug.org:5000/python:web-docs
+    - if: $CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main")
+  image: ai.b-bug.org:5000/python:web-docs-v2
   tags:
     - k230
   environment:
@@ -164,3 +168,39 @@ build-web-docs:
     - make mhtml
     - rm -rf /data1/k230/k230_canmv_docs/*
     - cp -r _build/* /data1/k230/k230_canmv_docs
+    - ssh -p 52522 huangziyi@40.73.58.120 "rm -rf /data/webapp/k230_canmv"
+    - scp -P 52522 -O -r _build huangziyi@40.73.58.120:/data/webapp/k230_canmv
+
+# sync dev branch to main branch
+dev_to_main:
+  rules:
+    # MR job to main branch
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+  timeout: 30m
+  script:
+    - echo "----------Step 1, Check Merge Request Title, k230 canmv docs release v*.* MUST bt exist----------"
+    - echo "$CI_MERGE_REQUEST_TITLE"
+    - >
+      if [[ "$CI_MERGE_REQUEST_TITLE" =~ "^k230 canmv docs release v[0-9]+\.[0-9]+".*$ ]];
+      then
+        echo "Merge Request title check PASS, continue get release version from merge request title";
+      else
+        echo "Merge Request title check FAILED, please EDIT title name with release tag";
+        echo "Title MUST be end with tag like: k230 canmv docs release v0.4";
+        exit 1;
+      fi
+    - RELEASE_TAG=$(echo $CI_MERGE_REQUEST_TITLE |grep -Eo "v[0-9]+\.[0-9]+.*?$")
+    - >
+      if [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+.*$ ]];
+      then
+        echo "Release TAG/version will be " $RELEASE_TAG;
+      else
+        echo "Release TAG/version check FAILED, please EDIT title name with release tag";
+        echo "Title MUST be end with tag like: k230 canmv docs release v1.4";
+        exit 1;
+      fi
+    - echo "----------sync dev branch to main branch for canmv dovs repo----------"
+    - wget -qc https://ai.b-bug.org/k230/test_resources/ci/release/k230_canmv_release.sh -O ./k230_canmv_release
+    - chmod +x ./k230_canmv_release
+    - ./k230_canmv_release docs $RELEASE_TAG "k230 canmv docs release $RELEASE_TAG" || exit 1
+    - echo "----------sync dev to main branch pass for canmv repo----------"

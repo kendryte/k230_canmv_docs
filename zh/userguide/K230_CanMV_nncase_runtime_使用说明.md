@@ -132,7 +132,7 @@ AI2D功能有：`crop`，`shift`，`pad`，`resize`，`affine`。可以根据实
 ai2d.set_dtype(nncase_runtime.ai2d_format.NCHW_FMT,
                nncase_runtime.ai2d_format.NCHW_FMT, 
                np.uint8, np.uint8)
-               
+             
 # 功能配置，以pad和resize为例
 ai2d.set_pad_param(True, [0,0,0,0,1,1,2,2], 0, [127,127,127])
 ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
@@ -141,7 +141,7 @@ ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pi
 ai2d_builder = ai2d.build([1,3,224,224], [1,3,256,256])
 ```
 
-#### 2.6.2. 串联使用AI2D和KPU
+#### 2.6.2. 串行使用AI2D和KPU
 
 ```Python
 data = np.zeros((1,3,224,224),dtype=np.uint8)
@@ -161,7 +161,12 @@ data = result.to_numpy() # 将输出tensor转换为numpy对象
 
 ### 2.7. 释放内存
 
+如果定义了`global`变量，则需要确保在程序结束前，所有`global`变量的引用计数为0，否则无法释放内存。
+
 ```Python
+import nncase_runtime as nn
+import gc
+
 del kpu
 del ai2d
 del ai2d_builder
@@ -174,4 +179,7 @@ del input_tensor
 
 # output_tensor = kpu.get_output_tensor(i)
 del output_tensor
+
+gc.collect()
+nn.shrink_memory_pool()
 ```

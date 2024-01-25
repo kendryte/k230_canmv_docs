@@ -106,6 +106,14 @@ image.to_rgb888(x_scale=1.0[, y_scale=1.0[, roi=None[, rgb_channel=-1[, alpha=25
 转换图像格式为RGB888，返回一个新图像对象。
 除原生支持格式外，额外添加`RGB888`格式支持，其它格式不支持。
 
+##### `copy_from`
+
+```python
+image.copy_from(src_img)
+```
+
+拷贝src_img到img。
+
 ##### `copy_to`
 
 ```python

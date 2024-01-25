@@ -13,4 +13,4 @@ Welcome to K230 CanMV's documentation!
    zh/userguide/userguide.rst
    zh/example/example.rst
    zh/api/api.rst
-   zh/CanMV-K230常见问题解答.md
+   zh/CanMV-K230常见问题解答_MicroPython.md

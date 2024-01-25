@@ -115,7 +115,7 @@ make CONF=k230_canmv_defconfig
 
 ### 4.2 Windows下烧录
 
-Windows下可通过balena Etcher工具对sd卡进行烧录（balena Etcher工具下载地址<https://www.balena.io/etcher/>）。
+Windows下可通过balena Etcher工具对sd卡进行烧录（balena Etcher工具下载地址 `https://www.balena.io/etcher`）。
 
 1）将TF卡插入PC，然后启动balena Etcher工具，点击工具界面的"Flash from file”按钮，选择待烧写的固件。
 
@@ -148,7 +148,7 @@ Windows下可通过balena Etcher工具对sd卡进行烧录（balena Etcher工具
 
 CanMV-K230通过Power接口提供两路调试串口，linux下显示的串口设备为/dev/ttyACMx，windows下显示的串口设备为USB-Enhanced-SERIAL-A/B CH342。
 
-windows驱动下载地址<https://www.wch.cn/downloads/CH343SER_EXE.html>。
+windows驱动下载地址 `https://www.wch.cn/downloads/CH343SER_EXE.html`。
 
 使用type C分别连接Power和USB接口，板子上电，可以发现三个USB串口设备。
 
@@ -158,7 +158,7 @@ linux串口显示：
 
 - `/dev/ttyACM0`为小核linux调试串口
 - `/dev/ttyACM1`为大核rt-smart调试串口
-- `/dev/ttyACM2`为micropython REPL串口
+- `/dev/ttyACM2`为micropython REPL串口，如果没有这个设备，请确定两个USB口都与电脑连接。
 
 windows串口显示：
 
@@ -166,7 +166,7 @@ windows串口显示：
 
 - `USB-Enhanced-SERIAL-A CH342（COM25）`为小核linux调试串口
 - `USB-Enhanced-SERIAL-B CH342（COM24）`为大核rt-smart调试串口
-- `USB串行设备（COM26）`为micropython REPL串口
+- `USB串行设备（COM26）`为micropython REPL串口，如果没有这个设备，请确定两个USB口都与电脑连接。
 
 ### 5.2 启动micropython
 

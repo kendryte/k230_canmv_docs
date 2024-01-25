@@ -31,3 +31,4 @@ CanMV API 手册
    nncase_runtime/K230_CanMV_nncase_runtime_API手册.md
    openmv/image.md
    stdlib/utime.md
+   lvgl/lvgl.md
