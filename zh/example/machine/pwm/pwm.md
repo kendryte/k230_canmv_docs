@@ -1,4 +1,4 @@
-# pwm - pwm例程
+# PWM - PWM例程
 
 本示例程序用于对 CanMV 开发板进行一个PWM输出的功能展示。  
 

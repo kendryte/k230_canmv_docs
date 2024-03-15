@@ -58,43 +58,25 @@ CanMV-K230开发板默认套件包含以下物品：
 
 4、Type-C数据线
 
-## 3 USB连接
+## 3. 固件获取及烧录
 
-使用Type-C线连接CanMV-K230如下图的位置，线另一端连接至电脑
-
-![CanMV-K230-usbotg](images/CanMV-K230-usbotg.png)
-
-### 3.2 Windows
-
-查看设备管理器
-
-![CanMV-K230-micropython-serial](images/CanMV-K230-micropython-serial.png)
-
-- `USB-Enhanced-SERIAL-A CH342（COM80）`为小核linux调试串口
-- `USB-Enhanced-SERIAL-B CH342（COM81）`为大核rt-smart调试串口
-- `USB串行设备（COM75）`为micropython REPL串口 是CanMV-IDE需要连接的串口。如果没有这个设备，请确定两个USB口都与电脑连接。
-
-### 3.2.2 linux
-
-Linux串口显示如下：
-
-- `/dev/ttyACM0`为小核linux调试串口
-- `/dev/ttyACM1`为大核rt-smart调试串口
-- `/dev/ttyACM2`为micropython REPL串口 是CanMV-IDE需要连接的串口。如果没有这个设备，请确定两个USB口都与电脑连接。
-
-## 4 固件获取及烧录
-
-### 4.1 固件获取
+### 3.1 固件获取
 
 CanMV-K230 固件下载地址： <https://github.com/kendryte/k230_canmv/releases> 或者 <https://developer.canaan-creative.com/resource>
 
+CanMV源码下载地址如下：
+
+`https://github.com/kendryte/k230_canmv`
+
+`https://gitee.com/kendryte/k230_canmv`
+
 请下载“CanMV-K230_micropython”开头的gz压缩包，解压得到sysimage-sdcard.img文件，即为CanMV-K230的固件。
 
-### 4.2 固件烧录
+### 3.2 固件烧录
 
 将固件通过电脑烧写至TF卡中。
 
-#### 4.2.1 Linux下烧录
+#### 3.2.1 Linux下烧录
 
 在TF卡插到宿主机之前，输入：
 
@@ -112,30 +94,52 @@ CanMV-K230 固件下载地址： <https://github.com/kendryte/k230_canmv/release
 
 `sudo dd if=sysimage-sdcard.img of=/dev/sdc bs=1M oflag=sync`
 
-#### 4.2.2 Windows下烧录
+#### 3.2.2 Windows下烧录
 
-Windows下可通过balena Etcher工具对TF卡进行烧录（balena Etcher工具下载地址 `https://www.balena.io/etcher`）。
+Windows下可通过rufus工具对TF卡进行烧录（rufus工具下载地址 `http://rufus.ie/downloads/`）。
 
-1）将TF卡插入PC，然后启动balena Etcher工具，点击工具界面的"Flash from file”按钮，选择待烧写的固件。
+1）将TF卡插入PC，然后启动rufus工具，点击工具界面的"选择”按钮，选择待烧写的固件。
 
-![balena-Etcher-flash-from-file](images/balena-Etcher-flash-from-file.jpg)
+![rufus-flash-from-file](images/rufus_select.png)
 
-2）点击工具界面的“Select target”按钮，选择目标sdcard卡。
+2）点击“开始”按钮开始烧写，烧写过程有进度条展示，烧写结束后会提示“准备就绪”。
 
-![balena-Etcher-select-target](images/balena-Etcher-select-target.jpg)
+![rufus-flash](images/rufus_start.png)
+![rufus-sure](images/rufus_sure.png)
+![rufus-warning](images/rufus_warning.png)
+![rufus-finish](images/rufus_finish.png)
 
-3）点击“Flash”按钮开始烧写，烧写过程有进度条展示，烧写结束后会提示Flash Finish。
+## 4. USB连接
 
-![balena-Etcher-flash](images/balena-Etcher-flash.jpg)
-![balena-Etcher-finish](images/balena-Etcher-finish.jpg)
+使用Type-C线连接CanMV-K230如下图的位置，线另一端连接至电脑。这时请注意把第3步烧录好的TF卡插到板子上。
 
-## 5 CanMV-IDE下载
+![CanMV-K230-usbotg](images/CanMV-K230-usbotg.png)
 
-下载地址 : <https://kendryte-download.canaan-creative.com/developer/common/canmv-ide-4.0.5.exe>
+### 4.1 Windows
 
-## 6 启动系统
+查看设备管理器
 
-将烧好固件的TF卡插入CanMV-K230 TF卡插槽，Type-C线连接电脑和板端的POWER口，板子即上电，系统开始启动。注意：这里两个USB口都要连接电脑，否则板子无法与IDE联通。
+![CanMV-K230-micropython-serial](images/CanMV-K230-micropython-serial.png)
+
+- `USB-Enhanced-SERIAL-A CH342（COM80）`为小核linux调试串口
+- `USB-Enhanced-SERIAL-B CH342（COM81）`为大核rt-smart调试串口
+- `USB串行设备（COM75）`为micropython REPL串口 是CanMV-IDE需要连接的串口。如果没有这个设备，请确定两个USB口都与电脑连接，TF卡烧录的固件是否为“CanMV-K230_micropython”开头的固件。
+
+### 4.2 linux
+
+Linux串口显示如下：
+
+- `/dev/ttyACM0`为小核linux调试串口
+- `/dev/ttyACM1`为大核rt-smart调试串口
+- `/dev/ttyACM2`为micropython REPL串口 是CanMV-IDE需要连接的串口。如果没有这个设备，请确定两个USB口都与电脑连接，TF卡烧录的固件是否为“CanMV-K230_micropython”开头的固件。
+
+## 5. CanMV-IDE下载
+
+下载地址 : <https://developer.canaan-creative.com/resource> 下载最新的CanMV IDE
+
+## 6. 启动系统
+
+将烧好固件的TF卡插入CanMV-K230 TF卡插槽，Type-C线连接电脑和板端的POWER口，板子即上电，系统开始启动。(**注意：这里两个USB口都要连接电脑，否则板子无法与IDE联通**)
 ![CanMV-K230-poweron](images/CanMV-K230-poweron.png)
 
 ### 6.1 连接开发板
@@ -151,10 +155,19 @@ Windows下可通过balena Etcher工具对TF卡进行烧录（balena Etcher工具
 
 ### 6.2 运行python
 
-在 <https://github.com/kendryte/k230_canmv/tree/main/tests> 下载测试程序，通过IDE加载。
+在 <https://github.com/kendryte/k230_canmv/tree/main/tests> 下载测试程序，通过IDE加载。(**V0.5版本之前，0.5版本后建议使用虚拟U盘**)
 
 ![canmv_open_py](images/canmv_open_py.png)
 
 点击打开按钮，选择下载的文件，打开。 点击左下角的绿色按钮运行，等待一会儿，显示器会显示sensor采集的图像，该程序为人脸检测程序，可以看到人脸被框出。
+
+(**V0.5版本之后已经支持虚拟U盘功能，可以直接打开TF卡中的示例**)
+
+查看“我的电脑”或“此电脑”，在设备和驱动器中会出现“CanMV"设备。
+![virtual_Udisk](images/virtual_Udisk.png)
+
+建议使用虚拟U盘里面的示例。
+![open_Udisk](images/open_Udisk.png)
+![face_detect_file](images/face_detect_file.png)
 
 ![CanMV-K230-aidemo](images/CanMV-K230-aidemo.png)

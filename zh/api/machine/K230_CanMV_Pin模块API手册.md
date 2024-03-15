@@ -1,4 +1,4 @@
-# K230 CanMV UART 模块API手册
+# K230 CanMV Pin 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -29,7 +29,7 @@
 
 ### 概述
 
-本文档主要介绍machine模块下的UART类API。
+本文档主要介绍machine模块下的Pin类API。
 
 ### 读者对象
 
@@ -42,94 +42,136 @@
 
 | 简称 | 说明 |
 | ---- | ---- |
+| GPIO  |  General Purpose Input Output （通用输入/输出）  |
 
 ### 修订记录
 
 | 文档版本号 | 修改说明 | 修改者     | 日期       |
 | ---------- | -------- | ---------- | ---------- |
-| V1.0       | 初版     | 软件部      | 2023-09-17 |
+| V1.0       | 初版     | 软件部      | 2023-09-20 |
 
 ## 1. 概述
 
-K230内部包含五个UART硬件模块，其中UART0被小核sh占用，UART3被大核sh占用，剩余UART1，UART2，UART4可供用户使用。
-UART IO配置参考IOMUX模块。
+K230内部包含64个GPIO Pin，每个Pin可配置为输入或输出，可配置上下拉，可配置驱动能力。
 
 ## 2. API描述
 
-UART类位于machine模块下
+Pin类位于machine模块下
 
 ### 示例
 
 ```python
-from machine import UART
-# UART1: baudrate 115200, 8bits, parity none, one stopbits
-u1 = UART(UART.UART1, baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, stop=UART.STOPBITS_ONE)
-# UART write
-u1.write("UART1 test")
-# UART read
-r = u1.read()
-# UART readline
-r = u1.readline()
-# UART readinto
-b = bytearray(8)
-r = u1.readinto(b)
-# UART deinit
-u1.deinit()
+from machine import Pin
+# 实例化Pin2为输出
+pin = Pin(2, Pin.OUT, pull=Pin.PULL_NONE, drive=7)
+# 设置输出为高
+pin.value(1)
+# 设置输出为低
+pin.value(0)
 ```
 
 ### 构造函数
 
 ```python
-uart = UART(id, baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, stop=UART.STOPBITS_ONE)
+pin = Pin(index, mode, pull=Pin.PULL_NONE, drive=7)
 ```
 
 【参数】
 
-- id: UART号，有效值 UART1、UART2、UART4
-- baudrate: UART波特率，可选参数，默认115200
-- bits: 每个字符的位数，有效值 FIVEBITS、SIXBITS、SEVENBITS、EIGHTBITS，可选参数，默认EIGHTBITS
-- parity: 奇偶校验，有效值 PARITY_NONE、PARITY_ODD、PARITY_EVEN，可选参数，默认PARITY_NONE
-- stop: 停止位的数目，有效值 STOPBITS_ONE、STOPBITS_TWO，可选参数，默认STOPBITS_ONE
+- index: 引脚号，取值:[0,63]
+- mode: 输入或输出模式
+- pull: 上下拉配置，可选参数，默认PULL_NONE
+- drive: 驱动能力配置，可选参数，默认7
 
 ### init
 
 ```python
-UART.init(baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, stop=UART.STOPBITS_ONE)
+Pin.init(mode, pull=Pin.PULL_NONE, drive=7)
 ```
 
-配置UART
+配置引脚模式，上下拉，驱动能力
 
 【参数】
 
-参考构造函数
+- mode: 输入或输出模式
+- pull: 上下拉配置，可选参数，默认PULL_NONE
+- drive: 驱动能力配置，可选参数，默认7
 
 【返回值】
 
 无
 
-### read
+### value
 
 ```python
-UART.read([nbytes])
+Pin.value([value])
 ```
 
-读取字符。若指定nbytes，则最多读取该数量的字节。否则可读取尽可能多的数据。
+获取引脚输入或设置引脚输出
 
 【参数】
 
-- nbytes: 最多读取nbytes字节，可选参数
+- value: 输出值，可选参数，如果不传参数则返回输入值
 
 【返回值】
 
-一个包括读入字节的字节对象
+返回空或当前引脚输入值
 
-### readline
+### mode
 
 ```python
-UART.readline()
+Pin.mode([mode])
 ```
 
-读取一行，并以一个换行符结束。
+获取或设置引脚输入输出模式
+
+【参数】
+
+- mode: 输入输出模式，可选参数，如果不传参数则返回当前输入输出模式
+
+【返回值】
+
+返回空或当前引脚输入输出模式
+
+### pull
+
+```python
+Pin.pull([pull])
+```
+
+获取或设置引脚上下拉配置
+
+【参数】
+
+- pull: 上下拉配置，可选参数，如果不传参数则返回当前上下拉配置
+
+【返回值】
+
+返回空或当前引脚上下拉配置
+
+### drive
+
+```python
+Pin.drive([drive])
+```
+
+获取或设置引脚驱动能力
+
+【参数】
+
+- drive: 驱动能力，可选参数，如果不传参数则返回当前驱动能力
+
+【返回值】
+
+返回空或当前引脚驱动能力
+
+### on
+
+```python
+Pin.on()
+```
+
+设置输出高
 
 【参数】
 
@@ -137,48 +179,47 @@ UART.readline()
 
 【返回值】
 
-一个包括读入字节的字节对象
+无
 
-### readinto
+### off
 
 ```python
-UART.readinto(buf[, nbytes])
+Pin.off()
 ```
 
-将字节读取入buf。若指定nbytes，则最多读取该数量的字节。否则，最多读取len(buf)数量的字节。
+设置输出低
 
 【参数】
 
-- buf: 一个buffer对象
-- nbytes: 最多读取nbytes字节，可选参数
+无
 
 【返回值】
 
-读取并存入buf的字节数
+无
 
-### write
+### high
 
 ```python
-UART.write(buf)
+Pin.high()
 ```
 
-将字节缓冲区写入UART。
+设置输出高
 
 【参数】
 
-- buf: 一个buffer对象
+无
 
 【返回值】
 
-写入的字节数
+无
 
-### deinit
+### low
 
 ```python
-UART.deinit()
+Pin.low()
 ```
 
-释放UART资源
+设置输出低
 
 【参数】
 

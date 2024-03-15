@@ -40,18 +40,17 @@
 
 ### 缩略词定义
 
-| 简称 | 说明 |
-| ---- | ---- |
-| XXX  | xx   |
-| XXX  | xx   |
+| 简称               | 说明                                                   |
+|--------------------|--------------------------------------------------------|
+| VICAP              | Video Input Capture，图像输入采集模块                  |
+| MCM                | Multi Camera Management ,多摄像头管理                  |
 
 ### 修订记录
 
 | 文档版本号 | 修改说明 | 修改者     | 日期       |
 | ---------- | -------- | ---------- | ---------- |
 | V1.0       | 初版     | 汪成根    | 2023-09-18 |
-| V1.1       |          |            |            |
-| V1.2       |          |            |            |
+| V1.1       | 添加多sensor MCM 相关的API     |  赵忠祥          |  2024-03-11          |
 
 ## 1. 概述
 
@@ -411,6 +410,66 @@ camera.capture_image(CAM_DEV_ID_0， CAM_CHN_ID_0)
 
 无
 
+### 2.7 start_mcm_stream
+
+【描述】
+
+多sensor时，启动camera数据流。多sensor时一定要先配置好各个sensor的参数，然后调该函数启动数据流。
+
+【语法】
+
+```python
+def start_mcm_stream(cls)
+```
+
+【返回值】
+
+| 返回值 | 描述                   |
+| ------ | ---------------------- |
+| 0      | 成功。                 |
+| 非 0   | 失败，其值为\[错误码\] |
+
+【举例】
+
+```python
+# 启动camera设备0输出数据流
+camera.start_mcm_stream()
+```
+
+【相关主题】
+
+无
+
+### 2.8 stop_mcm_stream
+
+【描述】
+
+多sensor时，停止camera数据流。与start_mcm_stream配套使用。
+
+【语法】
+
+```python
+def stop_mcm_stream(cls, dev_num)
+```
+
+【返回值】
+
+| 返回值 | 描述                   |
+| ------ | ---------------------- |
+| 0      | 成功。                 |
+| 非 0   | 失败，其值为\[错误码\] |
+
+【举例】
+
+```python
+# 停止camera设备0输出数据流
+camera.stop_mcm_stream()
+```
+
+【相关主题】
+
+无
+
 ## 3. 数据结构描述
 
 K230 CanMV平台Camera模块包含如下描述的各个数据定义。
@@ -419,46 +478,25 @@ K230 CanMV平台Camera模块包含如下描述的各个数据定义。
 
 【说明】
 
-示例数据结结构
+下面是目前Canmv-K230板micropython支持的Sensor。
+其中CSI1/2是可以使用树莓派的ov5647模组，如果使用Canmv-K230 V1.0/1.1版的板子，要修改该模组的电压。
 
 【定义】
 
 ```python
-CAM_OV9732_1280X720_30FPS_10BIT_LINEAR = 0
-
-CAM_OV9286_1280X720_30FPS_10BIT_LINEAR_IR = 1
-CAM_OV9286_1280X720_30FPS_10BIT_LINEAR_SPECKLE = 2
-
-CAM_OV9286_1280X720_60FPS_10BIT_LINEAR_IR = 3
-CAM_OV9286_1280X720_60FPS_10BIT_LINEAR_SPECKLE = 4
-
-CAM_OV9286_1280X720_30FPS_10BIT_LINEAR_IR_SPECKLE = 5
-CAM_OV9286_1280X720_60FPS_10BIT_LINEAR_IR_SPECKLE = 6
-
-
-CAM_IMX335_2LANE_1920X1080_30FPS_12BIT_LINEAR = 7
-CAM_IMX335_2LANE_2592X1944_30FPS_12BIT_LINEAR = 8
-CAM_IMX335_4LANE_2592X1944_30FPS_12BIT_LINEAR = 9
-CAM_IMX335_2LANE_1920X1080_30FPS_12BIT_USEMCLK_LINEAR = 10
-CAM_IMX335_2LANE_2592X1944_30FPS_12BIT_USEMCLK_LINEAR = 11
-CAM_IMX335_4LANE_2592X1944_30FPS_12BIT_USEMCLK_LINEAR = 12
-
-CAM_IMX335_2LANE_2592X1944_30FPS_10BIT_2HDR = 13
-CAM_IMX335_2LANE_2592X1944_30FPS_10BIT_3HDR = 14
-
-
-CAM_OV5647_1920X1080_30FPS_10BIT_LINEAR = 21
-CAM_OV5647_2592x1944_10FPS_10BIT_LINEAR = 22
-CAM_OV5647_2592x1944_10FPS_10BIT_LINEAR = 23
-CAM_OV5647_1920X1080_30FPS_10BIT_USEMCLK_LINEAR = 24
-
+CAM_IMX335_2LANE_1920X1080_30FPS_12BIT_USEMCLK_LINEAR                   # Imx335 CSI0
+CAM_OV5647_1920X1080_30FPS_10BIT_USEMCLK_LINEAR                         # OV5647 CSI0
+CAM_OV5647_1920X1080_CSI1_30FPS_10BIT_USEMCLK_LINEAR                    # OV5647 CSI1
+CAM_OV5647_1920X1080_CSI2_30FPS_10BIT_USEMCLK_LINEAR                    # OV5647 CSI2
 # the default sensor type
-CAM_DEFAULT_SENSOR = CAM_OV5647_1920X1080_30FPS_10BIT_USEMCLK_LINEAR
+CAM_DEFAULT_SENSOR = CAM_OV5647_1920X1080_30FPS_10BIT_USEMCLK_LINEAR    # 默认的sensor使用OV5647 CSI0
 ```
 
 【注意事项】
 
-无
+Canmv-K230 V1.0/1.1版的板子外设接口为1.8V，不能直接使用树莓派的ov5647模组，必须修改电压为1.8V。
+
+![ov5647_v1.8](../../images/ov5647_v1.8.jpg)
 
 【相关数据类型及接口】
 

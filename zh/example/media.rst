@@ -6,6 +6,7 @@
    media/acodec.md
    media/audio.md
    media/camera.md
+   media/camera_3sensnors.md
    media/display.md
    media/media.md
    media/mp4muxer.md

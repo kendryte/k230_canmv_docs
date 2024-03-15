@@ -1,4 +1,4 @@
-# tchttp - client 例程
+# http - client 例程
 
 本示例程序用于对 CanMV 开发板进行一个 http client的功能展示。
 

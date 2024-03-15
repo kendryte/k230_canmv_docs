@@ -1,4 +1,4 @@
-# uart - uart例程
+# UART - UART例程
 
 本示例程序用于对 CanMV 开发板进行一个UART的功能展示。  
 
@@ -19,7 +19,6 @@ print(r)
 b = bytearray(8)
 r = uart.readinto(b)
 print(r)
-
 ```
 
 具体接口定义请参考 [UART](../../../api/machine/K230_CanMV_UART模块API手册.md)

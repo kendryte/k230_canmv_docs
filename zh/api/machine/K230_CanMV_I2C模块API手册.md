@@ -52,7 +52,7 @@
 
 ## 1. 概述
 
-K230内部包含五个I2C硬件模块，支持7/10比特地址；支持标准100kb/s，快速400kb/s模式，高速模式3.4Mb/s。
+K230内部包含五个I2C硬件模块，支持标准100kb/s，快速400kb/s模式，高速模式3.4Mb/s。
 通道输出IO配置参考IOMUX模块。
 
 ## 2. API描述
@@ -63,8 +63,8 @@ I2C类位于machine模块下
 
 ```python
 from machine import I2C
-# i2c0 init 100KHz clock,7 bit address mode
-i2c = I2C(0, freq=100000, addr_size=7)
+# i2c0 init 100KHz clock
+i2c = I2C(0, freq=100000)
 # Scan the slave on the I2C bus
 i2c.scan()
 # Reading data from the bus
@@ -79,19 +79,20 @@ i2c.readfrom_mem(addr, memaddr, nbytes, mem_size=8)
 i2c.readfrom_mem_into(addr, memaddr, buf, mem_size=8)
 # Write data to slave register
 i2c.writeto_mem(addr, memaddr, buf, mem_size=8)
+# i2c deinit
+i2c.deinit()
 ```
 
 ### 构造函数
 
 ```python
-i2c = I2C(id, freq=100000, addr_size=7)
+i2c = I2C(id, freq=100000)
 ```
 
 【参数】
 
 - id： I2C ID, [0~4] (I2C.I2C0~I2C.I2C4)
 - freq: I2C时钟频率
-- addr_size: 地址寻址模式
 
 ### scan
 
@@ -215,6 +216,22 @@ i2c.writeto_mem(addr, memaddr, buf, mem_size=8)
 - memaddr： 从机寄存器地址
 - buf：  需要写的数据
 - mem_size： 寄存器宽度， 默认为8位
+
+【返回值】
+
+无
+
+### deinit
+
+```python
+i2c.deinit()
+```
+
+释放i2c资源
+
+【参数】
+
+无
 
 【返回值】
 

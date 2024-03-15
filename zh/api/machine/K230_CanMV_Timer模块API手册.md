@@ -1,4 +1,4 @@
-# K230 CanMV Timer API手册
+# K230 CanMV Timer 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -29,7 +29,7 @@
 
 ### 概述
 
-硬件定时器，可以用来定时触发任务或者处理任务。
+本文档主要介绍machine模块下的Timer类API。
 
 ### 读者对象
 
@@ -48,274 +48,74 @@
 
 | 文档版本号 | 修改说明 | 修改者     | 日期       |
 | ---------- | -------- | ---------- | ---------- |
-| V1.0       | 初版     | 史文涛      | 2023-09-22 |
+| V1.0       | 初版     | 软件部      | 2023-09-22 |
 
 ## 1. 概述
 
-硬件定时器，可以用来定时触发任务或者处理任务，设定时间到了后可以触发中断（调用回调函数），精度比软件定时器高。需要注意的是，定时器在不同的硬件中可能会有不同的表现。MicroPython 的 Timer 类定义了在给定时间段内（或在一段延迟后执行一次回调）执行回调的基本操作
+K230内部包含6个Timer硬件模块，最小定时周期为1us。
 
 ## 2. API描述
 
-Timer提供了一个类 Timer，实现了六个函数
+Timer类位于machine模块下
 
-### 2.1 类 machine.Timer
-
-【描述】
-
-通过指定的参数新建一个 Timer 对象。
-
-【语法】
+### 示例
 
 ```python
 from machine import Timer
-tim = machine.Timer(mode=Timer.MODE_ONE_SHOT,period=1000, unit=Timer.UNIT_MS, callback=None, arg=None, start=True)
-```
-
-【参数】
-
-| 参数名称        | 描述                          | 输入/输出 |
-|-----------------|-------------------------------|-----------|
-| mode  |    Timer模式，MODE_ONE_SHOT或MODE_PERIODIC       | 输入      |
-| period  |  TImer周期, 在启动定时器后 period 时间， 回调函数将会被调用       | 输入      |
-| unit  |    设置周期的单位，默认位毫秒（ms），Timer.UNIT_S 或者 Timer.UNIT_MS 或者 Timer.UNIT_US 或者Timer.UNIT_NS          | 输入      |
-| callback  |    定时器回调函数， 定义了两个参数， 一个是定时器对象Timer， 第二个是在定义对象是希望传的参数arg，更多请看arg参数解释         | 输入      |
-| arg  |    希望传给回调函数的参数,作为回调函数的第二个参数         | 输入      |
-| start  |     是否在对象构建成功后立即开始定时器,True：立即开始,False:不立即开启,需要调用start()函数来启动定时器         | 输入      |
-【返回值】
-
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功                          |
-| 非 0    | 失败 |
-
-【举例】
-
-无
-
-【相关主题】
-
-无
-
-#### 2.1.1 init
-
-【描述】
-
-类似构造函数。
-
-【语法】
-
-```python
-tim = machine.Timer(mode=Timer.MODE_ONE_SHOT,period=1000, unit=Timer.UNIT_MS, callback=None, arg=None, start=True)
-```
-
-【参数】
-
-与构造函数相同
-
-【返回值】
-
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功                          |
-| 非 0    | 失败 |
-
-【注意】
-
-无
-
-【举例】
-
-无
-
-【相关主题】
-
-无
-
-#### 2.1.2 callback
-
-【描述】
-
-获取或者设置回调函数
-
-【语法】
-
-```python
-tim.callback(callback)
-```
-
-【参数】
-
-• callback： 设置的回调函数，可选参数， 如果不传参数，则只返回先有的回调函数
-
-【返回值】
-
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功                          |
-| 非 0    | 失败 |
-
-【注意】
-
-无
-
-【举例】
-
-无
-
-【相关主题】
-
-无
-
-#### 2.1.3 period
-
-【描述】
-
-获取或者设置定时周期
-
-【语法】
-
-```python
-tim.period(period)
-```
-
-【参数】
-
-• period： 可选参数，配置周期， 如果不传参数， 则只返回当前周期值
-
-【返回值】
-
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功                          |
-| 非 0    | 失败 |
-
-【注意】
-
-无
-
-【举例】
-
-无
-
-【相关主题】
-
-无
-
-#### 2.1.4 start
-
-【描述】
-
-启动定时器
-
-【语法】
-
-```python
-tim.start()
-```
-
-【参数】
-
-无
-
-【返回值】
-
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功                          |
-| 非 0    | 失败 |
-
-【注意】
-
-无
-
-【举例】
-
-无
-
-【相关主题】
-
-无
-
-#### 2.1.5 stop
-
-【描述】
-
-停止定时器
-
-【语法】
-
-```python
-tim.stop()
-```
-
-【参数】
-
-无
-
-【返回值】
-
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功                          |
-| 非 0    | 失败 |
-
-【注意】
-
-无
-
-【举例】
-
-无
-
-【相关主题】
-
-无
-
-#### 2.1.6 deinit
-
-【描述】
-
-注销定时器，并且注销硬件的占用，关闭硬件的时钟
-
-【语法】
-
-```python
+# 实例化一个软定时器
+tim = Timer(-1)
+tim.init(period=100, mode=Timer.ONE_SHOT, callback=lambda t:print(1))
+tim.init(period=1000, mode=Timer.PERIODIC, callback=lambda t:print(2))
 tim.deinit()
 ```
 
+### 构造函数
+
+```python
+timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg=None)
+```
+
+【参数】
+
+- index: Timer号，取值:[-1,5]，-1代表软件定时器
+- mode: 运行模式，单次或周期，可选参数
+- freq: Timer运行频率，支持浮点，单位Hz，可选参数，优先级高于`period`
+- period: Timer运行周期，单位ms，可选参数
+- callback: 超时回调函数，必须设置，要带一个参数
+- arg: 超时回调函数参数，可选参数
+
+### init
+
+```python
+Timer.init(mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg=None)
+```
+
+初始化定时器参数
+
+【参数】
+
+- mode: 运行模式，单次或周期，可选参数
+- freq: Timer运行频率，支持浮点，单位Hz，可选参数，优先级高于`period`
+- period: Timer运行周期，单位ms，可选参数
+- callback: 超时回调函数，必须设置，要带一个参数
+- arg: 超时回调函数参数，可选参数
+
+【返回值】
+
+无
+
+### deinit
+
+```python
+Timer.deinit()
+```
+
+释放Timer资源
+
 【参数】
 
 无
 
 【返回值】
 
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功                          |
-| 非 0    | 失败 |
-
-【注意】
-
 无
-
-【举例】
-
-无
-
-【相关主题】
-
-无
-
-### 常量
-
-• UNIT_S: 单位秒 (s)
-
-• UNIT_MS: 单位毫秒 (ms)
-
-• UNIT_US: 单位微秒 (us)
-
-• UNIT_NS: 单位纳秒 (ns)
-
-• MACHINE_TIMER_MODE_ONE_SHOT: 只运行一次（回调一次）
-
-• MACHINE_TIMER_MODE_PERIODIC: 始终运行（连续回调）

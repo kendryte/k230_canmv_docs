@@ -54,6 +54,12 @@
 
 K230 CanMV是基于K230开发的一个可运行micropython的应用，用户可通过python语言使用硬件的各种资源。
 
+CanMV源码下载地址如下：
+
+`https://github.com/kendryte/k230_canmv`
+
+`https://gitee.com/kendryte/k230_canmv`
+
 ## 2. 开发环境搭建
 
 ### 2.1 支持的硬件
@@ -76,6 +82,12 @@ K230 CanMV没有在其他Linux版本的主机环境下验证过，不保证可�
 ## 3. 编译流程
 
 说明：本章节命令仅供参考，文件名请根据实际情况进行替换。
+
+CanMV源码下载地址如下：
+
+`https://github.com/kendryte/k230_canmv`
+
+`https://gitee.com/kendryte/k230_canmv`
 
 ```sh
 git clone https://github.com/kendryte/k230_canmv.git
@@ -115,20 +127,18 @@ make CONF=k230_canmv_defconfig
 
 ### 4.2 Windows下烧录
 
-Windows下可通过balena Etcher工具对sd卡进行烧录（balena Etcher工具下载地址 `https://www.balena.io/etcher`）。
+Windows下可通过rufus工具对TF卡进行烧录（rufus工具下载地址 `http://rufus.ie/downloads/`）。
 
-1）将TF卡插入PC，然后启动balena Etcher工具，点击工具界面的"Flash from file”按钮，选择待烧写的固件。
+1）将TF卡插入PC，然后启动rufus工具，点击工具界面的"选择”按钮，选择待烧写的固件。
 
-![balena-Etcher-flash-from-file](images/balena-Etcher-flash-from-file.jpg)
+![rufus-flash-from-file](../images/rufus_select.png)
 
-2）点击工具界面的“Select target”按钮，选择目标sdcard卡。
+2）点击“开始”按钮开始烧写，烧写过程有进度条展示，烧写结束后会提示“准备就绪”。
 
-![balena-Etcher-select-target](images/balena-Etcher-select-target.jpg)
-
-3）点击“Flash”按钮开始烧写，烧写过程有进度条展示，烧写结束后会提示Flash Finish。
-
-![balena-Etcher-flash](images/balena-Etcher-flash.jpg)
-![balena-Etcher-finish](images/balena-Etcher-finish.jpg)
+![rufus-flash](../images/rufus_start.png)
+![rufus-sure](../images/rufus_sure.png)
+![rufus-warning](../images/rufus_warning.png)
+![rufus-finish](../images/rufus_finish.png)
 
 说明：`sysimage-sdcard.img`可以是`images`目录下的`sysimage-sdcard.img`文件，或者`sysimage-sdcard.img.gz`文件解压缩后的文件。
 
