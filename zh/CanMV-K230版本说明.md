@@ -51,6 +51,7 @@
 | K230 CanMV | V0.3.0 | 2023-12-28 |
 | K230 CanMV | V0.4.0 | 2024-01-26 |
 | K230 CanMV | V0.5.0 | 2024-03-15 |
+| K230 CanMV | V0.6.0 | 2024-04-30 |
 
 ## 2. 支持的硬件
 
@@ -89,6 +90,9 @@ K230平台支持CanMV-K230等主板
 | 21 | V0.5.0 | 虚拟U盘 | 支持虚拟U盘的功能 | |
 | 22 | V0.5.0 | 外设模块 | 根据micropython官方重新整理fpioa、adc、uart、spi、i2c、rtc、timer模块的API | |
 | 23 | V0.5.0 | MCM | 支持多摄像头，添加2sensors,3sensors demo | |
+| 24 | V0.6.0 | sensor | 增加sensor类 | |
+| 25 | V0.6.0 | lcd | 增加lcd类 | |
+| 25 | V0.6.0 | HDMI | 添加720P、480P分辨率 | |
 
 ### 4.2 AI Demo
 

@@ -5,7 +5,9 @@
 
    mpp/K230_CanMV_Audio模块API手册.md
    mpp/K230_CanMV_Camera模块API手册.md
+   mpp/K230_CanMV_Sensor模块API手册.md
    mpp/K230_CanMV_Display模块API手册.md
+   mpp/K230_CanMV_Lcd模块API手册.md
    mpp/K230_CanMV_Media模块API手册.md
    mpp/K230_CanMV_MP4模块API手册.md
    mpp/K230_CanMV_VDEC模块API手册.md

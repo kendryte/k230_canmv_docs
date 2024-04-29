@@ -1,4 +1,4 @@
-# K230 CanMV Display模块API手册
+# K230 CanMV Lcd模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -29,7 +29,7 @@
 
 ### 概述
 
-此文档介绍CanMV Display模块，用以指导开发人员如何调用MicroPython API实现图像输出功能。
+此文档介绍CanMV lcd模块，用以指导开发人员如何调用MicroPython API实现图像输出功能。
 
 ### 读者对象
 
@@ -49,26 +49,24 @@
 
 | 文档版本号 | 修改说明 | 修改者     | 日期       |
 | ---------- | -------- | ---------- | ---------- |
-| V1.0       | 初版     | 王权      | 2023-09-15 |
+| V1.0       | 初版     | 赵忠祥      | 2024-04-25 |
 
 ## 1. 概述
 
-`该模块将在V1.0版本后废弃，请使用lcd模块`
-
-此文档介绍CanMV Display模块，用以指导开发人员如何调用Micro Python API实现图像输出功能。
+此文档介绍CanMV lcd模块，用以指导开发人员如何调用Micro Python API实现图像输出功能。
 
 ## 2. API描述
 
-### 2.1 init
+### 2.1 lcd.init
 
 【描述】
 
-初始化整个Display通路，包括VO模块、DSI模块、LCD/HDMI
+初始化整个lcd通路，包括VO模块、DSI模块、LCD/HDMI
 
 【语法】
 
 ```python
-def init(type)
+lcd.init(type)
 ```
 
 【参数】
@@ -96,7 +94,7 @@ def init(type)
 
 无
 
-### 2.2 set_backlight
+### 2.2 lcd.set_backlight
 
 【描述】
 
@@ -105,7 +103,7 @@ def init(type)
 【语法】
 
 ```python
-def set_backlight(level)
+lcd.set_backlight(level)
 ```
 
 【参数】
@@ -133,7 +131,7 @@ set_backlight仅适用于LCD输出
 
 无
 
-### 2.3 set_plane
+### 2.3 lcd.set_plane
 
 【描述】
 
@@ -142,7 +140,7 @@ set_backlight仅适用于LCD输出
 【语法】
 
 ```python
-def set_plane(x, y, width, height, pixelformat, rotate, mirror, chn)
+lcd.set_plane(x, y, width, height, pixelformat, rotate, chn, mirror)
 ```
 
 【参数】
@@ -155,8 +153,8 @@ def set_plane(x, y, width, height, pixelformat, rotate, mirror, chn)
 | height | 高度 | 输入 |
 | pixelformat | 像素格式 | 输入 |
 | rotate | 顺时针旋转功能 | 输入 |
-| mirror | 水平方向和垂直方向镜像翻转功能 | 输入 |
 | chn | VO通道 | 输入 |
+| mirror | 翻转功能 | 输入 |
 
 【返回值】
 
@@ -177,7 +175,7 @@ def set_plane(x, y, width, height, pixelformat, rotate, mirror, chn)
 
 无
 
-### 2.4 show_image
+### 2.4 lcd.display
 
 【描述】
 
@@ -186,7 +184,7 @@ def set_plane(x, y, width, height, pixelformat, rotate, mirror, chn)
 【语法】
 
 ```python
-def show_image(image, x, y, chn)
+lcd.display(image, x, y, chn)
 ```
 
 【参数】
@@ -217,7 +215,7 @@ def show_image(image, x, y, chn)
 
 无
 
-### 2.5 disable_plane
+### 2.5 lcd.disable_plane
 
 【描述】
 
@@ -226,7 +224,7 @@ def show_image(image, x, y, chn)
 【语法】
 
 ```python
-def disable_plane(chn)
+lcd.disable_plane(chn)
 ```
 
 【参数】
@@ -244,7 +242,7 @@ def disable_plane(chn)
 
 【注意】
 
-通过disable_plane方法关闭的VO通道，可以通过set_plane方法或者show_image方法重新打开
+通过disable_plane方法关闭的VO通道，可以通过set_plane方法或者display方法重新打开
 
 【举例】
 
@@ -254,16 +252,16 @@ def disable_plane(chn)
 
 无
 
-### 2.6 deinit
+### 2.6 lcd.deinit
 
 【描述】
 
-执行反初始化，deinit方法会关闭整个Display通路，包括VO模块、DSI模块、LCD/HDMI
+执行反初始化，deinit方法会关闭整个lcd通路，包括VO模块、DSI模块、LCD/HDMI
 
 【语法】
 
 ```python
-def deinit()
+lcd.deinit()
 ```
 
 【返回值】
@@ -356,28 +354,7 @@ VO通道
 
 无
 
-### 3.4 rotate
-
-【说明】
-
-顺时针旋转功能
-
-【定义】
-
-【成员】
-
-| 成员名称  | 描述                            |
-|---------|---------------------------------|
-| DISPLAY_ROTATE_0 | 不进行旋转 |
-| DISPLAY_ROTATE_90 | 顺时针旋转90度 |
-| DISPLAY_ROTATE_180 | 顺时针旋转180度 |
-| DISPLAY_ROTATE_270 | 顺时针旋转270度 |
-
-【注意事项】
-
-无
-
-### 3.5 mirror
+### 3.4 mirror
 
 【说明】
 
@@ -389,6 +366,10 @@ VO通道
 
 | 成员名称  | 描述                            |
 |---------|---------------------------------|
+| DISPLAY_ROTATE_0 | 不进行旋转 |
+| DISPLAY_ROTATE_90 | 顺时针旋转90度 |
+| DISPLAY_ROTATE_180 | 顺时针旋转180度 |
+| DISPLAY_ROTATE_270 | 顺时针旋转270度 |
 | DISPLAY_MIRROR_NONE | 不进行翻转 |
 | DISPLAY_MIRROR_HOR | 水平方向翻转180度 |
 | DISPLAY_MIRROR_VER | 垂直方向翻转180度 |
@@ -404,14 +385,71 @@ VO通道
 
 ```python
 
-from media.display import * #导入display模块，使用display相关接口
-import image #导入image模块，使用image相关接口
+from media.lcd import *
+from media.media import *
+import time, os, urandom, sys
 
-display.init(LT9611_1920X1080_30FPS) #初始化HDMI显示
+DISPLAY_WIDTH = ALIGN_UP(1920, 16)
+DISPLAY_HEIGHT = 1080
 
-img = image.open("test.jpg")
-img.draw_rectangle(20, 20, 80, 80, color=White) #画框
-display.show_image(img, 0, 0, DISPLAY_CHN_OSD2) #显示
+def lcd_test():
+    print("lcd test")
+    # use hdmi for lcd
+    lcd.init(LT9611_1920X1080_30FPS)  // 实始化lcd
+    # config vb for osd layer
+    config = k_vb_config()            // 配置内存
+    config.max_pool_cnt = 1
+    config.comm_pool[0].blk_size = 4*DISPLAY_WIDTH*DISPLAY_HEIGHT
+    config.comm_pool[0].blk_cnt = 1
+    config.comm_pool[0].mode = VB_REMAP_MODE_NOCACHE
+    # meida buffer config
+    media.buffer_config(config)
+    # media buffer init
+    media.buffer_init()
+    # request media buffer for osd image
+    globals()["buffer"] = media.request_buffer(4 * DISPLAY_WIDTH * DISPLAY_HEIGHT)
 
-display.deinit()
+    # create image for drawing
+    img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
+    # create image for osd
+    buffer = globals()["buffer"]
+    osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, alloc=image.ALLOC_VB, phyaddr=buffer.phys_addr, virtaddr=buffer.virt_addr, poolid=buffer.pool_id)
+    osd_img.clear()
+    lcd.display(osd_img, 0, 0, DISPLAY_CHN_OSD0) // 显示
+    try:
+        while True:
+            img.clear()
+            for i in range(10):
+                x = (urandom.getrandbits(11) % img.width())
+                y = (urandom.getrandbits(11) % img.height())
+                r = (urandom.getrandbits(8))
+                g = (urandom.getrandbits(8))
+                b = (urandom.getrandbits(8))
+                # If the first argument is a scaler then this method expects
+                # to see x, y, and text. Otherwise, it expects a (x,y,text) tuple.
+                # Character and string rotation can be done at 0, 90, 180, 270, and etc. degrees.
+                img.draw_string(x, y, "Hello World!", color = (r, g, b), scale = 2, mono_space = False,
+                                char_rotation = 0, char_hmirror = False, char_vflip = False,
+                                string_rotation = 0, string_hmirror = False, string_vflip = False) // 绘图
+            img.copy_to(osd_img)
+            time.sleep(1)
+            os.exitpoint()
+    except KeyboardInterrupt as e:
+        print("user stop: ", e)
+    except BaseException as e:
+        sys.print_exception(e)
+
+    # deinit lcd
+    lcd.deinit()
+    os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
+    time.sleep_ms(100)
+    # release media buffer
+    media.release_buffer(globals()["buffer"])
+    # deinit media buffer
+    media.buffer_deinit()
+
+if __name__ == "__main__":
+    os.exitpoint(os.EXITPOINT_ENABLE)
+    lcd_test()
+
 ```
