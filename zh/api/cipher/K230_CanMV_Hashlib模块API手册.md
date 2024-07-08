@@ -1,4 +1,4 @@
-# K230 CanMV Hashlib 模块API手册
+# 1.2 Hashlib 模块API手册
 
 ![cover](../images/canaan-cover.png)
 

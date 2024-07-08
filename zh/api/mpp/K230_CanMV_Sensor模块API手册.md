@@ -1,4 +1,4 @@
-# K230 CanMV Sensor 模块API手册
+# 3.1 Sensor 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -29,7 +29,9 @@
 
 ### 概述
 
-本文档主要介绍K230 CanMV平台Camera模块 API使用说明及应用示例。
+**`该模块在固件版本V0.6之后有较大改变，若使用V0.6之前固件请参考旧版本的文档`**
+
+本文档主要介绍K230 CanMV平台Sensor模块 API使用说明及应用示例。
 
 ### 读者对象
 
@@ -42,14 +44,14 @@
 
 | 简称               | 说明                                                   |
 |--------------------|--------------------------------------------------------|
-| VICAP              | Video Input Capture，图像输入采集模块                  |
-| MCM                | Multi Camera Management ,多摄像头管理                  |
+|||
 
 ### 修订记录
 
 | 文档版本号 | 修改说明 | 修改者     | 日期       |
 | ---------- | -------- | ---------- | ---------- |
 | V1.0       | 初版     | 赵忠祥    | 2024-04-24 |
+| V2.0       | 重构API     | xel    | 2024-06-11 |
 
 ## 1. 概述
 
@@ -63,52 +65,84 @@ sensor 0，sensor 1，sensor 2表示三个图像传感器；Camera Device 0，Ca
 
 ## 2. API描述
 
-K230 CanMV平台sensor模块提供sensor静态类，该类提供以下章节描述的方法。
+### 构造函数
+
+【描述】
+
+根据`csi id`和摄像头类型构建`Sensor`对象
+
+用户需要先构建`Sensor`对象再继续操作
+
+目前已实现自动探测摄像头，用户可选择输出图像的最大分辨率和帧率，参考[摄像头列表](#4-摄像头列表)
+
+用户设置目标分辨率和帧率之后，如果底层驱动不支持该设置，则会进行自动匹配出最佳配置
+
+具体使用的配置可参考日志，如`use sensor 23, output 640x480@90`
+
+【语法】
+
+```python
+sensor = Sensor(id, [width, height, fps])
+```
+
+【参数】
+
+| 参数名称        | 描述                          | 输入/输出 | 说明 |
+|-----------------|-------------------------------|-----------| --- |
+| id | `csi` 端口, 支持`0-2` | 输入 | 必选 |
+| width | `sensor`最大输出图像宽度 | 输入 | 可选，默认`1920` |
+| height | `sensor`最大输出图像高度 | 输入 | 可选，默认`1080` |
+| fps | `sensor`最大输出图像帧率 | 输入 | 可选，默认`30` |
+
+【返回值】
+
+| 返回值  | 描述                            |
+|---------|---------------------------------|
+| Sensor 对象       |  |
+
+【举例】
+
+```python
+sensor = Sensor(id = 0)
+sensor = Sensor(id = 0, witdh = 1280, height = 720, fps = 60)
+sensor = Sensor(id = 0, witdh = 640, height = 480)
+```
+
+【相关主题】
+
+无
 
 ### 2.1 sensor.reset
 
 【描述】
 
-根据指定的sensor设备和sensor类型执行初始化
+复位`sensor`
+
+在构造`Sensor`对象之后，必须调用本函数才能继续其他操作
 
 【语法】
 
 ```python
-sensor.reset(dev_num, type)
+sensor.reset()
 ```
 
 【参数】
 
 | 参数名称        | 描述                          | 输入/输出 |
 |-----------------|-------------------------------|-----------|
-| dev_num | sensor设备号 |  |
-| sensor_type | sensor类型，CanMV平台定义的已经支持的各类sensor | 输入      |
+| 无 | | |
 
 【返回值】
 
 | 返回值  | 描述                            |
 |---------|---------------------------------|
-| 0       | 成功。                          |
-| 非 0    | 失败，其值为\[错误码\] |
-
-sensor_type:
-
-CAM_DEFAULT_SENSOR/OV_OV5647_MIPI_CSI0_1920X1080_30FPS_10BIT_LINEAR
-
-CAM_OV5647_1920X1080_CSI1_30FPS_10BIT_USEMCLK_LINEAR/OV_OV5647_MIPI_CSI1_1920X1080_30FPS_10BIT_LINEAR
-
-CAM_OV5647_1920X1080_CSI2_30FPS_10BIT_USEMCLK_LINEAR/OV_OV5647_MIPI_CSI2_1920X1080_30FPS_10BIT_LINEAR
-
-【注意】
-这是使用sensor模块需要调用的第一个方法。
-
-用户不调用该方法，默认初始化sensor设备0及sensor OV5647
+| 无 | |
 
 【举例】
 
 ```python
 # 初始化sensor设备0以及sensor OV5647
-sensor.reset(CAM_DEV_ID_0, CAM_DEFAULT_SENSOR)
+sensor.reset()
 ```
 
 【相关主题】
@@ -119,46 +153,47 @@ sensor.reset(CAM_DEV_ID_0, CAM_DEFAULT_SENSOR)
 
 【描述】
 
-设置指定sensor设备和通道的输出图像尺寸
+设置指定通道的输出图像尺寸
+
+用户可使用`framesize`或通过指定`width`&`height`来设置输出图像尺寸
+
+***宽度会自动对齐到16像素宽***
 
 【语法】
 
 ```python
-sensor.set_framesize(dev_num, chn_num, width, height)
+sensor.set_framesize(framesize = FRAME_SIZE_INVAILD, chn = CAM_CHN_ID_0, alignment=0, **kwargs)
 ```
 
 【参数】
 
 | 参数名称 | 描述             | 输入/输出 |
 | -------- | ---------------- | --------- |
-| dev_num  | sensor设备号     | 输入      |
-| chn_num  | sensor输出通道号 | 输入      |
-| width    | 输出图像宽度     | 输入      |
-| height   | 输出图像高度     | 输入      |
+| framesize  | sensor[输出图像尺寸](#31-frame_size)     | 输入      |
+| chn  | sensor输出[通道号](#33-channel) | 输入      |
+| width    | 输出图像宽度,*kw_arg*     | 输入      |
+| height   | 输出图像高度,*kw_arg*     | 输入      |
 
 【返回值】
 
 | 返回值 | 描述                   |
 | ------ | ---------------------- |
-| 0      | 成功。                 |
-| 非 0   | 失败，其值为\[错误码\] |
+| 无 | |
 
 【注意】
 
-输出图像尺寸不能超过输入图像尺寸。
+输出图像尺寸不能超过摄像头实际输出。
 
 不同输出通道最大可输出图像尺寸由硬件限制。
-
-用户不调用该方法，默认输出图像尺寸与输入图像一致。
 
 【举例】
 
 ```python
 # 配置sensor设备0,输出通道0, 输出图尺寸为640x480
-sensor.set_framesize(CAM_DEV_ID_0, CAM_CHN_ID_0, 640, 480)
+sensor.set_framesize(chn = CAM_CHN_ID_0, width = 640, height = 480)
 
 # 配置sensor设备0,输出通道1, 输出图尺寸为320x240
-sensor.set_framesize(CAM_DEV_ID_0, CAM_CHN_ID_1, 320, 240)
+sensor.set_framesize(chn = CAM_CHN_ID_1, width = 320, height = 240)
 ```
 
 【相关主题】
@@ -174,59 +209,120 @@ sensor.set_framesize(CAM_DEV_ID_0, CAM_CHN_ID_1, 320, 240)
 【语法】
 
 ```python
-sensor.set_pixformat(dev_num, chn_num, pix_format)
+sensor.set_pixformat(pix_format, chn = CAM_CHN_ID_0)
 ```
 
 【参数】
 
 | 参数名称   | 描述             | 输入/输出 |
 | ---------- | ---------------- | --------- |
-| dev_num    | sensor设备号     | 输入      |
-| chn_num    | sensor输出通道号 | 输入      |
-| pix_format | 输出图像格式     | 输入      |
-
-pix_format:
-
-sensor.YUV420SP: NV12
-
-sensor.RGB888: RGB888 interleave
-
-sensor.RGB888P: RGB888 planer
+| pix_format | [输出图像格式](#32-pixel_format)     | 输入      |
+| chn_num    | sensor输出[通道号](#33-channel) | 输入      |
 
 【返回值】
 
 | 返回值 | 描述                   |
 | ------ | ---------------------- |
-| 0      | 成功。                 |
-| 非 0   | 失败，其值为\[错误码\] |
-
-【注意】
-用户不调用方法，将使用默认配置。
+| 无 | |
 
 【举例】
 
 ```python
 # 配置sensor设备0,输出通道0, 输出NV12格式
-sensor.set_pixformat(CAM_DEV_ID_0, CAM_CHN_ID_0, sensor.YUV420SP)
+sensor.set_pixformat(sensor.YUV420SP, chn = CAM_CHN_ID_0)
 
 # 配置sensor设备0,输出通道1, 输出RGB888格式
-sensor.set_pixformat(CAM_DEV_ID_0, CAM_CHN_ID_1, sensor.RGB888)
+sensor.set_pixformat(sensor.RGB888, chn =  CAM_CHN_ID_1)
 ```
 
 【相关主题】
 
 无
 
-### 2.4 sensor.start_stream
+### 2.4 sensor.set_hmirror
 
 【描述】
 
-启动sensor数据流
+设置摄像头水平镜像
 
 【语法】
 
 ```python
-sensor.start_stream()
+sensor.set_hmirror(enable)
+```
+
+【参数】
+
+| 参数名称   | 描述             | 输入/输出 |
+| ---------- | ---------------- | --------- |
+| enable    | `True` 表示开启水平镜像<br>`False`表示关闭水平镜像 | 输入      |
+
+【返回值】
+
+| 返回值 | 描述                   |
+| ------ | ---------------------- |
+| 无 | |
+
+【注意】
+
+【举例】
+
+```python
+sensor.set_hmirror(True)
+```
+
+【相关主题】
+
+无
+
+### 2.5 sensor.set_vflip
+
+【描述】
+
+设置摄像头垂直翻转
+
+【语法】
+
+```python
+sensor.set_vflip(enable)
+```
+
+【参数】
+
+| 参数名称   | 描述             | 输入/输出 |
+| ---------- | ---------------- | --------- |
+| enable    | `True` 表示开启垂直翻转<br>`False` 表示关闭垂直翻转 | 输入      |
+
+【返回值】
+
+| 返回值 | 描述                   |
+| ------ | ---------------------- |
+| 无 | |
+
+【注意】
+
+【举例】
+
+```python
+sensor.set_vflip(True)
+```
+
+【相关主题】
+
+无
+
+### 2.6 sensor.run
+
+【描述】
+
+摄像头开始输出
+
+**`必须在MediaManager.init()之前调用`**
+
+【语法】
+
+```python
+sensor.run()
 ```
 
 【参数】
@@ -235,30 +331,35 @@ sensor.start_stream()
 
 | 返回值 | 描述                   |
 | ------ | ---------------------- |
-| 0      | 成功。                 |
-| 非 0   | 失败，其值为\[错误码\] |
+| 无 | |
+
+【注意】
+
+如果同时使用多个摄像头(最多3个)，只需要其中一个执行`run`即可
 
 【举例】
 
 ```python
 # 启动sensor设备输出数据流
-sensor.start_stream()
+sensor.run()
 ```
 
 【相关主题】
 
 无
 
-### 2.5 sensor.stop_stream
+### 2.7 sensor.stop
 
 【描述】
 
-停止sensor数据流
+停止sensor输出
+
+**`必须在MediaManager.deinit()之前调用`**
 
 【语法】
 
 ```python
-sensor.stop_stream()
+sensor.stop()
 ```
 
 【参数】
@@ -267,21 +368,24 @@ sensor.stop_stream()
 
 | 返回值 | 描述                   |
 | ------ | ---------------------- |
-| 0      | 成功。                 |
-| 非 0   | 失败，其值为\[错误码\] |
+| 无 | |
+
+【注意】
+
+如果同时使用多个摄像头(最多3个)，**需要每一个都执行`stop`**
 
 【举例】
 
 ```python
 # 停止sensor设备0输出数据流
-sensor.stop_stream(CAM_DEV_ID_0)
+sensor.stop()
 ```
 
 【相关主题】
 
 无
 
-### 2.6 sensor.snapshot
+### 2.8 sensor.snapshot
 
 【描述】
 
@@ -290,15 +394,14 @@ sensor.stop_stream(CAM_DEV_ID_0)
 【语法】
 
 ```python
-sensor.snapshot(dev_num, chn_num)
+sensor.snapshot(chn = CAM_CHN_ID_0)
 ```
 
 【参数】
 
 | 参数名称 | 描述             | 输入/输出 |
 | -------- | ---------------- | --------- |
-| dev_num  | sensor设备号     | 输入      |
-| chn_num  | sensor输出通道号 |           |
+| chn_num  | sensor输出[通道号](#33-channel) |           |
 
 【返回值】
 
@@ -309,13 +412,49 @@ sensor.snapshot(dev_num, chn_num)
 
 【注意】
 
-该方法捕获的图像格式由set_outfmt方法指定。
-
 【举例】
 
 ```python
 # 从sensor设备0的通道0输出捕获一帧图像数据
-sensor.snapshot(CAM_DEV_ID_0， CAM_CHN_ID_0)
+sensor.snapshot()
+```
+
+【相关主题】
+
+无
+
+### 2.9 sensor.bind_info
+
+【描述】
+
+在`Display.bind_layer`时使用，获取绑定信息
+
+【语法】
+
+```python
+sensor.bind_info(x = 0, y = 0, chn = CAM_CHN_ID_0)
+```
+
+【参数】
+
+| 参数名称 | 描述             | 输入/输出 |
+| -------- | ---------------- | --------- |
+| x | 将`sensor`指定通道输出图像绑定到`Display`或`Venc`模块的指定坐标 | |
+| y | 将`sensor`指定通道输出图像绑定到`Display`或`Venc`模块的指定坐标 | |
+| chn_num  | sensor输出[通道号](#33-channel) |           |
+
+【返回值】
+
+| 返回值    | 描述 |
+| --------- | ---- |
+| 无 | |
+
+【注意】
+
+【举例】
+
+```python
+
 ```
 
 【相关主题】
@@ -324,195 +463,141 @@ sensor.snapshot(CAM_DEV_ID_0， CAM_CHN_ID_0)
 
 ## 3. 数据结构描述
 
-K230 CanMV平台Camera模块包含如下描述的各个数据定义。
+### 3.1 frame_size
 
-### 3.1 sensor类型
+| 图像帧尺寸 | 分辨率 |
+| -- | -- |
+| QQCIF       | 88x72 |
+| QCIF        | 176x144 |
+| CIF         | 352x288 |
+| QSIF        | 176x120 |
+| SIF         | 352x240 |
+| QQVGA       | 160x120 |
+| QVGA        | 320x240 |
+| VGA         | 640x480 |
+| HQQVGA      | 120x80 |
+| HQVGA       | 240x160 |
+| HVGA        | 480x320 |
+| B64X64      | 64x64 |
+| B128X64     | 128x64 |
+| B128X128    | 128x128 |
+| B160X160    | 160x160 |
+| B320X320    | 320x320 |
+| QQVGA2      | 128x160 |
+| WVGA        | 720x480 |
+| WVGA2       | 752x480 |
+| SVGA        | 800x600 |
+| XGA         | 1024x768 |
+| WXGA        | 1280x768 |
+| SXGA        | 1280x1024 |
+| SXGAM       | 1280x960 |
+| UXGA        | 1600x1200 |
+| HD          | 1280x720 |
+| FHD         | 1920x1080 |
+| QHD         | 2560x1440 |
+| QXGA        | 2048x1536 |
+| WQXGA       | 2560x1600 |
+| WQXGA2      | 2592x1944 |
 
-【说明】
+### 3.2 pixel_format
 
-下面是目前Canmv-K230板micropython支持的Sensor。
-其中CSI1/2是可以使用树莓派的ov5647模组，如果使用Canmv-K230 V1.0/1.1版的板子，要修改该模组的电压。
+| 像素格式 |  |
+| -- | -- |
+|   RGB565 | |
+|   RGB888 | |
+|   RGBP888 | |
+|   YUV420SP | NV12 |
+|   GRAYSCALE | |
 
-【定义】
+### 3.3 channel
 
-```python
-CAM_IMX335_2LANE_1920X1080_30FPS_12BIT_USEMCLK_LINEAR                   # Imx335 CSI0
-CAM_OV5647_1920X1080_30FPS_10BIT_USEMCLK_LINEAR                         # OV5647 CSI0
-CAM_OV5647_1920X1080_CSI1_30FPS_10BIT_USEMCLK_LINEAR                    # OV5647 CSI1
-CAM_OV5647_1920X1080_CSI2_30FPS_10BIT_USEMCLK_LINEAR                    # OV5647 CSI2
-# the default sensor type
-CAM_DEFAULT_SENSOR = CAM_OV5647_1920X1080_30FPS_10BIT_USEMCLK_LINEAR    # 默认的sensor使用OV5647 CSI0
-```
+| 通道号 | |
+| -- | -- |
+| CAM_CHN_ID_0 | 通道0 |
+| CAM_CHN_ID_1 | 通道1 |
+| CAM_CHN_ID_2 | 通道2 |
+| CAM_CHN_ID_MAX | 非法通道 |
 
-【注意事项】
+## 4. 摄像头列表
 
-Canmv-K230 V1.0/1.1版的板子外设接口为1.8V，不能直接使用树莓派的ov5647模组，必须修改电压为1.8V。
+| 摄像头型号 | 分辨率<br>Width x Height | 帧率 |
+| -- | -- | -- |
+| OV5647 | 1920x1080 | 30 |
+| | 1280x960 | 60 |
+| | 1280x720 | 60 |
+| | 640x480 | 90 |
 
-![ov5647_v1.8](../../images/ov5647_v1.8.jpg)
-
-【相关数据类型及接口】
-
-### 3.2 输出图像尺寸
-
-【说明】
-
-定义各个输出通道能够支持的输出图像最大尺寸和最小尺寸
-
-【定义】
-
-```python
-CAM_CHN0_OUT_WIDTH_MAX = 3072
-CAM_CHN0_OUT_HEIGHT_MAX = 2160
-
-CAM_CHN1_OUT_WIDTH_MAX = 1920
-CAM_CHN1_OUT_HEIGHT_MAX = 1080
-
-CAM_CHN2_OUT_WIDTH_MAX = 1920
-CAM_CHN2_OUT_HEIGHT_MAX = 1080
-
-CAM_OUT_WIDTH_MIN = 64
-CAM_OUT_HEIGHT_MIN = 64
-```
-
-【注意事项】
-
-无
-
-【相关数据类型及接口】
-
-## 4. 示例程序
+## 5. 示例程序
 
 ### 例程
 
 ```python
-# 本示例程序包括以下内容：
-# 1. 配置sensor设备0同时输出三路图像数据
-# 2. 通道0输出YUV格式用于预览显示，通道1、2输出RGB888P
-# 3. 抓取三路输出的图像各100张
-#
+# Camera Example
+import time, os, sys
 
-from media.sensor import * #导入sensor模块，使用sensor相关接口
-from media.display import * #导入display模块，使用display相关接口
-from media.media import * #导入media模块，使用meida相关接口
-from time import * #导入time模块，使用time相关接口
-import time
-import image #导入image模块，使用image相关接口
+from media.sensor import *
+from media.display import *
+from media.media import *
 
-def canmv_sensor_test():
-    print("canmv_sensor_test")
+def camera_test():
+    print("camera_test")
 
-    #初始化HDMI显示
-    display.init(LT9611_1920X1080_30FPS)
+    # construct a Sensor object with default configure
+    sensor = Sensor()
+    # sensor reset
+    sensor.reset()
+    # set hmirror
+    # sensor.set_hmirror(False)
+    # sensor vflip
+    # sensor.set_vflip(False)
 
-    #初始化默认sensor配置（OV5647）
-    sensor.reset(CAM_DEV_ID_0, CAM_DEFAULT_SENSOR)
+    # set chn0 output size, 1920x1080
+    sensor.set_framesize(Sensor.FHD)
+    # set chn0 output format
+    sensor.set_pixformat(Sensor.YUV420SP)
+    # bind sensor chn0 to display layer video 1
+    bind_info = sensor.bind_info()
+    Display.bind_layer(**bind_info, layer = Display.LAYER_VIDEO1)
 
-    out_width = 1920
-    out_height = 1080
-    # 设置输出宽度16字节对齐
-    out_width = ALIGN_UP(out_width, 16)
+    # set chn1 output format
+    sensor.set_framesize(width = 640, height = 480, chn = CAM_CHN_ID_1)
+    sensor.set_pixformat(Sensor.RGB888, chn = CAM_CHN_ID_1)
 
-    #设置通道0输出尺寸
-    sensor.set_framesize(CAM_DEV_ID_0, CAM_CHN_ID_0, out_width, out_height)
-    #设置通道0输出格式
-    sensor.set_pixformat(CAM_DEV_ID_0, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
+    # set chn2 output format
+    sensor.set_framesize(width = 640, height = 480, chn = CAM_CHN_ID_2)
+    sensor.set_pixformat(Sensor.RGB565, chn = CAM_CHN_ID_2)
 
-    #创建媒体数据源设备
-    media_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
-    #创建媒体数据接收设备
-    media_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_VIDEO1)
-    #创建媒体链路，数据从源设备流到接收设备
-    media.create_link(media_source, media_sink)
-    #设置显示输出平面的属性
-    display.set_plane(0, 0, out_width, out_height, PIXEL_FORMAT_YVU_PLANAR_420, DISPLAY_MIRROR_NONE, DISPLAY_CHN_VIDEO1)
+    # use hdmi as display output
+    Display.init(Display.LT9611, to_ide = True, osd_num = 2)
+    # init media manager
+    MediaManager.init()
+    # sensor start run
+    sensor.run()
 
-    out_width = 640
-    out_height = 480
-    out_width = ALIGN_UP(out_width, 16)
+    try:
+        while True:
+            os.exitpoint()
 
-    #设置通道1输出尺寸
-    sensor.set_framesize(CAM_DEV_ID_0, CAM_CHN_ID_1, out_width, out_height)
-    #设置通道1输出格式
-    sensor.set_pixformat(CAM_DEV_ID_0, CAM_CHN_ID_1, PIXEL_FORMAT_RGB_888)
+            img = sensor.snapshot(chn = CAM_CHN_ID_1)
+            Display.show_image(img, alpha = 128)
 
-    #设置通道2输出尺寸
-    sensor.set_framesize(CAM_DEV_ID_0, CAM_CHN_ID_2, out_width, out_height)
-    #设置通道2输出格式
-    sensor.set_pixformat(CAM_DEV_ID_0, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
+            img = sensor.snapshot(chn = CAM_CHN_ID_2)
+            Display.show_image(img, x = 1920 - 640, layer = Display.LAYER_OSD1)
 
-    #初始化媒体缓冲区
-    ret = media.buffer_init()
-    if ret:
-        print("canmv_sensor_test, buffer init failed")
-        return ret
+    except KeyboardInterrupt as e:
+        print("user stop: ", e)
+    except BaseException as e:
+        print(f"Exception {e}")
+    # sensor stop run
+    sensor.stop()
+    # deinit display
+    Display.deinit()
+    os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
+    time.sleep_ms(100)
+    # release media buffer
+    MediaManager.deinit()
 
-    #启动摄像头数据流
-    sensor.start_stream(CAM_DEV_ID_0)
-    time.sleep(15)
-
-    capture_count = 0
-    while capture_count < 100:
-        time.sleep(1)
-        for dev_num in range(CAM_DEV_ID_MAX):
-            if not sensor.cam_dev[dev_num].dev_attr.dev_enable:
-                continue
-
-            for chn_num in range(CAM_CHN_ID_MAX):
-                if not sensor.cam_dev[dev_num].chn_attr[chn_num].chn_enable:
-                    continue
-
-                print(f"canmv_sensor_test, dev({dev_num}) chn({chn_num}) capture frame.")
-                #从指定设备和通道捕获图像
-                img = sensor.capture_image(dev_num, chn_num)
-                if img == -1:
-                    print("sensor.capture_image failed")
-                    continue
-
-                if img.format() == image.YUV420:
-                    suffix = "yuv420sp"
-                elif img.format() == image.RGB888:
-                    suffix = "rgb888"
-                elif img.format() == image.RGBP888:
-                    suffix = "rgb888p"
-                else:
-                    suffix = "unkown"
-
-                filename = f"/sdcard/dev_{dev_num:02d}_chn_{chn_num:02d}_{img.width()}x{img.height()}_{capture_count:04d}.{suffix}"
-                print("save capture image to file:", filename)
-
-                with open(filename, "wb") as f:
-                    if f:
-                        img_data = uctypes.bytearray_at(img.virtaddr(), img.size())
-                        # save yuv data to sdcard.
-                        #f.write(img_data)
-                    else:
-                        print(f"capture_image, open dump file failed({filename})")
-
-                time.sleep(1)
-                #释放捕获的图像数据
-                sensor.release_image(dev_num, chn_num, img)
-
-                capture_count += 1
-
-    #停止摄像头输出
-    sensor.stop_stream(CAM_DEV_ID_0)
-
-    #去初始化显示设备
-    display.deinit()
-
-    #销毁媒体链路
-    media.destroy_link(media_source, media_sink)
-
-    time.sleep(1)
-    #去初始化媒体缓冲区资源
-    ret = media.buffer_deinit()
-    if ret:
-        print("sensor test, media_buffer_deinit failed")
-        return ret
-
-    print("sensor test exit")
-    return 0
-
-
-canmv_sensor_test()
+if __name__ == "__main__":
+    os.exitpoint(os.EXITPOINT_ENABLE)
+    camera_test()
 ```

@@ -1,4 +1,4 @@
-CanMV API 手册
+API 手册
 ===========
 .. toctree::
    :maxdepth: 1

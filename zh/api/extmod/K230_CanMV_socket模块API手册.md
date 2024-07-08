@@ -1,4 +1,4 @@
-# K230 CanMV socket 模块API手册
+# 2.3 socket 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -101,13 +101,13 @@ client()
 
 详见`https://docs.micropython.org/en/latest/library/socket.html`
 
-### 3.1定义
+### 3.1 定义
 
 - *class*socket.socket(*af=AF_INET*, *type=SOCK_STREAM*, *proto=IPPROTO_TCP*, */*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket)
 
   Create a new socket using the given address family, socket type and protocol number. Note that specifying *proto* in most cases is not required (and not recommended, as some MicroPython ports may omit `IPPROTO_*` constants). Instead, *type* argument will select needed protocol automatically:`# Create STREAM TCP socket socket(AF_INET, SOCK_STREAM) # Create DGRAM UDP socket socket(AF_INET, SOCK_DGRAM)`
 
-### 3.3函数
+### 3.2 函数
 
 - socket.close()[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.close)
 

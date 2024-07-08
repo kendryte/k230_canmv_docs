@@ -1,4 +1,4 @@
-# K230 CanMV PM 模块API手册
+# 3.9 PM 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -58,7 +58,7 @@ PM模块是功耗管理模块，具体可参考SDK中关于PM框架的描述([K2
 
 pm类位于mpp模块下，模块内部包含了两个实例化对象cpu, kpu
 
-### 示例
+### 2.1 示例
 
 ```python
 from mpp import pm
@@ -70,7 +70,7 @@ pm.cpu.list_profiles()
 pm.cpu.set_profile(1)
 ```
 
-### get_freq
+### 2.2 get_freq
 
 ```python
 pm.pm_domain.get_freq()
@@ -86,7 +86,7 @@ pm.pm_domain.get_freq()
 
 指定域频率
 
-### list_profiles
+### 2.3 list_profiles
 
 ```python
 pm.pm_domain.list_profiles()
@@ -102,7 +102,7 @@ pm.pm_domain.list_profiles()
 
 指定域支持的频率列表
 
-### set_profile
+### 2.4 set_profile
 
 ```python
 pm.pm_domain.set_profile(index)

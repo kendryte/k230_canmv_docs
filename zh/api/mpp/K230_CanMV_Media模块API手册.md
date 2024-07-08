@@ -1,4 +1,4 @@
-# K230 CanMV Media模块API手册
+# 3.8 Media模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -29,7 +29,7 @@
 
 ### 概述
 
-本文档主要介绍K230 CanMV平台Meida模块 API使用说明及应用示例。
+本文档主要介绍K230 CanMV平台media模块 API使用说明及应用示例。
 
 ### 读者对象
 
@@ -42,50 +42,46 @@
 
 | 简称 | 说明 |
 | ---- | ---- |
-| XXX  | xx   |
-| XXX  | xx   |
+|   |    |
 
 ### 修订记录
 
 | 文档版本号 | 修改说明 | 修改者     | 日期       |
 | ---------- | -------- | ---------- | ---------- |
 | V1.0       | 初版     | 汪成根    | 2023-09-25 |
-| V1.1       |          |            |            |
-| V1.2       |          |            |            |
+| V2.0       | 重构API         | xel           | 2024-06-11 |
 
 ## 1. 概述
 
-​        K230 CanMV平台Meida模块是一个软件抽象模块，主要是针对K230 CanMV平台媒体数据链路以及媒体缓冲区相关操作的封装。
+​        K230 CanMV平台media模块是一个软件抽象模块，主要是针对K230 CanMV平台媒体数据链路以及媒体缓冲区相关操作的封装。
 
 ## 2. API描述
 
-K230 CanMV平台Meida模块提供meida静态类，该类提供以下章节描述的方法。
+K230 CanMV平台media模块提供MediaManager静态类，该类提供以下章节描述的方法。
 
-### 2.1 create_link
+### 2.1 init
 
 【描述】
 
-创建由参数source和sink指定的媒体链路，链路创建成功后，数据流会自动从souce流入sink，无需用户干预。
+用户[配置](#23-_config)完`buffer`之后，调用`init`进行初始化，必须在最后进行调用
 
 【语法】
 
 ```python
-def create_link(cls, souce, sink)
+MediaManager.init()
 ```
 
 【参数】
 
 | 参数名称        | 描述                          | 输入/输出 |
 |-----------------|-------------------------------|-----------|
-| souce | 媒体数据源 | 输入 |
-| sink | 媒体数据接收者 | 输入      |
+| 无 | | |
 
 【返回值】
 
 | 返回值  | 描述                            |
 |---------|---------------------------------|
-| 0       | 成功。                          |
-| 非 0    | 失败，其值为\[错误码\] |
+| 无 | |
 
 【注意】
 
@@ -97,31 +93,29 @@ def create_link(cls, souce, sink)
 
 无
 
-### 2.2 destroy_link
+### 2.2 deinit
 
 【描述】
 
-销毁已经创建的媒体链路
+销毁所有申请的`buffer`
 
 【语法】
 
 ```python
-def destroy_link(cls, souce, sink)
+MediaManager.deinit()
 ```
 
 【参数】
 
 | 参数名称 | 描述           | 输入/输出 |
 | -------- | -------------- | --------- |
-| souce    | 媒体数据源     | 输入      |
-| sink     | 媒体数据接收者 | 输入      |
+| 无 | | |
 
 【返回值】
 
 | 返回值 | 描述                   |
 | ------ | ---------------------- |
-| 0      | 成功。                 |
-| 非 0   | 失败，其值为\[错误码\] |
+| 无 | |
 
 【注意】
 
@@ -133,7 +127,7 @@ def destroy_link(cls, souce, sink)
 
 无
 
-### 2.3 buffer_config
+### 2.3 _config
 
 【描述】
 
@@ -142,7 +136,7 @@ def destroy_link(cls, souce, sink)
 【语法】
 
 ```python
-def buffer_config(cls, config)
+MediaManager._config(config)
 ```
 
 【参数】
@@ -169,30 +163,34 @@ def buffer_config(cls, config)
 
 无
 
-### 2.4 buffer_init
+### 2.4 link
 
 【描述】
 
-初始化K230 CanMV平台媒体缓冲区。
+为不同模块的通道建立连接，数据自动流转，无需用户手动操作
+
+`Display`可使用`bind_layer`自动创建`link`
 
 【语法】
 
 ```python
-def buffer_init(cls)
+MediaManager.link(src=(mod,dev,chn), dst = (mod,dev,chn))
 ```
 
-【参数】无
+【参数】
+
+| 参数名称        | 描述                          | 输入/输出 |
+|-----------------|-------------------------------|-----------|
+| 无 | | |
 
 【返回值】
 
 | 返回值 | 描述                   |
 | ------ | ---------------------- |
-| 0      | 成功。                 |
-| 非 0   | 失败，其值为\[错误码\] |
+| `MediaManager.linker`类 | |
 
 【注意】
-
-该方法只能调用一次，应用开发者进行应用媒体开发时，需要先初始化所需要的各个子模块，并在启动媒体数据流之前调用一次该方法！！！
+该方法仅提供给K230 CanMV平台各媒体子模块（例如：camera，video encode等）封装本模块接口时内部使用。上层应用开发者无需关注！
 
 【举例】
 
@@ -202,29 +200,65 @@ def buffer_init(cls)
 
 无
 
-### 2.5 buffer_deinit
+### 2.5 Buffer 管理
+
+#### 2.5.1 get
 
 【描述】
 
-去初始化K230 CanMV平台媒体缓冲区。
+用户在[_config](#23-_config)之后，可通过`MediaManager.Buffer.get`获取`buffer`
+
+**必须在[init](#21-init)执行之后才能获取**
 
 【语法】
 
 ```python
-def buffer_deinit(cls):
+MediaManager.Buffer.get(size)
 ```
 
-【参数】无
+【参数】
+
+| 参数名称        | 描述                          | 输入/输出 |
+|-----------------|-------------------------------|-----------|
+| size | 想要获取的`buffer`大小，不能超过`_config`中配置的 | 输入 |
 
 【返回值】
 
 | 返回值 | 描述                   |
 | ------ | ---------------------- |
-| 0      | 成功。                 |
-| 非 0   | 失败，其值为\[错误码\] |
+| `MediaManager.Buffer` 类 | 成功 |
 
-【注意】
-该方法必须要做退出媒体应用之前调用，如果去初始化媒体缓冲区失败，则会导致下次启动媒体应用时缓冲区初始化失败！
+【举例】
+
+无
+
+【相关主题】
+
+无
+
+#### 2.5.2 释放内存
+
+【描述】
+
+用户手动释放获取到的`buffer`
+
+【语法】
+
+```python
+buffer.__del__()
+```
+
+【参数】
+
+| 参数名称        | 描述                          | 输入/输出 |
+|-----------------|-------------------------------|-----------|
+| 无 | | |
+
+【返回值】
+
+| 返回值 | 描述                   |
+| ------ | ---------------------- |
+| 无 | |
 
 【举例】
 
@@ -354,28 +388,37 @@ DISPLAY_CHN_ID_6 = K_VO_DISPLAY_CHN_ID6
 
 【相关数据类型及接口】
 
-### 3.3 图像格式
-
-【说明】
-
-K230 CanMV平台当前定义的各种图像格式
-
-【定义】
-
-```python
-#TODO
-```
-
-【注意事项】
-
 无
-
-【相关数据类型及接口】
 
 ## 4. 示例程序
 
 ### 例程
 
 ```python
-# 参考Camera模块API手册：示例程序
+from media.media import *
+
+config = k_vb_config()
+config.max_pool_cnt = 1
+config.comm_pool[0].blk_size = 1024
+config.comm_pool[0].blk_cnt = 1
+config.comm_pool[0].mode = VB_REMAP_MODE_NOCACHE
+
+ret = MediaManager._config(config)
+if not ret:
+    raise RuntimeError(f"configure buffer failed.")
+
+MediaManager.init()
+
+buffer = MediaManager.Buffer.get(1024)
+
+print(buffer)
+
+buffer.__del__()
+
+MediaManager.deinit()
+
+'''
+buffer pool :  1
+MediaManager.Buffer: handle 0, size 1024, poolId 0, phyAddr 268439552, virtAddr 100424000
+'''
 ```

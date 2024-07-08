@@ -1,4 +1,4 @@
-# K230 CanMV UART 模块API手册
+# 2.13 UART 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -58,7 +58,7 @@ UART IO配置参考IOMUX模块。
 
 UART类位于machine模块下
 
-### 示例
+### 2.1 示例
 
 ```python
 from machine import UART
@@ -77,7 +77,7 @@ r = u1.readinto(b)
 u1.deinit()
 ```
 
-### 构造函数
+### 2.2 构造函数
 
 ```python
 uart = UART(id, baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, stop=UART.STOPBITS_ONE)
@@ -91,7 +91,7 @@ uart = UART(id, baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, s
 - parity: 奇偶校验，有效值 PARITY_NONE、PARITY_ODD、PARITY_EVEN，可选参数，默认PARITY_NONE
 - stop: 停止位的数目，有效值 STOPBITS_ONE、STOPBITS_TWO，可选参数，默认STOPBITS_ONE
 
-### init
+### 2.3 init
 
 ```python
 UART.init(baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, stop=UART.STOPBITS_ONE)
@@ -107,7 +107,7 @@ UART.init(baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, stop=UA
 
 无
 
-### read
+### 2.4 read
 
 ```python
 UART.read([nbytes])
@@ -123,7 +123,7 @@ UART.read([nbytes])
 
 一个包括读入字节的字节对象
 
-### readline
+### 2.5 readline
 
 ```python
 UART.readline()
@@ -139,7 +139,7 @@ UART.readline()
 
 一个包括读入字节的字节对象
 
-### readinto
+### 2.6 readinto
 
 ```python
 UART.readinto(buf[, nbytes])
@@ -156,7 +156,7 @@ UART.readinto(buf[, nbytes])
 
 读取并存入buf的字节数
 
-### write
+### 2.7 write
 
 ```python
 UART.write(buf)
@@ -172,7 +172,7 @@ UART.write(buf)
 
 写入的字节数
 
-### deinit
+### 2.8 deinit
 
 ```python
 UART.deinit()

@@ -1,8 +1,8 @@
-# image 图像处理 API手册
+# 3.9 image 图像处理 API手册
 
 移植于`openmv`，与`openmv`功能相同，详细请参考[官方文档](https://docs.openmv.io/library/omv.image.html)，以下仅列出与官方API的差异部分及新增API。
 
-## 类 `Image`
+## 1. 类 `Image`
 
 图像对象是机器视觉操作的基本对象。
 image支持从micropython gc，mmz，heap，vb区域创建，REF为在参考对象内存上直接生成image。
@@ -30,7 +30,7 @@ image支持的分配区域：
 - ALLOC_VB：视频缓冲区
 - ALLOC_REF：不分配内存，使用参考对象内存
 
-### 构造函数
+### 1.1 构造函数
 
 ```python
 class image.Image(path, alloc=ALLOC_MMZ, cache=True, phyaddr=0, virtaddr=0, poolid=0, data=None)
@@ -69,11 +69,11 @@ del img
 gc.collect()
 ```
 
-### 函数
+### 1.2 函数
 
-#### 新增函数
+#### 1.2.1 新增函数
 
-##### `phyaddr`
+##### 1.2.2 `phyaddr`
 
 ```python
 image.phyaddr()
@@ -81,7 +81,7 @@ image.phyaddr()
 
 获取image数据的物理内存地址。
 
-##### `virtaddr`
+##### 1.2.3 `virtaddr`
 
 ```python
 image.virtaddr()
@@ -89,7 +89,7 @@ image.virtaddr()
 
 获取image数据的虚拟内存地址。
 
-##### `poolid`
+##### 1.3.4 `poolid`
 
 ```python
 image.poolid()
@@ -97,7 +97,7 @@ image.poolid()
 
 获取image数据的VB poolid。
 
-##### `to_rgb888`
+##### 1.2.5 `to_rgb888`
 
 ```python
 image.to_rgb888(x_scale=1.0[, y_scale=1.0[, roi=None[, rgb_channel=-1[, alpha=256[, color_palette=None[, alpha_palette=None[, hint=0[, alloc=ALLOC_MMZ, cache=True, phyaddr=0, virtaddr=0, poolid=0]]]]]]]])
@@ -106,7 +106,7 @@ image.to_rgb888(x_scale=1.0[, y_scale=1.0[, roi=None[, rgb_channel=-1[, alpha=25
 转换图像格式为RGB888，返回一个新图像对象。
 除原生支持格式外，额外添加`RGB888`格式支持，其它格式不支持。
 
-##### `copy_from`
+##### 1.2.6 `copy_from`
 
 ```python
 image.copy_from(src_img)
@@ -114,7 +114,7 @@ image.copy_from(src_img)
 
 拷贝src_img到img。
 
-##### `copy_to`
+##### 1.2.7 `copy_to`
 
 ```python
 image.copy_to(dst_img)
@@ -122,7 +122,7 @@ image.copy_to(dst_img)
 
 拷贝img到dst_img。
 
-##### `to_numpy_ref`
+##### 1.2.8 `to_numpy_ref`
 
 ```python
 image.to_numpy_ref()
@@ -130,9 +130,17 @@ image.to_numpy_ref()
 
 将image类转换成numpy类，转换完成后numpy与image指向的是同一块数据，在numpy使用完成之前不能删除image，支持格式`GRAYSCALE`、`RGB565`、`ARGB8888`、`RGB888`、`RGBP888`。
 
-#### 差异函数
+##### 1.2.9 `draw_string_advanced`
 
-##### 图像变换API
+```python
+image.draw_string_advanced(x,y,char_size,str,[color, font])
+```
+
+`draw_string`的升级版，支持中文显示，用户可通过`font`自定义字体文件
+
+#### 1.3 差异函数
+
+##### 1.3.1 图像变换API
 
 - `to_bitmap`
 - `to_grayscale`
@@ -152,18 +160,18 @@ image.to_numpy_ref()
 
 除原生支持格式外，额外添加`RGB888`格式支持，其它格式不支持。
 
-##### 画图API
+##### 1.3.2 画图API
 
 除原生支持格式外，额外添加`ARGB8888`、`RGB888`格式支持，其它格式不支持。
 
-##### BINARY API
+##### 1.3.3 BINARY API
 
 `binary`新增分配方式参数，仅在copy=True时有效。
 
-##### POOL API
+##### 1.3.4 POOL API
 
 `mean_pooled`和`midpoint_pooled`新增分配方式参数。
 
-#### 其它图像算法API
+#### 1.4 其它图像算法API
 
 只支持原生格式，`RGB888`格式需要经过转换后才能使用。

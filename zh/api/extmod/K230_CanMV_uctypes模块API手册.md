@@ -1,4 +1,4 @@
-# K230 CanMV uctypes 模块API手册
+# 2.1 uctypes 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -65,7 +65,7 @@
 
 ## 2. 结构说明
 
-### 示例
+### 2.1 示例
 
 ```python
 import uctypes
@@ -125,7 +125,7 @@ WWDG.WWDG_CR.WDGA = 1
 print("Current counter:", WWDG.WWDG_CR.T)
 ```
 
-### 定义结构布局
+### 2.2定义结构布局
 
 结构布局由“描述符”定义 - 一个Python字典，它将字段名称编码为键，以及将它们作为关联值访问它们所需的其他属性：
 
@@ -206,7 +206,7 @@ print("Current counter:", WWDG.WWDG_CR.T)
 
 ## 3. API描述
 
-### struct类
+### 3.1 struct类
 
 ```python
 class uctypes.struct(addr, descriptor, layout_type=NATIVE)
@@ -224,7 +224,7 @@ class uctypes.struct(addr, descriptor, layout_type=NATIVE)
 
 struct类实例
 
-### sizeof
+### 3.2 sizeof
 
 ```python
 uctypes.sizeof(struct, layout_type=NATIVE)
@@ -241,7 +241,7 @@ uctypes.sizeof(struct, layout_type=NATIVE)
 
 数据结构的大小
 
-### addressof
+### 3.3 addressof
 
 ```python
 uctypes.addressof(obj)
@@ -257,7 +257,7 @@ uctypes.addressof(obj)
 
 对象的地址
 
-### bytes_at
+### 3.4 bytes_at
 
 ```python
 uctypes.bytes_at(addr, size)
@@ -274,7 +274,7 @@ uctypes.bytes_at(addr, size)
 
 bytes对象
 
-### bytearray_at
+### 3.5 bytearray_at
 
 ```python
 uctypes.bytearray_at(addr, size)
@@ -291,7 +291,7 @@ uctypes.bytearray_at(addr, size)
 
 bytearray对象
 
-### string_at
+### 3.6 string_at
 
 ```python
 uctypes.string_at(addr, size=1048576)
@@ -310,31 +310,31 @@ str对象
 
 ## 4. 常量定义
 
-### uctypes.LITTLE_ENDIAN
+### 4.1 uctypes.LITTLE_ENDIAN
 
 little-endian压缩结构的布局类型。 （打包意味着每个字段占用描述符中定义的字节数，即对齐为1）。
 
-### uctypes.BIG_ENDIAN
+### 4.2 uctypes.BIG_ENDIAN
 
 big-endian压缩结构的布局类型。
 
-### uctypes.NATIVE
+### 4.3 uctypes.NATIVE
 
 本机结构的布局类型 - 数据字节顺序和对齐符合运行MicroPython的系统的ABI。
 
-### uctypes.UINT8 uctypes.INT8 uctypes.UINT16 uctypes.INT16 uctypes.UINT32 uctypes.INT32 uctypes.UINT64 uctypes.INT64
+### 4.4 uctypes.UINT8 uctypes.INT8 uctypes.UINT16 uctypes.INT16 uctypes.UINT32 uctypes.INT32 uctypes.UINT64 uctypes.INT64
 
 结构描述符的整数类型。 提供了8,16,32和64位类型的常量，包括有符号和无符号。
 
-### uctypes.FLOAT32 uctypes.FLOAT64
+### 4.5 uctypes.FLOAT32 uctypes.FLOAT64
 
 结构描述符的浮点类型。
 
-### uctypes.VOID
+### 4.6 uctypes.VOID
 
 VOID是UINT8的别名，用于方便地定义C的void指针：（uctypes.PTR，uctypes.VOID）。
 
-### uctypes.PTR uctypes.ARRAY
+### 4.7 uctypes.PTR uctypes.ARRAY
 
 输入指针和数组的常量。 请注意，结构没有显式常量，它是隐式的：没有PTR或ARRAY标志的聚合类型是一种结构。
 

@@ -1,4 +1,4 @@
-# K230 CanMV VENC 模块API手册
+# 3.5 VENC 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -58,7 +58,7 @@
 
 提供Encoder类，该类提供如下方法：
 
-### Encoder.Create
+### 2.1 Encoder.Create
 
 【描述】
 
@@ -95,7 +95,7 @@ VENC最多支持4路编码，编码通道号取值范围[0, 3]，其中第4路�
 
 无
 
-### Encoder.SetOutBufs
+### 2.2 Encoder.SetOutBufs
 
 【描述】
 
@@ -131,7 +131,7 @@ Encoder.SetOutBufs(chn, buf_num, width, height)
 
 无
 
-### Encoder.Start
+### 2.3 Encoder.Start
 
 【描述】
 
@@ -164,7 +164,7 @@ Encoder.Start(chn)
 
 无
 
-### Encoder.GetStream
+### 2.4 Encoder.GetStream
 
 【描述】
 
@@ -198,7 +198,7 @@ Encoder.GetStream(chn, streamData)
 
 无
 
-### Encoder.ReleaseStream
+### 2.5 Encoder.ReleaseStream
 
 【描述】
 
@@ -232,7 +232,7 @@ Encoder.ReleaseStream(chn, streamData)
 
 无
 
-### Encoder.Stop
+### 2.6 Encoder.Stop
 
 【描述】
 
@@ -258,7 +258,7 @@ Encoder.Stop(chn)
 
 无
 
-### Encoder.Destroy
+### 2.7 Encoder.Destroy
 
 【描述】
 
@@ -286,7 +286,7 @@ Encoder.Destroy(chn)
 
 ## 3. 数据结构描述
 
-### ChnAttrStr
+### 3.1 ChnAttrStr
 
 【说明】
 
@@ -322,7 +322,7 @@ class ChnAttrStr:
 
 Encoder.Create
 
-### StreamData
+### 3.2 StreamData
 
 【说明】
 
@@ -357,7 +357,7 @@ VENC_PACK_CNT_MAX是码流结构体中pack的最大个数，目前设置为12
 Encoder.GetStream
 Encoder.ReleaseStream
 
-### payload_type
+### 3.3 payload_type
 
 【描述】
 
@@ -370,7 +370,7 @@ Encoder.ReleaseStream
 | PAYLOAD_TYPE_H264 | h264编码格式 |
 | PAYLOAD_TYPE_H265| h265编码格式 |
 
-### profile
+### 3.4 profile
 
 【描述】
 
@@ -385,7 +385,7 @@ Encoder.ReleaseStream
 | H264_PROFILE_HIGH | h264 high profile |
 | H265_PROFILE_MAIN | h265 main profile |
 
-### stream_type
+### 3.5 stream_type
 
 【描述】
 
@@ -401,7 +401,7 @@ Encoder.ReleaseStream
 
 ## 4. 示例程序
 
-### 例程1
+### 4.1 例程1
 
 ```python
 from media.vencoder import *

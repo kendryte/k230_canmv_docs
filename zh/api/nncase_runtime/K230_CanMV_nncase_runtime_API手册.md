@@ -1,4 +1,4 @@
-# K230 CanMV nncase_runtime 模块API手册
+# 4.1 K230 CanMV nncase_runtime 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -316,8 +316,8 @@ get_input_desc(index)
 
 【返回值】
 
-| 返回值      | 描述                                               |
-| :---------- | -------------------------------------------------- |
+| 返回值      | 描述                                         |
+| :---------- | -------------------------------------------- |
 | MemoryRange | 第index个输入信息:`dtype`, `start`, `size`。 |
 
 #### 2.3.10 get_output_desc
@@ -340,8 +340,8 @@ get_output_desc(index)
 
 【返回值】
 
-| 返回值      | 描述                                               |
-| :---------- | -------------------------------------------------- |
+| 返回值      | 描述                                         |
+| :---------- | -------------------------------------------- |
 | MemoryRange | 第index个输出信息:`dtype`, `start`, `size`。 |
 
 ### 2.4 nncase_runtime.ai2d
@@ -488,7 +488,7 @@ set_pad_param(pad_flag, paddings, pad_mode, pad_val)
 【定义】
 
 ```Python
-set_resize_param(resize_flag, interp_method, interp_mode)
+set_resize_param(resize_flag, ai2d_interp_method, ai2d_interp_mode)
 ```
 
 【参数】
@@ -496,8 +496,8 @@ set_resize_param(resize_flag, interp_method, interp_mode)
 | 名称          | 类型               | 描述               |
 | ------------- | ------------------ | ------------------ |
 | resize_flag   | bool               | 是否开启resize功能 |
-| interp_method | ai2d_interp_method | resize插值方法     |
-| interp_mode   | ai2d_interp_mode   | resize模式         |
+| ai2d_interp_method | interp_method | resize插值方法     |
+| ai2d_interp_mode   | interp_mode   | resize模式         |
 
 #### 2.4.8 set_affine_param
 
@@ -508,7 +508,7 @@ set_resize_param(resize_flag, interp_method, interp_mode)
 【定义】
 
 ```Python
-set_affine_param(affine_flag, interp_method, cord_round, bound_ind, bound_val, bound_smooth, M)
+set_affine_param(affine_flag, ai2d_interp_method, cord_round, bound_ind, bound_val, bound_smooth, M)
 ```
 
 【参数】
@@ -516,12 +516,61 @@ set_affine_param(affine_flag, interp_method, cord_round, bound_ind, bound_val, b
 | 名称          | 类型               | 描述                                                                                                                     |
 | ------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | affine_flag   | bool               | 是否开启affine功能                                                                                                       |
-| interp_method | ai2d_interp_method | Affine采用的插值方法                                                                                                     |
+| ai2d_interp_method | interp_method | Affine采用的插值方法                                                                                                     |
 | cord_round    | uint32_t           | 整数边界0或者1                                                                                                           |
 | bound_ind     | uint32_t           | 边界像素模式0或者1                                                                                                       |
 | bound_val     | uint32_t           | 边界填充值                                                                                                               |
 | bound_smooth  | uint32_t           | 边界平滑0或者1                                                                                                           |
 | M             | list               | 仿射变换矩阵对应的vector，仿射变换为Y=\[a_0, a_1; a_2, a_3\] \cdot  X + \[b_0, b_1\] $, 则  M=[a_0,a_1,b_0,a_2,a_3,b_1 ] |
+
+#### 2.4.9 ai2d_format
+
+【描述】
+
+ai2d_format用于配置输入输出的可选数据格式.
+
+【定义】
+
+```Python
+class ai2d_format
+    YUV420_NV12 = 0
+    YUV420_NV21 = 1
+    YUV420_I420 = 2
+    NCHW_FMT = 3
+    RGB_packed = 4
+    RAW16 = 5
+```
+
+#### 2.4.10 interp_method
+
+【描述】
+
+interp_method用于配置可选的插值方式.
+
+【定义】
+
+```Python
+class interp_method:
+    tf_nearest = 0
+    tf_bilinear = 1
+    cv2_nearest = 2
+    cv2_bilinear = 3
+```
+
+#### 2.4.11 interp_mode
+
+【描述】
+
+interp_mode 用于配置可选的插值模式.
+
+【定义】
+
+```Python
+class interp_mode:
+    none = 0
+    align_corner = 1
+    half_pixel = 2
+```
 
 ### 2.5 shrink_memory_pool
 

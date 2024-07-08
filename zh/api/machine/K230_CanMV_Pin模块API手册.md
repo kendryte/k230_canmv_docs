@@ -1,4 +1,4 @@
-# K230 CanMV Pin 模块API手册
+# 2.6 K230 CanMV Pin 模块API手册
 
 ![cover](../images/canaan-cover.png)
 

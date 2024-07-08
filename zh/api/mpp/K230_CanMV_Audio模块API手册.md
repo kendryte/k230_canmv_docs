@@ -1,4 +1,4 @@
-# K230 CanMV Audio 模块API手册
+# 3.3 Audio 模块API手册
 
 ![cover](../images/canaan-cover.png)
 

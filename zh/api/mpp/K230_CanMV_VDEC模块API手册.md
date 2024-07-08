@@ -1,4 +1,4 @@
-# K230 CanMV VDEC 模块API手册
+# 3.4 VDEC 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -58,7 +58,7 @@
 
 提供Decoder类，该类提供如下方法：
 
-### Decoder.\_\_init__
+### 2.1 Decoder.\_\_init__
 
 【描述】
 
@@ -95,7 +95,7 @@ VDEC最多支持4路解码
 
 无
 
-### Decoder.Create
+### 2.2 Decoder.Create
 
 【描述】
 
@@ -127,7 +127,7 @@ decoder.create()
 
 无
 
-### Decoder.destroy
+### 2.3 Decoder.destroy
 
 【描述】
 
@@ -159,7 +159,7 @@ decoder.destroy()
 
 无
 
-### Decoder.Start
+### 2.4 Decoder.Start
 
 【描述】
 
@@ -189,7 +189,7 @@ decoder.Start()
 
 无
 
-### Decoder.decode
+### 2.5 Decoder.decode
 
 【描述】
 
@@ -223,7 +223,7 @@ decoder.decode(stream_data)
 
 无
 
-### Decoder.stop
+### 2.6 Decoder.stop
 
 【描述】
 
@@ -257,7 +257,7 @@ decoder.stop()
 
 ## 3. 数据结构描述
 
-### StreamData
+### 3.1 StreamData
 
 【说明】
 
@@ -285,7 +285,7 @@ class StreamData:
 
 ## 4. 示例程序
 
-### 例程1
+### 4.1 例程1
 
 ```python
 from media.media import *

@@ -1,4 +1,4 @@
-# K230 CanMV SPI 模块API手册
+# 2.10 SPI 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -59,7 +59,7 @@ K230内部包含三个SPI硬件模块，片选的极性可配置；支持时钟�
 
 SPI类位于machine模块下
 
-### 示例
+### 2.1 示例
 
 ```python
 from machine import SPI
@@ -73,7 +73,7 @@ spi.write_readinto(write_buf, read_buf)
 spi.deinit()
 ```
 
-### 构造函数
+### 2.2 构造函数
 
 ```python
 spi = machine.SPI(id, baudrate=20, polarity=0, phase=0, bits=8)
@@ -87,7 +87,39 @@ spi = machine.SPI(id, baudrate=20, polarity=0, phase=0, bits=8)
 - phase: 相位
 - bits: 数据位宽
 
-### write
+### 2.3 read
+
+```python
+spi.read(nbytes)
+```
+
+读取指定的字节数
+
+【参数】
+
+- nbytes： 读取长度
+
+【返回值】
+
+返回bytes对象
+
+### 2.4 readinto
+
+```python
+spi.readinto(buf)
+```
+
+读入指定的缓冲区
+
+【参数】
+
+- buf： bytearray类型的缓冲区
+
+【返回值】
+
+无
+
+### 2.5 write
 
 ```python
 spi.write(buf)
@@ -103,7 +135,7 @@ spi.write(buf)
 
 无
 
-### write_readinto
+### 2.6 write_readinto
 
 ```python
 spi.write_readinto(write_buf, read_buf)
@@ -120,7 +152,7 @@ spi.write_readinto(write_buf, read_buf)
 
 无
 
-### deinit
+### 2.7 deinit
 
 ```python
 spi.deinit()

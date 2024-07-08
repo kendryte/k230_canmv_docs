@@ -1,4 +1,4 @@
-# K230 CanMV network 模块API手册
+# 2.2 network 模块API手册
 
 ![cover](../images/canaan-cover.png)
 

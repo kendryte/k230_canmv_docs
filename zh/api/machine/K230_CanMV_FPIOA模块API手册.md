@@ -1,4 +1,4 @@
-# K230 CanMV FPIOA 模块API手册
+# 2.8 K230 CanMV FPIOA 模块API手册
 
 ![cover](../images/canaan-cover.png)
 

@@ -1,4 +1,4 @@
-# K230 CanMV PWM 模块API手册
+# 2.9 PWM 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -59,7 +59,7 @@ K230内部包含两个PWM硬件模块，每个模块有3个输出通道，模块
 
 PWM类位于machine模块下
 
-### 示例
+### 2.1 示例
 
 ```python
 from machine import PWM
@@ -77,7 +77,7 @@ pwm0.enable(True)
 pwm0.deinit()
 ```
 
-### 构造函数
+### 2.2 构造函数
 
 ```python
 pwm = PWM(channel, freq, duty=50, enable=False)
@@ -90,7 +90,7 @@ pwm = PWM(channel, freq, duty=50, enable=False)
 - duty: PWM通道输出占空比，指高电平占整个周期的百分比，取值:[0,100]，可选参数，默认50
 - enable: PWM通道输出立即使能，可选参数，默认False
 
-### freq
+### 2.3 freq
 
 ```python
 PWM.freq([freq])
@@ -106,7 +106,7 @@ PWM.freq([freq])
 
 返回空或当前PWM通道输出频率
 
-### duty
+### 2.4 duty
 
 ```python
 PWM.duty([duty])
@@ -122,7 +122,7 @@ PWM.duty([duty])
 
 返回空或当前PWM通道输出占空比
 
-### enable
+### 2.5 enable
 
 ```python
 PWM.enable(enable)
@@ -138,7 +138,7 @@ PWM.enable(enable)
 
 无
 
-### deinit
+### 2.6 deinit
 
 ```python
 PWM.deinit()

@@ -3,7 +3,7 @@
 ```python
 import os
 
-from media.camera import * #导入camera模块，使用camera相关接口
+from media.sensor import * #导入camera模块，使用camera相关接口
 from media.display import * #导入display模块，使用display相关接口
 from media.media import * #导入media模块，使用meida相关接口
 from time import *
@@ -228,86 +228,51 @@ def face_detect_test():
     ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel )
     ai2d_builder = ai2d.build([1,3,OUT_RGB888P_HEIGH,OUT_RGB888P_WIDTH], [1,3,320,320])
 
+    # 初始化并配置sensor
+    sensor = Sensor()
+    sensor.reset()
+    sensor.set_hmirror(False)
+    sensor.set_vflip(False)
+    # 通道0直接给到显示VO，格式为YUV420
+    sensor.set_framesize(width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT)
+    sensor.set_pixformat(PIXEL_FORMAT_YUV_SEMIPLANAR_420)
+    # 通道2给到AI做算法处理，格式为RGB888
+    sensor.set_framesize(width = OUT_RGB888P_WIDTH , height = OUT_RGB888P_HEIGH, chn=CAM_CHN_ID_2)
+    # set chn2 output format
+    sensor.set_pixformat(PIXEL_FORMAT_RGB_888_PLANAR, chn=CAM_CHN_ID_2)
 
-    #初始化HDMI显示
-    display.init(LT9611_1920X1080_30FPS)
+    # OSD图像初始化
+    osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
 
-    #创建osd图层使用的vb
-    config = k_vb_config()
-    config.max_pool_cnt = 1
-    config.comm_pool[0].blk_size = 4*DISPLAY_WIDTH*DISPLAY_HEIGHT
-    config.comm_pool[0].blk_cnt = 1
-    config.comm_pool[0].mode = VB_REMAP_MODE_NOCACHE
-    #配置媒体缓冲区
-    ret = media.buffer_config(config)
-    #初始化默认sensor配置（OV5647）
-    camera.sensor_init(CAM_DEV_ID_0, CAM_DEFAULT_SENSOR)
-
-    #设置通道0输出尺寸
-    camera.set_outsize(CAM_DEV_ID_0, CAM_CHN_ID_0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
-    #设置通道0输出格式
-    camera.set_outfmt(CAM_DEV_ID_0, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
-
-    #创建媒体数据源设备
-    meida_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
-    #创建媒体数据接收设备
-    meida_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_VIDEO1)
-    #创建媒体链路，数据从源设备流到接收设备
-    media.create_link(meida_source, meida_sink)
-    #设置视频层
-    display.set_plane(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, PIXEL_FORMAT_YVU_PLANAR_420, DISPLAY_MIRROR_NONE, DISPLAY_CHN_VIDEO1)
-
-    # set chn1 output rgb888
-    #camera.set_outsize(CAM_DEV_ID_0, CAM_CHN_ID_1, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGH)
-    #camera.set_outfmt(CAM_DEV_ID_0, CAM_CHN_ID_1, PIXEL_FORMAT_RGB_888)
-
-    #设置通道2输出尺寸
-    camera.set_outsize(CAM_DEV_ID_0, CAM_CHN_ID_2, OUT_RGB888P_WIDTH, OUT_RGB888P_HEIGH)
-    #设置通道2输出格式
-    camera.set_outfmt(CAM_DEV_ID_0, CAM_CHN_ID_2, PIXEL_FORMAT_RGB_888_PLANAR)
+    sensor_bind_info = sensor.bind_info(x = 0, y = 0, chn = CAM_CHN_ID_0)
+    Display.bind_layer(**sensor_bind_info, layer = Display.LAYER_VIDEO1)
+    # 设置为LT9611显示，默认1920x1080
+    Display.init(Display.LT9611, to_ide = True)
 
     try:
-        #初始化媒体缓冲区
-        ret = media.buffer_init()
-        if ret:
-            print("face_detect_test, buffer init failed")
-            return ret
-        #请求媒体缓冲区用于OSD
-        buffer = media.request_buffer(4*DISPLAY_WIDTH*DISPLAY_HEIGHT)
-        #创建用于绘制人脸框信息的image对象
-        draw_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, alloc=image.ALLOC_MPGC)
-        #创建用于OSD显示的image对象
-        osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888, poolid=buffer.pool_id, alloc=image.ALLOC_VB, phyaddr=buffer.phys_addr, virtaddr=buffer.virt_addr)
-        #启动摄像头
-        camera.start_stream(CAM_DEV_ID_0)
-        time.sleep(5)
-
+        # media初始化
+        MediaManager.init()
+        # 启动sensor
+        sensor.run()
         rgb888p_img = None
         while  True:
             #捕获摄像头数据
-            rgb888p_img = camera.capture_image(CAM_DEV_ID_0, CAM_CHN_ID_2)
+            rgb888p_img = sensor.snapshot(chn=CAM_CHN_ID_2)
             if rgb888p_img == -1:
                 print("face_detect_test, capture_image failed")
-                #释放捕获的数据
-                camera.release_image(CAM_DEV_ID_0, CAM_CHN_ID_2, rgb888p_img)
                 continue
 
             # for rgb888planar
             if rgb888p_img.format() == image.RGBP888:
                 ai2d_input = rgb888p_img.to_numpy_ref()
-
                 ai2d_input_tensor = nn.from_numpy(ai2d_input)
-
                 data = np.ones((1,3,320,320),dtype=np.uint8)
                 ai2d_out = nn.from_numpy(data)
-
                 ai2d_builder.run(ai2d_input_tensor, ai2d_out)
-
                 #设置kpu输入
                 kpu.set_input_tensor(0, ai2d_out)
                 #运行kmodel
                 kpu.run()
-
                 del ai2d_input_tensor
                 del ai2d_out
                 # get output
@@ -315,7 +280,6 @@ def face_detect_test():
                 for i in range(kpu.outputs_size()):
                     data = kpu.get_output_tensor(i)
                     result = data.to_numpy()
-
                     tmp = (result.shape[0],result.shape[1],result.shape[2],result.shape[3])
                     result = result.reshape((result.shape[0]*result.shape[1],result.shape[2]*result.shape[3]))
                     result = result.transpose()
@@ -327,58 +291,35 @@ def face_detect_test():
 
                 #获取人脸检测结果
                 dets = get_result(results)
+                osd_img.clear()
                 if dets:
-                    draw_img.clear()
                     for det in dets:
                         x1, y1, x2, y2 = map(lambda x: int(round(x, 0)), det[:4])
                         w = (x2 - x1) * DISPLAY_WIDTH // OUT_RGB888P_WIDTH
                         h = (y2 - y1) * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH
                         #绘制人脸框
-                        draw_img.draw_rectangle(x1 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH, y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH, w, h, color=(255,255,0,255))
-                    #拷贝人脸框信息到OSD对象
-                    draw_img.copy_to(osd_img)
-                    #显示人脸框
-                    display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
-                else:
-                    draw_img.clear()
-                    draw_img.draw_rectangle(0, 0, 128, 128, color=(0,0,0,0))
-                    draw_img.copy_to(osd_img)
-                    display.show_image(osd_img, 0, 0, DISPLAY_CHN_OSD3)
-            #释放采集的图像
-            camera.release_image(CAM_DEV_ID_0, CAM_CHN_ID_2, rgb888p_img)
+                        osd_img.draw_rectangle(x1 * DISPLAY_WIDTH // OUT_RGB888P_WIDTH, y1 * DISPLAY_HEIGHT // OUT_RGB888P_HEIGH, w, h, color=(255,255,0,255))
+                    Display.show_image(osd_img, 0, 0, Display.LAYER_OSD3)
             rgb888p_img = None
 
     except Exception as e:
-        print(f"An error occurred during buffer used: {e}")
+        print(f"An error occurred during running: {e}")
     finally:
-        if rgb888p_img is not None:
-            camera.release_image(CAM_DEV_ID_0, CAM_CHN_ID_2, rgb888p_img)
+        os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
         #停止摄像头输出
-        camera.stop_stream(CAM_DEV_ID_0)
+        sensor.stop()
         #去初始化显示设备
-        display.deinit()
+        Display.deinit()
         #释放媒体缓冲区
-        media.release_buffer(buffer)
-        #销毁媒体链路
-        media.destroy_link(meida_source, meida_sink)
-
+        MediaManager.deinit()
         del kpu #释放kpu资源
         del ai2d #释放ai2d资源
         gc.collect()
-
         time.sleep(1)
-        #去初始化媒体缓冲区资源
-        ret = media.buffer_deinit()
-        if ret:
-            print("face_detect_test, buffer_deinit failed")
-            return ret
-
     print("face_detect_test end")
     return 0
 
-
 face_detect_test()
-
 ```
 
 具体接口使用请参考相关文档说明

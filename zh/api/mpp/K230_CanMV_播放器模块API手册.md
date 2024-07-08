@@ -1,4 +1,4 @@
-# K230 CanMV 播放器 模块API手册
+# 3.7 播放器 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -52,7 +52,7 @@
 
 提供Player类，该类提供如下方法：
 
-### Player.load
+### 2.1 Player.load
 
 【描述】
 
@@ -90,7 +90,7 @@ player.load("test.mp4")
 
 无
 
-### Player.start
+### 2.2 Player.start
 
 【描述】
 
@@ -122,7 +122,7 @@ player.start()
 
 无
 
-### Player.pause
+### 2.3 Player.pause
 
 【描述】
 
@@ -154,7 +154,7 @@ player.pause()
 
 无
 
-### Player.resume
+### 2.4 Player.resume
 
 【描述】
 
@@ -186,7 +186,7 @@ player.resume()
 
 无
 
-### Player.stop
+### 2.5 Player.stop
 
 【描述】
 
@@ -218,7 +218,7 @@ player.stop()
 
 无
 
-### Player.set_event_callback
+### 2.6 Player.set_event_callback
 
 【描述】
 
@@ -262,7 +262,7 @@ player.set_event_callback(callback=player_event)
 
 ## 3. 数据结构描述
 
-### playe_event_type
+### 3.1 playe_event_type
 
 【描述】
 
@@ -277,7 +277,7 @@ player.set_event_callback(callback=player_event)
 
 ## 4. 示例程序
 
-### 例程1
+### 4.1 例程1
 
 ```python
 from media.player import *

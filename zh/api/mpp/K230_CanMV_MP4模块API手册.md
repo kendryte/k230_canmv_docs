@@ -1,4 +1,4 @@
-# K230 CanMV MP4 模块API手册
+# 3.6 MP4 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -59,7 +59,7 @@
 
 提供MP4Container类，该类提供如下方法：
 
-### MP4Container.Create
+### 2.1 MP4Container.Create
 
 【描述】
 
@@ -95,7 +95,7 @@ MP4Container.Create(mp4Cfg)
 
 无
 
-### MP4Container.Start
+### 2.2 MP4Container.Start
 
 【描述】
 
@@ -126,7 +126,7 @@ MP4Container.Start()
 
 无
 
-### MP4Container.Process
+### 2.3 MP4Container.Process
 
 【描述】
 
@@ -157,7 +157,7 @@ MP4Container.Process()
 
 无
 
-### MP4Container.Stop
+### 2.4 MP4Container.Stop
 
 【描述】
 
@@ -188,7 +188,7 @@ MP4Container.Stop()
 
 无
 
-### MP4Container.Destroy
+### 2.5 MP4Container.Destroy
 
 【描述】
 
@@ -221,7 +221,7 @@ MP4Container.Destroy()
 
 ## 3. 数据结构描述
 
-### Mp4CfgStr
+### 3.1 Mp4CfgStr
 
 【说明】
 
@@ -259,7 +259,7 @@ class Mp4CfgStr:
 
 MP4Container.Create
 
-### MuxerCfgStr
+### 3.2 MuxerCfgStr
 
 【说明】
 
@@ -295,7 +295,7 @@ class MuxerCfgStr:
 
 MP4Container.Create
 
-### MP4Container类型
+### 3.3 MP4Container类型
 
 【说明】
 
@@ -308,7 +308,7 @@ MP4Container类型枚举
 | MP4_CONFIG_TYPE_MUXER | muxer类型 |
 | MP4_CONFIG_TYPE_DEMUXER | demuxer类型，目前不支持 |
 
-### video_payload_type
+### 3.4 video_payload_type
 
 【说明】
 
@@ -321,7 +321,7 @@ MP4Container类型枚举
 | MP4_CODEC_ID_H264 | h264视频编码类型 |
 | MP4_CODEC_ID_H265 | h265视频编码类型 |
 
-### audio_payload_type
+### 3.5 audio_payload_type
 
 【说明】
 
@@ -336,7 +336,7 @@ MP4Container类型枚举
 
 ## 4. 示例程序
 
-### 例程1
+### 4.1 例程1
 
 ```python
 

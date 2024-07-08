@@ -1,4 +1,4 @@
-# K230 CanMV machine 模块API手册
+# 2.14 machine 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -56,7 +56,7 @@
 
 ## 2. API描述
 
-### reset
+### 2.1 reset
 
 ```python
 machine.reset()
@@ -67,6 +67,24 @@ machine.reset()
 【参数】
 
 无
+
+【返回值】
+
+无
+
+### 2.2 mem_copy
+
+```python
+machine.mem_copy(dst, src, size)
+```
+
+内存拷贝
+
+【参数】
+
+- dst: 目标地址
+- src: 源地址
+- size: 字节数
 
 【返回值】
 

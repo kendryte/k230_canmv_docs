@@ -1,4 +1,4 @@
-# K230 CanMV Timer 模块API手册
+# 2.11 Timer 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -58,7 +58,7 @@ K230内部包含6个Timer硬件模块，最小定时周期为1us。
 
 Timer类位于machine模块下
 
-### 示例
+### 2.1 示例
 
 ```python
 from machine import Timer
@@ -69,7 +69,7 @@ tim.init(period=1000, mode=Timer.PERIODIC, callback=lambda t:print(2))
 tim.deinit()
 ```
 
-### 构造函数
+### 2.2 构造函数
 
 ```python
 timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg=None)
@@ -84,7 +84,9 @@ timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg
 - callback: 超时回调函数，必须设置，要带一个参数
 - arg: 超时回调函数参数，可选参数
 
-### init
+**注意：** [0-5]硬件Timer暂不可用
+
+### 2.3 init
 
 ```python
 Timer.init(mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg=None)
@@ -104,7 +106,7 @@ Timer.init(mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg=None)
 
 无
 
-### deinit
+### 2.4 deinit
 
 ```python
 Timer.deinit()

@@ -8,11 +8,11 @@ Welcome to K230 CanMV's documentation!
 
 .. toctree::
    :maxdepth: 2
-
+ 
    zh/CanMV-K230快速入门指南.md
    zh/userguide/userguide.rst
    zh/example/example.rst
    zh/api/api.rst
    zh/CanMV-K230常见问题解答_MicroPython.md
    zh/CanMV-K230版本说明.md
-   zh/CanMV-K230_SDK_nncase版本对应关系.md
+   zh/CanMV-K230_SDK_nncase.md

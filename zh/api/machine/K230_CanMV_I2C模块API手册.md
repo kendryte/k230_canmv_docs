@@ -1,4 +1,4 @@
-# K230 CanMV I2C 模块API手册
+# 2.7 I2C 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -59,7 +59,7 @@ K230内部包含五个I2C硬件模块，支持标准100kb/s，快速400kb/s模�
 
 I2C类位于machine模块下
 
-### 示例
+### 2.1 示例
 
 ```python
 from machine import I2C
@@ -83,7 +83,7 @@ i2c.writeto_mem(addr, memaddr, buf, mem_size=8)
 i2c.deinit()
 ```
 
-### 构造函数
+### 2.2 构造函数
 
 ```python
 i2c = I2C(id, freq=100000)
@@ -94,7 +94,7 @@ i2c = I2C(id, freq=100000)
 - id： I2C ID, [0~4] (I2C.I2C0~I2C.I2C4)
 - freq: I2C时钟频率
 
-### scan
+### 2.3 scan
 
 ```python
 i2c.scan()
@@ -110,7 +110,7 @@ i2c.scan()
 
 list 对象， 包含了所有扫描到的从机地址
 
-### readfrom
+### 2.4 readfrom
 
 ```python
 i2c.readfrom(addr, len, True)
@@ -128,7 +128,7 @@ i2c.readfrom(addr, len, True)
 
 读取到的数据，bytes 类型
 
-### readfrom_into
+### 2.5 readfrom_into
 
 ```python
 i2c.readfrom_into(addr, buf, True)
@@ -146,7 +146,7 @@ i2c.readfrom_into(addr, buf, True)
 
 无
 
-### writeto
+### 2.6 writeto
 
 ```python
 i2c.writeto(addr, buf, True)
@@ -164,7 +164,7 @@ i2c.writeto(addr, buf, True)
 
 成功发送的字节数
 
-### readfrom_mem
+### 2.7readfrom_mem
 
 ```python
 i2c.readfrom_mem(addr, memaddr, nbytes, mem_size=8)
@@ -183,7 +183,7 @@ i2c.readfrom_mem(addr, memaddr, nbytes, mem_size=8)
 
 返回bytes类型的读取到的数据
 
-### readfrom_mem_into
+### 2.8 readfrom_mem_into
 
 ```python
 i2c.readfrom_mem_into(addr, memaddr, buf, mem_size=8)
@@ -202,7 +202,7 @@ i2c.readfrom_mem_into(addr, memaddr, buf, mem_size=8)
 
 无
 
-### writeto_mem
+### 2.9 writeto_mem
 
 ```python
 i2c.writeto_mem(addr, memaddr, buf, mem_size=8)
@@ -221,7 +221,7 @@ i2c.writeto_mem(addr, memaddr, buf, mem_size=8)
 
 无
 
-### deinit
+### 2.10 deinit
 
 ```python
 i2c.deinit()

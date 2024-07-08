@@ -8,8 +8,7 @@ SPHINXBUILD   ?= sphinx-build
 SPHINXMULTIVERSION ?= sphinx-multiversion
 SOURCEDIR     = .
 BUILDDIR      = _build
-WEB_DOCS_BUILDER_USER ?= gitlab+deploy-token-8
-WEB_DOCS_BUILDER_TOKEN ?= _qsc99tPFsbcBhSbXH4S
+WEB_DOCS_BUILDER_URL ?= https://ai.b-bug.org/~zhengshanshan/web-docs-builder
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -19,13 +18,23 @@ help:
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile _templates/layout.html
+%: Makefile _static/init_mermaid.js _templates/versionsFlex.html _static/topbar.css _static/custom-theme.css
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-mhtml: _templates/layout.html
+mhtml: _static/init_mermaid.js _templates/versionsFlex.html _static/topbar.css _static/custom-theme.css
 	@$(SPHINXMULTIVERSION) "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-_templates/layout.html:
-	git clone --depth 1 https://$(WEB_DOCS_BUILDER_USER):$(WEB_DOCS_BUILDER_TOKEN)@g.a-bug.org/huangziyi/web-docs-builder.git
-	cp web-docs-builder/layout.html _templates/layout.html
-	rm -rf web-docs-builder
+_templates:
+	mkdir $@
+
+_static/init_mermaid.js: _templates
+	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
+
+_templates/versionsFlex.html: _templates
+	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
+
+_static/topbar.css:
+	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
+
+_static/custom-theme.css:
+	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@

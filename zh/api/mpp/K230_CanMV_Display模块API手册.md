@@ -1,4 +1,4 @@
-# K230 CanMV Display模块API手册
+# 3.2 Display模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -29,7 +29,7 @@
 
 ### 概述
 
-此文档介绍CanMV Display模块，用以指导开发人员如何调用MicroPython API实现图像输出功能。
+此文档介绍CanMV Display模块，用以指导开发人员如何调用MicroPython API实现图像显示功能。
 
 ### 读者对象
 
@@ -50,12 +50,13 @@
 | 文档版本号 | 修改说明 | 修改者     | 日期       |
 | ---------- | -------- | ---------- | ---------- |
 | V1.0       | 初版     | 王权      | 2023-09-15 |
+| V2.0       | 重构API     | xel      | 2024-06-11 |
 
 ## 1. 概述
 
-`该模块将在V1.0版本后废弃，请使用lcd模块`
+**`该模块在固件版本V0.6之后有较大改变，若使用V0.6之前固件请参考旧版本的文档`**
 
-此文档介绍CanMV Display模块，用以指导开发人员如何调用Micro Python API实现图像输出功能。
+此文档介绍CanMV Display模块，用以指导开发人员如何调用Micro Python API实现图像显示功能。
 
 ## 2. API描述
 
@@ -65,24 +66,30 @@
 
 初始化整个Display通路，包括VO模块、DSI模块、LCD/HDMI
 
+**`必须在MediaManager.init()之前调用`**
+
 【语法】
 
 ```python
-def init(type)
+def init(type = None, width = None, height = None, osd_num = 1, to_ide = False, fps = None)
 ```
 
 【参数】
 
-| 参数名称        | 描述                          | 输入/输出 |
-|-----------------|-------------------------------|-----------|
-| type | 输出接口参数 | 输入 |
+| 参数名称        | 描述                          | 输入/输出 | 说明 |
+|-----------------|-------------------------------|-----------|-----|
+| type | [显示设备类型](#31-type) | 输入 | 必选 |
+| width | 分辨率宽度 | 输入 | 默认值根据`type`决定 |
+| height | 分辨率高度 | 输入 | 默认值根据`type`决定 |
+| osd_num | 在[show_image](#22-show_image)时可以支持的LAYER数量 | 输入 |越大占用内存越多 |
+| to_ide | 是否将屏幕显示传输到IDE显示 |  输入 | 开启会占用更多内存 |
+| fps | 显示帧率 | 输入 | 仅支持`VIRT`类型 |
 
 【返回值】
 
 | 返回值  | 描述                            |
 |---------|---------------------------------|
-| 0       | 成功。                          |
-| 非 0    | 失败，其值为\[错误码\] |
+| 无 | |
 
 【注意】
 
@@ -96,114 +103,34 @@ def init(type)
 
 无
 
-### 2.2 set_backlight
+### 2.2 show_image
 
 【描述】
 
-设置LCD背光
+在屏幕上显示图像
 
 【语法】
 
 ```python
-def set_backlight(level)
+def show_image(img, x = 0, y = 0, layer = None, alpha = 255, flag = 0)
 ```
 
 【参数】
 
-| 参数名称        | 描述                          | 输入/输出 |
-|-----------------|-------------------------------|-----------|
-| level | 0：关闭LCD背光；1：打开LCD背光 | 输入 |
+| 参数名称        | 描述                          | 输入/输出 | 说明 |
+|-----------------|-------------------------------|-----------|------|
+| img | 显示的图像 | 输入 | |
+| x | 起始坐标的x值 | 输入 | |
+| y | 起始坐标的y值 | 输入 | |
+| layer | 显示到[指定层](#32-layer) | 输入 | 仅支持`OSD`层 <br> 若需要多层请设置[init](#21-init)参数中的`osd_num`|
+| alpha | 图层混合alpha | 输入 | |
+| flag | 显示[标志](#33-flag) | 输入 | |
 
 【返回值】
 
 | 返回值  | 描述                            |
 |---------|---------------------------------|
-| 0       | 成功。                          |
-| 非 0    | 失败，其值为\[错误码\] |
-
-【注意】
-
-set_backlight仅适用于LCD输出
-
-【举例】
-
-无
-
-【相关主题】
-
-无
-
-### 2.3 set_plane
-
-【描述】
-
-设置VO通道参数，set_plane方法主要用来设置和Camera、vdec、DPU、AI2D绑定的VO通道
-
-【语法】
-
-```python
-def set_plane(x, y, width, height, pixelformat, rotate, mirror, chn)
-```
-
-【参数】
-
-| 参数名称        | 描述                          | 输入/输出 |
-|-----------------|-------------------------------|-----------|
-| x | 起始坐标的x值 | 输入 |
-| y | 起始坐标的y值 | 输入 |
-| width | 宽度 | 输入 |
-| height | 高度 | 输入 |
-| pixelformat | 像素格式 | 输入 |
-| rotate | 顺时针旋转功能 | 输入 |
-| mirror | 水平方向和垂直方向镜像翻转功能 | 输入 |
-| chn | VO通道 | 输入 |
-
-【返回值】
-
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功。                          |
-| 非 0    | 失败，其值为\[错误码\] |
-
-【注意】
-
-只有DISPLAY_CHN_VIDEO1通道支持rotate功能和mirror功能
-
-【举例】
-
-无
-
-【相关主题】
-
-无
-
-### 2.4 show_image
-
-【描述】
-
-输出image到VO通道
-
-【语法】
-
-```python
-def show_image(image, x, y, chn)
-```
-
-【参数】
-
-| 参数名称        | 描述                          | 输入/输出 |
-|-----------------|-------------------------------|-----------|
-| image | 待输出的图像 | 输入 |
-| x | 起始坐标的x值 | 输入 |
-| y | 起始坐标的y值 | 输入 |
-| chn | VO通道 | 输入 |
-
-【返回值】
-
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功。                          |
-| 非 0    | 失败，其值为\[错误码\] |
+| 无 | |
 
 【注意】
 
@@ -217,48 +144,14 @@ def show_image(image, x, y, chn)
 
 无
 
-### 2.5 disable_plane
-
-【描述】
-
-关闭VO通道
-
-【语法】
-
-```python
-def disable_plane(chn)
-```
-
-【参数】
-
-| 参数名称        | 描述                          | 输入/输出 |
-|-----------------|-------------------------------|-----------|
-| chn | VO通道 | 输入 |
-
-【返回值】
-
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功。                          |
-| 非 0    | 失败，其值为\[错误码\] |
-
-【注意】
-
-通过disable_plane方法关闭的VO通道，可以通过set_plane方法或者show_image方法重新打开
-
-【举例】
-
-无
-
-【相关主题】
-
-无
-
-### 2.6 deinit
+### 2.3 deinit
 
 【描述】
 
 执行反初始化，deinit方法会关闭整个Display通路，包括VO模块、DSI模块、LCD/HDMI
+
+**`必须在MediaManager.deinit()之前调用`**
+**`必须在sensor.stop()之后调用`**
 
 【语法】
 
@@ -270,8 +163,51 @@ def deinit()
 
 | 返回值  | 描述                            |
 |---------|---------------------------------|
-| 0       | 成功。                          |
-| 非 0    | 失败，其值为\[错误码\] |
+| 无 | |
+
+【注意】
+
+无
+
+【举例】
+
+无
+
+【相关主题】
+
+无
+
+### 2.4 bind_layer
+
+【描述】
+
+绑定`sensor`或`vdec`模块输出到屏幕显示
+不需要用户手动参与即可将图像持续显示到屏幕
+
+**`必须在init之前调用`**
+
+【语法】
+
+```python
+def bind_layer(src=(mod, dev, layer), dstlayer, rect = (x, y, w, h), pix_format, alpha, flag)
+```
+
+【参数】
+
+| 参数名称        | 描述                          | 输入/输出 | 说明 |
+|-----------------|-------------------------------|-----------|------|
+| src | `sensor`或`vdec` 输出信息 | 输入 | 可通过`sensor.bind_info()`获取 |
+| dstlayer | 绑定到Display的[显示层](#32-layer) | 输入 | 可绑定到`video`或`osd`层 |
+| rect | 显示区域 | 输入 | 可通过`sensor.bind_info()`获取 |
+| pix_format | 图像像素格式 | 输入 | 可通过`sensor.bind_info()`获取 |
+| alpha | 图层混合alpha | 输入 | |
+| flag | 显示[标志](#33-flag) | 输入 | `LAYER_VIDEO1`不支持 |
+
+【返回值】
+
+| 返回值  | 描述                            |
+|---------|---------------------------------|
+| 无 | |
 
 【注意】
 
@@ -289,129 +225,71 @@ def deinit()
 
 ### 3.1 type
 
-【说明】
+| 类型 | 分辨率<br>(width x height @ fps) | 备注 |
+|------|----------|----------|
+| LT9611 | 1920x1080@30 | *默认值* |
+|  | 1280x720@30 |  |
+|  | 640x480@60 |  |
+| HX8377 | 1080x1920@30 |  *默认值* |
+| ST7701 | 800x480@30 |  *默认值*<br>可设置为竖屏480x800 |
+|  | 854x480@30 |  可设置为竖屏480x854 |
+| VIRT | 640x480@90 | *默认值*<br> |
+| | | `IDE`调试专用，不显示内容在外接屏幕<br>用户可自定义设置分辨率(64x64)-(4096x4096)和帧率(1-200)<br> |
 
-输出接口参数
+### 3.2 layer
 
-【定义】
+| 显示层 | 说明 | 备注 |
+| -- | -- | -- |
+| LAYER_VIDEO1 | | 仅[bind_layer](#24-bind_layer)可用 |
+| LAYER_VIDEO2 | | 仅[bind_layer](#24-bind_layer)可用 |
+| LAYER_OSD0 | | 支持[show_image](#22-show_image)和[bind_layer](#24-bind_layer)使用 |
+| LAYER_OSD1 | | 支持[show_image](#22-show_image)和[bind_layer](#24-bind_layer)使用 |
+| LAYER_OSD2 | | 支持[show_image](#22-show_image)和[bind_layer](#24-bind_layer)使用 |
+| LAYER_OSD3 | | 支持[show_image](#22-show_image)和[bind_layer](#24-bind_layer)使用 |
 
-【成员】
+### 3.3 flag
 
-| 成员名称  | 描述                            |
-|---------|---------------------------------|
-| HX8377_1080X1920_30FPS | VO和DSI模块输出1080X1920 30FPS时序到LCD |
-| ST7701_V1_MIPI_2LAN_480X800_30FPS | VO和DSI模块输出480x800 30FPS时序到LCD |
-| LT9611_1920X1080_30FPS | VO和DSI模块输出1920X1080 30FPS时序到HDMI |
-| LT9611_MIPI_4LAN_1920X1080_60FPS | VO和DSI模块输出1920X1080 60FPS时序到HDMI |
-| LT9611_MIPI_4LAN_1280X720_60FPS | VO和DSI模块输出1280x720 60FPS时序到HDMI |
-| LT9611_MIPI_4LAN_1280X720_50FPS | VO和DSI模块输出1280x720 50FPS时序到HDMI |
-| LT9611_MIPI_4LAN_1280X720_30FPS | VO和DSI模块输出1280x720 30FPS时序到HDMI |
-| LT9611_MIPI_4LAN_640X480_60FPS | VO和DSI模块输出640x480 30FPS时序到HDMI |
-
-【注意事项】
-
-无
-
-### 3.2 chn
-
-【说明】
-
-VO通道
-
-【定义】
-
-【成员】
-
-| 成员名称  | 描述                            |
-|---------|---------------------------------|
-| DISPLAY_CHN_VIDEO1 | VO模块video 1 通道，支持DISPLAY_OUT_NV12输出 |
-| DISPLAY_CHN_VIDEO2 | VO模块video 2 通道，支持DISPLAY_OUT_NV12输出 |
-| DISPLAY_CHN_OSD0 | VO模块OSD 0 通道，支持DISPLAY_OUT_ARGB8888、DISPLAY_OUT_RGB888、DISPLAY_OUT_RGB565输出 |
-| DISPLAY_CHN_OSD1 | VO模块OSD 1 通道，支持DISPLAY_OUT_ARGB8888、DISPLAY_OUT_RGB888、DISPLAY_OUT_RGB565输出 |
-| DISPLAY_CHN_OSD2 | VO模块OSD 2 通道，支持DISPLAY_OUT_ARGB8888、DISPLAY_OUT_RGB888、DISPLAY_OUT_RGB565输出 |
-| DISPLAY_CHN_OSD3 | VO模块OSD 3 通道，支持DISPLAY_OUT_ARGB8888、DISPLAY_OUT_RGB888、DISPLAY_OUT_RGB565输出 |
-
-【注意事项】
-
-只有DISPLAY_CHN_VIDEO1通道支持rotate功能和mirror功能
-
-### 3.3 pixelformat
-
-【说明】
-
-像素格式
-
-【定义】
-
-【成员】
-
-| 成员名称  | 描述                            |
-|---------|---------------------------------|
-| DISPLAY_OUT_NV12 | 输出NV12  |
-| DISPLAY_OUT_ARGB8888 | 输出ARGB8888 |
-| DISPLAY_OUT_RGB888 | 输出RGB888 |
-| DISPLAY_OUT_RGB565 | 输出RGB565 |
-
-【注意事项】
-
-无
-
-### 3.4 rotate
-
-【说明】
-
-顺时针旋转功能
-
-【定义】
-
-【成员】
-
-| 成员名称  | 描述                            |
-|---------|---------------------------------|
-| DISPLAY_ROTATE_0 | 不进行旋转 |
-| DISPLAY_ROTATE_90 | 顺时针旋转90度 |
-| DISPLAY_ROTATE_180 | 顺时针旋转180度 |
-| DISPLAY_ROTATE_270 | 顺时针旋转270度 |
-
-【注意事项】
-
-无
-
-### 3.5 mirror
-
-【说明】
-
-水平方向和垂直方向镜像翻转功能
-
-【定义】
-
-【成员】
-
-| 成员名称  | 描述                            |
-|---------|---------------------------------|
-| DISPLAY_MIRROR_NONE | 不进行翻转 |
-| DISPLAY_MIRROR_HOR | 水平方向翻转180度 |
-| DISPLAY_MIRROR_VER | 垂直方向翻转180度 |
-| DISPLAY_MIRROR_BOTH | 水平方向和垂直方向都翻转180度 |
-
-【注意事项】
-
-无
+| 标志 | 说明 | 备注 |
+|---------|--------|-------|
+| FLAG_ROTATION_0 | 旋转`0`度 | |
+| FLAG_ROTATION_90 | 旋转`90`度 | |
+| FLAG_ROTATION_180 | 旋转`180`度 | |
+| FLAG_ROTATION_270 |旋转`270`度 | |
+| FLAG_MIRROR_NONE | 不镜像| |
+| FLAG_MIRROR_HOR |水平镜像 | |
+| FLAG_MIRROR_VER |垂直镜像 | |
+| FLAG_MIRROR_BOTH |水平与垂直镜像 | |
 
 ## 4. 示例程序
 
 例程
 
 ```python
-
 from media.display import * #导入display模块，使用display相关接口
-import image #导入image模块，使用image相关接口
+from media.media import * #导入display模块，使用display相关接口
+import os, time, image #导入image模块，使用image相关接口
 
-display.init(LT9611_1920X1080_30FPS) #初始化HDMI显示
+# use lcd as display output
+Display.init(Display.ST7701, width = 800, height = 480, to_ide = True)
+# init media manager
+MediaManager.init()
 
-img = image.open("test.jpg")
-img.draw_rectangle(20, 20, 80, 80, color=White) #画框
-display.show_image(img, 0, 0, DISPLAY_CHN_OSD2) #显示
+# create image for drawing
+img = image.Image(800, 480, image.RGB565)
+img.clear()
+img.draw_string_advanced(0,0,32, "Hello World!，你好世界！！！", color = (255, 0, 0))
 
-display.deinit()
+Display.show_image(img)
+
+try:
+    while True:
+        time.sleep(1)
+        os.exitpoint()
+except KeyboardInterrupt as e:
+    print("user stop: ", e)
+except BaseException as e:
+    print(f"Exception {e}")
+
+Display.deinit()
+MediaManager.deinit()
 ```

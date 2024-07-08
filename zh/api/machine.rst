@@ -1,4 +1,4 @@
-Micropython特有库
+2.Micropython特有库
 ===========
 .. toctree::
    :maxdepth: 1
@@ -8,9 +8,9 @@ Micropython特有库
    extmod/K230_CanMV_socket模块API手册.md
    machine/K230_CanMV_ADC模块API手册.md
    machine/K230_CanMV_FFT模块API手册.md
-   machine/K230_CanMV_GPIO模块API手册.md
+   machine/K230_CanMV_Pin模块API手册.md
    machine/K230_CanMV_I2C模块API手册.md
-   machine/K230_CanMV_IOMUX_API手册.md
+   machine/K230_CanMV_FPIOA模块API手册.md
    machine/K230_CanMV_PWM模块API手册.md
    machine/K230_CanMV_SPI模块API手册.md
    machine/K230_CanMV_Timer模块API手册.md

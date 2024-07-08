@@ -1,4 +1,4 @@
-# K230 CanMV FFT API手册
+# 2.5 FFT API手册
 
 ![cover](../images/canaan-cover.png)
 

@@ -119,6 +119,7 @@ markdownlint:
     - git config --global --add safe.directory $CI_PROJECT_DIR
 
 .sync_github_gitee:
+  stage: build
   timeout: 45m
   image: ai.b-bug.org:5000/k230_sdk:latest
   tags:
@@ -151,14 +152,20 @@ build web docs:
   stage: build
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main")
-  image: ai.b-bug.org:5000/python:web-docs-v2
+  image: ai.b-bug.org:5000/huangziyi/web-docs-builder:3d9c3f0b2be1fe67b3b2f4e5d47504f6c2662b76
   tags:
     - k230
   environment:
     name: dev
     url: https://ai.b-bug.org/k230/k230_canmv_docs/dev/
   script:
-    - git fetch
+    - git fetch --tags
+    - git branch main origin/main
+    - git checkout main
+    - python3 preprocess.py
+    - git config --global user.email "auto@canaan-creative.com"
+    - git config --global user.name "GitLab CI"
+    - git commit "*.md" -m "remove cover"
     - git checkout dev
     - git reset --hard origin/dev
     - python3 preprocess.py

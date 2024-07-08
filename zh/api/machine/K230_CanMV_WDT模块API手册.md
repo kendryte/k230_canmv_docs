@@ -1,4 +1,4 @@
-# K230 CanMV WDT 模块API手册
+# 2.12 WDT 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -58,7 +58,7 @@ K230内部包含两个WDT硬件模块，用于在应用程序崩溃且最终进�
 
 WDT类位于machine模块下
 
-### 示例
+### 2.1 示例
 
 ```python
 from machine import WDT
@@ -68,18 +68,20 @@ wdt1 = WDT(1,3)
 wdt1.feed()
 ```
 
-### 构造函数
+### 2.2 构造函数
 
 ```python
-wdt = WDT(index, timeout)
+wdt = WDT(id=1, timeout=5)
 ```
 
 【参数】
 
-- index: WDT号，取值:[0,1]
-- timeout: 超时值，单位s
+- id: WDT号，取值:[0,1]，默认1
+- timeout: 超时值，单位s，默认5
 
-### feed
+**注意：** WDT0暂不可用
+
+### 2.3 feed
 
 ```python
 WDT.feed()

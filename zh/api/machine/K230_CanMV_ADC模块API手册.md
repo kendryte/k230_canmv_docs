@@ -1,4 +1,4 @@
-# K230 CanMV ADC 模块API手册
+# 2.4 ADC 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -58,7 +58,7 @@ K230内部包含一个ADC硬件模块，有6个通道，采样分辨率为12bit(
 
 ADC类位于machine模块下
 
-### 示例
+### 2.1 示例
 
 ```python
 from machine import ADC
@@ -70,7 +70,7 @@ print(adc.read_u16())
 print(adc.read_uv(), "uV")
 ```
 
-### 构造函数
+### 2.2 构造函数
 
 ```python
 adc = ADC(channel)
@@ -80,7 +80,7 @@ adc = ADC(channel)
 
 - channel: ADC通道号，取值:[0,5]
 
-### read_u16
+### 2.3 read_u16
 
 ```python
 ADC.read_u16()
@@ -96,7 +96,7 @@ ADC.read_u16()
 
 返回当前ADC通道采样值，[0-4095]
 
-### read_uv
+### 2.4 read_uv
 
 ```python
 ADC.read_uv()
