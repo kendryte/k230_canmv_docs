@@ -1,4 +1,4 @@
-# 3.4 VDEC 模块API手册
+# 3.5 VDEC 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -287,44 +287,6 @@ class StreamData:
 
 ### 4.1 例程1
 
-```python
-from media.media import *
-from mpp.payload_struct import *
-import media.vdecoder as vdecoder
-from media.display import *
-
-def vdec_vo_test():
-    #init display
-    display.init(LT9611_1920X1080_30FPS)
-    display.set_plane(400, 200, 1280, 720, PIXEL_FORMAT_YVU_PLANAR_420, DISPLAY_MIRROR_NONE, DISPLAY_CHN_VIDEO1)
-
-    #init vdec
-    vdec = vdecoder.Decoder(K_PT_H265)
-    ret = media.buffer_init()
-    if ret:
-        print("buffer_init failed")
-
-    vdec.create()
-    vdec.start()
-
-    #bind vdec -> vo
-    meida_source = media_device(VIDEO_DECODE_MOD_ID, VDEC_DEV_ID, VDEC_CHN_ID_0)
-    meida_sink = media_device(DISPLAY_MOD_ID, DISPLAY_DEV_ID, DISPLAY_CHN_VIDEO1)
-    media.create_link(meida_source, meida_sink)
-
-    #show vdec data
-    stream_data = StreamData()
-    while(1):
-        stream_data.data = get_one_frame_data()#get one frame
-        vdec.decode(stream_data)
-
-    #deinit
-    vdec.stop()
-    media.destroy_link(meida_source, meida_sink)
-    vdec.destroy()
-    time.sleep(1)
-    display.deinit()
-
-vdec_vo_test()
-
+```{admonition} 提示
+无,具体接口使用可参考 [player](./K230_CanMV_播放器模块API手册.md)
 ```

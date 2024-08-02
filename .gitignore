@@ -3,3 +3,7 @@ venv
 *.pyc
 _templates/layout.html
 
+_static/init_mermaid.js
+_templates/versionsFlex.html
+_static/topbar.css
+_static/custom-theme.css

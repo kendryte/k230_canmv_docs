@@ -36,7 +36,7 @@ source_suffix = {
 }
 
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns = ['.github/*', '.gitlab/*', '**/--*']
 
 language = 'zh_CN'
 

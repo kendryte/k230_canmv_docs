@@ -1,4 +1,4 @@
-# 2.8 K230 CanMV FPIOA 模块API手册
+# 2.8 FPIOA 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -92,7 +92,7 @@ fpioa = FPIOA()
 
 无
 
-### freq
+### set_function
 
 ```python
 FPIOA.set_function(pin, func, ie=-1, oe=-1, pu=-1, pd=-1, st=-1, sl=-1, ds=-1)

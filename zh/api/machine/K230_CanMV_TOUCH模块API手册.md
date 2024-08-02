@@ -1,4 +1,4 @@
-# K230 CanMV TOUCH 模块API手册
+# 2.16 TOUCH 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -49,6 +49,7 @@
 | 文档版本号 | 修改说明 | 修改者     | 日期       |
 | ---------- | -------- | ---------- | ---------- |
 | V1.0       | 初版     | 软件部      | 2024-04-20 |
+| V2.0       | 增加旋转支持 | xel | 20224-07-22 |
 
 ## 1. 概述
 
@@ -75,12 +76,13 @@ print(p)
 ### 构造函数
 
 ```python
-touch = TOUCH(index)
+touch = TOUCH(index, rotation)
 ```
 
 【参数】
 
 - index: TOUCH设备号，取值:[0,9]，实际取决于有几个触摸设备
+- rotation: 面板输出坐标与屏幕坐标旋转，取值[0-3]，具体定义参考[坐标旋转](#42-坐标旋转)
 
 ### read
 
@@ -118,9 +120,25 @@ TOUCH.deinit()
 
 TOUCH_INFO类存储了触摸点的信息，用户可通过相关属性(只读)去访问
 
-- event，事件码
+- event，事件码，具体参考[触摸事件](#41-触摸事件)
 - track_id，触点id，用于多点触摸
 - width，触点width
 - x，触点x坐标
 - y，触点y坐标
 - timestamp，触点时间辍
+
+## 4. 常量
+
+### 4.1 触摸事件
+
+- EVENT_NONE: 无
+- EVENT_UP: 触摸按下之后抬起
+- EVENT_DOWN: 触摸按下开始
+- EVENT_MOVE： 触摸按下之后移动
+
+### 4.2 坐标旋转
+
+- ROTATE_0: 坐标不旋转
+- ROTATE_90: 坐标旋转90度
+- ROTATE_180: 坐标选择180度
+- ROTATE_270: 坐标选择270度

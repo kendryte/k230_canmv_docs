@@ -1,4 +1,4 @@
-# 3.7 播放器 模块API手册
+# 3.8 播放器 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -281,6 +281,7 @@ player.set_event_callback(callback=player_event)
 
 ```python
 from media.player import *
+import os
 
 start_play = False
 def player_event(event,data):

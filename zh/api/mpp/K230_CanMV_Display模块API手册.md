@@ -52,9 +52,11 @@
 | V1.0       | 初版     | 王权      | 2023-09-15 |
 | V2.0       | 重构API     | xel      | 2024-06-11 |
 
-## 1. 概述
+```{attention}
+该模块在固件版本V0.7之后有较大改变，若使用V0.7之前固件请参考旧版本的文档
+```
 
-**`该模块在固件版本V0.6之后有较大改变，若使用V0.6之前固件请参考旧版本的文档`**
+## 1. 概述
 
 此文档介绍CanMV Display模块，用以指导开发人员如何调用Micro Python API实现图像显示功能。
 
@@ -71,7 +73,7 @@
 【语法】
 
 ```python
-def init(type = None, width = None, height = None, osd_num = 1, to_ide = False, fps = None)
+def init(type = None, width = None, height = None, osd_num = 1, to_ide = False, fps = None, quality = 90)
 ```
 
 【参数】
@@ -84,6 +86,7 @@ def init(type = None, width = None, height = None, osd_num = 1, to_ide = False, 
 | osd_num | 在[show_image](#22-show_image)时可以支持的LAYER数量 | 输入 |越大占用内存越多 |
 | to_ide | 是否将屏幕显示传输到IDE显示 |  输入 | 开启会占用更多内存 |
 | fps | 显示帧率 | 输入 | 仅支持`VIRT`类型 |
+| quality | 设置`Jpeg`压缩质量 | 输入 | 仅`to_ide` 为`True`时有效，取值范围[10-100] |
 
 【返回值】
 

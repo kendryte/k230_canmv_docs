@@ -1,4 +1,4 @@
-# 3.5 VENC 模块API手册
+# 3.6 VENC 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
@@ -405,61 +405,48 @@ Encoder.ReleaseStream
 
 ```python
 from media.vencoder import *
-from media.camera import *
+from media.sensor import *
 from media.media import *
-from time import *
-import time
+import time, os
 
 def canmv_venc_test():
+    print("venc_test start")
     width = 1280
     height = 720
-    vi_chn = 0
-    venc_chn = 0
+    venc_chn = VENC_CHN_ID_0
+    width = ALIGN_UP(width, 16)
+    # 初始化sensor
 
-    width = CAM_ALIGN_UP(width, 16)
-    camera.sensor_init(CAM_DEV_ID_0, CAM_DEFAULT_SENSOR)
+    sensor = Sensor()
+    sensor.reset()
+    # 设置camera 输出buffer
+    # set chn0 output size
+    sensor.set_framesize(width = width, height = height, alignment=12)
+    # set chn0 output format
+    sensor.set_pixformat(Sensor.YUV420SP)
 
-    # set vicap chn0
-    camera.set_outbufs(CAM_DEV_ID_0, CAM_CHN_ID_0, 6)
-    camera.set_outsize(CAM_DEV_ID_0, CAM_CHN_ID_0, width, height)
-    camera.set_outfmt(CAM_DEV_ID_0, CAM_CHN_ID_0, PIXEL_FORMAT_YUV_SEMIPLANAR_420)
 
+    # 实例化video encoder
     encoder = Encoder()
-    ret = encoder.SetOutBufs(venc_chn, 15, width, height)
-    if ret:
-        print("canmv_venc_test, encoder SetOutBufs failed.")
-        return -1
+    # 设置video encoder 输出buffer
+    encoder.SetOutBufs(venc_chn, 15, width, height)
 
-    ret = media.buffer_init()
-    if ret:
-        print("canmv_venc_test, buffer_init failed.")
-        return ret
+    # 绑定camera和venc
+    link = MediaManager.link(sensor.bind_info()['src'], (VIDEO_ENCODE_MOD_ID, VENC_DEV_ID, venc_chn))
+
+    # init media manager
+    MediaManager.init()
 
     chnAttr = ChnAttrStr(encoder.PAYLOAD_TYPE_H265, encoder.H265_PROFILE_MAIN, width, height)
     streamData = StreamData()
 
-    ret = encoder.Create(venc_chn, chnAttr)
-    if ret < 0:
-        print("canmv_venc_test, vencoder create filed.")
-        return ret
+    # 创建编码器
+    encoder.Create(venc_chn, chnAttr)
 
-    # Bind with camera
-    media_source = media_device(CAMERA_MOD_ID, CAM_DEV_ID_0, CAM_CHN_ID_0)
-    media_sink = media_device(VENC_MOD_ID, VENC_DEV_ID, venc_chn)
-    ret = media.create_link(media_source, media_sink)
-    if ret:
-        print("cam_venc_test, create link with camera failed.")
-        return ret
-
-    ret = encoder.Start(venc_chn)
-    if ret:
-        print("cam_venc_test, encoder start failed")
-        return ret
-
-    ret = camera.start_stream(CAM_DEV_ID_0)
-    if ret:
-        print("cam_venc_test, camera start failed")
-        return ret
+    # 开始编码
+    encoder.Start(venc_chn)
+    # 启动camera
+    sensor.run()
 
     frame_count = 0
     if chnAttr.payload_type == encoder.PAYLOAD_TYPE_H265:
@@ -469,54 +456,42 @@ def canmv_venc_test():
     else:
         suffix = "unkown"
         print("cam_venc_test, venc payload_type unsupport")
-        return -1
 
     out_file = f"/sdcard/app/tests/venc_chn_{venc_chn:02d}.{suffix}"
     print("save stream to file: ", out_file)
 
     with open(out_file, "wb") as fo:
-        while True:
-            ret = encoder.GetStream(venc_chn, streamData)
-            if ret < 0:
-                print("cam_venc_test, venc get stream failed")
-                return ret
+        try:
+            while True:
+                os.exitpoint()
+                encoder.GetStream(venc_chn, streamData) # 获取一帧码流
 
-            for pack_idx in range(0, streamData.pack_cnt):
-                stream_data = uctypes.bytearray_at(streamData.data[pack_idx], streamData.data_size[pack_idx])
-                fo.write(stream_data)
-                print("stream size: ", streamData.data_size[pack_idx], "stream type: ", streamData.stream_type[pack_idx])
+                for pack_idx in range(0, streamData.pack_cnt):
+                    stream_data = uctypes.bytearray_at(streamData.data[pack_idx], streamData.data_size[pack_idx])
+                    fo.write(stream_data) # 码流写文件
+                    print("stream size: ", streamData.data_size[pack_idx], "stream type: ", streamData.stream_type[pack_idx])
 
-            ret = encoder.ReleaseStream(venc_chn, streamData)
-            if ret < 0:
-                print("cam_venc_test, venc release stream failed")
-                return ret
+                encoder.ReleaseStream(venc_chn, streamData) # 释放一帧码流
 
-            frame_count += 1
-            if frame_count >= 100:
-                break
-        
-    camera.stop_stream(CAM_DEV_ID_0)
+                frame_count += 1
+                if frame_count >= 100:
+                    break
+        except KeyboardInterrupt as e:
+            print("user stop: ", e)
+        except BaseException as e:
+            sys.print_exception(e)
 
-    ret = media.destroy_link(media_source, media_sink)
-    if ret:
-        print("cam_venc_test, venc destroy link with camera failed.")
-        return ret
-
-    ret = encoder.Stop(venc_chn)
-    if ret < 0:
-        print("cam_venc_test, venc stop failed.")
-        return ret
-
-    ret = encoder.Destroy(venc_chn)
-    if ret < 0:
-        print("cam_venc_test, venc destroy failed.")
-        return ret
-
-    ret = media.buffer_deinit()
-    if ret:
-        print("cam_venc_test, media buffer deinit failed.")
-        return ret
-
+    # 停止camera
+    sensor.stop()
+    # 销毁camera和venc的绑定
+    del link
+    # 停止编码
+    encoder.Stop(venc_chn)
+    # 销毁编码器
+    encoder.Destroy(venc_chn)
+    # 清理buffer
+    MediaManager.deinit()
+    print("venc_test stop")
 
 canmv_venc_test()
 

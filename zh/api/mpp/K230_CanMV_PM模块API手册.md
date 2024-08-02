@@ -1,4 +1,4 @@
-# 3.9 PM 模块API手册
+# 3.10 PM 模块API手册
 
 ![cover](../images/canaan-cover.png)
 
