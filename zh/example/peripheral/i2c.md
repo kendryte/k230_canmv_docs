@@ -2,62 +2,38 @@
 
 ## 1. 概述
 
-K230内部包含五个I2C硬件模块，支持标准100kb/s，快速400kb/s模式，高速模式3.4Mb/s。
-通道输出IO配置参考IOMUX模块。
+K230 芯片内部集成了 5 个 I2C 硬件模块，支持标准模式（100 kb/s）、快速模式（400 kb/s）以及高速模式（3.4 Mb/s）。这些模块非常适合在开发板上进行 I2C 通信，例如连接外设（如传感器或显示器）。I2C 通道的输出 IO 可通过 IOMUX 模块进行配置。
 
 ## 2. 示例
 
-本示例程序用于对 CanMV 开发板进行i2c读取hdmi id的功能展示。
+以下示例展示了如何使用 I2C 4 模块读取 HDMI 设备的 ID。
 
 ```python
 from machine import I2C
-# 实例化I2C4,使用默认100KHz时钟,7 bit地址模式
-i2c4=I2C(4)
 
-# 扫描I2C4连接的hdmi地址
-a=i2c4.scan()
-# 打印I2C4连接的hdmi地址，59
-print(a)
+# 实例化 I2C4，使用默认的 100KHz 时钟和 7 位地址模式
+i2c4 = I2C(4)
 
-# hdmi地址0x3b(即59),写hdmi页地址寄存器（0xff）为0x80,位宽为8bits
-i2c4.writeto_mem(0x3b,0xff,bytes([0x80]),mem_size=8)
-# hdmi地址0x3b(即59),读id地址0,位宽为8bits,值为0x17
-i2c4.readfrom_mem(0x3b,0x00,1,mem_size=8)
-# hdmi地址0x3b(即59),读id地址1,位宽为8bits,值为0x2
-i2c4.readfrom_mem(0x3b,0x01,1,mem_size=8)
+# 扫描 I2C4 连接的设备，找到 HDMI 地址
+a = i2c4.scan()
+print(a)  # 输出设备地址，通常为 59 (0x3B)
 
-# hdmi地址0x3b(即59),写hdmi页地址寄存器（0xff）为0x80
-i2c4.writeto(0x3b,bytes([0xff,0x80]),True)
-# hdmi地址0x3b(即59)，发送要被读取的id地址0
-i2c4.writeto(0x3b,bytes([0x00]),True)
-# hdmi地址0x3b(即59)，读返回的id,值为0x17
-i2c4.readfrom(0x3b,1)
-# hdmi地址0x3b(即59)，发送要被读取的id地址1
-i2c4.writeto(0x3b,bytes([0x01]),True)
-# hdmi地址0x3b(即59)，读返回的id,值为0x2
-i2c4.readfrom(0x3b,1)
+# 向 HDMI 页地址寄存器 0xFF 写入 0x80，数据宽度为 8 位
+i2c4.writeto_mem(0x3b, 0xff, bytes([0x80]), mem_size=8)
 
-# hdmi地址0x3b(即59),写hdmi页地址寄存器（0xff）为0x80,位宽为8bits
-i2c4.writeto_mem(0x3b,0xff,bytes([0x80]),mem_size=8)
-# 创建长度为1的接收buff
-a=bytearray(1)
-# hdmi地址0x3b(即59),读id地址0,位宽为8bits
-i2c4.readfrom_mem_into(0x3b,0x0,a,mem_size=8)
-# 打印buff,值为0x17
-print(a)
+# 读取 HDMI ID 地址 0，数据宽度为 8 位，期望返回 0x17
+i2c4.readfrom_mem(0x3b, 0x00, 1, mem_size=8)
 
-# hdmi地址0x3b(即59),写hdmi页地址寄存器（0xff）为0x80
-i2c4.writeto(0x3b,bytes([0xff,0x80]),True)
-# hdmi地址0x3b(即59),发送要被读取的id地址0
-i2c4.writeto(0x3b,bytes([0x00]),True)
-# 创建长度为1的接收buff
-b=bytearray(1)
-# hdmi地址0x3b(即59),读返回的id,
-i2c4.readfrom_into(0x3b,b)
-# 打印buff,值为0x17
-print(b)
+# 读取 HDMI ID 地址 1，数据宽度为 8 位，期望返回 0x02
+i2c4.readfrom_mem(0x3b, 0x01, 1, mem_size=8)
+
+# 更详细的操作，包括读写操作
+i2c4.writeto(0x3b, bytes([0xff, 0x80]), True)
+i2c4.writeto(0x3b, bytes([0x00]), True)
+i2c4.readfrom(0x3b, 1)
+
 ```
 
 ```{admonition} 提示
-I2C模块具体接口请参考[API文档](../../api/machine/K230_CanMV_I2C模块API手册.md)
+有关 I2C 模块的详细接口和使用方法，请参考[API文档](../../api/machine/K230_CanMV_I2C模块API手册.md)
 ```

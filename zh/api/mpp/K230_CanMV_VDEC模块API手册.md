@@ -1,269 +1,199 @@
-# 3.5 VDEC 模块API手册
-
-![cover](../images/canaan-cover.png)
-
-版权所有©2023北京嘉楠捷思信息技术有限公司
-
-<div style="page-break-after:always"></div>
-
-## 免责声明
-
-您购买的产品、服务或特性等应受北京嘉楠捷思信息技术有限公司（“本公司”，下同）及其关联公司的商业合同和条款的约束，本文档中描述的全部或部分产品、服务或特性可能不在您的购买或使用范围之内。除非合同另有约定，本公司不对本文档的任何陈述、信息、内容的正确性、可靠性、完整性、适销性、符合特定目的和不侵权提供任何明示或默示的声明或保证。除非另有约定，本文档仅作为使用指导参考。
-
-由于产品版本升级或其他原因，本文档内容将可能在未经任何通知的情况下，不定期进行更新或修改。
-
-## 商标声明
-
-![logo](../images/logo.png)、“嘉楠”和其他嘉楠商标均为北京嘉楠捷思信息技术有限公司及其关联公司的商标。本文档可能提及的其他所有商标或注册商标，由各自的所有人拥有。
-
-**版权所有 © 2023北京嘉楠捷思信息技术有限公司。保留一切权利。**
-非经本公司书面许可，任何单位和个人不得擅自摘抄、复制本文档内容的部分或全部，并不得以任何形式传播。
-
-<div style="page-break-after:always"></div>
-
-## 目录
-
-[TOC]
-
-## 前言
-
-### 概述
-
-本文档主要介绍K230_CanMV VDEC模块API的使用。
-
-### 读者对象
-
-本文档（本指南）主要适用于以下人员：
-
-- 技术支持工程师
-- 软件开发工程师
-
-### 缩略词定义
-
-| 简称 | 说明 |
-| ---- | ---- |
-| VDEC | Video Decoder   |
-
-### 修订记录
-
-| 文档版本号 | 修改说明 | 修改者     | 日期       |
-| ---------- | -------- | ---------- | ---------- |
-| V1.0       | 初版     | 孙小朋      | 2023-10-27 |
+# 3.5 VDEC 模块 API 手册
 
 ## 1. 概述
 
-此文档介绍K230_CanMV VDEC模块API，可支持264,265解码，并于vo模块绑定，将解码数据输出到vo显示。
+本文件详细介绍了 K230_CanMV VDEC 模块的 API。该模块支持 H.264 和 H.265 解码，并能够与 VO 模块进行绑定，将解码后的数据输出至 VO 显示设备。
 
-## 2. API描述
+## 2. API 介绍
 
-提供Decoder类，该类提供如下方法：
+本模块提供了 `Decoder` 类，该类包含以下方法：
 
 ### 2.1 Decoder.\_\_init__
 
-【描述】
+**描述**
 
-构造函数
+构造函数，用于初始化解码器实例。
 
-【语法】
+**语法**  
 
 ```python
 decoder = Decoder(K_PT_H264)
 ```
 
-【参数】
+**参数**  
 
-| 参数名称        | 描述                          | 输入/输出 |
-|-----------------|-------------------------------|-----------|
-| type  | 编码类型            | 输入      |
+| 参数名称 | 描述         | 输入/输出 |
+|----------|--------------|-----------|
+| type     | 编码类型     | 输入      |
 
-【返回值】
+**返回值**  
 
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功                          |
-| 非 0    | 失败 |
+| 返回值 | 描述    |
+|--------|---------|
+| 0      | 成功    |
+| 非 0   | 失败    |
 
-【注意】
+**注意事项**  
 
-VDEC最多支持4路解码
-
-【举例】
-
-无
-
-【相关主题】
-
-无
+VDEC 模块最多支持四路并发解码。
 
 ### 2.2 Decoder.Create
 
-【描述】
+**描述**
 
-创建解码器
+创建解码器实例。
 
-【语法】
+**语法**  
 
 ```python
 decoder = Decoder(K_PT_H264)
 decoder.create()
 ```
 
-【参数】
+**参数**
 
 无
 
-【返回值】
+**返回值**  
 
-| 返回值  | 描述                            |
-|---------|---------------------------------|
-| 0       | 成功                          |
-| 非 0    | 失败 |
-
-【举例】
-
-无
-
-【相关主题】
-
-无
+| 返回值 | 描述    |
+|--------|---------|
+| 0      | 成功    |
+| 非 0   | 失败    |
 
 ### 2.3 Decoder.destroy
 
-【描述】
+**描述**
 
-销毁解码器
+销毁解码器实例。
 
-【语法】
+**语法**  
 
 ```python
 decoder = Decoder(K_PT_H264)
 decoder.destroy()
 ```
 
-【参数】
+**参数**
 
 无
 
-【返回值】
+**返回值**  
 
-| 返回值 | 描述 |
-|--------|------|
-| 0 | 成功 |
-| 非0 | 失败 |
-
-【注意】
-
-无
-
-【举例】
-
-无
+| 返回值 | 描述    |
+|--------|---------|
+| 0      | 成功    |
+| 非 0   | 失败    |
 
 ### 2.4 Decoder.Start
 
-【描述】
+**描述**
 
-开始编码
+启动解码器，开始解码过程。
 
-【语法】
+**语法**  
 
 ```python
 decoder = Decoder(K_PT_H264)
 decoder.Start()
 ```
 
-【参数】
-
-【返回值】
-
-| 返回值 | 描述 |
-|--------|-----|
-| 0 | 成功 |
-| 非0 | 失败 |
-
-【注意】
+**参数**
 
 无
 
-【举例】
+**返回值**  
 
-无
+| 返回值 | 描述    |
+|--------|---------|
+| 0      | 成功    |
+| 非 0   | 失败    |
 
 ### 2.5 Decoder.decode
 
-【描述】
+**描述**
 
-解码一帧数据
+对一帧数据进行解码。
 
-【语法】
+**语法**  
 
 ```python
 decoder = Decoder(K_PT_H264)
 decoder.decode(stream_data)
 ```
 
-【参数】
+**参数**  
 
-| 参数名称 | 描述 | 输入/输出 |
-|----------|-----|----------|
-| stream_data | 编码数据 | 输入 |
+| 参数名称   | 描述     | 输入/输出 |
+|------------|----------|-----------|
+| stream_data| 编码数据 | 输入      |
 
-【返回值】
+**返回值**  
 
-| 返回值 | 描述 |
-|--------|------|
-| 0 | 成功 |
-| 非0 | 失败 |
-
-【注意】
-
-无
-
-【举例】
-
-无
+| 返回值 | 描述    |
+|--------|---------|
+| 0      | 成功    |
+| 非 0   | 失败    |
 
 ### 2.6 Decoder.stop
 
-【描述】
+**描述**
 
-释放一帧码流buffer
+释放当前解码帧的码流缓冲区。
 
-【语法】
+**语法**  
 
 ```python
 decoder = Decoder(K_PT_H264)
 decoder.stop()
 ```
 
-【参数】
+**参数**
 
 无
 
-【返回值】
+**返回值**  
+
+| 返回值 | 描述    |
+|--------|---------|
+| 0      | 成功    |
+| 非 0   | 失败    |
+
+### 2.7 Decoder.bind_info
+
+**描述**
+
+在调用 `Display.bind_layer` 时使用，用于获取绑定信息。
+
+**语法**  
+
+```python
+vdec.bind_info(width=vdec_width, height=vdec_height, chn=0)
+```
+
+**参数**  
+
+| 参数名称 | 描述               | 输入/输出 |
+|----------|--------------------|-----------|
+| width    | 解码帧的宽度      | 输入      |
+| height   | 解码帧的高度      | 输入      |
+| chn      | 编码输出通道号    | 输入      |
+
+**返回值**  
 
 | 返回值 | 描述 |
 |--------|------|
-| 0 | 成功 |
-| 非0 | 失败 |
-
-【注意】
-
-无
-
-【举例】
-
-无
+| 无     |      |
 
 ## 3. 数据结构描述
 
 ### 3.1 StreamData
 
-【说明】
+**说明**  
 
-码流结构体
+码流结构体，包含解码数据及其时间戳信息。
 
-【定义】
+**定义**  
 
 ```python
 class StreamData:
@@ -272,21 +202,95 @@ class StreamData:
         self.pts
 ```
 
-【成员】
+**成员**  
 
-| 成员名称 | 描述 |
-|---------|------|
-| data | 码流数据 |
-| pts | 时间戳 |
-
-【注意事项】
-
-无
+| 成员名称 | 描述       |
+|----------|------------|
+| data     | 码流数据   |
+| pts      | 时间戳信息 |
 
 ## 4. 示例程序
 
-### 4.1 例程1
+### 4.1 示例 1
 
-```{admonition} 提示
-无,具体接口使用可参考 [player](./K230_CanMV_播放器模块API手册.md)
+```python
+from media.media import *
+from mpp.payload_struct import *
+import media.vdecoder as vdecoder
+from media.display import *
+import time
+import os
+
+STREAM_SIZE = 40960
+
+def vdec_test(file_name, width=1280, height=720):
+    print("vdec_test start")
+    vdec_chn = VENC_CHN_ID_0
+    vdec_width = ALIGN_UP(width, 16)
+    vdec_height = height
+    vdec = None
+    vdec_payload_type = K_PT_H264
+
+    # display_type = Display.VIRT
+    display_type = Display.ST7701  # 使用 ST7701 LCD 屏幕作为输出，最大分辨率 800*480
+    # display_type = Display.LT9611  # 使用 HDMI 作为输出
+
+    # 判断文件类型
+    suffix = file_name.split('.')[-1]
+    if suffix == '264':
+        vdec_payload_type = K_PT_H264
+    elif suffix == '265':
+        vdec_payload_type = K_PT_H265
+    else:
+        print("未知的文件扩展名")
+        return
+
+    # 实例化视频解码器
+    vdec = vdecoder.Decoder(vdec_payload_type)
+
+    # 初始化显示设备
+    if display_type == Display.VIRT:
+        Display.init(display_type, width=vdec_width, height=vdec_height, fps=30)
+    else:
+        Display.init(display_type, to_ide=True)
+
+    # 初始化缓冲区
+    MediaManager.init()
+
+    # 创建视频解码器
+    vdec.create()
+
+    # 绑定显示
+    bind_info = vdec.bind_info(width=vdec_width, height=vdec_height, chn=vdec.get_vdec_channel())
+    Display.bind_layer(**bind_info, layer=Display.LAYER_VIDEO1)
+
+    vdec.start()
+
+    # 打开文件
+    with open(file_name, "rb") as fi:
+        while True:
+            os.exitpoint()
+            # 读取视频数据流
+            data = fi.read(STREAM_SIZE)
+            if not data:
+                break
+            # 解码数据流
+            vdec.decode(data)
+
+    # 停止视频解码器
+    vdec.stop()
+    # 销毁视频解码器
+    vdec.destroy()
+    time.sleep(1)
+
+    # 关闭显示
+    Display.deinit()
+    # 释放缓冲区
+    MediaManager.deinit()
+
+    print("vdec_test stop")
+
+if __name__ == "__main__":
+    os.exitpoint(os.EXITPOINT_ENABLE)
+    vdec_test("/sdcard/examples/test.264", 800, 480)  # 解码 H.264/H.265 视频文件
 ```

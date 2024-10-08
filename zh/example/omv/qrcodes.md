@@ -2,21 +2,22 @@
 
 ## 1. 概述
 
-CanMV支持OpenMV算法，支持识别二维码，相关接口为`find_qrcodes`
+CanMV 支持 OpenMV 算法，可以识别二维码。相关接口为 `find_qrcodes`。
 
 ## 2. 示例
 
-本示例设置摄像头输出640x480灰度图像，使用`image.find_qrcodes`来识别二维码
+本示例设置摄像头输出为 640x480 的灰度图像，并使用 `image.find_qrcodes` 来识别二维码。
 
 ```{tip}
-如果识别成功率低，可尝试修改摄像头输出的mirror和flip设置
+如果识别成功率低，可尝试调整摄像头的镜像和翻转设置。
 ```
 
 ```python
-# QRCode Example
-#
-# This example shows the power of the CanMV Cam to detect QR Codes.
-import time, os, gc, sys
+# QR 码示例
+import time
+import os
+import gc
+import sys
 
 from media.sensor import *
 from media.display import *
@@ -28,34 +29,35 @@ DETECT_HEIGHT = 480
 sensor = None
 
 try:
-    # construct a Sensor object with default configure
-    sensor = Sensor(width = DETECT_WIDTH, height = DETECT_HEIGHT)
-    # sensor reset
+    # 使用默认配置构造 Sensor 对象
+    sensor = Sensor(width=DETECT_WIDTH, height=DETECT_HEIGHT)
+    # 重置 sensor
     sensor.reset()
-    # set hmirror
+    # 设置水平镜像
     # sensor.set_hmirror(False)
-    # sensor vflip
+    # 设置垂直翻转
     # sensor.set_vflip(False)
-    # set chn0 output size
-    sensor.set_framesize(width = DETECT_WIDTH, height = DETECT_HEIGHT)
-    # set chn0 output format
+    # 设置输出大小
+    sensor.set_framesize(width=DETECT_WIDTH, height=DETECT_HEIGHT)
+    # 设置输出格式
     sensor.set_pixformat(Sensor.GRAYSCALE)
 
-    # use hdmi as display output, set to VGA
-    # Display.init(Display.LT9611, width = 640, height = 480, to_ide = True)
+    # 初始化显示，如果选择的屏幕无法点亮，请参考 API 文档中的 K230_CanMV_Display 模块 API 手册进行配置
+    # 使用 HDMI 输出，设置为 VGA
+    # Display.init(Display.LT9611, width=640, height=480, to_ide=True)
 
-    # use hdmi as display output, set to 1080P
-    # Display.init(Display.LT9611, width = 1920, height = 1080, to_ide = True)
+    # 使用 HDMI 输出，设置为 1080P
+    # Display.init(Display.LT9611, width=1920, height=1080, to_ide=True)
 
-    # use lcd as display output
-    # Display.init(Display.ST7701, to_ide = True)
+    # 使用 LCD 输出
+    # Display.init(Display.ST7701, to_ide=True)
 
-    # use IDE as output
-    Display.init(Display.VIRT, width = DETECT_WIDTH, height = DETECT_HEIGHT, fps = 100)
+    # 使用 IDE 输出
+    Display.init(Display.VIRT, width=DETECT_WIDTH, height=DETECT_HEIGHT, fps=100)
 
-    # init media manager
+    # 初始化媒体管理器
     MediaManager.init()
-    # sensor start run
+    # 启动 sensor
     sensor.run()
 
     fps = time.clock()
@@ -63,40 +65,39 @@ try:
     while True:
         fps.tick()
 
-        # check if should exit.
+        # 检查是否应该退出
         os.exitpoint()
         img = sensor.snapshot()
 
         for code in img.find_qrcodes():
             rect = code.rect()
-            img.draw_rectangle([v for v in rect], color=(255, 0, 0), thickness = 5)
+            img.draw_rectangle([v for v in rect], color=(255, 0, 0), thickness=5)
             img.draw_string_advanced(rect[0], rect[1], 32, code.payload())
             print(code)
 
-        # draw result to screen
+        # 将结果绘制到屏幕上
         Display.show_image(img)
         gc.collect()
 
-        print(fps.fps())
+        # print(fps.fps())
 except KeyboardInterrupt as e:
     print(f"user stop")
 except BaseException as e:
     print(f"Exception '{e}'")
 finally:
-    # sensor stop run
+    # 停止 sensor
     if isinstance(sensor, Sensor):
         sensor.stop()
-    # deinit display
+    # 取消初始化显示
     Display.deinit()
 
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
 
-    # release media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
-
 ```
 
 ```{admonition} 提示
-具体接口定义请参考 [find_qrcodes](../../api/openmv/image.md#2281-find_qrcodes)
+具体接口定义请参考 [find_qrcodes](../../api/openmv/image.md#2281-find_qrcodes)。
 ```

@@ -1,12 +1,12 @@
 # CanMV-K230 快速入门指南
 
-## 1. CanMV-K230介绍
+## 1. CanMV-K230 介绍
 
-CanMV-K230开发板采用的是嘉楠科技Kendryte®系列AIoT芯片中的最新一代SoC芯片K230。该芯片采用全新的多异构单元加速计算架构，集成了2个RISC-V高能效计算核心，内置新一代KPU（Knowledge Process Unit）智能计算单元，具备多精度AI算力，广泛支持通用的AI计算框架，部分典型网络的利用率超过了70%。
+CanMV-K230 开发板基于嘉楠科技 Kendryte ® 系列 AIoT 芯片中的最新一代 AIoT SoC K230 系列芯片。该芯片采用全新的多异构单元加速计算架构，集成了 2 个 RISC-V 高能效计算核心，内置新一代 KPU（ Knowledge Process Unit）智能计算单元，具备多精度 AI 算力，广泛支持通用的 AI 计算框架，部分典型网络的利用率超过了 70%。
 
-该芯片同时具备丰富多样的外设接口，以及2D、2.5D等多个标量、向量、图形等专用硬件加速单元，可以对多种图像、视频、音频、AI等多样化计算任务进行全流程计算加速，具备低延迟、高性能、低功耗、快速启动、高安全性等多项特性。
+该芯片还支持丰富的外设接口，并集成了 2D、 2.5D 等多个种专用硬件加速单元，能够对图像、视频、音频、 AI 等多类型任务进行加速，具备低延迟、高性能、低功耗、快速启动以及高安全性等多项特性。
 
-![K230_block_diagram](images/K230_block_diagram.png)
+![K230_block_diagram](./images/K230_block_diagram.png)
 
 ## 2. 快速上手
 
@@ -16,7 +16,7 @@ CanMV-K230开发板采用的是嘉楠科技Kendryte®系列AIoT芯片中的最�
 :header-rows: 1
 
 * - 开发板
-  - 靓照
+  - 照片
   - 简介
 * - [CanMV-K230](./userguide/boards/canmv_k230.md)
   - ```{image} images/CanMV-K230_front.png
@@ -24,33 +24,30 @@ CanMV-K230开发板采用的是嘉楠科技Kendryte®系列AIoT芯片中的最�
     :height: 400
     :align: "center"
     ```
-  - 基于K230，外置DDR(512MB)，内存更大
+  - 基于 K230 ，外置 512MB LPDDR，内存更大
 * - [CanMV-K230D](./userguide/boards/canmv_k230d.md)
   - TODO
-  - 基于K230D，内置DDR(128MB)
+  - 基于 K230D，芯片内置 128MB LPDDR4 ， 开发板尺寸小巧
 ```
 
 ### 2.2 烧录固件
 
-用户可在[github](https://github.com/kendryte/k230_canmv/releases)或[开发者社区](https://developer.canaan-creative.com/resource)下载固件
+用户可在 [Github](https://github.com/kendryte/canmv_k230/releases) 或 [嘉楠开发者社区](https://developer.canaan-creative.com/resource) 下载固件。下载对应开发板的固件完成后，
+请参考[固件下载指南](./userguide/how_to_burn_firmware.md#2-烧录固件) 将固件烧录到开发板。
 
-下载对应开发板的固件，参考[固件下载指南](./userguide/how_to_burn_firmware.md#2-烧录固件)
+### 2.3 下载 IDE
 
-### 2.3 下载IDE
+CanMV-K230 支持使用 CanMV-IDE 进行开发，用户可通过 IDE 运行代码，查看运行结果以及预览图像。详细使用方法请参考 [IDE 下载指南](./userguide/how_to_use_ide.md#1-概述)
 
-CanMV-K230支持使用CanMV-IDE进行开发，用户可通过IDE运行代码，并查看运行结果和预览图像
+### 2.4 运行 Demo
 
-参考[IDE下载指南](./userguide/how_to_use_ide.md#1-概述)
+CanMV-K230 固件中预置了大量 Demo 程序，用户无需从网络下载即可体验。使用 IDE 打开虚拟 U 盘中的示例即可快速运行。
 
-### 2.4 运行Demo
-
-CanMV-K230固件中预置大量Demo程序，用户无需从网络下载即可使用，使用IDE打开虚拟U盘中的示例即可体验
-
-参考[运行Demo](./userguide/how_to_run_examples.md#2-运行示例程序)
+请参考 [如何运行 Demo 程序](./userguide/how_to_run_examples.md#2-运行示例程序)
 
 ## 3. 摄像头图像预览
 
-从摄像头获取图像并通过HDMI显示
+使用摄像头捕捉图像并通过 HDMI 输出显示：
 
 ```python
 import time, os, sys
@@ -108,7 +105,7 @@ finally:
 
 ## 4. AI Demo
 
-人脸检测demo
+这是一个人脸检测 demo
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -128,7 +125,7 @@ import gc
 import sys
 import aidemo
 
-# 自定义人脸检测类，继承自AIBase基类
+# 自定义人脸检测类，继承自 AIBase 基类
 class FaceDetectionApp(AIBase):
     def __init__(self, kmodel_path, model_input_size, anchors, confidence_threshold=0.5, nms_threshold=0.2, rgb888p_size=[224,224], display_size=[1920,1080], debug_mode=0):
         super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)  # 调用基类的构造函数
@@ -137,22 +134,22 @@ class FaceDetectionApp(AIBase):
         self.confidence_threshold = confidence_threshold  # 置信度阈值
         self.nms_threshold = nms_threshold  # NMS（非极大值抑制）阈值
         self.anchors = anchors  # 锚点数据，用于目标检测
-        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]  # sensor给到AI的图像分辨率，并对宽度进行16的对齐
-        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]]  # 显示分辨率，并对宽度进行16的对齐
+        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]  # sensor 给到 AI 的图像分辨率，并对宽度进行 16 的对齐
+        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]]  # 显示分辨率，并对宽度进行 16 的对齐
         self.debug_mode = debug_mode  # 是否开启调试模式
-        self.ai2d = Ai2d(debug_mode)  # 实例化Ai2d，用于实现模型预处理
-        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)  # 设置Ai2d的输入输出格式和类型
+        self.ai2d = Ai2d(debug_mode)  # 实例化 Ai2d，用于实现模型预处理
+        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)  # 设置 Ai2d 的输入输出格式和类型
 
-    # 配置预处理操作，这里使用了pad和resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    # 配置预处理操作，这里使用了 pad 和 resize， Ai2d 支持 crop/shift/pad/resize/affine，具体代码请打开 /sdcard/app/libs/AI2D.py 查看
     def config_preprocess(self, input_image_size=None):
-        with ScopedTiming("set preprocess config", self.debug_mode > 0):  # 计时器，如果debug_mode大于0则开启
-            ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size  # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
-            top, bottom, left, right = self.get_padding_param()  # 获取padding参数
+        with ScopedTiming("set preprocess config", self.debug_mode > 0):  # 计时器，如果 debug_mode 大于 0 则开启
+            ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size  # 初始化 ai2d 预处理配置，默认为 sensor 给到 AI 的尺寸，可以通过设置 input_image_size 自行修改输入尺寸
+            top, bottom, left, right = self.get_padding_param()  # 获取 padding 参数
             self.ai2d.pad([0, 0, 0, 0, top, bottom, left, right], 0, [104, 117, 123])  # 填充边缘
             self.ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)  # 缩放图像
             self.ai2d.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,self.model_input_size[1],self.model_input_size[0]])  # 构建预处理流程
 
-    # 自定义当前任务的后处理，results是模型输出array列表，这里使用了aidemo库的face_det_post_process接口
+    # 自定义当前任务的后处理， results 是模型输出 array 列表，这里使用了 aidemo 库的 face_det_post_process 接口
     def postprocess(self, results):
         with ScopedTiming("postprocess", self.debug_mode > 0):
             post_ret = aidemo.face_det_post_process(self.confidence_threshold, self.nms_threshold, self.model_input_size[1], self.anchors, self.rgb888p_size, results)
@@ -165,7 +162,7 @@ class FaceDetectionApp(AIBase):
     def draw_result(self, pl, dets):
         with ScopedTiming("display_draw", self.debug_mode > 0):
             if dets:
-                pl.osd_img.clear()  # 清除OSD图像
+                pl.osd_img.clear()  # 清除 OSD 图像
                 for det in dets:
                     # 将检测框的坐标转换为显示分辨率下的坐标
                     x, y, w, h = map(lambda x: int(round(x, 0)), det[:4])
@@ -177,7 +174,7 @@ class FaceDetectionApp(AIBase):
             else:
                 pl.osd_img.clear()
 
-    # 获取padding参数
+    # 获取 padding 参数
     def get_padding_param(self):
         dst_w = self.model_input_size[0]  # 模型输入宽度
         dst_h = self.model_input_size[1]  # 模型输入高度
@@ -195,7 +192,7 @@ class FaceDetectionApp(AIBase):
         return top, bottom, left, right
 
 if __name__ == "__main__":
-    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
+    # 显示模式，默认 "hdmi", 可以选择 "hdmi" 和 "lcd"
     display_mode="hdmi"
     if display_mode=="hdmi":
         display_size=[1920,1080]
@@ -213,9 +210,9 @@ if __name__ == "__main__":
     anchors = anchors.reshape((anchor_len, det_dim))
     rgb888p_size = [1920, 1080]
 
-    # 初始化PipeLine，用于图像处理流程
+    # 初始化 PipeLine，用于图像处理流程
     pl = PipeLine(rgb888p_size=rgb888p_size, display_size=display_size, display_mode=display_mode)
-    pl.create()  # 创建PipeLine实例
+    pl.create()  # 创建 PipeLine 实例
     # 初始化自定义人脸检测实例
     face_det = FaceDetectionApp(kmodel_path, model_input_size=[320, 320], anchors=anchors, confidence_threshold=confidence_threshold, nms_threshold=nms_threshold, rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     face_det.config_preprocess()  # 配置预处理
@@ -233,5 +230,5 @@ if __name__ == "__main__":
         sys.print_exception(e)                  # 打印异常信息
     finally:
         face_det.deinit()                       # 反初始化
-        pl.destroy()                            # 销毁PipeLine实例
+        pl.destroy()                            # 销毁 PipeLine 实例
 ```

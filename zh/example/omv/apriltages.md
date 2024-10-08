@@ -1,98 +1,76 @@
-# 3. 识别AprilTags例程讲解
+# 3. 识别 AprilTags 例程讲解
 
 ## 1. 概述
 
-AprilTags 是一种视觉标记系统，用于计算机视觉应用中进行定位、识别和跟踪。由 April Robotics 开发，AprilTags 是一种非常高效的二进制识别标签系统，具有广泛的应用场景，尤其在机器人技术和增强现实领域中表现突出。
+AprilTags 是一种视觉标记系统，广泛应用于计算机视觉领域，用于定位、识别和跟踪。由 April Robotics 开发，AprilTags 是一种高效的二进制识别标签系统，特别适合机器人技术和增强现实等应用。
 
-CanMV支持OpenMV算法，支持识别AprilTags，相关接口为`find_apriltags`
+CanMV 支持 OpenMV 算法，可以识别 AprilTags，相关接口为 `find_apriltags`。
 
 ## 2. 示例
 
-本示例设置摄像头输出320x240灰度图像，使用`image.find_apriltags`来识别AprilTags
+本示例设置摄像头输出为 320x240 的灰度图像，并使用 `image.find_apriltags` 来识别 AprilTags。
 
 ```{tip}
-如果识别成功率低，可尝试修改摄像头输出的mirror和flip设置
+如果识别成功率低，可尝试调整摄像头的镜像和翻转设置。
 ```
 
 ```python
-# AprilTags Example
-#
-# This example shows the power of the CanMV Cam to detect April Tags.
+# AprilTags 示例
+# 这个示例展示了 CanMV 检测 April Tags 的强大功能。
 
-import time, math, os, gc, sys
+import time
+import math
+import os
+import gc
+import sys
 
 from media.sensor import *
 from media.display import *
 from media.media import *
 
+# 定义检测图像的宽度和高度
 DETECT_WIDTH = 320
 DETECT_HEIGHT = 240
 
-# Note! Unlike find_qrcodes the find_apriltags method does not need lens correction on the image to work.
-
-# The apriltag code supports up to 6 tag families which can be processed at the same time.
-# Returned tag objects will have their tag family and id within the tag family.
-
+# 定义可用的标签族
 tag_families = 0
-tag_families |= image.TAG16H5 # comment out to disable this family
-tag_families |= image.TAG25H7 # comment out to disable this family
-tag_families |= image.TAG25H9 # comment out to disable this family
-tag_families |= image.TAG36H10 # comment out to disable this family
-tag_families |= image.TAG36H11 # comment out to disable this family (default family)
-tag_families |= image.ARTOOLKIT # comment out to disable this family
+tag_families |= image.TAG16H5  # 4x4 方形标签
+tag_families |= image.TAG25H7   # 5x7 方形标签
+tag_families |= image.TAG25H9   # 5x9 方形标签
+tag_families |= image.TAG36H10  # 6x10 方形标签
+tag_families |= image.TAG36H11  # 6x11 方形标签（默认）
+tag_families |= image.ARTOOLKIT # ARToolKit 标签
 
-# What's the difference between tag families? Well, for example, the TAG16H5 family is effectively
-# a 4x4 square tag. So, this means it can be seen at a longer distance than a TAG36H11 tag which
-# is a 6x6 square tag. However, the lower H value (H5 versus H11) means that the false positve
-# rate for the 4x4 tag is much, much, much, higher than the 6x6 tag. So, unless you have a
-# reason to use the other tags families just use TAG36H11 which is the default family.
-
+# 函数: 获取标签族的名称
 def family_name(tag):
-    if(tag.family() == image.TAG16H5):
-        return "TAG16H5"
-    if(tag.family() == image.TAG25H7):
-        return "TAG25H7"
-    if(tag.family() == image.TAG25H9):
-        return "TAG25H9"
-    if(tag.family() == image.TAG36H10):
-        return "TAG36H10"
-    if(tag.family() == image.TAG36H11):
-        return "TAG36H11"
-    if(tag.family() == image.ARTOOLKIT):
-        return "ARTOOLKIT"
+    family_dict = {
+        image.TAG16H5: "TAG16H5",
+        image.TAG25H7: "TAG25H7",
+        image.TAG25H9: "TAG25H9",
+        image.TAG36H10: "TAG36H10",
+        image.TAG36H11: "TAG36H11",
+        image.ARTOOLKIT: "ARTOOLKIT",
+    }
+    return family_dict.get(tag.family(), "未知标签族")
 
 sensor = None
 
 try:
-    # construct a Sensor object with default configure
-    sensor = Sensor(width = DETECT_WIDTH, height = DETECT_HEIGHT)
-    # sensor reset
+    # 使用默认配置构造 Sensor 对象
+    sensor = Sensor(width=DETECT_WIDTH, height=DETECT_HEIGHT)
+    # 重置 sensor
     sensor.reset()
-    # set hmirror
-    # sensor.set_hmirror(False)
-    # sensor vflip
-    # sensor.set_vflip(False)
 
-    # set chn0 output size
-    sensor.set_framesize(width = DETECT_WIDTH, height = DETECT_HEIGHT)
-    # set chn0 output format
+    # 设置输出大小和格式
+    sensor.set_framesize(width=DETECT_WIDTH, height=DETECT_HEIGHT)
     sensor.set_pixformat(Sensor.GRAYSCALE)
 
-    # use hdmi as display output, set to VGA
-    # Display.init(Display.LT9611, width = 640, height = 480, to_ide = True)
+    # 初始化显示
+    Display.init(Display.VIRT, width=DETECT_WIDTH, height=DETECT_HEIGHT, fps=100)
 
-    # use hdmi as display output, set to 1080P
-    # Display.init(Display.LT9611, width = 1920, height = 1080, to_ide = True)
-
-    # use lcd as display output
-    # Display.init(Display.ST7701, to_ide = True)
-
-    # use IDE as output
-    Display.init(Display.VIRT, width = DETECT_WIDTH, height = DETECT_HEIGHT, fps = 100)
-
-    # init media manager
+    # 初始化媒体管理器
     MediaManager.init()
-    # sensor start run
+    # 启动 sensor
     sensor.run()
 
     fps = time.clock()
@@ -100,39 +78,53 @@ try:
     while True:
         fps.tick()
 
-        # check if should exit.
+        # 检查是否应该退出
         os.exitpoint()
 
         img = sensor.snapshot()
         for tag in img.find_apriltags(families=tag_families):
+            # 绘制识别到的标签的矩形框和中心十字
             img.draw_rectangle([v for v in tag.rect()], color=(255, 0, 0))
             img.draw_cross(tag.cx(), tag.cy(), color=(0, 255, 0))
             print_args = (family_name(tag), tag.id(), (180 * tag.rotation()) / math.pi)
-            print("Tag Family %s, Tag ID %d, rotation %f (degrees)" % print_args)
+            print("标签族 %s, 标签 ID %d, 旋转 %f (度)" % print_args)
 
-        # draw result to screen
+        # 将结果绘制到屏幕上
         Display.show_image(img)
         gc.collect()
 
-        print(fps.fps())
-except KeyboardInterrupt as e:
-    print(f"user stop")
+except KeyboardInterrupt:
+    print("用户停止")
 except BaseException as e:
-    print(f"Exception '{e}'")
+    print(f"异常 '{e}'")
 finally:
-    # sensor stop run
+    # 停止 sensor
     if isinstance(sensor, Sensor):
         sensor.stop()
-    # deinit display
+    # 销毁 display
     Display.deinit()
 
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
 
-    # release media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 ```
 
+### 代码说明
+
+- **导入模块**：导入必要的库以便使用传感器、显示和媒体管理功能。
+- **定义图像尺寸**：设置检测图像的宽度和高度为 320x240。
+- **定义标签族**：配置可识别的标签族，包括 TAG16H5、TAG25H7、TAG25H9、TAG36H10、TAG36H11 和 ARToolkit。可以通过注释掉相关行来禁用某些标签族。
+- **family_name 函数**：根据标签的类型返回其名称，便于后续处理和显示。
+- **Sensor 配置**：创建并配置传感器对象，设置图像输出的大小和格式（灰度图像）。
+- **显示初始化**：配置显示输出方式，选择 IDE 输出。
+- **主循环**：
+  - 捕捉图像并检查退出条件。
+  - 识别图像中的 AprilTags，并在标签周围绘制红色矩形框和中心十字。
+  - 打印标签的详细信息，包括标签族、标签 ID 和旋转角度。
+- **异常处理**：捕获用户中断或其他异常，确保传感器正常停止并释放资源。
+
 ```{admonition} 提示
-具体接口定义请参考 [find_apriltags](../../api/openmv/image.md#2282-find_apriltags)
+具体接口定义请参考 [find_apriltags](../../api/openmv/image.md#2282-find_apriltags)。
 ```

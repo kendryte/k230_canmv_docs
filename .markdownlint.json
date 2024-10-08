@@ -48,7 +48,7 @@
     // MD024
     "no-duplicate-heading": {
         "allow_different_nesting": false,
-        "siblings_only": false
+        "siblings_only": true
     },
     // MD029
     "ol-prefix": {
@@ -77,6 +77,8 @@
     "hr-style": {
         "style": "---"
     },
+    // MD036
+    "MD036": false,
     // MD040
     "fenced-code-language": {
         "allowed_languages": [],

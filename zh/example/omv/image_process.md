@@ -12,7 +12,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`histeq`**: 直方图均衡化
   - 用于增强图像的对比度，使图像的直方图分布更均匀。
-  
+
   ```python
   img = sensor.snapshot()
   img.histeq()
@@ -20,7 +20,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`gamma_corr`**: Gamma 校正
   - 调整图像的亮度和对比度。Gamma 值大于 1 可以增加对比度，Gamma 值小于 1 可以减小对比度。
-  
+
   ```python
   img = sensor.snapshot()
   img.gamma_corr(1.5)  # Gamma 值为 1.5
@@ -28,7 +28,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`rotation_corr`**: 旋转校正
   - 校正图像中的旋转误差。
-  
+
   ```python
   img = sensor.snapshot()
   img.rotation_corr(0.5)  # 校正旋转误差，校正角度为 0.5 弧度
@@ -36,7 +36,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`lens_corr`**: 镜头畸变校正
   - 校正镜头的几何畸变，通常用于纠正鱼眼镜头的畸变。
-  
+
   ```python
   img = sensor.snapshot()
   img.lens_corr(1.0)  # 校正畸变，校正系数为 1.0
@@ -46,7 +46,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`gaussian`**: 高斯滤波
   - 用于平滑图像，减少噪声。高斯滤波通过均值滤波的方式进行加权平均。
-  
+
   ```python
   img = sensor.snapshot()
   img.gaussian(2)  # 高斯滤波，滤波核大小为 2
@@ -54,7 +54,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`bilateral`**: 双边滤波
   - 旨在平滑图像同时保留边缘。双边滤波结合了空间域和颜色域的平滑。
-  
+
   ```python
   img = sensor.snapshot()
   img.bilateral(5, 75, 75)  # 双边滤波，空间域、颜色域的标准差分别为 5、75
@@ -62,7 +62,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`median`**: 中值滤波
   - 去除图像中的噪声，特别是椒盐噪声。
-  
+
   ```python
   img = sensor.snapshot()
   img.median(3)  # 中值滤波，窗口大小为 3x3
@@ -70,7 +70,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`mean`**: 均值滤波
   - 平滑图像，通过计算邻域像素的均值来降低噪声。
-  
+
   ```python
   img = sensor.snapshot()
   img.mean(3)  # 均值滤波，窗口大小为 3x3
@@ -80,7 +80,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`binary`**: 二值化
   - 将图像转换为二值图像，根据阈值将像素分为黑白两种颜色。
-  
+
   ```python
   img = sensor.snapshot()
   img.binary([(100, 255)])  # 二值化，阈值范围为 (100, 255)
@@ -88,7 +88,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`dilate`**: 膨胀
   - 形态学操作，扩展图像中的白色区域，通常用于填补孔洞。
-  
+
   ```python
   img = sensor.snapshot()
   img.dilate(2)  # 膨胀操作，膨胀次数为 2
@@ -96,7 +96,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`erode`**: 腐蚀
   - 形态学操作，收缩图像中的白色区域，通常用于去除小的噪声。
-  
+
   ```python
   img = sensor.snapshot()
   img.erode(2)  # 腐蚀操作，腐蚀次数为 2
@@ -104,7 +104,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`morph`**: 形态学操作
   - 进行复杂的形态学操作，如开运算、闭运算等。
-  
+
   ```python
   img = sensor.snapshot()
   img.morph(2, morph.MORPH_CLOSE)  # 形态学操作，闭运算
@@ -114,7 +114,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`laplacian`**: 拉普拉斯边缘检测
   - 用于检测图像中的边缘。
-  
+
   ```python
   img = sensor.snapshot()
   img.laplacian(3)  # 拉普拉斯边缘检测，窗口大小为 3
@@ -122,7 +122,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`sobel`**: Sobel 边缘检测
   - 另一种用于边缘检测的滤波器。
-  
+
   ```python
   img = sensor.snapshot()
   img.sobel(3)  # Sobel 边缘检测，窗口大小为 3
@@ -132,7 +132,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`linpolar`**: 线性极坐标转换
   - 将图像从笛卡尔坐标系转换到极坐标系。
-  
+
   ```python
   img = sensor.snapshot()
   img.linpolar(10)  # 线性极坐标转换，半径步长为 10
@@ -140,7 +140,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`logpolar`**: 对数极坐标转换
   - 将图像从笛卡尔坐标系转换到对数极坐标系。
-  
+
   ```python
   img = sensor.snapshot()
   img.logpolar(10)  # 对数极坐标转换，半径步长为 10
@@ -150,7 +150,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`negate`**: 反转图像
   - 将图像中的所有像素值取反。
-  
+
   ```python
   img = sensor.snapshot()
   img.negate()  # 反转图像
@@ -158,7 +158,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`midpoint`**: 中值模式
   - 返回图像中值的像素。
-  
+
   ```python
   img = sensor.snapshot()
   img.midpoint()
@@ -166,7 +166,7 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 
 - **`mode`**: 模式值
   - 返回图像中最常见的像素值。
-  
+
   ```python
   img = sensor.snapshot()
   img.mode()
@@ -190,10 +190,9 @@ CanMV支持OpenMV算法，同样可以使用这些函数
 这里只列举一个图像二值化demo，具体demo还请查看固件自带虚拟U盘中的例程
 
 ```python
-# Color Binary Filter Example
+# 颜色二值化滤波示例
 #
-# This script shows off the binary image filter. You may pass binary any
-# number of thresholds to segment the image by.
+# 这个脚本展示了二值化图像滤波。您可以传递任意数量的阈值来对图像进行分割。
 import time, os, gc, sys
 
 from media.sensor import *
@@ -203,7 +202,7 @@ from media.media import *
 DETECT_WIDTH = ALIGN_UP(640, 16)
 DETECT_HEIGHT = 480
 
-# Use the Tools -> Machine Vision -> Threshold Edtor to pick better thresholds.
+# 使用工具 -> 机器视觉 -> 阈值编辑器来选择更好的阈值。
 red_threshold = (0,100,   0,127,   0,127) # L A B
 green_threshold = (0,100,   -128,0,   0,127) # L A B
 blue_threshold = (0,100,   -128,127,   -128,0) # L A B
@@ -213,38 +212,38 @@ sensor = None
 def camera_init():
     global sensor
 
-    # construct a Sensor object with default configure
+    # 使用默认配置构造一个Sensor对象
     sensor = Sensor(width=DETECT_WIDTH,height=DETECT_HEIGHT)
-    # sensor reset
+    # sensor复位
     sensor.reset()
-    # set hmirror
+    # 设置水平镜像
     # sensor.set_hmirror(False)
-    # sensor vflip
+    # 设置垂直翻转
     # sensor.set_vflip(False)
 
-    # set chn0 output size
+    # 设置通道 0 输出大小
     sensor.set_framesize(width=DETECT_WIDTH,height=DETECT_HEIGHT)
-    # set chn0 output format
+    # 设置通道 0 输出格式
     sensor.set_pixformat(Sensor.RGB565)
 
-    # use IDE as display output
+    # 使用 IDE 作为显示输出，如果您选择的屏幕无法点亮，请参考API文档中的K230_CanMV_Display模块API手册自行配置
     Display.init(Display.VIRT, width= DETECT_WIDTH, height = DETECT_HEIGHT,fps=100,to_ide = True)
-    # init media manager
+    # 初始化媒体管理器
     MediaManager.init()
-    # sensor start run
+    # sensor开始运行
     sensor.run()
 
 def camera_deinit():
     global sensor
 
-    # sensor stop run
+    # sensor停止运行
     sensor.stop()
-    # deinit display
+    # 销毁display
     Display.deinit()
-    # sleep
+    # 休眠
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # release media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 
 def capture_picture():
@@ -259,32 +258,32 @@ def capture_picture():
             global sensor
             img = sensor.snapshot()
 
-            # Test red threshold
+            # 测试红色阈值
             if frame_count < 100:
                 img.binary([red_threshold])
-            # Test green threshold
+            # 测试绿色阈值
             elif frame_count < 200:
                 img.binary([green_threshold])
-            # Test blue threshold
+            # 测试蓝色阈值
             elif frame_count < 300:
                 img.binary([blue_threshold])
-            # Test not red threshold
+            # 测试非红色阈值
             elif frame_count < 400:
                 img.binary([red_threshold], invert = 1)
-            # Test not green threshold
+            # 测试非绿色阈值
             elif frame_count < 500:
                 img.binary([green_threshold], invert = 1)
-            # Test not blue threshold
+            # 测试非蓝色阈值
             elif frame_count < 600:
                 img.binary([blue_threshold], invert = 1)
             else:
                 frame_count = 0
             frame_count = frame_count + 1
-            # draw result to screen
+            # 将结果绘制到屏幕上
             Display.show_image(img)
             img = None
             gc.collect()
-            print(fps.fps())
+            #print(fps.fps())
         except KeyboardInterrupt as e:
             print("user stop: ", e)
             break

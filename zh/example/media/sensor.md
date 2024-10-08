@@ -1,20 +1,20 @@
-# 1. Sensor例程讲解
+# 1. Sensor 示例讲解
 
 ## 1. 概述
 
-K230有3路MIPI-CSI（3x2 lane/1x4+1x2 lane）输入，最多可接3路摄像头，每路摄像头支持3个通道输出不同的分辨率及图像格式
+K230 具备 3 路 MIPI-CSI 输入（3x2 lane/1x4+1x2 lane），最多可连接 3 路摄像头，每路摄像头支持输出 3 个通道，提供不同的分辨率和图像格式。
 
 ## 2. 示例
 
-### 2.1 获取单摄3个通道图像显示在HDMI显示器
+### 2.1 获取单摄像头的 3 个通道图像并显示在 HDMI 显示器上
 
-打开摄像头，获取3个通道的图像显示在HDMI显示器
-
-通道0采集1080P图像，通道1和通道2采集VGA分辨率图像并叠加在通道0图像上
+本示例打开摄像头，获取 3 个通道的图像并显示在 HDMI 显示器上。通道 0 采集 1080P 图像，通道 1 和通道 2 采集 VGA 分辨率的图像并叠加在通道 0 的图像上。
 
 ```python
-# Camera Example
-import time, os, sys
+# Camera 示例
+import time
+import os
+import sys
 
 from media.sensor import *
 from media.display import *
@@ -25,74 +25,68 @@ sensor = None
 try:
     print("camera_test")
 
-    # construct a Sensor object with default configure
+    # 根据默认配置构建 Sensor 对象
     sensor = Sensor()
-    # sensor reset
+    # 复位 sensor
     sensor.reset()
-    # set hmirror
-    # sensor.set_hmirror(False)
-    # sensor vflip
-    # sensor.set_vflip(False)
 
-    # set chn0 output size, 1920x1080
+    # 设置通道 0 分辨率为 1920x1080
     sensor.set_framesize(Sensor.FHD)
-    # set chn0 output format
+    # 设置通道 0 格式为 YUV420SP
     sensor.set_pixformat(Sensor.YUV420SP)
-    # bind sensor chn0 to display layer video 1
+    # 绑定通道 0 到显示 VIDEO1 层
     bind_info = sensor.bind_info()
-    Display.bind_layer(**bind_info, layer = Display.LAYER_VIDEO1)
+    Display.bind_layer(**bind_info, layer=Display.LAYER_VIDEO1)
 
-    # set chn1 output format
-    sensor.set_framesize(width = 640, height = 480, chn = CAM_CHN_ID_1)
-    sensor.set_pixformat(Sensor.RGB888, chn = CAM_CHN_ID_1)
+    # 设置通道 1 分辨率和格式
+    sensor.set_framesize(width=640, height=480, chn=CAM_CHN_ID_1)
+    sensor.set_pixformat(Sensor.RGB888, chn=CAM_CHN_ID_1)
 
-    # set chn2 output format
-    sensor.set_framesize(width = 640, height = 480, chn = CAM_CHN_ID_2)
-    sensor.set_pixformat(Sensor.RGB565, chn = CAM_CHN_ID_2)
+    # 设置通道 2 分辨率和格式
+    sensor.set_framesize(width=640, height=480, chn=CAM_CHN_ID_2)
+    sensor.set_pixformat(Sensor.RGB565, chn=CAM_CHN_ID_2)
 
-    # use hdmi as display output
-    Display.init(Display.LT9611, to_ide = True, osd_num = 2)
-    # init media manager
+    # 初始化 HDMI 和 IDE 输出显示，若屏幕无法点亮，请参考 API 文档中的 K230_CanMV_Display 模块 API 手册进行配置
+    Display.init(Display.LT9611, to_ide=True, osd_num=2)
+    # 初始化媒体管理器
     MediaManager.init()
-    # sensor start run
+    # 启动 sensor
     sensor.run()
 
     while True:
         os.exitpoint()
 
-        img = sensor.snapshot(chn = CAM_CHN_ID_1)
-        Display.show_image(img, alpha = 128)
+        img = sensor.snapshot(chn=CAM_CHN_ID_1)
+        Display.show_image(img, alpha=128)
 
-        img = sensor.snapshot(chn = CAM_CHN_ID_2)
-        Display.show_image(img, x = 1920 - 640, layer = Display.LAYER_OSD1)
+        img = sensor.snapshot(chn=CAM_CHN_ID_2)
+        Display.show_image(img, x=1920 - 640, layer=Display.LAYER_OSD1)
 
 except KeyboardInterrupt as e:
-    print("user stop: ", e)
+    print("用户停止: ", e)
 except BaseException as e:
-    print(f"Exception {e}")
+    print(f"异常: {e}")
 finally:
-    # sensor stop run
+    # 停止 sensor
     if isinstance(sensor, Sensor):
         sensor.stop()
-    # deinit display
+    # 销毁显示
     Display.deinit()
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # release media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 ```
 
-### 2.2 获取双摄图像显示在HDMI显示器
+### 2.2 获取双摄像头图像并显示在 HDMI 显示器上
 
-分别配置2个摄像头输出960x540图像，并排显示在HDMI显示器
+本示例分别配置 2 个摄像头输出 960x540 图像，并并排显示在 HDMI 显示器上。
 
 ```python
-# Camera Example
-#
-# Note: You will need an SD card to run this example.
-#
-# You can start 2 camera preview.
-import time, os, sys
+# Camera 双摄示例
+import time
+import os
+import sys
 
 from media.sensor import *
 from media.display import *
@@ -104,59 +98,57 @@ sensor1 = None
 try:
     print("camera_test")
 
-    sensor0 = Sensor(id = 0)
+    # 构建 Sensor 对象 sensor0
+    sensor0 = Sensor(id=0)
     sensor0.reset()
-    # set chn0 output size, 960x540
-    sensor0.set_framesize(width = 960, height = 540)
-    # set chn0 out format
+    # 设置通道 0 分辨率为 960x540
+    sensor0.set_framesize(width=960, height=540)
+    # 设置通道 0 格式为 YUV420
     sensor0.set_pixformat(Sensor.YUV420SP)
-    # bind sensor chn0 to display layer video 1
-    bind_info = sensor0.bind_info(x = 0, y = 0)
-    Display.bind_layer(**bind_info, layer = Display.LAYER_VIDEO1)
+    # 绑定通道 0 到显示 VIDEO1 层
+    bind_info = sensor0.bind_info(x=0, y=0)
+    Display.bind_layer(**bind_info, layer=Display.LAYER_VIDEO1)
 
-    sensor1 = Sensor(id = 1)
+    # 构建 Sensor 对象 sensor1
+    sensor1 = Sensor(id=1)
     sensor1.reset()
-    # set chn0 output size, 960x540
-    sensor1.set_framesize(width = 960, height = 540)
-    # set chn0 out format
+    # 设置通道 0 分辨率为 960x540
+    sensor1.set_framesize(width=960, height=540)
+    # 设置通道 0 格式为 YUV420
     sensor1.set_pixformat(Sensor.YUV420SP)
+    # 绑定通道 0 到显示 VIDEO2 层
+    bind_info = sensor1.bind_info(x=960, y=0)
+    Display.bind_layer(**bind_info, layer=Display.LAYER_VIDEO2)
 
-    bind_info = sensor1.bind_info(x = 960, y = 540)
-    Display.bind_layer(**bind_info, layer = Display.LAYER_VIDEO2)
-
-    # use hdmi as display output
-    Display.init(Display.LT9611, to_ide = True)
-    # init media manager
+    # 初始化 HDMI 和 IDE 输出显示，若屏幕无法点亮，请参考 API 文档中的 K230_CanMV_Display 模块 API 手册进行配置
+    Display.init(Display.LT9611, to_ide=True)
+    # 初始化媒体管理器
     MediaManager.init()
 
-    # multiple sensor only need one excute run()
+    # 多摄场景仅需执行一次 run
     sensor0.run()
 
     while True:
         os.exitpoint()
         time.sleep(1)
 except KeyboardInterrupt as e:
-    print("user stop")
+    print("用户停止")
 except BaseException as e:
-    print(f"Exception '{e}'")
+    print(f"异常: '{e}'")
 finally:
-    # multiple sensor all need excute stop()
+    # 每个 sensor 都需要执行 stop
     if isinstance(sensor0, Sensor):
         sensor0.stop()
     if isinstance(sensor1, Sensor):
         sensor1.stop()
-    # or call Sensor.deinit()
-    # Sensor.deinit()
-
-    # deinit display
+    # 销毁显示
     Display.deinit()
-
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # deinit media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 ```
 
 ```{admonition} 提示
-Sensor模块具体接口请参考[API文档](../../api/mpp/K230_CanMV_Sensor模块API手册.md)
+有关 Sensor 模块的详细接口，请参考 [API 文档](../../api/mpp/K230_CanMV_Sensor模块API手册.md)。
 ```

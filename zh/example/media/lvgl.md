@@ -2,13 +2,11 @@
 
 ## 1. 概述
 
-K230 CanMV集成[lv_binding_micropython](https://github.com/lvgl/lv_binding_micropython)项目，用户可使用lvgl进行UI开发
+CanMV K230 集成了[lv_binding_micropython](https://github.com/lvgl/lv_binding_micropython)项目，用户可以利用lvgl进行图形用户界面（GUI）开发。本示例展示了在 CanMV 开发板上实现 lvgl 动图显示的功能。
 
 ## 2. 示例
 
-本示例程序用于对 CanMV 开发板进行一个lvgl显示动图的功能展示。
-
-本例程依赖部分资源文件，建议使用固件内自带的lvgl例程
+下面的示例程序演示了如何在CanMV开发板上使用lvgl库显示动态图像。该示例依赖于一些资源文件，建议使用固件内自带的lvgl例程。
 
 ```python
 from media.display import *
@@ -20,17 +18,17 @@ DISPLAY_WIDTH = ALIGN_UP(1920, 16)
 DISPLAY_HEIGHT = 1080
 
 def display_init():
-    # use hdmi for display
-    Display.init(Display.LT9611, to_ide = False)
-    # init media manager
+    # 使用hdmi作为显示输出，如果您选择的屏幕无法点亮，请参考API文档中的K230_CanMV_Display模块API手册自行配置
+    Display.init(Display.LT9611, to_ide = True)
+    # 初始化media管理器
     MediaManager.init()
 
 def display_deinit():
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(50)
-    # deinit display
+    # 销毁 display
     Display.deinit()
-    # release media buffer
+    # 释放media缓冲区
     MediaManager.deinit()
 
 def disp_drv_flush_cb(disp_drv, area, color):
@@ -61,7 +59,7 @@ def lvgl_deinit():
     del disp_img2
 
 def user_gui_init():
-    res_path = "/sdcard/app/tests/lvgl/data/"
+    res_path = "/sdcard/examples/15-LVGL/data/"
 
     font_montserrat_16 = lv.font_load("A:" + res_path + "font/montserrat-16.fnt")
     ltr_label = lv.label(lv.scr_act())

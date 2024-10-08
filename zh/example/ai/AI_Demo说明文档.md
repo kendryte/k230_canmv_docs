@@ -4,21 +4,26 @@
 
 ### 1.1. AI Demo开发框架
 
-为了帮助用户简化AI部分的开发，基于K230_CanMV提供的API接口，搭建了配套的AI 开发框架。框架结构如下图所示：
+为了帮助用户简化 AI 部分的开发，基于 K230_CanMV 提供的 API 接口，我们搭建了配套的 AI 开发框架。框架结构如下图所示：
 
 ![开发框架](../images/framework.png)
 
-Camera默认出两路图像，一路格式为YUV420，直接给到Display显示；另一路格式为RGB888，给到AI部分进行处理。AI主要实现任务的前处理、推理和后处理流程，得到后处理结果后将其绘制在osd image实例上，并送给Display叠加显示。
+Camera 默认输出两路图像：一路格式为 YUV420SP (Sensor.YUV420SP)，直接提供给 Display 显示；另一路格式为 RGBP888 (Sensor.RGBP888)，则用于 AI 部分进行处理。AI 主要负责任务的前处理、推理和后处理流程。处理完成后，结果将绘制在 OSD 图像实例上，并发送给 Display 进行叠加显示。
 
-### 1.2. 接口介绍  
+```{admonition} 提示
+PipeLine 流程封装主要简化视觉任务的开发过程。您可以使用 'get_frame' 获取一帧图像以进行机器视觉处理；如果您希望自定义 AI 过程，请参考 [face_detection](./face_detection.md)。若使用音频相关的 AI，请参考 demo 中的 keyword_spotting 和 tts_zh 两个示例。
+
+```
+
+### 1.2. 接口介绍
 
 #### 1.2.1. PipeLine
 
-我们将Media部分的代码封装在PipeLine类型中，通过固定的接口实现整个流程操作。
+我们将 Media 部分的代码封装在 PipeLine 类型中，通过固定接口实现整个流程操作。
 
-其中PipeLine类提供的接口包括：
+PipeLine 类提供的接口包括：
 
-- 初始化参数包括：
+- 初始化参数：
 
   （1）rgb888p_size：list类型，预设给到AI部分的图像分辨率；如rgb888p_size=[1920,1080]。
 
@@ -42,7 +47,7 @@ Camera默认出两路图像，一路格式为YUV420，直接给到Display显示�
 
 - destroy()：销毁PipeLine实例。
 
-下面给出无AI部分的示例代码：
+以下是无 AI 部分的示例代码：
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -74,15 +79,15 @@ if __name__ == "__main__":
         pl.destroy()                            # 销毁PipeLine实例
 ```
 
-上述代码中，通过`pl.get_frame()`接口获取一帧分辨率为rgb888p_size的图像，类型为ulab.numpy.ndarray，排布为CHW。基于上面的代码得到了一帧图像给AI处理，您可以只关注AI推理部分的操作。
+上述代码中，通过`pl.get_frame()`接口获取一帧分辨率为rgb888p_size的图像，类型为ulab.numpy.ndarray，排布为CHW。基于这段代码，您可以专注于 AI 推理部分的操作。
 
 图像AI开发过程包括：图像预处理、模型推理、输出后处理的过程，我们将整个过程封装在Ai2d类和AIBase类中。
 
 #### 1.2.2. Ai2d
 
-对于Ai2d类，我们给出了常见的几种预处理方法，包括crop/shift/pad/resize/affine。该类别提供的接口包括：
+Ai2d 类提供多种常见的预处理方法，包括 crop、shift、pad、resize 和 affine。该类提供的接口包括：
 
-- 初始化参数包括：
+- 初始化参数：
 
 ​    （1）debug_mode：int类型，耗时调试模式，如果大于0，打印操作耗时；如debug_mode=0。
 
@@ -92,7 +97,7 @@ if __name__ == "__main__":
 
 ​    （2）output_format：ai2d预处理输出格式。
 
-输入输出格式支持如下所示：
+输入输出格式支持如下：
 
 ```c++
 enum class ai2d_format
@@ -120,15 +125,16 @@ enum class ai2d_format
 
 ​    （4）output_type：输出数据类型。
 
-下面是接口调用示例：
+以下是接口调用示例：
 
 ```python
 from libs.AI2D import Ai2d
 import nncase_runtime as nn
+import ulab.numpy as np
 
 my_ai2d=Ai2d(debug_mode=1)
-my_ai2d.set_ai2d_type(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
-my_ai2d.set_ai2d_type(nn.ai2d_format.RGB_packed, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
+my_ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
+my_ai2d.set_ai2d_dtype(nn.ai2d_format.RGB_packed, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
 ```
 
 - crop(start_x,start_y,width,height)：预处理crop函数。
@@ -155,7 +161,7 @@ my_ai2d.shift(2)
 
 - pad(paddings,pad_mode,pad_val)：预处理padding函数。
 
-​    （1）paddings：list类型，各维度两侧padding的大小，对于4维的图像(NCHW)，该参数包含8个值，分别表示N/C/H/W四个维度两侧的padding大小，一般只在后两个维度做padding；
+​    （1）paddings：list类型，各维度两侧padding的大小，对于4维的图像(NCHW)，该参数包含8个值，分别表示N/C/H/W四个维度两侧的padding大小，通常只在后两个维度做padding；
 
 ​    （2）pad_mode：只支持constant padding，直接设为0；
 
@@ -187,7 +193,11 @@ my_ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
 
 ​    （5）bound_smooth:边界平滑0或者1,uint32_t类型；
 
-​    （6）M:仿射变换矩阵对应的vector，仿射变换为Y=[a_0, a_1; a_2, a_3] \cdot  X + [b_0, b_1] $, 则  M=[a_0,a_1,b_0,a_2,a_3,b_1 ],list类型。
+​    （6）M:仿射变换矩阵对应的vector，仿射变换为：
+$$
+Y=[a_0, a_1; a_2, a_3] \cdot  X + [b_0, b_1]
+$$
+则  M=[a_0,a_1,b_0,a_2,a_3,b_1 ],list类型。
 
 ```python
 affine_matrix=[0.2159457, -0.031286, -59.5312, 0.031286, 0.2159457, -35.30719]
@@ -236,7 +246,7 @@ if __name__ == "__main__":
     # 初始化PipeLine，用于图像处理流程
     pl = PipeLine(rgb888p_size=[512,512], display_size=display_size, display_mode=display_mode)
     pl.create()  # 创建PipeLine实例
-    my_ai2d=Ai2d(debug_mode=0) #初始化Ai2d实例 
+    my_ai2d=Ai2d(debug_mode=0) #初始化Ai2d实例
     # 配置resize预处理方法
     my_ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
     # 构建预处理过程
@@ -259,7 +269,7 @@ if __name__ == "__main__":
 
 #### 1.2.3. AIBase
 
-AIBase部分封装了实现模型推理的主要接口，也是进行AI开发主要关注的部分。用户需要按照自己demo的要求实现前处理和后处理部分。
+AIBase 类封装了实现模型推理的主要接口，也是进行AI开发主要关注的部分。用户需要按照自己demo的要求实现前处理和后处理部分。
 
 AIBase提供的接口包括：
 
@@ -385,31 +395,31 @@ import sys
 class MyAIApp(AIBase):
     def __init__(self, kmodel_path, model_input_size, rgb888p_size=[224,224], display_size=[1920,1080], debug_mode=0):
         # 调用基类的构造函数
-        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)  
+        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)
         # 模型文件路径
-        self.kmodel_path = kmodel_path  
+        self.kmodel_path = kmodel_path
         # 模型输入分辨率
-        self.model_input_size = model_input_size  
+        self.model_input_size = model_input_size
         # sensor给到AI的图像分辨率，并对宽度进行16的对齐
-        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]   
+        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]
         # 显示分辨率，并对宽度进行16的对齐
-        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]] 
+        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]]
         # 是否开启调试模式
-        self.debug_mode = debug_mode  
+        self.debug_mode = debug_mode
         # 实例化Ai2d，用于实现模型预处理
-        self.ai2d = Ai2d(debug_mode)  
+        self.ai2d = Ai2d(debug_mode)
         # 设置Ai2d的输入输出格式和类型
-        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)  
+        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
 
-    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/libs/AI2D.py查看
     def config_preprocess(self, input_image_size=None):
-        with ScopedTiming("set preprocess config", self.debug_mode > 0): 
+        with ScopedTiming("set preprocess config", self.debug_mode > 0):
             # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
-            ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size  
+            ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size
             # 配置resize预处理方法
-            self.ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel) 
+            self.ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
             # 构建预处理流程
-            self.ai2d.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,self.model_input_size[1],self.model_input_size[0]])  
+            self.ai2d.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,self.model_input_size[1],self.model_input_size[0]])
 
     # 自定义当前任务的后处理，results是模型输出array列表，需要根据实际任务重写
     def postprocess(self, results):
@@ -456,7 +466,7 @@ if __name__ == "__main__":
     finally:
         my_ai.deinit()                          # 反初始化
         pl.destroy()                            # 销毁PipeLine实例
-                 
+
 ```
 
 下面以人脸检测为例给出示例代码：
@@ -548,21 +558,23 @@ class FaceDetectionApp(AIBase):
 if __name__ == "__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 设置模型路径和其他参数
-    kmodel_path = "/sdcard/app/tests/kmodel/face_detection_320.kmodel"
+    kmodel_path = "/sdcard/examples/kmodel/face_detection_320.kmodel"
     # 其它参数
     confidence_threshold = 0.5
     nms_threshold = 0.2
     anchor_len = 4200
     det_dim = 4
-    anchors_path = "/sdcard/app/tests/utils/prior_data_320.bin"
+    anchors_path = "/sdcard/examples/utils/prior_data_320.bin"
     anchors = np.fromfile(anchors_path, dtype=np.float)
     anchors = anchors.reshape((anchor_len, det_dim))
-    rgb888p_size = [1920, 1080]
 
     # 初始化PipeLine，用于图像处理流程
     pl = PipeLine(rgb888p_size=rgb888p_size, display_size=display_size, display_mode=display_mode)
@@ -605,51 +617,51 @@ import sys
 class MyAIApp(AIBase):
     def __init__(self, kmodel_path, model_input_size, rgb888p_size=[224,224], display_size=[1920,1080], debug_mode=0):
         # 调用基类的构造函数
-        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)  
+        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)
         # 模型文件路径
-        self.kmodel_path = kmodel_path  
+        self.kmodel_path = kmodel_path
         # 模型输入分辨率
-        self.model_input_size = model_input_size  
+        self.model_input_size = model_input_size
         # sensor给到AI的图像分辨率，并对宽度进行16的对齐
-        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]   
+        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]
         # 显示分辨率，并对宽度进行16的对齐
-        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]] 
+        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]]
         # 是否开启调试模式
-        self.debug_mode = debug_mode  
+        self.debug_mode = debug_mode
         # 实例化Ai2d，用于实现模型预处理
-        self.ai2d_resize = Ai2d(debug_mode)  
+        self.ai2d_resize = Ai2d(debug_mode)
         # 设置Ai2d的输入输出格式和类型
-        self.ai2d_resize.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)  
+        self.ai2d_resize.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
         # 实例化Ai2d，用于实现模型预处理
-        self.ai2d_resize = Ai2d(debug_mode)  
+        self.ai2d_resize = Ai2d(debug_mode)
         # 设置Ai2d的输入输出格式和类型
-        self.ai2d_resize.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)  
+        self.ai2d_resize.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
         # 实例化Ai2d，用于实现模型预处理
-        self.ai2d_crop = Ai2d(debug_mode)  
+        self.ai2d_crop = Ai2d(debug_mode)
         # 设置Ai2d的输入输出格式和类型
         self.ai2d_crop.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
 
-    # 配置预处理操作，这里使用了resize和crop，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    # 配置预处理操作，这里使用了resize和crop，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/libs/AI2D.py查看
     def config_preprocess(self, input_image_size=None):
-        with ScopedTiming("set preprocess config", self.debug_mode > 0): 
+        with ScopedTiming("set preprocess config", self.debug_mode > 0):
             # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
-            ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size  
+            ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size
             # 配置resize预处理方法
-            self.ai2d_resize.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel) 
+            self.ai2d_resize.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
             # 构建预处理流程
-            self.ai2d_resize.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,640,640])  
+            self.ai2d_resize.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,640,640])
             # 配置crop预处理方法
             self.ai2d_crop.crop(0,0,320,320)
             # 构建预处理流程
-            self.ai2d_crop.build([1,3,640,640],[1,3,320,320])  
-    
-    # 假设该任务需要crop和resize预处理，顺序是先resize再crop，该顺序不符合ai2d的处理顺序，因此需要设置两个Ai2d实例分别处理       
+            self.ai2d_crop.build([1,3,640,640],[1,3,320,320])
+
+    # 假设该任务需要crop和resize预处理，顺序是先resize再crop，该顺序不符合ai2d的处理顺序，因此需要设置两个Ai2d实例分别处理
     def preprocess(self,input_np):
         resize_tensor=self.ai2d_resize.run(input_np)
         resize_np=resize_tensor.to_numpy()
         crop_tensor=self.ai2d_crop.run(resize_np)
         return [crop_tensor]
-        
+
 
     # 自定义当前任务的后处理，results是模型输出array列表，需要根据实际任务重写
     def postprocess(self, results):
@@ -660,7 +672,7 @@ class MyAIApp(AIBase):
     def draw_result(self, pl, dets):
         with ScopedTiming("display_draw", self.debug_mode > 0):
             pass
-        
+
     # 重写deinit，释放多个ai2d资源
     def deinit(self):
         with ScopedTiming("deinit",self.debug_mode > 0):
@@ -725,22 +737,22 @@ import sys
 class MyAIApp(AIBase):
     def __init__(self, kmodel_path, model_input_size, rgb888p_size=[224,224], display_size=[1920,1080], debug_mode=0):
         # 调用基类的构造函数
-        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)  
+        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)
         # 模型文件路径
-        self.kmodel_path = kmodel_path  
+        self.kmodel_path = kmodel_path
         # 模型输入分辨率
-        self.model_input_size = model_input_size  
+        self.model_input_size = model_input_size
         # sensor给到AI的图像分辨率，并对宽度进行16的对齐
-        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]   
+        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]
         # 显示分辨率，并对宽度进行16的对齐
-        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]] 
+        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]]
         # 是否开启调试模式
-        self.debug_mode = debug_mode  
+        self.debug_mode = debug_mode
         # 实例化Ai2d，用于实现模型预处理
-        self.ai2d = Ai2d(debug_mode)  
+        self.ai2d = Ai2d(debug_mode)
         # 设置Ai2d的输入输出格式和类型
-        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)  
-    
+        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
+
     # 对于不使用ai2d完成预处理的AI任务，使用封装的接口或者ulab.numpy实现预处理，需要在子类中重写该函数
     def preprocess(self,input_np):
         #############
@@ -752,7 +764,7 @@ class MyAIApp(AIBase):
     def postprocess(self, results):
         with ScopedTiming("postprocess", self.debug_mode > 0):
            pass
-           
+
     # 绘制结果到画面上，需要根据任务自己写
     def draw_result(self, pl, dets):
         with ScopedTiming("display_draw", self.debug_mode > 0):
@@ -857,14 +869,14 @@ if __name__ == "__main__":
     os.exitpoint(os.EXITPOINT_ENABLE)
     nn.shrink_memory_pool()
     # 设置模型路径和其他参数
-    kmodel_path = "/sdcard/app/tests/kmodel/kws.kmodel"
+    kmodel_path = "/sdcard/examples/kmodel/kws.kmodel"
     # 其它参数
     THRESH = 0.5                # 检测阈值
     SAMPLE_RATE = 16000         # 采样率16000Hz,即每秒采样16000次
     CHANNELS = 1                # 通道数 1为单声道，2为立体声
     FORMAT = paInt16            # 音频输入输出格式 paInt16
     CHUNK = int(0.3 * 16000)    # 每次读取音频数据的帧数，设置为0.3s的帧数16000*0.3=4800
-    reply_wav_file = "/sdcard/app/tests/utils/wozai.wav"         # kws唤醒词回复音频路径
+    reply_wav_file = "/sdcard/examples/utils/wozai.wav"         # kws唤醒词回复音频路径
 
     # 初始化音频预处理接口
     fp = aidemo.kws_fp_create()
@@ -930,23 +942,23 @@ import sys
 class MyAIApp(AIBase):
     def __init__(self, kmodel_path, model_input_size, rgb888p_size=[224,224], display_size=[1920,1080], debug_mode=0):
         # 调用基类的构造函数
-        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)  
+        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)
         # 模型文件路径
-        self.kmodel_path = kmodel_path  
+        self.kmodel_path = kmodel_path
         # 模型输入分辨率
-        self.model_input_size = model_input_size  
+        self.model_input_size = model_input_size
         # sensor给到AI的图像分辨率，并对宽度进行16的对齐
-        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]   
+        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]
         # 显示分辨率，并对宽度进行16的对齐
-        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]] 
+        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]]
         # 是否开启调试模式
-        self.debug_mode = debug_mode  
+        self.debug_mode = debug_mode
 
     # 自定义当前任务的后处理，results是模型输出array列表，需要根据实际任务重写
     def postprocess(self, results):
         with ScopedTiming("postprocess", self.debug_mode > 0):
            pass
-           
+
     # 对于用预处理的AI任务，需要在子类中重写该函数
     def run(self,inputs_np):
         # 先将ulab.numpy.ndarray列表转换成tensor列表
@@ -1025,7 +1037,7 @@ class TrackerApp(AIBase):
         # 可以不定义
         self.ai2d=Ai2d(debug_mode)
         self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
-    
+
     # 可以不定义
     def config_preprocess(self,input_image_size=None):
         with ScopedTiming("set preprocess config",self.debug_mode > 0):
@@ -1067,81 +1079,81 @@ import sys
 class MyAIApp_1(AIBase):
     def __init__(self, kmodel_path, model_input_size, rgb888p_size=[224,224], display_size=[1920,1080], debug_mode=0):
         # 调用基类的构造函数
-        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)  
+        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)
         # 模型文件路径
-        self.kmodel_path = kmodel_path  
+        self.kmodel_path = kmodel_path
         # 模型输入分辨率
-        self.model_input_size = model_input_size  
+        self.model_input_size = model_input_size
         # sensor给到AI的图像分辨率，并对宽度进行16的对齐
-        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]   
+        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]
         # 显示分辨率，并对宽度进行16的对齐
-        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]] 
+        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]]
         # 是否开启调试模式
-        self.debug_mode = debug_mode  
+        self.debug_mode = debug_mode
         # 实例化Ai2d，用于实现模型预处理
-        self.ai2d = Ai2d(debug_mode)  
+        self.ai2d = Ai2d(debug_mode)
         # 设置Ai2d的输入输出格式和类型
-        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)  
+        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
 
-    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/libs/AI2D.py查看
     def config_preprocess(self, input_image_size=None):
-        with ScopedTiming("set preprocess config", self.debug_mode > 0): 
+        with ScopedTiming("set preprocess config", self.debug_mode > 0):
             # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
-            ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size  
+            ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size
             # 配置resize预处理方法
-            self.ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel) 
+            self.ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
             # 构建预处理流程
-            self.ai2d.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,self.model_input_size[1],self.model_input_size[0]])  
+            self.ai2d.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,self.model_input_size[1],self.model_input_size[0]])
 
     # 自定义当前任务的后处理，results是模型输出array列表，需要根据实际任务重写
     def postprocess(self, results):
         with ScopedTiming("postprocess", self.debug_mode > 0):
            pass
 
-            
+
 # 自定义AI任务类，继承自AIBase基类
 class MyAIApp_2(AIBase):
     def __init__(self, kmodel_path, model_input_size, rgb888p_size=[224,224], display_size=[1920,1080], debug_mode=0):
         # 调用基类的构造函数
-        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)  
+        super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)
         # 模型文件路径
-        self.kmodel_path = kmodel_path  
+        self.kmodel_path = kmodel_path
         # 模型输入分辨率
-        self.model_input_size = model_input_size  
+        self.model_input_size = model_input_size
         # sensor给到AI的图像分辨率，并对宽度进行16的对齐
-        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]   
+        self.rgb888p_size = [ALIGN_UP(rgb888p_size[0], 16), rgb888p_size[1]]
         # 显示分辨率，并对宽度进行16的对齐
-        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]] 
+        self.display_size = [ALIGN_UP(display_size[0], 16), display_size[1]]
         # 是否开启调试模式
-        self.debug_mode = debug_mode  
+        self.debug_mode = debug_mode
         # 实例化Ai2d，用于实现模型预处理
-        self.ai2d = Ai2d(debug_mode)  
+        self.ai2d = Ai2d(debug_mode)
         # 设置Ai2d的输入输出格式和类型
-        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)  
+        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
 
-    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/libs/AI2D.py查看
     def config_preprocess(self, input_image_size=None):
-        with ScopedTiming("set preprocess config", self.debug_mode > 0): 
+        with ScopedTiming("set preprocess config", self.debug_mode > 0):
             # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
-            ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size  
+            ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size
             # 配置resize预处理方法
-            self.ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel) 
+            self.ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
             # 构建预处理流程
-            self.ai2d.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,self.model_input_size[1],self.model_input_size[0]])  
+            self.ai2d.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,self.model_input_size[1],self.model_input_size[0]])
 
     # 自定义当前任务的后处理，results是模型输出array列表，需要根据实际任务重写
     def postprocess(self, results):
         with ScopedTiming("postprocess", self.debug_mode > 0):
            pass
-           
-           
+
+
 class MyApp:
     def __init__(kmodel1_path,kmodel2_path,kmodel1_input_size,kmodel2_input_size,rgb888p_size,display_size,debug_mode):
         # 创建两个模型推理的实例
         self.app_1=MyApp_1(kmodel1_path,kmodel1_input_size,rgb888p_size,display_size,debug_mode)
         self.app_2=MyApp_2(kmodel2_path,kmodel2_input_size，rgb888p_size,display_size，debug_mode)
         self.app_1.config_preprocess()
-    
+
     # 编写run函数，具体代码根据AI任务的需求编写，此处只是给出一个示例
     def run(self,input_np):
         outputs_1=self.app_1.run(input_np)
@@ -1151,15 +1163,15 @@ class MyApp:
             out_2=self.app_2.run(input_np)
             outputs_2.append(out_2)
         return outputs_1,outputs_2
-            
+
     # 绘制
     def draw_result(self,pl,outputs_1,outputs_2):
         pass
-        
+
     ######其他函数########
     # 省略
     ####################
-        
+
 
 if __name__ == "__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
@@ -1174,7 +1186,7 @@ if __name__ == "__main__":
     kmdoel1_input_size=[320,320]
     kmodel2_path = "test_kmodel2.kmodel"
     kmodel2_input_size=[48,48]
-    
+
     ###### 其它参数########
     # 省略
     ######################
@@ -1204,7 +1216,7 @@ if __name__ == "__main__":
 
 ```
 
-下面以车牌检测为例给出示例代码：
+下面以车牌检测识别为例给出示例代码：
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -1244,7 +1256,7 @@ class LicenceDetectionApp(AIBase):
         # 设置Ai2d的输入输出格式和类型
         self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
 
-    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine
+    # 配置预处理操作，这里使用了pad和resize，Ai2d支持crop/shift/pad/resize/affine
     def config_preprocess(self, input_image_size=None):
         with ScopedTiming("set preprocess config", self.debug_mode > 0):
             # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
@@ -1359,16 +1371,17 @@ class LicenceRec:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    rgb888p_size = [640,360]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 车牌检测模型路径
-    licence_det_kmodel_path="/sdcard/app/tests/kmodel/LPD_640.kmodel"
+    licence_det_kmodel_path="/sdcard/examples/kmodel/LPD_640.kmodel"
     # 车牌识别模型路径
-    licence_rec_kmodel_path="/sdcard/app/tests/kmodel/licence_reco.kmodel"
+    licence_rec_kmodel_path="/sdcard/examples/kmodel/licence_reco.kmodel"
     # 其它参数
-    rgb888p_size=[640,360]
     licence_det_input_size=[640,640]
     licence_rec_input_size=[220,32]
     confidence_threshold=0.2
@@ -1413,22 +1426,22 @@ AI Demo分为两种类型：单模型、多模型，涵盖物体、人脸、人�
 
 | Demo名称                | 场景            | 任务类型   | K230 | K230D |
 | ----------------------- | --------------- | ---------- | ---- | ---- |
-| dynamic_gesture         | 动态手势识别    | 多模型任务 | √ |  |
+| dynamic_gesture         | 动态手势识别    | 多模型任务 | √ | √ |
 | eye_gaze                | 注视估计        | 多模型任务 | √ |  |
 | face_detection          | 人脸检测        | 单模型任务 | √ | √ |
 | face_landmark           | 人脸关键部位    | 多模型任务 | √ | √ |
 | face_mesh               | 人脸3D网格      | 多模型任务 | √ |  |
 | face_parse              | 人脸解析        | 多模型任务 | √ |  |
 | face_pose               | 人脸姿态        | 多模型任务 | √ | √ |
-| face_recognition        | 人脸识别        | 多模型任务 | √ |  |
 | face_registration       | 人脸注册        | 多模型任务 | √ | √ |
+| face_recognition        | 人脸识别        | 多模型任务 | √ | √ |
 | falldown_detection      | 跌倒检测        | 单模型任务 | √ | √ |
 | finger_guessing         | 猜拳游戏        | 多模型任务 | √ | √ |
 | hand_detection          | 手掌检测        | 单模型任务 | √ | √ |
 | hand_keypoint_class     | 手掌关键点分类  | 多模型任务 | √ | √ |
 | hand_keypoint_detection | 手掌关键点检测  | 多模型任务 | √ | √ |
 | hand_recognition        | 手势识别        | 多模型任务 | √ | √ |
-| keyword_spotting        | 关键词唤醒      | 单模型任务 | √ |  |
+| keyword_spotting        | 关键词唤醒      | 单模型任务 | √ | √ |
 | licence_det             | 车牌检测        | 单模型任务 | √ | √ |
 | licence_det_rec         | 车牌识别        | 多模型任务 | √ | √ |
 | nanotracker             | 单目标跟踪      | 多模型任务 | √ | √ |
@@ -1443,7 +1456,17 @@ AI Demo分为两种类型：单模型、多模型，涵盖物体、人脸、人�
 | space_resize            | 局部放大器      | 多模型任务 | √ | √ |
 | tts_zh                  | 中文文本转语音  | 多模型任务 | √ |  |
 
+```{admonition} 提示
+K230D芯片的开发板运行上述demo需要更改`__main__`中的`display_mode`为`lcd`适配显示输出，同时需要按照注释降低分辨率运行。同时部分demo无法在K230D上运行，详情见上述表格。
+```
+
 ### 2.1. 动态手势识别
+
+#### 2.1.1 demo说明
+
+动态手势识别实现了五种动态手势的识别，五种手势包括：上挥手、下挥手、左挥手、右挥手、手指捏合五个手势。
+
+#### 2.1.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -1821,13 +1844,13 @@ class DynamicGesture:
         # 动态手势识别贴图
         self.bin_width = 150                                                     # 动态手势识别屏幕坐上角标志状态文件的短边尺寸
         self.bin_height = 216                                                    # 动态手势识别屏幕坐上角标志状态文件的长边尺寸
-        shang_argb = np.fromfile("/sdcard/app/tests/utils/shang.bin", dtype=np.uint8)
+        shang_argb = np.fromfile("/sdcard/examples/utils/shang.bin", dtype=np.uint8)
         self.shang_argb = shang_argb.reshape((self.bin_height, self.bin_width, 4))
-        xia_argb = np.fromfile("/sdcard/app/tests/utils/xia.bin", dtype=np.uint8)
+        xia_argb = np.fromfile("/sdcard/examples/utils/xia.bin", dtype=np.uint8)
         self.xia_argb = xia_argb.reshape((self.bin_height, self.bin_width, 4))
-        zuo_argb = np.fromfile("/sdcard/app/tests/utils/zuo.bin", dtype=np.uint8)
+        zuo_argb = np.fromfile("/sdcard/examples/utils/zuo.bin", dtype=np.uint8)
         self.zuo_argb = zuo_argb.reshape((self.bin_width, self.bin_height, 4))
-        you_argb = np.fromfile("/sdcard/app/tests/utils/you.bin", dtype=np.uint8)
+        you_argb = np.fromfile("/sdcard/examples/utils/you.bin", dtype=np.uint8)
         self.you_argb = you_argb.reshape((self.bin_width, self.bin_height, 4))
         #其他参数
         self.TRIGGER = 0                                                         # 动态手势识别应用的结果状态
@@ -1990,19 +2013,19 @@ class DynamicGesture:
         self.elapsed_ms_show = round((time.time_ns()-self.s_start)/1000000)
         if (self.elapsed_ms_show<1000):
             if (self.draw_state == self.UP):
-                draw_img.draw_arrow(1068,330,1068,130, (255,170,190,230), thickness=13)                             # 判断为向上挥动时，画一个向上的箭头
+                draw_img.draw_arrow(self.display_size[0]//2,self.display_size[1]//2,self.display_size[0]//2,self.display_size[1]//2-100, (255,170,190,230), thickness=13)                             # 判断为向上挥动时，画一个向上的箭头
                 draw_img.draw_string_advanced(self.display_size[0]//2-50,self.display_size[1]//2-50,32,"向上")
             elif (self.draw_state == self.RIGHT):
-                draw_img.draw_arrow(1290,540,1536,540, (255,170,190,230), thickness=13)                             # 判断为向右挥动时，画一个向右的箭头
-                draw_img.draw_string_advanced(self.display_size[0]//2-50,self.display_size[1]//2-50,32,"向右")
+                draw_img.draw_arrow(self.display_size[0]//2,self.display_size[1]//2,self.display_size[0]//2-100,self.display_size[1]//2, (255,170,190,230), thickness=13)                             # 判断为向右挥动时，画一个向右的箭头
+                draw_img.draw_string_advanced(self.display_size[0]//2-50,self.display_size[1]//2-50,32,"向左")
             elif (self.draw_state == self.DOWN):
-                draw_img.draw_arrow(1068,750,1068,950, (255,170,190,230), thickness=13)                             # 判断为向下挥动时，画一个向下的箭头
+                draw_img.draw_arrow(self.display_size[0]//2,self.display_size[1]//2,self.display_size[0]//2,self.display_size[1]//2+100, (255,170,190,230), thickness=13)                             # 判断为向下挥动时，画一个向下的箭头
                 draw_img.draw_string_advanced(self.display_size[0]//2-50,self.display_size[1]//2-50,32,"向下")
             elif (self.draw_state == self.LEFT):
-                draw_img.draw_arrow(846,540,600,540, (255,170,190,230), thickness=13)                               # 判断为向左挥动时，画一个向左的箭头
-                draw_img.draw_string_advanced(self.display_size[0]//2-50,self.display_size[1]//2-50,32,"向左")
+                draw_img.draw_arrow(self.display_size[0]//2,self.display_size[1]//2,self.display_size[0]//2+100,self.display_size[1]//2, (255,170,190,230), thickness=13)                               # 判断为向左挥动时，画一个向左的箭头
+                draw_img.draw_string_advanced(self.display_size[0]//2-50,self.display_size[1]//2-50,32,"向右")
             elif (self.draw_state == self.MIDDLE):
-                draw_img.draw_circle(1068,540,100, (255,170,190,230), thickness=2, fill=True)                       # 判断为五指捏合手势时，画一个实心圆
+                draw_img.draw_circle(self.display_size[0]//2,self.display_size[1]//2,100, (255,170,190,230), thickness=2, fill=True)                       # 判断为五指捏合手势时，画一个实心圆
                 draw_img.draw_string_advanced(self.display_size[0]//2-50,self.display_size[1]//2-50,32,"中间")
         else:
             self.draw_state = self.TRIGGER
@@ -2012,18 +2035,20 @@ class DynamicGesture:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size=[1920,1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 手掌检测模型路径
-    hand_det_kmodel_path="/sdcard/app/tests/kmodel/hand_det.kmodel"
+    hand_det_kmodel_path="/sdcard/examples/kmodel/hand_det.kmodel"
     # 手部关键点模型路径
-    hand_kp_kmodel_path="/sdcard/app/tests/kmodel/handkp_det.kmodel"
+    hand_kp_kmodel_path="/sdcard/examples/kmodel/handkp_det.kmodel"
     # 动态手势识别模型路径
-    gesture_kmodel_path="/sdcard/app/tests/kmodel/gesture.kmodel"
+    gesture_kmodel_path="/sdcard/examples/kmodel/gesture.kmodel"
     # 其他参数
-    rgb888p_size=[1920,1080]
     hand_det_input_size=[512,512]
     hand_kp_input_size=[256,256]
     gesture_input_size=[224,224]
@@ -2055,7 +2080,17 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.1.3 演示效果
+
+请将手掌对准摄像头，屏幕左上角出现对应方向的手掌后，做出向左、向右、向上、向下、五指捏合的动作，识别到动作后会显示动态手势的类别，并以箭头标识出来。
+
 ### 2.2. 注视估计
+
+#### 2.2.1 demo说明
+
+注视估计根据人脸特征预测人眼注视方向。该应用是双模型应用，先进行人脸检测，然后对检测到的人脸的注视方向进行预测，使用箭头在屏幕上标示出来。
+
+#### 2.2.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -2099,7 +2134,7 @@ class FaceDetApp(AIBase):
         # 设置Ai2d的输入输出格式和类型
         self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
 
-    # 配置预处理操作，这里使用了pad和resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    # 配置预处理操作，这里使用了padding和resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
     def config_preprocess(self,input_image_size=None):
         with ScopedTiming("set preprocess config",self.debug_mode > 0):
             # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
@@ -2244,18 +2279,18 @@ class EyeGaze:
 
 
 if __name__=="__main__":
-    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
+    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"，k230d受限于内存不支持
     display_mode="hdmi"
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 人脸检测模型路径
-    face_det_kmodel_path="/sdcard/app/tests/kmodel/face_detection_320.kmodel"
+    face_det_kmodel_path="/sdcard/examples/kmodel/face_detection_320.kmodel"
     # 人脸注视估计模型路径
-    eye_gaze_kmodel_path="/sdcard/app/tests/kmodel/eye_gaze.kmodel"
+    eye_gaze_kmodel_path="/sdcard/examples/kmodel/eye_gaze.kmodel"
     # 其他参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
     rgb888p_size=[1920,1080]
     face_det_input_size=[320,320]
     eye_gaze_input_size=[448,448]
@@ -2287,7 +2322,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.2.3 演示效果
+
+原图像如下：
+
+![eye_gaze](../images/ai_demo/eye_gaze.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![eye_gaze_res](../images/ai_demo/eye_gaze_res.jpg)
+
 ### 2.3. 人脸检测
+
+#### 2.3.1 demo说明
+
+人脸检测应用对视频中每一个人脸检测，并以检测框的形式标识出来，同时将每个人脸的左眼球、右眼球、鼻尖、左嘴角、右嘴角五个关键点位置标出。
+
+#### 2.3.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -2376,21 +2427,23 @@ class FaceDetectionApp(AIBase):
 if __name__ == "__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 设置模型路径和其他参数
-    kmodel_path = "/sdcard/app/tests/kmodel/face_detection_320.kmodel"
+    kmodel_path = "/sdcard/examples/kmodel/face_detection_320.kmodel"
     # 其它参数
     confidence_threshold = 0.5
     nms_threshold = 0.2
     anchor_len = 4200
     det_dim = 4
-    anchors_path = "/sdcard/app/tests/utils/prior_data_320.bin"
+    anchors_path = "/sdcard/examples/utils/prior_data_320.bin"
     anchors = np.fromfile(anchors_path, dtype=np.float)
     anchors = anchors.reshape((anchor_len, det_dim))
-    rgb888p_size = [1920, 1080]
 
     # 初始化PipeLine，用于图像处理流程
     pl = PipeLine(rgb888p_size=rgb888p_size, display_size=display_size, display_mode=display_mode)
@@ -2415,7 +2468,23 @@ if __name__ == "__main__":
         pl.destroy()                            # 销毁PipeLine实例
 ```
 
+#### 2.3.3 演示效果
+
+原图像如下：
+
+![face_det](../images/ai_demo/face_det.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![face_det_res](../images/ai_demo/face_det_res.jpg)
+
 ### 2.4. 人脸关键部位
+
+#### 2.4.1 demo说明
+
+人脸关键部位应用是双模型应用，首先对视频的每一帧图像进行人脸检测，然后对检测到的每一张人脸识别106个关键点，并根据106个关键点绘制人脸、嘴巴、眼睛、鼻子和眉毛区域的轮廓。
+
+#### 2.4.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -2689,17 +2758,19 @@ class FaceLandMark:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 人脸检测模型路径
-    face_det_kmodel_path="/sdcard/app/tests/kmodel/face_detection_320.kmodel"
+    face_det_kmodel_path="/sdcard/examples/kmodel/face_detection_320.kmodel"
     # 人脸关键标志模型路径
-    face_landmark_kmodel_path="/sdcard/app/tests/kmodel/face_landmark.kmodel"
+    face_landmark_kmodel_path="/sdcard/examples/kmodel/face_landmark.kmodel"
     # 其它参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
-    rgb888p_size=[1920,1080]
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
     face_det_input_size=[320,320]
     face_landmark_input_size=[192,192]
     confidence_threshold=0.5
@@ -2730,7 +2801,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
-### 2.5. 人脸3D网络
+#### 2.4.3 演示效果
+
+原图像如下：
+
+![face_landmark](../images/ai_demo/face.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![face_landmark_res](../images/ai_demo/face_landmark_res.jpg)
+
+### 2.5. 人脸3D网格
+
+#### 2.5.1 demo说明
+
+人脸3D网格是多模型应用，首先对视频中的每一帧图像进行人脸检测，然后使用人脸对齐模型（3DDFA，3D Dense Face Alignment）进行人脸对齐，最后使用人脸mesh模型进行人脸3D网格重建，得到图中每个人脸的mesh。
+
+#### 2.5.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -2988,20 +3075,20 @@ class FaceMesh:
 
 
 if __name__=="__main__":
-    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
+    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"，k230d受限于内存不支持
     display_mode="hdmi"
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 人脸检测模型路径
-    face_det_kmodel_path="/sdcard/app/tests/kmodel/face_detection_320.kmodel"
+    face_det_kmodel_path="/sdcard/examples/kmodel/face_detection_320.kmodel"
     # 人脸网格模型路径
-    face_mesh_kmodel_path="/sdcard/app/tests/kmodel/face_alignment.kmodel"
+    face_mesh_kmodel_path="/sdcard/examples/kmodel/face_alignment.kmodel"
     # 人脸网格后处理模型路径
-    face_mesh_post_kmodel_path="/sdcard/app/tests/kmodel/face_alignment_post.kmodel"
+    face_mesh_post_kmodel_path="/sdcard/examples/kmodel/face_alignment_post.kmodel"
     # 其他参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
     rgb888p_size=[1920,1080]
     face_det_input_size=[320,320]
     face_mesh_input_size=[120,120]
@@ -3034,7 +3121,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.5.3 演示效果
+
+原图像如下：
+
+![face_mesh](../images/ai_demo/face.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![face_mesh_res](../images/ai_demo/face_mesh_res.jpg)
+
 ### 2.6. 人脸解析
+
+#### 2.6.1 demo说明
+
+人脸解析（又称人脸分割）应用是一个双模型应用，首先进行人脸检测，然后实现人脸不同部分的分割。人脸分割包括对眼睛、鼻子、嘴巴等部位的像素级分类，不同区域在屏幕上以不同颜色标识。
+
+#### 2.6.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -3240,18 +3343,18 @@ class FaceParse:
 
 
 if __name__=="__main__":
-    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
+    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"，k230d受限于内存不支持
     display_mode="hdmi"
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 人脸检测模型路径
-    face_det_kmodel_path="/sdcard/app/tests/kmodel/face_detection_320.kmodel"
+    face_det_kmodel_path="/sdcard/examples/kmodel/face_detection_320.kmodel"
     # 人脸解析模型路径
-    face_parse_kmodel_path="/sdcard/app/tests/kmodel/face_parse.kmodel"
+    face_parse_kmodel_path="/sdcard/examples/kmodel/face_parse.kmodel"
     # 其他参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
     rgb888p_size=[1920,1080]
     face_det_input_size=[320,320]
     face_parse_input_size=[320,320]
@@ -3283,7 +3386,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.6.3 演示效果
+
+原图像如下：
+
+![face_parse](../images/ai_demo/face.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![face_parse_res](../images/ai_demo/face_parse_res.jpg)
+
 ### 2.7. 人脸姿态
+
+#### 2.7.1 demo说明
+
+人脸姿态是一个双模型应用，首先对视频的每一帧进行人脸检测，然后对检测到的每张人脸预测人脸朝向。人脸朝向使用欧拉角（roll/yaw/pitch）表示，roll表示人脸左右摇头的程度，yaw表示人脸左右旋转的程度，pitch表示人脸低头抬头的程度。该应用通过构建投影矩阵的方式将人脸朝向可视化到屏幕上。
+
+#### 2.7.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -3561,17 +3680,19 @@ class FacePose:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 人脸检测模型路径
-    face_det_kmodel_path="/sdcard/app/tests/kmodel/face_detection_320.kmodel"
+    face_det_kmodel_path="/sdcard/examples/kmodel/face_detection_320.kmodel"
     # 人脸姿态模型路径
-    face_pose_kmodel_path="/sdcard/app/tests/kmodel/face_pose.kmodel"
+    face_pose_kmodel_path="/sdcard/examples/kmodel/face_pose.kmodel"
     # 其它参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
-    rgb888p_size=[1920,1080]
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
     face_det_input_size=[320,320]
     face_pose_input_size=[120,120]
     confidence_threshold=0.5
@@ -3602,7 +3723,350 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
-### 2.8. 人脸识别
+#### 2.7.3 演示效果
+
+原图像如下：
+
+![face_pose](../images/ai_demo/face_pose.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![face_pose_res](../images/ai_demo/face_pose_res.jpg)
+
+### 2.8. 人脸注册
+
+#### 2.8.1 demo说明
+
+人脸注册是人脸识别的前置任务，对人脸数据库中每一张包含人脸的图片进行特征化，并将人脸特征以bin文件的形式写入人脸数据库目录，以备人脸识别程序调用。人脸注册输出的人脸特征维度是512。
+
+#### 2.8.2 代码
+
+```python
+from libs.PipeLine import PipeLine, ScopedTiming
+from libs.AIBase import AIBase
+from libs.AI2D import Ai2d
+import os
+import ujson
+from media.media import *
+from time import *
+import nncase_runtime as nn
+import ulab.numpy as np
+import time
+import image
+import aidemo
+import random
+import gc
+import sys
+import math
+
+# 自定义人脸检测任务类
+class FaceDetApp(AIBase):
+    def __init__(self,kmodel_path,model_input_size,anchors,confidence_threshold=0.25,nms_threshold=0.3,rgb888p_size=[1280,720],display_size=[1920,1080],debug_mode=0):
+        super().__init__(kmodel_path,model_input_size,rgb888p_size,debug_mode)
+        # kmodel路径
+        self.kmodel_path=kmodel_path
+        # 检测模型输入分辨率
+        self.model_input_size=model_input_size
+        # 置信度阈值
+        self.confidence_threshold=confidence_threshold
+        # nms阈值
+        self.nms_threshold=nms_threshold
+        self.anchors=anchors
+        # sensor给到AI的图像分辨率，宽16字节对齐
+        self.rgb888p_size=[ALIGN_UP(rgb888p_size[0],16),rgb888p_size[1]]
+        # 视频输出VO分辨率，宽16字节对齐
+        self.display_size=[ALIGN_UP(display_size[0],16),display_size[1]]
+        # debug模式
+        self.debug_mode=debug_mode
+        # 实例化Ai2d，用于实现模型预处理
+        self.ai2d=Ai2d(debug_mode)
+        # 设置Ai2d的输入输出格式和类型
+        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
+        self.image_size=[]
+
+    # 配置预处理操作，这里使用了pad和resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    def config_preprocess(self,input_image_size=None):
+        with ScopedTiming("set preprocess config",self.debug_mode > 0):
+            # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
+            ai2d_input_size=input_image_size if input_image_size else self.rgb888p_size
+            self.image_size=[input_image_size[1],input_image_size[0]]
+            # 计算padding参数，并设置padding预处理
+            self.ai2d.pad(self.get_pad_param(ai2d_input_size), 0, [104,117,123])
+            # 设置resize预处理
+            self.ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
+            # 构建预处理流程,参数为预处理输入tensor的shape和预处理输出的tensor的shape
+            self.ai2d.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,self.model_input_size[1],self.model_input_size[0]])
+
+    # 自定义后处理，results是模型输出的array列表，这里使用了aidemo库的face_det_post_process接口
+    def postprocess(self,results):
+        with ScopedTiming("postprocess",self.debug_mode > 0):
+            res = aidemo.face_det_post_process(self.confidence_threshold,self.nms_threshold,self.model_input_size[0],self.anchors,self.image_size,results)
+            if len(res)==0:
+                return res
+            else:
+                return res[0],res[1]
+
+    def get_pad_param(self,image_input_size):
+        dst_w = self.model_input_size[0]
+        dst_h = self.model_input_size[1]
+        # 计算最小的缩放比例，等比例缩放
+        ratio_w = dst_w / image_input_size[0]
+        ratio_h = dst_h / image_input_size[1]
+        if ratio_w < ratio_h:
+            ratio = ratio_w
+        else:
+            ratio = ratio_h
+        new_w = (int)(ratio * image_input_size[0])
+        new_h = (int)(ratio * image_input_size[1])
+        dw = (dst_w - new_w) / 2
+        dh = (dst_h - new_h) / 2
+        top = (int)(round(0))
+        bottom = (int)(round(dh * 2 + 0.1))
+        left = (int)(round(0))
+        right = (int)(round(dw * 2 - 0.1))
+        return [0,0,0,0,top, bottom, left, right]
+
+# 自定义人脸注册任务类
+class FaceRegistrationApp(AIBase):
+    def __init__(self,kmodel_path,model_input_size,rgb888p_size=[1920,1080],display_size=[1920,1080],debug_mode=0):
+        super().__init__(kmodel_path,model_input_size,rgb888p_size,debug_mode)
+        # kmodel路径
+        self.kmodel_path=kmodel_path
+        # 人脸注册模型输入分辨率
+        self.model_input_size=model_input_size
+        # sensor给到AI的图像分辨率，宽16字节对齐
+        self.rgb888p_size=[ALIGN_UP(rgb888p_size[0],16),rgb888p_size[1]]
+        # 视频输出VO分辨率，宽16字节对齐
+        self.display_size=[ALIGN_UP(display_size[0],16),display_size[1]]
+        # debug模式
+        self.debug_mode=debug_mode
+        # 标准5官
+        self.umeyama_args_112 = [
+            38.2946 , 51.6963 ,
+            73.5318 , 51.5014 ,
+            56.0252 , 71.7366 ,
+            41.5493 , 92.3655 ,
+            70.7299 , 92.2041
+        ]
+        self.ai2d=Ai2d(debug_mode)
+        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
+
+    # 配置预处理操作，这里使用了affine，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    def config_preprocess(self,landm,input_image_size=None):
+        with ScopedTiming("set preprocess config",self.debug_mode > 0):
+            ai2d_input_size=input_image_size if input_image_size else self.rgb888p_size
+            # 计算affine矩阵，并设置仿射变换预处理
+            affine_matrix = self.get_affine_matrix(landm)
+            self.ai2d.affine(nn.interp_method.cv2_bilinear,0, 0, 127, 1,affine_matrix)
+            # 构建预处理流程,参数为预处理输入tensor的shape和预处理输出的tensor的shape
+            self.ai2d.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,self.model_input_size[1],self.model_input_size[0]])
+
+    # 自定义后处理
+    def postprocess(self,results):
+        with ScopedTiming("postprocess",self.debug_mode > 0):
+            return results[0][0]
+
+    def svd22(self,a):
+        # svd
+        s = [0.0, 0.0]
+        u = [0.0, 0.0, 0.0, 0.0]
+        v = [0.0, 0.0, 0.0, 0.0]
+        s[0] = (math.sqrt((a[0] - a[3]) ** 2 + (a[1] + a[2]) ** 2) + math.sqrt((a[0] + a[3]) ** 2 + (a[1] - a[2]) ** 2)) / 2
+        s[1] = abs(s[0] - math.sqrt((a[0] - a[3]) ** 2 + (a[1] + a[2]) ** 2))
+        v[2] = math.sin((math.atan2(2 * (a[0] * a[1] + a[2] * a[3]), a[0] ** 2 - a[1] ** 2 + a[2] ** 2 - a[3] ** 2)) / 2) if \
+        s[0] > s[1] else 0
+        v[0] = math.sqrt(1 - v[2] ** 2)
+        v[1] = -v[2]
+        v[3] = v[0]
+        u[0] = -(a[0] * v[0] + a[1] * v[2]) / s[0] if s[0] != 0 else 1
+        u[2] = -(a[2] * v[0] + a[3] * v[2]) / s[0] if s[0] != 0 else 0
+        u[1] = (a[0] * v[1] + a[1] * v[3]) / s[1] if s[1] != 0 else -u[2]
+        u[3] = (a[2] * v[1] + a[3] * v[3]) / s[1] if s[1] != 0 else u[0]
+        v[0] = -v[0]
+        v[2] = -v[2]
+        return u, s, v
+
+    def image_umeyama_112(self,src):
+        # 使用Umeyama算法计算仿射变换矩阵
+        SRC_NUM = 5
+        SRC_DIM = 2
+        src_mean = [0.0, 0.0]
+        dst_mean = [0.0, 0.0]
+        for i in range(0,SRC_NUM * 2,2):
+            src_mean[0] += src[i]
+            src_mean[1] += src[i + 1]
+            dst_mean[0] += self.umeyama_args_112[i]
+            dst_mean[1] += self.umeyama_args_112[i + 1]
+        src_mean[0] /= SRC_NUM
+        src_mean[1] /= SRC_NUM
+        dst_mean[0] /= SRC_NUM
+        dst_mean[1] /= SRC_NUM
+        src_demean = [[0.0, 0.0] for _ in range(SRC_NUM)]
+        dst_demean = [[0.0, 0.0] for _ in range(SRC_NUM)]
+        for i in range(SRC_NUM):
+            src_demean[i][0] = src[2 * i] - src_mean[0]
+            src_demean[i][1] = src[2 * i + 1] - src_mean[1]
+            dst_demean[i][0] = self.umeyama_args_112[2 * i] - dst_mean[0]
+            dst_demean[i][1] = self.umeyama_args_112[2 * i + 1] - dst_mean[1]
+        A = [[0.0, 0.0], [0.0, 0.0]]
+        for i in range(SRC_DIM):
+            for k in range(SRC_DIM):
+                for j in range(SRC_NUM):
+                    A[i][k] += dst_demean[j][i] * src_demean[j][k]
+                A[i][k] /= SRC_NUM
+        T = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+        U, S, V = self.svd22([A[0][0], A[0][1], A[1][0], A[1][1]])
+        T[0][0] = U[0] * V[0] + U[1] * V[2]
+        T[0][1] = U[0] * V[1] + U[1] * V[3]
+        T[1][0] = U[2] * V[0] + U[3] * V[2]
+        T[1][1] = U[2] * V[1] + U[3] * V[3]
+        scale = 1.0
+        src_demean_mean = [0.0, 0.0]
+        src_demean_var = [0.0, 0.0]
+        for i in range(SRC_NUM):
+            src_demean_mean[0] += src_demean[i][0]
+            src_demean_mean[1] += src_demean[i][1]
+        src_demean_mean[0] /= SRC_NUM
+        src_demean_mean[1] /= SRC_NUM
+        for i in range(SRC_NUM):
+            src_demean_var[0] += (src_demean_mean[0] - src_demean[i][0]) * (src_demean_mean[0] - src_demean[i][0])
+            src_demean_var[1] += (src_demean_mean[1] - src_demean[i][1]) * (src_demean_mean[1] - src_demean[i][1])
+        src_demean_var[0] /= SRC_NUM
+        src_demean_var[1] /= SRC_NUM
+        scale = 1.0 / (src_demean_var[0] + src_demean_var[1]) * (S[0] + S[1])
+        T[0][2] = dst_mean[0] - scale * (T[0][0] * src_mean[0] + T[0][1] * src_mean[1])
+        T[1][2] = dst_mean[1] - scale * (T[1][0] * src_mean[0] + T[1][1] * src_mean[1])
+        T[0][0] *= scale
+        T[0][1] *= scale
+        T[1][0] *= scale
+        T[1][1] *= scale
+        return T
+
+    def get_affine_matrix(self,sparse_points):
+        # 获取affine变换矩阵
+        with ScopedTiming("get_affine_matrix", self.debug_mode > 1):
+            # 使用Umeyama算法计算仿射变换矩阵
+            matrix_dst = self.image_umeyama_112(sparse_points)
+            matrix_dst = [matrix_dst[0][0],matrix_dst[0][1],matrix_dst[0][2],
+                          matrix_dst[1][0],matrix_dst[1][1],matrix_dst[1][2]]
+            return matrix_dst
+
+# 人脸注册任务类
+class FaceRegistration:
+    def __init__(self,face_det_kmodel,face_reg_kmodel,det_input_size,reg_input_size,database_dir,anchors,confidence_threshold=0.25,nms_threshold=0.3,rgb888p_size=[1280,720],display_size=[1920,1080],debug_mode=0):
+        # 人脸检测模型路径
+        self.face_det_kmodel=face_det_kmodel
+        # 人脸注册模型路径
+        self.face_reg_kmodel=face_reg_kmodel
+        # 人脸检测模型输入分辨率
+        self.det_input_size=det_input_size
+        # 人脸注册模型输入分辨率
+        self.reg_input_size=reg_input_size
+        self.database_dir=database_dir
+        # anchors
+        self.anchors=anchors
+        # 置信度阈值
+        self.confidence_threshold=confidence_threshold
+        # nms阈值
+        self.nms_threshold=nms_threshold
+        # sensor给到AI的图像分辨率，宽16字节对齐
+        self.rgb888p_size=[ALIGN_UP(rgb888p_size[0],16),rgb888p_size[1]]
+        # 视频输出VO分辨率，宽16字节对齐
+        self.display_size=[ALIGN_UP(display_size[0],16),display_size[1]]
+        # debug_mode模式
+        self.debug_mode=debug_mode
+        self.face_det=FaceDetApp(self.face_det_kmodel,model_input_size=self.det_input_size,anchors=self.anchors,confidence_threshold=self.confidence_threshold,nms_threshold=self.nms_threshold,debug_mode=0)
+        self.face_reg=FaceRegistrationApp(self.face_reg_kmodel,model_input_size=self.reg_input_size,rgb888p_size=self.rgb888p_size)
+
+    # run函数
+    def run(self,input_np,img_file):
+        self.face_det.config_preprocess(input_image_size=[input_np.shape[3],input_np.shape[2]])
+        det_boxes,landms=self.face_det.run(input_np)
+        if det_boxes:
+            if det_boxes.shape[0] == 1:
+                # 若是只检测到一张人脸，则将该人脸注册到数据库
+                db_i_name = img_file.split('.')[0]
+                for landm in landms:
+                    self.face_reg.config_preprocess(landm,input_image_size=[input_np.shape[3],input_np.shape[2]])
+                    reg_result = self.face_reg.run(input_np)
+                    with open(self.database_dir+'{}.bin'.format(db_i_name), "wb") as file:
+                        file.write(reg_result.tobytes())
+                        print('Success!')
+            else:
+                print('Only one person in a picture when you sign up')
+        else:
+            print('No person detected')
+
+    def image2rgb888array(self,img):   #4维
+        # 将Image转换为rgb888格式
+        with ScopedTiming("fr_kpu_deinit",self.debug_mode > 0):
+            img_data_rgb888=img.to_rgb888()
+            # hwc,rgb888
+            img_hwc=img_data_rgb888.to_numpy_ref()
+            shape=img_hwc.shape
+            img_tmp = img_hwc.reshape((shape[0] * shape[1], shape[2]))
+            img_tmp_trans = img_tmp.transpose()
+            img_res=img_tmp_trans.copy()
+            # chw,rgb888
+            img_return=img_res.reshape((1,shape[2],shape[0],shape[1]))
+        return  img_return
+
+
+if __name__=="__main__":
+    # 人脸检测模型路径
+    face_det_kmodel_path="/sdcard/examples/kmodel/face_detection_320.kmodel"
+    # 人脸注册模型路径
+    face_reg_kmodel_path="/sdcard/examples/kmodel/face_recognition.kmodel"
+    # 其它参数
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
+    database_dir="/sdcard/examples/utils/db/"
+    database_img_dir="/sdcard/examples/utils/db_img/"
+    face_det_input_size=[320,320]
+    face_reg_input_size=[112,112]
+    confidence_threshold=0.5
+    nms_threshold=0.2
+    anchor_len=4200
+    det_dim=4
+    anchors = np.fromfile(anchors_path, dtype=np.float)
+    anchors = anchors.reshape((anchor_len,det_dim))
+    max_register_face = 100              #数据库最多人脸个数
+    feature_num = 128                    #人脸识别特征维度
+
+    fr=FaceRegistration(face_det_kmodel_path,face_reg_kmodel_path,det_input_size=face_det_input_size,reg_input_size=face_reg_input_size,database_dir=database_dir,anchors=anchors,confidence_threshold=confidence_threshold,nms_threshold=nms_threshold)
+    try:
+        # 获取图像列表
+        img_list = os.listdir(database_img_dir)
+        for img_file in img_list:
+            #本地读取一张图像
+            full_img_file = database_img_dir + img_file
+            print(full_img_file)
+            img = image.Image(full_img_file)
+            img.compress_for_ide()
+            # 转rgb888的chw格式
+            rgb888p_img_ndarry = fr.image2rgb888array(img)
+            # 人脸注册
+            fr.run(rgb888p_img_ndarry,img_file)
+            gc.collect()
+    except Exception as e:
+        sys.print_exception(e)
+    finally:
+        fr.face_det.deinit()
+        fr.face_reg.deinit()
+```
+
+#### 2.8.3 演示效果
+
+将带有人脸的图片注册为人脸特征并存入人脸特征库，下图是人脸图片中的一张：
+
+![id_2](../images/ai_demo/id_2.png)
+
+### 2.9. 人脸识别
+
+#### 2.9.1 demo说明
+
+人脸识别应用是基于人脸注册的信息对视频中的每一帧图片做人脸身份识别，如果识别到的人脸在注册数据库中，则标注识别人脸的身份信息，否则显示unknown。
+
+#### 2.9.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -3937,18 +4401,20 @@ if __name__=="__main__":
     # 注意：执行人脸识别任务之前，需要先执行人脸注册任务进行人脸身份注册生成feature数据库
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 人脸检测模型路径
-    face_det_kmodel_path="/sdcard/app/tests/kmodel/face_detection_320.kmodel"
+    face_det_kmodel_path="/sdcard/examples/kmodel/face_detection_320.kmodel"
     # 人脸识别模型路径
-    face_reg_kmodel_path="/sdcard/app/tests/kmodel/face_recognition.kmodel"
+    face_reg_kmodel_path="/sdcard/examples/kmodel/face_recognition.kmodel"
     # 其它参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
-    database_dir ="/sdcard/app/tests/utils/db/"
-    rgb888p_size=[1920,1080]
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
+    database_dir ="/sdcard/examples/utils/db/"
     face_det_input_size=[320,320]
     face_reg_input_size=[112,112]
     confidence_threshold=0.5
@@ -3980,322 +4446,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
-### 2.9. 人脸注册
+#### 2.9.3 演示效果
 
-```python
-from libs.PipeLine import PipeLine, ScopedTiming
-from libs.AIBase import AIBase
-from libs.AI2D import Ai2d
-import os
-import ujson
-from media.media import *
-from time import *
-import nncase_runtime as nn
-import ulab.numpy as np
-import time
-import image
-import aidemo
-import random
-import gc
-import sys
-import math
+注册人脸原图像如下：
 
-# 自定义人脸检测任务类
-class FaceDetApp(AIBase):
-    def __init__(self,kmodel_path,model_input_size,anchors,confidence_threshold=0.25,nms_threshold=0.3,rgb888p_size=[1280,720],display_size=[1920,1080],debug_mode=0):
-        super().__init__(kmodel_path,model_input_size,rgb888p_size,debug_mode)
-        # kmodel路径
-        self.kmodel_path=kmodel_path
-        # 检测模型输入分辨率
-        self.model_input_size=model_input_size
-        # 置信度阈值
-        self.confidence_threshold=confidence_threshold
-        # nms阈值
-        self.nms_threshold=nms_threshold
-        self.anchors=anchors
-        # sensor给到AI的图像分辨率，宽16字节对齐
-        self.rgb888p_size=[ALIGN_UP(rgb888p_size[0],16),rgb888p_size[1]]
-        # 视频输出VO分辨率，宽16字节对齐
-        self.display_size=[ALIGN_UP(display_size[0],16),display_size[1]]
-        # debug模式
-        self.debug_mode=debug_mode
-        # 实例化Ai2d，用于实现模型预处理
-        self.ai2d=Ai2d(debug_mode)
-        # 设置Ai2d的输入输出格式和类型
-        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
-        self.image_size=[]
+![face_recognition](../images/ai_demo/id_2.png)
 
-    # 配置预处理操作，这里使用了pad和resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
-    def config_preprocess(self,input_image_size=None):
-        with ScopedTiming("set preprocess config",self.debug_mode > 0):
-            # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
-            ai2d_input_size=input_image_size if input_image_size else self.rgb888p_size
-            self.image_size=[input_image_size[1],input_image_size[0]]
-            # 计算padding参数，并设置padding预处理
-            self.ai2d.pad(self.get_pad_param(ai2d_input_size), 0, [104,117,123])
-            # 设置resize预处理
-            self.ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
-            # 构建预处理流程,参数为预处理输入tensor的shape和预处理输出的tensor的shape
-            self.ai2d.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,self.model_input_size[1],self.model_input_size[0]])
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
 
-    # 自定义后处理，results是模型输出的array列表，这里使用了aidemo库的face_det_post_process接口
-    def postprocess(self,results):
-        with ScopedTiming("postprocess",self.debug_mode > 0):
-            res = aidemo.face_det_post_process(self.confidence_threshold,self.nms_threshold,self.model_input_size[0],self.anchors,self.image_size,results)
-            if len(res)==0:
-                return res
-            else:
-                return res[0],res[1]
-
-    def get_pad_param(self,image_input_size):
-        dst_w = self.model_input_size[0]
-        dst_h = self.model_input_size[1]
-        # 计算最小的缩放比例，等比例缩放
-        ratio_w = dst_w / image_input_size[0]
-        ratio_h = dst_h / image_input_size[1]
-        if ratio_w < ratio_h:
-            ratio = ratio_w
-        else:
-            ratio = ratio_h
-        new_w = (int)(ratio * image_input_size[0])
-        new_h = (int)(ratio * image_input_size[1])
-        dw = (dst_w - new_w) / 2
-        dh = (dst_h - new_h) / 2
-        top = (int)(round(0))
-        bottom = (int)(round(dh * 2 + 0.1))
-        left = (int)(round(0))
-        right = (int)(round(dw * 2 - 0.1))
-        return [0,0,0,0,top, bottom, left, right]
-
-# 自定义人脸注册任务类
-class FaceRegistrationApp(AIBase):
-    def __init__(self,kmodel_path,model_input_size,rgb888p_size=[1920,1080],display_size=[1920,1080],debug_mode=0):
-        super().__init__(kmodel_path,model_input_size,rgb888p_size,debug_mode)
-        # kmodel路径
-        self.kmodel_path=kmodel_path
-        # 人脸注册模型输入分辨率
-        self.model_input_size=model_input_size
-        # sensor给到AI的图像分辨率，宽16字节对齐
-        self.rgb888p_size=[ALIGN_UP(rgb888p_size[0],16),rgb888p_size[1]]
-        # 视频输出VO分辨率，宽16字节对齐
-        self.display_size=[ALIGN_UP(display_size[0],16),display_size[1]]
-        # debug模式
-        self.debug_mode=debug_mode
-        # 标准5官
-        self.umeyama_args_112 = [
-            38.2946 , 51.6963 ,
-            73.5318 , 51.5014 ,
-            56.0252 , 71.7366 ,
-            41.5493 , 92.3655 ,
-            70.7299 , 92.2041
-        ]
-        self.ai2d=Ai2d(debug_mode)
-        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
-
-    # 配置预处理操作，这里使用了affine，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
-    def config_preprocess(self,landm,input_image_size=None):
-        with ScopedTiming("set preprocess config",self.debug_mode > 0):
-            ai2d_input_size=input_image_size if input_image_size else self.rgb888p_size
-            # 计算affine矩阵，并设置仿射变换预处理
-            affine_matrix = self.get_affine_matrix(landm)
-            self.ai2d.affine(nn.interp_method.cv2_bilinear,0, 0, 127, 1,affine_matrix)
-            # 构建预处理流程,参数为预处理输入tensor的shape和预处理输出的tensor的shape
-            self.ai2d.build([1,3,ai2d_input_size[1],ai2d_input_size[0]],[1,3,self.model_input_size[1],self.model_input_size[0]])
-
-    # 自定义后处理
-    def postprocess(self,results):
-        with ScopedTiming("postprocess",self.debug_mode > 0):
-            return results[0][0]
-
-    def svd22(self,a):
-        # svd
-        s = [0.0, 0.0]
-        u = [0.0, 0.0, 0.0, 0.0]
-        v = [0.0, 0.0, 0.0, 0.0]
-        s[0] = (math.sqrt((a[0] - a[3]) ** 2 + (a[1] + a[2]) ** 2) + math.sqrt((a[0] + a[3]) ** 2 + (a[1] - a[2]) ** 2)) / 2
-        s[1] = abs(s[0] - math.sqrt((a[0] - a[3]) ** 2 + (a[1] + a[2]) ** 2))
-        v[2] = math.sin((math.atan2(2 * (a[0] * a[1] + a[2] * a[3]), a[0] ** 2 - a[1] ** 2 + a[2] ** 2 - a[3] ** 2)) / 2) if \
-        s[0] > s[1] else 0
-        v[0] = math.sqrt(1 - v[2] ** 2)
-        v[1] = -v[2]
-        v[3] = v[0]
-        u[0] = -(a[0] * v[0] + a[1] * v[2]) / s[0] if s[0] != 0 else 1
-        u[2] = -(a[2] * v[0] + a[3] * v[2]) / s[0] if s[0] != 0 else 0
-        u[1] = (a[0] * v[1] + a[1] * v[3]) / s[1] if s[1] != 0 else -u[2]
-        u[3] = (a[2] * v[1] + a[3] * v[3]) / s[1] if s[1] != 0 else u[0]
-        v[0] = -v[0]
-        v[2] = -v[2]
-        return u, s, v
-
-    def image_umeyama_112(self,src):
-        # 使用Umeyama算法计算仿射变换矩阵
-        SRC_NUM = 5
-        SRC_DIM = 2
-        src_mean = [0.0, 0.0]
-        dst_mean = [0.0, 0.0]
-        for i in range(0,SRC_NUM * 2,2):
-            src_mean[0] += src[i]
-            src_mean[1] += src[i + 1]
-            dst_mean[0] += self.umeyama_args_112[i]
-            dst_mean[1] += self.umeyama_args_112[i + 1]
-        src_mean[0] /= SRC_NUM
-        src_mean[1] /= SRC_NUM
-        dst_mean[0] /= SRC_NUM
-        dst_mean[1] /= SRC_NUM
-        src_demean = [[0.0, 0.0] for _ in range(SRC_NUM)]
-        dst_demean = [[0.0, 0.0] for _ in range(SRC_NUM)]
-        for i in range(SRC_NUM):
-            src_demean[i][0] = src[2 * i] - src_mean[0]
-            src_demean[i][1] = src[2 * i + 1] - src_mean[1]
-            dst_demean[i][0] = self.umeyama_args_112[2 * i] - dst_mean[0]
-            dst_demean[i][1] = self.umeyama_args_112[2 * i + 1] - dst_mean[1]
-        A = [[0.0, 0.0], [0.0, 0.0]]
-        for i in range(SRC_DIM):
-            for k in range(SRC_DIM):
-                for j in range(SRC_NUM):
-                    A[i][k] += dst_demean[j][i] * src_demean[j][k]
-                A[i][k] /= SRC_NUM
-        T = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-        U, S, V = self.svd22([A[0][0], A[0][1], A[1][0], A[1][1]])
-        T[0][0] = U[0] * V[0] + U[1] * V[2]
-        T[0][1] = U[0] * V[1] + U[1] * V[3]
-        T[1][0] = U[2] * V[0] + U[3] * V[2]
-        T[1][1] = U[2] * V[1] + U[3] * V[3]
-        scale = 1.0
-        src_demean_mean = [0.0, 0.0]
-        src_demean_var = [0.0, 0.0]
-        for i in range(SRC_NUM):
-            src_demean_mean[0] += src_demean[i][0]
-            src_demean_mean[1] += src_demean[i][1]
-        src_demean_mean[0] /= SRC_NUM
-        src_demean_mean[1] /= SRC_NUM
-        for i in range(SRC_NUM):
-            src_demean_var[0] += (src_demean_mean[0] - src_demean[i][0]) * (src_demean_mean[0] - src_demean[i][0])
-            src_demean_var[1] += (src_demean_mean[1] - src_demean[i][1]) * (src_demean_mean[1] - src_demean[i][1])
-        src_demean_var[0] /= SRC_NUM
-        src_demean_var[1] /= SRC_NUM
-        scale = 1.0 / (src_demean_var[0] + src_demean_var[1]) * (S[0] + S[1])
-        T[0][2] = dst_mean[0] - scale * (T[0][0] * src_mean[0] + T[0][1] * src_mean[1])
-        T[1][2] = dst_mean[1] - scale * (T[1][0] * src_mean[0] + T[1][1] * src_mean[1])
-        T[0][0] *= scale
-        T[0][1] *= scale
-        T[1][0] *= scale
-        T[1][1] *= scale
-        return T
-
-    def get_affine_matrix(self,sparse_points):
-        # 获取affine变换矩阵
-        with ScopedTiming("get_affine_matrix", self.debug_mode > 1):
-            # 使用Umeyama算法计算仿射变换矩阵
-            matrix_dst = self.image_umeyama_112(sparse_points)
-            matrix_dst = [matrix_dst[0][0],matrix_dst[0][1],matrix_dst[0][2],
-                          matrix_dst[1][0],matrix_dst[1][1],matrix_dst[1][2]]
-            return matrix_dst
-
-# 人脸注册任务类
-class FaceRegistration:
-    def __init__(self,face_det_kmodel,face_reg_kmodel,det_input_size,reg_input_size,database_dir,anchors,confidence_threshold=0.25,nms_threshold=0.3,rgb888p_size=[1280,720],display_size=[1920,1080],debug_mode=0):
-        # 人脸检测模型路径
-        self.face_det_kmodel=face_det_kmodel
-        # 人脸注册模型路径
-        self.face_reg_kmodel=face_reg_kmodel
-        # 人脸检测模型输入分辨率
-        self.det_input_size=det_input_size
-        # 人脸注册模型输入分辨率
-        self.reg_input_size=reg_input_size
-        self.database_dir=database_dir
-        # anchors
-        self.anchors=anchors
-        # 置信度阈值
-        self.confidence_threshold=confidence_threshold
-        # nms阈值
-        self.nms_threshold=nms_threshold
-        # sensor给到AI的图像分辨率，宽16字节对齐
-        self.rgb888p_size=[ALIGN_UP(rgb888p_size[0],16),rgb888p_size[1]]
-        # 视频输出VO分辨率，宽16字节对齐
-        self.display_size=[ALIGN_UP(display_size[0],16),display_size[1]]
-        # debug_mode模式
-        self.debug_mode=debug_mode
-        self.face_det=FaceDetApp(self.face_det_kmodel,model_input_size=self.det_input_size,anchors=self.anchors,confidence_threshold=self.confidence_threshold,nms_threshold=self.nms_threshold,debug_mode=0)
-        self.face_reg=FaceRegistrationApp(self.face_reg_kmodel,model_input_size=self.reg_input_size,rgb888p_size=self.rgb888p_size)
-
-    # run函数
-    def run(self,input_np,img_file):
-        self.face_det.config_preprocess(input_image_size=[input_np.shape[3],input_np.shape[2]])
-        det_boxes,landms=self.face_det.run(input_np)
-        if det_boxes:
-            if det_boxes.shape[0] == 1:
-                # 若是只检测到一张人脸，则将该人脸注册到数据库
-                db_i_name = img_file.split('.')[0]
-                for landm in landms:
-                    self.face_reg.config_preprocess(landm,input_image_size=[input_np.shape[3],input_np.shape[2]])
-                    reg_result = self.face_reg.run(input_np)
-                    with open(self.database_dir+'{}.bin'.format(db_i_name), "wb") as file:
-                        file.write(reg_result.tobytes())
-                        print('Success!')
-            else:
-                print('Only one person in a picture when you sign up')
-        else:
-            print('No person detected')
-
-    def image2rgb888array(self,img):   #4维
-        # 将Image转换为rgb888格式
-        with ScopedTiming("fr_kpu_deinit",self.debug_mode > 0):
-            img_data_rgb888=img.to_rgb888()
-            # hwc,rgb888
-            img_hwc=img_data_rgb888.to_numpy_ref()
-            shape=img_hwc.shape
-            img_tmp = img_hwc.reshape((shape[0] * shape[1], shape[2]))
-            img_tmp_trans = img_tmp.transpose()
-            img_res=img_tmp_trans.copy()
-            # chw,rgb888
-            img_return=img_res.reshape((1,shape[2],shape[0],shape[1]))
-        return  img_return
-
-
-if __name__=="__main__":
-    # 人脸检测模型路径
-    face_det_kmodel_path="/sdcard/app/tests/kmodel/face_detection_320.kmodel"
-    # 人脸注册模型路径
-    face_reg_kmodel_path="/sdcard/app/tests/kmodel/face_recognition.kmodel"
-    # 其它参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
-    database_dir="/sdcard/app/tests/utils/db/"
-    database_img_dir="/sdcard/app/tests/utils/db_img/"
-    face_det_input_size=[320,320]
-    face_reg_input_size=[112,112]
-    confidence_threshold=0.5
-    nms_threshold=0.2
-    anchor_len=4200
-    det_dim=4
-    anchors = np.fromfile(anchors_path, dtype=np.float)
-    anchors = anchors.reshape((anchor_len,det_dim))
-    max_register_face = 100              #数据库最多人脸个数
-    feature_num = 128                    #人脸识别特征维度
-
-    fr=FaceRegistration(face_det_kmodel_path,face_reg_kmodel_path,det_input_size=face_det_input_size,reg_input_size=face_reg_input_size,database_dir=database_dir,anchors=anchors,confidence_threshold=confidence_threshold,nms_threshold=nms_threshold)
-    try:
-        # 获取图像列表
-        img_list = os.listdir(database_img_dir)
-        for img_file in img_list:
-            #本地读取一张图像
-            full_img_file = database_img_dir + img_file
-            print(full_img_file)
-            img = image.Image(full_img_file)
-            img.compress_for_ide()
-            # 转rgb888的chw格式
-            rgb888p_img_ndarry = fr.image2rgb888array(img)
-            # 人脸注册
-            fr.run(rgb888p_img_ndarry,img_file)
-            gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        fr.face_det.deinit()
-        fr.face_reg.deinit()
-```
+![face_recognition_res](../images/ai_demo/face_recognition_res.jpg)
 
 ### 2.10. 跌倒检测
+
+#### 2.10.1 demo说明
+
+跌倒检测应用对视频中的每一帧图片是否存在人类并对人类的跌倒状态进行检测，如果非跌倒则标识NoFall，如果跌倒则标识Fall。
+
+#### 2.10.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -4396,15 +4563,17 @@ class FallDetectionApp(AIBase):
 if __name__ == "__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 设置模型路径和其他参数
-    kmodel_path = "/sdcard/app/tests/kmodel/yolov5n-falldown.kmodel"
+    kmodel_path = "/sdcard/examples/kmodel/yolov5n-falldown.kmodel"
     confidence_threshold = 0.3
     nms_threshold = 0.45
-    rgb888p_size = [1920, 1080]
     labels = ["Fall","NoFall"]  # 模型输出类别名称
     anchors = [10, 13, 16, 30, 33, 23, 30, 61, 62, 45, 59, 119, 116, 90, 156, 198, 373, 326]  # anchor设置
 
@@ -4430,7 +4599,23 @@ if __name__ == "__main__":
         pl.destroy()                                        # 销毁PipeLine实例
 ```
 
+#### 2.10.3 演示效果
+
+原图像如下：
+
+![falldown_det](../images/ai_demo/falldown_detect.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![falldown_det_res](../images/ai_demo/falldown_det_res.jpg)
+
 ### 2.11. 猜拳游戏
+
+#### 2.11.1 demo说明
+
+猜拳游戏是基于手部应用的趣味性游戏，首先保持屏幕内无其他手掌，然后一只手进入镜头出石头/剪刀/布，机器同时会随机出石头/剪刀/布，最后按照三局两胜的原则判定输赢。
+
+#### 2.11.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -4657,9 +4842,9 @@ class FingerGuess:
         self.debug_mode=debug_mode
         self.guess_mode=guess_mode
         # 石头剪刀布的贴图array
-        self.five_image = self.read_file("/sdcard/app/tests/utils/five.bin")
-        self.fist_image = self.read_file("/sdcard/app/tests/utils/fist.bin")
-        self.shear_image = self.read_file("/sdcard/app/tests/utils/shear.bin")
+        self.five_image = self.read_file("/sdcard/examples/utils/five.bin")
+        self.fist_image = self.read_file("/sdcard/examples/utils/fist.bin")
+        self.shear_image = self.read_file("/sdcard/examples/utils/shear.bin")
         self.counts_guess = -1                                                               # 猜拳次数 计数
         self.player_win = 0                                                                  # 玩家 赢次计数
         self.k230_win = 0                                                                    # k230 赢次计数
@@ -4784,17 +4969,19 @@ class FingerGuess:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 手掌检测模型路径
-    hand_det_kmodel_path="/sdcard/app/tests/kmodel/hand_det.kmodel"
+    hand_det_kmodel_path="/sdcard/examples/kmodel/hand_det.kmodel"
     # 手掌关键点模型路径
-    hand_kp_kmodel_path="/sdcard/app/tests/kmodel/handkp_det.kmodel"
+    hand_kp_kmodel_path="/sdcard/examples/kmodel/handkp_det.kmodel"
     # 其它参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
-    rgb888p_size=[1920,1080]
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
     hand_det_input_size=[512,512]
     hand_kp_input_size=[256,256]
     confidence_threshold=0.2
@@ -4825,7 +5012,17 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.11.3 演示效果
+
+初始请保证摄像头范围内空白，一只手进入镜头的同时出石头/剪刀/布,规则采用三局两胜制。请您自行体验。
+
 ### 2.12. 手掌检测
+
+#### 2.12.1 demo说明
+
+手掌检测应用对视频中每一帧图片存在的手掌进行检测，在屏幕上标识手掌检测框。
+
+#### 2.12.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -4940,16 +5137,18 @@ class HandDetectionApp(AIBase):
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 模型路径
-    kmodel_path="/sdcard/app/tests/kmodel/hand_det.kmodel"
+    kmodel_path="/sdcard/examples/kmodel/hand_det.kmodel"
     # 其它参数设置
     confidence_threshold = 0.2
     nms_threshold = 0.5
-    rgb888p_size=[1920,1080]
     labels = ["hand"]
     anchors = [26,27, 53,52, 75,71, 80,99, 106,82, 99,134, 140,113, 161,172, 245,276]   #anchor设置
 
@@ -4975,7 +5174,25 @@ if __name__=="__main__":
         pl.destroy()                                    # 销毁PipeLine实例
 ```
 
+#### 2.12.3 演示效果
+
+原图像如下：
+
+![hand_det](../images/ai_demo/hand_det.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![hand_det_res](../images/ai_demo/hand_det_res.jpg)
+
 ### 2.13. 手掌关键点分类
+
+#### 2.13.1 demo说明
+
+手掌关键点分类应用是双模型任务，首先对视频中存在的手掌进行检测，然后对检测到的手掌进行关键点回归，得到关键点信息后通过计算手指之间的角度信息区分不同的手势。现在支持9中手势如下图。
+
+![支持手势图示](../images/ai_demo/hand_class.jpg)
+
+#### 2.13.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -5271,17 +5488,19 @@ class HandKeyPointClass:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 手掌检测模型路径
-    hand_det_kmodel_path="/sdcard/app/tests/kmodel/hand_det.kmodel"
+    hand_det_kmodel_path="/sdcard/examples/kmodel/hand_det.kmodel"
     # 手掌关键点模型路径
-    hand_kp_kmodel_path="/sdcard/app/tests/kmodel/handkp_det.kmodel"
+    hand_kp_kmodel_path="/sdcard/examples/kmodel/handkp_det.kmodel"
     # 其他参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
-    rgb888p_size=[1920,1080]
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
     hand_det_input_size=[512,512]
     hand_kp_input_size=[256,256]
     confidence_threshold=0.2
@@ -5310,7 +5529,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.13.3 演示效果
+
+原图像如下：
+
+![hand_kp_cls](../images/ai_demo/hand_rec.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![hand_kp_cls_res](../images/ai_demo/hand_kp_cls_res.jpg)
+
 ### 2.14. 手掌关键点检测
+
+#### 2.14.1 demo说明
+
+手掌关键点检测是一个双模型任务，首先对视频中的每一帧图像进行手掌检测，然后对检测到的每一个手掌进行关键点回归得到21个手掌骨骼关键点位置，在屏幕上将关键点和关键点的连线标识出来。
+
+#### 2.14.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -5559,17 +5794,19 @@ class HandKeyPointDet:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 手掌检测模型路径
-    hand_det_kmodel_path="/sdcard/app/tests/kmodel/hand_det.kmodel"
+    hand_det_kmodel_path="/sdcard/examples/kmodel/hand_det.kmodel"
     # 手部关键点模型路径
-    hand_kp_kmodel_path="/sdcard/app/tests/kmodel/handkp_det.kmodel"
+    hand_kp_kmodel_path="/sdcard/examples/kmodel/handkp_det.kmodel"
     # 其它参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
-    rgb888p_size=[1920,1080]
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
     hand_det_input_size=[512,512]
     hand_kp_input_size=[256,256]
     confidence_threshold=0.2
@@ -5598,7 +5835,25 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.14.3 演示效果
+
+原图像如下：
+
+![hand_kp_det](../images/ai_demo/hand_kp_cls.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![hand_kp_det_res](../images/ai_demo/hand_kp_det.jpg)
+
 ### 2.15. 手势识别
+
+#### 2.15.1 demo说明
+
+手势识别应用是基于分类的手势识别任务，首先对视频中的每一帧图片进行手掌检测，然后将检测到的手掌送入分类模型进行分类得到识别的手势。这里只是给出示例，支持3种手势如下图所示。
+
+![手势识别](../images/ai_demo/hand_reco.jpg)
+
+#### 2.15.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -5829,17 +6084,19 @@ class HandRecognition:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 手掌检测模型路径
-    hand_det_kmodel_path="/sdcard/app/tests/kmodel/hand_det.kmodel"
+    hand_det_kmodel_path="/sdcard/examples/kmodel/hand_det.kmodel"
     # 手势识别模型路径
-    hand_rec_kmodel_path="/sdcard/app/tests/kmodel/hand_reco.kmodel"
+    hand_rec_kmodel_path="/sdcard/examples/kmodel/hand_reco.kmodel"
     # 其它参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
-    rgb888p_size=[1920,1080]
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
     hand_det_input_size=[512,512]
     hand_rec_input_size=[224,224]
     confidence_threshold=0.2
@@ -5868,7 +6125,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.15.3 演示效果
+
+原图像如下：
+
+![hand_rec](../images/ai_demo/hand_rec.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![hand_rec_res](../images/ai_demo/hand_rec_res.jpg)
+
 ### 2.16 关键词唤醒
+
+#### 2.16.1 demo说明
+
+关键词唤醒应用是典型的音频应用，应用启动后，请在麦克风附近以“小楠小楠”唤醒，应用识别到唤醒词后会恢复“我在”。其他需要采集音频数据的应用开发也可参考该应用。
+
+#### 2.16.2 代码
 
 ```python
 from libs.PipeLine import ScopedTiming
@@ -5929,14 +6202,14 @@ if __name__ == "__main__":
     os.exitpoint(os.EXITPOINT_ENABLE)
     nn.shrink_memory_pool()
     # 设置模型路径和其他参数
-    kmodel_path = "/sdcard/app/tests/kmodel/kws.kmodel"
+    kmodel_path = "/sdcard/examples/kmodel/kws.kmodel"
     # 其它参数
     THRESH = 0.5                # 检测阈值
     SAMPLE_RATE = 16000         # 采样率16000Hz,即每秒采样16000次
     CHANNELS = 1                # 通道数 1为单声道，2为立体声
     FORMAT = paInt16            # 音频输入输出格式 paInt16
     CHUNK = int(0.3 * 16000)    # 每次读取音频数据的帧数，设置为0.3s的帧数16000*0.3=4800
-    reply_wav_file = "/sdcard/app/tests/utils/wozai.wav"         # kws唤醒词回复音频路径
+    reply_wav_file = "/sdcard/examples/utils/wozai.wav"         # kws唤醒词回复音频路径
 
     # 初始化音频预处理接口
     fp = aidemo.kws_fp_create()
@@ -5982,7 +6255,17 @@ if __name__ == "__main__":
         kws.deinit()                       # 反初始化
 ```
 
+#### 2.16.3 演示效果
+
+请靠近麦克风，用“小楠小楠”唤醒，唤醒后k230会回复“我在”！
+
 ### 2.17. 车牌检测
+
+#### 2.17.1 demo说明
+
+车牌检测应用对视频中出现的车牌进行检测，在屏幕上用检测框标识出来。
+
+#### 2.17.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -6023,7 +6306,7 @@ class LicenceDetectionApp(AIBase):
         # 设置Ai2d的输入输出格式和类型
         self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
 
-    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine
+    # 配置预处理操作，这里使用了pad和resize，Ai2d支持crop/shift/pad/resize/affine
     def config_preprocess(self, input_image_size=None):
         with ScopedTiming("set preprocess config", self.debug_mode > 0):
             # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
@@ -6060,16 +6343,18 @@ class LicenceDetectionApp(AIBase):
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+    
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 模型路径
-    kmodel_path="/sdcard/app/tests/kmodel/LPD_640.kmodel"
+    kmodel_path="/sdcard/examples/kmodel/LPD_640.kmodel"
     # 其它参数设置
     confidence_threshold = 0.2
     nms_threshold = 0.2
-    rgb888p_size=[1920,1080]
 
     # 初始化PipeLine
     pl=PipeLine(rgb888p_size=rgb888p_size,display_size=display_size,display_mode=display_mode)
@@ -6097,7 +6382,17 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
-### 2.18. 车牌识别  
+#### 2.17.3 演示效果
+
+请您自行寻找车牌图片进行检测，本示例涉及车牌隐私，没有给出演示效果。
+
+### 2.18. 车牌识别
+
+#### 2.18.1 demo说明
+
+车牌识别应用是一个双模型任务，首先对视频中出现的车牌进行检测，然后对检测到的每个车牌进行识别，并将识别的车牌内容标识在对应检测框附近。
+
+#### 2.18.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -6137,7 +6432,7 @@ class LicenceDetectionApp(AIBase):
         # 设置Ai2d的输入输出格式和类型
         self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
 
-    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine
+    # 配置预处理操作，这里使用了pad和resize，Ai2d支持crop/shift/pad/resize/affine
     def config_preprocess(self, input_image_size=None):
         with ScopedTiming("set preprocess config", self.debug_mode > 0):
             # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
@@ -6252,16 +6547,17 @@ class LicenceRec:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    rgb888p_size = [640,360]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 车牌检测模型路径
-    licence_det_kmodel_path="/sdcard/app/tests/kmodel/LPD_640.kmodel"
+    licence_det_kmodel_path="/sdcard/examples/kmodel/LPD_640.kmodel"
     # 车牌识别模型路径
-    licence_rec_kmodel_path="/sdcard/app/tests/kmodel/licence_reco.kmodel"
+    licence_rec_kmodel_path="/sdcard/examples/kmodel/licence_reco.kmodel"
     # 其它参数
-    rgb888p_size=[640,360]
     licence_det_input_size=[640,640]
     licence_rec_input_size=[220,32]
     confidence_threshold=0.2
@@ -6288,7 +6584,17 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.18.3 演示效果
+
+请您自行寻找车牌图片进行识别，本示例涉及车牌隐私，没有给出演示效果。
+
 ### 2.19. 单目标跟踪
+
+#### 2.19.1 demo说明
+
+单目标跟踪应用对目标框中注册的目标进行跟踪识别。应用启动后会等待一段时间，在这段时间将待跟踪的目标（尽量与背景颜色有差异）放入目标框中，注册结束后会自动进入跟踪状态，移动目标跟踪框也会随目标移动。
+
+#### 2.19.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -6651,18 +6957,19 @@ class NanoTracker:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    rgb888p_size=[1280,720]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 跟踪模板模型路径
-    track_crop_kmodel_path="/sdcard/app/tests/kmodel/cropped_test127.kmodel"
+    track_crop_kmodel_path="/sdcard/examples/kmodel/cropped_test127.kmodel"
     # 跟踪实时模型路径
-    track_src_kmodel_path="/sdcard/app/tests/kmodel/nanotrack_backbone_sim.kmodel"
+    track_src_kmodel_path="/sdcard/examples/kmodel/nanotrack_backbone_sim.kmodel"
     # 跟踪模型路径
-    tracker_kmodel_path="/sdcard/app/tests/kmodel/nanotracker_head_calib_k230.kmodel"
+    tracker_kmodel_path="/sdcard/examples/kmodel/nanotracker_head_calib_k230.kmodel"
     # 其他参数
-    rgb888p_size=[1280,720]
     track_crop_input_size=[127,127]
     track_src_input_size=[255,255]
     threshold=0.1
@@ -6689,7 +6996,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.19.3 演示效果
+
+原图像如下：
+
+![nanotracker](../images/ai_demo/nanotracker.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![nanotracker_res](../images/ai_demo/nanotracker_res.jpg)
+
 ### 2.20. yolov8n目标检测
+
+#### 2.20.1 demo说明
+
+yolov8n目标检测应用使用yolov8n模型对COCO的80个类别进行检测，检测结果在屏幕上以检测框的形式标识。
+
+#### 2.20.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -6850,18 +7173,19 @@ class ObjectDetectionApp(AIBase):
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    rgb888p_size=[320,320]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 模型路径
-    kmodel_path="/sdcard/app/tests/kmodel/yolov8n_320.kmodel"
+    kmodel_path="/sdcard/examples/kmodel/yolov8n_320.kmodel"
     labels = ["person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"]
     # 其它参数设置
     confidence_threshold = 0.2
     nms_threshold = 0.2
     max_boxes_num = 50
-    rgb888p_size=[320,320]
 
     # 初始化PipeLine
     pl=PipeLine(rgb888p_size=rgb888p_size,display_size=display_size,display_mode=display_mode)
@@ -6889,7 +7213,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.20.3 演示效果
+
+原图像如下：
+
+![yolov8n_det](../images/ai_demo/yolov8n_det.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![yolov8n_det_res](../images/ai_demo/yolov8n_det_res.jpg)
+
 ### 2.21. OCR检测
+
+#### 2.21.1 demo说明
+
+OCR检测应用对视频中出现的文本检测，检测结果以检测框的形式在屏幕标识出来。
+
+#### 2.21.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -7001,14 +7341,14 @@ class OCRDetectionApp(AIBase):
         return hwc_array
 
 if __name__=="__main__":
-    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
+    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"，k230d受限内存不支持
     display_mode="hdmi"
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 模型路径
-    kmodel_path="/sdcard/app/tests/kmodel/ocr_det_int16.kmodel"
+    kmodel_path="/sdcard/examples/kmodel/ocr_det_int16.kmodel"
     # kmodel其它参数设置
     mask_threshold = 0.25
     box_threshold = 0.3
@@ -7040,7 +7380,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.21.3 演示效果
+
+原图像如下：
+
+![ocr_det](../images/ai_demo/ocr_det.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![ocr_det_res](../images/ai_demo/ocr_det_res.jpg)
+
 ### 2.22. OCR识别
+
+#### 2.22.1 demo说明
+
+OCR识别应用是一个双模型任务，首先对视频中每一帧图片中的文本进行检测，然后对检测到的文本进行识别，最后将检测框在屏幕上标识出来并在检测框附近添加识别文本内容。
+
+#### 2.22.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -7264,18 +7620,18 @@ class OCRDetRec:
 
 
 if __name__=="__main__":
-    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
+    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"，k230d受限内存不支持
     display_mode="hdmi"
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # OCR检测模型路径
-    ocr_det_kmodel_path="/sdcard/app/tests/kmodel/ocr_det_int16.kmodel"
+    ocr_det_kmodel_path="/sdcard/examples/kmodel/ocr_det_int16.kmodel"
     # OCR识别模型路径
-    ocr_rec_kmodel_path="/sdcard/app/tests/kmodel/ocr_rec_int16.kmodel"
+    ocr_rec_kmodel_path="/sdcard/examples/kmodel/ocr_rec_int16.kmodel"
     # 其他参数
-    dict_path="/sdcard/app/tests/utils/dict.txt"
+    dict_path="/sdcard/examples/utils/dict.txt"
     rgb888p_size=[640,360]
     ocr_det_input_size=[640,640]
     ocr_rec_input_size=[512,32]
@@ -7303,7 +7659,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.22.3 演示效果
+
+原图像如下：
+
+![ocr_rec](../images/ai_demo/ocr_rec.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![ocr_rec_res](../images/ai_demo/ocr_rec_res.jpg)
+
 ### 2.23. 人体检测
+
+#### 2.23.1 demo说明
+
+人体检测应用将视频中的人检测出来，并在屏幕上以检测框的形式标识。
+
+#### 2.23.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -7417,16 +7789,18 @@ class PersonDetectionApp(AIBase):
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 模型路径
-    kmodel_path="/sdcard/app/tests/kmodel/person_detect_yolov5n.kmodel"
+    kmodel_path="/sdcard/examples/kmodel/person_detect_yolov5n.kmodel"
     # 其它参数设置
     confidence_threshold = 0.2
     nms_threshold = 0.6
-    rgb888p_size=[1920,1080]
     labels = ["person"]
     anchors = [10, 13, 16, 30, 33, 23, 30, 61, 62, 45, 59, 119, 116, 90, 156, 198, 373, 326]
 
@@ -7456,7 +7830,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.23.3 演示效果
+
+原图像如下：
+
+![person_det](../images/ai_demo/person_det.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![person_det_res](../images/ai_demo/person_det_res.jpg)
+
 ### 2.24. 人体关键点检测
+
+#### 2.24.1 demo说明
+
+人体关键点检测应用使用yolov8n-pose模型对人体姿态进行检测，检测结果得到17个人体骨骼关键点的位置，并用不同颜色的线将关键点连起来在屏幕显示。
+
+#### 2.24.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -7576,16 +7966,18 @@ class PersonKeyPointApp(AIBase):
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 模型路径
-    kmodel_path="/sdcard/app/tests/kmodel/yolov8n-pose.kmodel"
+    kmodel_path="/sdcard/examples/kmodel/yolov8n-pose.kmodel"
     # 其它参数设置
     confidence_threshold = 0.2
     nms_threshold = 0.5
-    rgb888p_size=[1920,1080]
     # 初始化PipeLine
     pl=PipeLine(rgb888p_size=rgb888p_size,display_size=display_size,display_mode=display_mode)
     pl.create()
@@ -7612,7 +8004,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.24.3 演示效果
+
+原图像如下：
+
+![person_kp_det](../images/ai_demo/person_kp_det.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![person_kp_det_res](../images/ai_demo/person_kp_det_res.jpg)
+
 ### 2.25. 拼图游戏
+
+#### 2.25.1 demo说明
+
+拼图游戏是基于手部的趣味性游戏，应用启动时保持镜头范围内没有手掌，等待屏幕初始化，左侧是随机打乱的拼图，右侧是目标拼图。手掌进入后，拇指和中指张开，两指之间的黄色点位用于定位移动块，快速合并两指然后再打开，黄色点位变为蓝色点位，然后对应方块移动到旁边的空白处。
+
+#### 2.25.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -7925,17 +8333,19 @@ class PuzzleGame:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 手掌检测模型路径
-    hand_det_kmodel_path="/sdcard/app/tests/kmodel/hand_det.kmodel"
+    hand_det_kmodel_path="/sdcard/examples/kmodel/hand_det.kmodel"
     # 手掌关键点模型路径
-    hand_kp_kmodel_path="/sdcard/app/tests/kmodel/handkp_det.kmodel"
+    hand_kp_kmodel_path="/sdcard/examples/kmodel/handkp_det.kmodel"
     # 其他参数
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
-    rgb888p_size=[1920,1080]
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
     hand_det_input_size=[512,512]
     hand_kp_input_size=[256,256]
     confidence_threshold=0.2
@@ -7964,7 +8374,19 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
-### 2.26. yolov8分割
+#### 2.25.3 演示效果
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。距离镜头一定距离，张开拇指和中指，在空白位置周边的方块捏合拇指和中指，空白方块和当前方块会互换位置。
+
+![puzzle_game_res](../images/ai_demo/puzzle_game_res.jpg)
+
+### 2.26. yolov8n分割
+
+#### 2.26.1 demo说明
+
+yolov8n分割应用使用yolov8n模型对视频中出现的COCO数据集80个类别的目标进行分割，并以蒙版的形式显示在屏幕上。
+
+#### 2.26.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -8076,14 +8498,14 @@ class SegmentationApp(AIBase):
 
 
 if __name__=="__main__":
-    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
+    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"，k230d受限于内存不支持
     display_mode="hdmi"
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 模型路径
-    kmodel_path="/sdcard/app/tests/kmodel/yolov8n_seg_320.kmodel"
+    kmodel_path="/sdcard/examples/kmodel/yolov8n_seg_320.kmodel"
     labels = ["person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"]
     #其它参数设置
     confidence_threshold = 0.2
@@ -8117,7 +8539,23 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.26.3 演示效果
+
+原图像如下：
+
+![yolov8n_seg](../images/ai_demo/yolov8n_seg.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。
+
+![yolov8n_seg_res](../images/ai_demo/yolov8n_seg_res.jpg)
+
 ### 2.27. 自学习
+
+#### 2.27.1 demo说明
+
+自学习是基于特征的分类方法，首先在代码中设置labels，设定要采集的物品名称，然后启动应用，按照屏幕提示将待采集的物品放入特征采集框，特征采集结束后自动进入识别状态，将待识别物品放入采集框，该物品会与注册的物品做特征比对，按照相似度完成分类。
+
+#### 2.27.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -8270,15 +8708,17 @@ class SelfLearningApp(AIBase):
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[1280,720]
+    rgb888p_size=[1920,1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 模型路径
-    kmodel_path="/sdcard/app/tests/kmodel/recognition.kmodel"
-    database_path="/sdcard/app/tests/utils/features/"
+    kmodel_path="/sdcard/examples/kmodel/recognition.kmodel"
+    database_path="/sdcard/examples/utils/features/"
     # 其它参数设置
-    rgb888p_size=[1920,1080]
     model_input_size=[224,224]
     labels=["苹果","香蕉"]
     top_k=3
@@ -8317,7 +8757,25 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.27.3 演示效果
+
+待学习的苹果和香蕉图片如下：
+
+![apple](../images/ai_demo/apple.jpg)
+
+![banana](../images/ai_demo/banana.jpg)
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。根据屏幕提示将苹果和香蕉放入框内学习，然后自动进入识别状态，会将框内的物体识别为苹果和香蕉，并给出相似度分数。
+
+![self_learning_res](../images/ai_demo/self_learning_res.jpg)
+
 ### 2.28. 局部放大器
+
+#### 2.28.1 demo说明
+
+局部放大器是基于手部特征的趣味应用，启动该应用后，保证一只手在镜头内部，捏合拇指和中指，定位到某一位置，张开两指，该区域的放大图像会在两指附近显示出来。
+
+#### 2.28.2 代码
 
 ```python
 from libs.PipeLine import PipeLine, ScopedTiming
@@ -8578,16 +9036,18 @@ class SpaceResize:
 if __name__=="__main__":
     # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
     display_mode="hdmi"
+    # k230保持不变，k230d可调整为[640,360]
+    rgb888p_size = [1920, 1080]
+
     if display_mode=="hdmi":
         display_size=[1920,1080]
     else:
         display_size=[800,480]
     # 手掌检测模型路径
-    hand_det_kmodel_path="/sdcard/app/tests/kmodel/hand_det.kmodel"
+    hand_det_kmodel_path="/sdcard/examples/kmodel/hand_det.kmodel"
     # 手掌关键点模型路径
-    hand_kp_kmodel_path="/sdcard/app/tests/kmodel/handkp_det.kmodel"
-    anchors_path="/sdcard/app/tests/utils/prior_data_320.bin"
-    rgb888p_size=[1920,1080]
+    hand_kp_kmodel_path="/sdcard/examples/kmodel/handkp_det.kmodel"
+    anchors_path="/sdcard/examples/utils/prior_data_320.bin"
     hand_det_input_size=[512,512]
     hand_kp_input_size=[256,256]
     confidence_threshold=0.2
@@ -8616,7 +9076,19 @@ if __name__=="__main__":
         pl.destroy()
 ```
 
+#### 2.28.3 演示效果
+
+这里以01studio的LCD屏幕（800*480）为例给出演示效果，请将`__main__`函数中的`display_mode`改为`lcd`后运行，hdmi效果类似。捏合拇指和中指，放入镜头，然后拇指和中指开合，周围的一个小区域会缩放显示。
+
+![space_resize_res](../images/ai_demo/space_resize_res.jpg)
+
 ### 2.29. 文本转语音（中文）
+
+#### 2.29.1 demo说明
+
+文本转语音（tts,中文）是典型的音频应用，您可以修改main函数中的text文本，音频生成后可以通过耳机听到生成的音频。本应用较耗时较长，同时完整音频播放时间也比较长，时长受生成文本的长度限制。
+
+#### 2.29.2 代码
 
 ```python
 from libs.PipeLine import ScopedTiming
@@ -8740,8 +9212,7 @@ class HifiGanApp(AIBase):
     def postprocess(self, results):
         with ScopedTiming("hifigan postprocess", self.debug_mode > 0):
             # 汇总输出数据
-            for j in range(25600):
-                self.mel_data.append(results[0][0][0][j])
+            self.mel_data+=results[0][0][0].tolist()
 
 #自定义中文TTS任务类
 class TTSZH:
@@ -8800,21 +9271,21 @@ if __name__ == "__main__":
     nn.shrink_memory_pool()
     # 设置模型路径和其他参数
     # 中文tts encoder模型
-    encoder_kmodel_path = "/sdcard/app/tests/kmodel/zh_fastspeech_1_f32.kmodel"
+    encoder_kmodel_path = "/sdcard/examples/kmodel/zh_fastspeech_1_f32.kmodel"
     # 中文tts decoder模型
-    decoder_kmodel_path = "/sdcard/app/tests/kmodel/zh_fastspeech_2.kmodel"
+    decoder_kmodel_path = "/sdcard/examples/kmodel/zh_fastspeech_2.kmodel"
     # 中文tts 声码器模型
-    hifigan_kmodel_path="/sdcard/app/tests/kmodel/hifigan.kmodel"
+    hifigan_kmodel_path="/sdcard/examples/kmodel/hifigan.kmodel"
     # 拼音字典
-    dict_path="/sdcard/app/tests/utils/pinyin.txt"
+    dict_path="/sdcard/examples/utils/pinyin.txt"
     # 汉字转拼音字典文件
-    phase_path="/sdcard/app/tests/utils/small_pinyin.txt"
+    phase_path="/sdcard/examples/utils/small_pinyin.txt"
     # 拼音转音素映射文件
-    mapfile="/sdcard/app/tests/utils/phone_map.txt"
+    mapfile="/sdcard/examples/utils/phone_map.txt"
     # 输入中文语句
     text="嘉楠科技研发了最新款的芯片"
     # 生成音频存储路径
-    save_wav_file = "/sdcard/app/tests/test.wav"
+    save_wav_file = "/sdcard/examples/test.wav"
 
     # 初始化自定义中文tts实例
     tts_zh = TTSZH(encoder_kmodel_path,decoder_kmodel_path,hifigan_kmodel_path,dict_path,phase_path,mapfile,save_wav_file,debug_mode=0)
@@ -8827,3 +9298,7 @@ if __name__ == "__main__":
     finally:
         tts_zh.deinit()
 ```
+
+#### 2.29.3 演示效果
+
+请插入耳机或者音响，运行程序，生成结束后会播放生成的音频。请自行体验!

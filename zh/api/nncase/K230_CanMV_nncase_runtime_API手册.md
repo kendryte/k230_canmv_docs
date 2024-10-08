@@ -1,414 +1,365 @@
-# 4.2 nncase_runtime 模块API手册
-
-![cover](../images/canaan-cover.png)
-
-版权所有©2023北京嘉楠捷思信息技术有限公司
-
-<div style="page-break-after:always"></div>
-
-## 免责声明
-
-您购买的产品、服务或特性等应受北京嘉楠捷思信息技术有限公司（“本公司”，下同）及其关联公司的商业合同和条款的约束，本文档中描述的全部或部分产品、服务或特性可能不在您的购买或使用范围之内。除非合同另有约定，本公司不对本文档的任何陈述、信息、内容的正确性、可靠性、完整性、适销性、符合特定目的和不侵权提供任何明示或默示的声明或保证。除非另有约定，本文档仅作为使用指导参考。
-
-由于产品版本升级或其他原因，本文档内容将可能在未经任何通知的情况下，不定期进行更新或修改。
-
-## 商标声明
-
-![logo](../images/logo.png)、“嘉楠”和其他嘉楠商标均为北京嘉楠捷思信息技术有限公司及其关联公司的商标。本文档可能提及的其他所有商标或注册商标，由各自的所有人拥有。
-
-**版权所有 © 2023北京嘉楠捷思信息技术有限公司。保留一切权利。**
-非经本公司书面许可，任何单位和个人不得擅自摘抄、复制本文档内容的部分或全部，并不得以任何形式传播。
-
-<div style="page-break-after:always"></div>
-
-## 目录
-
-[toc]
-
-## 前言
-
-### 概述
-
-此文档介绍CanMV nncase_runtime模块，用于指导开发人员使用MicroPython调用KPU和AI2D模块。
-
-### 读者对象
-
-本文档（本指南）主要适用于以下人员：
-
-- 技术支持工程师
-- 软件开发工程师
-
-### 缩略词定义
-
-| 简称                | 说明                                        |
-| ------------------- | ------------------------------------------- |
-| nncase_runtime      | k230 nncase runtime包,包含KPU模块和AI2D模块 |
-| nncase_runtime.kpu  | kpu模块                                     |
-| nncase_runtime.ai2d | ai2d模块                                    |
-
-### 修订记录
-
-| 文档版本号 | 修改说明 | 修改者 | 日期       |
-| ---------- | -------- | ------ | ---------- |
-| V1.0       | 初版     | 杨浩琪 | 2023-09-18 |
+# 4.1 nncase_runtime 模块 API 手册
 
 ## 1. 概述
 
-此文档介绍CanMV nncase_runtime模块，用于指导开发人员使用MicroPython调用KPU和AI2D模块。
+本手册旨在介绍 CanMV 平台的 nncase_runtime 模块，指导开发人员在 MicroPython 环境下调用 KPU（神经网络处理单元）及 AI2D 模块，以实现高效的深度学习推理和图像处理功能。
 
-## 2. API描述
+## 2. API 介绍
 
 ### 2.1 from_numpy
 
-【描述】
-从MicroPython中ulab.numpy创建runtime_tensor。
+**描述**
 
-【语法】
+该函数用于从 MicroPython 中的 ulab.numpy 对象创建 runtime_tensor。
 
-```Python
+**语法**
+
+```python
 runtime_tensor = nncase_runtime.from_numpy(ulab.numpy)
 ```
 
-【参数】
+**参数**
 
-| 参数名称   | 描述      | 输入/输出 |
-| ---------- | --------- | --------- |
-| ulab.numpy | numpy对象 | 输入      |
+| 参数名称   | 描述         | 输入/输出 |
+| ---------- | ------------ | --------- |
+| ulab.numpy | numpy 对象   | 输入      |
 
-【返回值】
+**返回值**
 
-| 返回值         | 描述                         |
-| -------------- | ---------------------------- |
-| runtime_tensor | 返回创建好的runtime_tensor。 |
-| 其他           | 失败，抛出C++异常。          |
+| 返回值         | 描述                             |
+| -------------- | -------------------------------- |
+| runtime_tensor | 返回创建的 runtime_tensor 对象。  |
+| 其他           | 如果失败，将抛出 C++ 异常。     |
 
 ### 2.2 to_numpy
 
-【描述】
+**描述**
 
-将runtime_tensor转为ulab.numpy。
+将 runtime_tensor 对象转换为 ulab.numpy 对象。
 
-【语法】
+**语法**
 
-```Python
+```python
 runtime_tensor = kpu.get_output_tensor(0)
 result = runtime_tensor.to_numpy()
 ```
 
-【参数】
+**参数**
 
 无。
 
-【返回值】
+**返回值**
 
-| 返回值     | 描述                                     |
-| ---------- | ---------------------------------------- |
-| ulab.numpy | 返回从runtime_tensor转换后的ulab.numpy。 |
-| 其他       | 失败                                     |
+| 返回值     | 描述                                           |
+| ---------- | ---------------------------------------------- |
+| ulab.numpy | 返回从 runtime_tensor 转换后的 ulab.numpy 对象。 |
+| 其他       | 如果失败，将抛出 C++ 异常。                    |
 
 ### 2.3 nncase_runtime.kpu
 
-kpu模块提供调用KPU硬件来完成开发板上推理神经网络模型的基础函数，主要包括加载模型，设置输入数据，执行推理，获取输出结果等功能。
+kpu 模块提供了用于调用 KPU 硬件执行神经网络模型推理的基本功能，包括加载模型、设置输入数据、执行推理及获取输出结果等。
 
 #### 2.3.1 load_kmodel
 
-【描述】
+**描述**
 
-加载编译生成的kmodel格式的神经网络。
+加载编译生成的 kmodel 格式的神经网络模型。
 
-【语法】
+**语法**
 
-```Python
+```python
 load_kmodel(read_bin)
 load_kmodel(path)
 ```
 
-【参数】
+**参数**
 
 | 参数名称 | 描述               | 输入/输出 |
 | -------- | ------------------ | --------- |
-| read_bin | kmodel的二进制内容 | 输入      |
-| path     | kmodel的路径       | 输入      |
+| read_bin | kmodel 的二进制内容 | 输入      |
+| path     | kmodel 的文件路径   | 输入      |
 
-【返回值】
+**返回值**
 
 | 返回值 | 描述                |
 | ------ | ------------------- |
-| 无     | 成功。              |
-| 其他   | 失败，抛出C++异常。 |
+| 无     | 加载成功。          |
+| 其他   | 如果失败，将抛出 C++ 异常。 |
 
 #### 2.3.2 set_input_tensor
 
-【描述】
+**描述**
 
-设置kmodel推理时的runtime_tensor。
+设置 kmodel 推理时的输入 runtime_tensor。
 
-【语法】
+**语法**
 
-```Python
+```python
 set_input_tensor(index, runtime_tensor)
 ```
 
-【参数】
+**参数**
 
 | 参数名称       | 描述               | 输入/输出 |
 | -------------- | ------------------ | --------- |
-| index          | kmodel的输入索引。 | 输入      |
-| runtime_tensor | 包含输入数据信息。 | 输入      |
+| index          | kmodel 的输入索引   | 输入      |
+| runtime_tensor | 包含输入数据信息的 tensor | 输入      |
 
-【返回值】
+**返回值**
 
 | 返回值 | 描述                |
 | ------ | ------------------- |
-| 无     | 成功。              |
-| 其他   | 失败，抛出C++异常。 |
+| 无     | 设置成功。          |
+| 其他   | 如果失败，将抛出 C++ 异常。 |
 
 #### 2.3.3 get_input_tensor
 
-【描述】
+**描述**
 
-获取kmodel推理时的runtime_tensor。
+获取 kmodel 推理时的输入 runtime_tensor。
 
-【语法】
+**语法**
 
-```Python
+```python
 get_input_tensor(index)
 ```
 
-【参数】
+**参数**
 
 | 参数名称 | 描述               | 输入/输出 |
 | -------- | ------------------ | --------- |
-| index    | kmodel的输入索引。 | 输入      |
+| index    | kmodel 的输入索引   | 输入      |
 
-【返回值】
+**返回值**
 
-| 返回值         | 描述                |
-| -------------- | ------------------- |
-| runtime_tensor | 包含输入数据信息。  |
-| 其他           | 失败，抛出C++异常。 |
+| 返回值         | 描述                       |
+| -------------- | -------------------------- |
+| runtime_tensor | 包含输入数据信息的 tensor。 |
+| 其他           | 如果失败，将抛出 C++ 异常。 |
 
 #### 2.3.4 set_output_tensor
 
-【描述】
+**描述**
 
-设置kmodel推理后的输出结果。
+设置 kmodel 推理后的输出结果。
 
-【语法】
+**语法**
 
-```Python
+```python
 set_output_tensor(index, runtime_tensor)
 ```
 
-【参数】
+**参数**
 
 | 参数名称       | 描述               | 输入/输出 |
 | -------------- | ------------------ | --------- |
-| index          | kmodel的输出索引。 | 输入      |
-| runtime_tensor | 输出结果。         | 输入      |
+| index          | kmodel 的输出索引   | 输入      |
+| runtime_tensor | 输出结果的 tensor    | 输入      |
 
-【返回值】
+**返回值**
 
 | 返回值 | 描述                |
 | ------ | ------------------- |
-| 无     | 成功。              |
-| 其他   | 失败，抛出C++异常。 |
+| 无     | 设置成功。          |
+| 其他   | 如果失败，将抛出 C++ 异常。 |
 
 #### 2.3.5 get_output_tensor
 
-【描述】
+**描述**
 
-获取kmodel推理后的输出结果。
+获取 kmodel 推理后的输出结果。
 
-【语法】
+**语法**
 
-```Python
+```python
 get_output_tensor(index)
 ```
 
-【参数】
+**参数**
 
 | 参数名称 | 描述               | 输入/输出 |
 | -------- | ------------------ | --------- |
-| index    | kmodel的输出索引。 | 输入      |
+| index    | kmodel 的输出索引   | 输入      |
 
-【返回值】
+**返回值**
 
-| 返回值         | 描述                          |
-| :------------- | ----------------------------- |
-| runtime_tensor | 获取第index个runtime_tensor。 |
-| 其他           | 失败，抛出C++异常。           |
+| 返回值         | 描述                            |
+| :------------- | ------------------------------- |
+| runtime_tensor | 获取第 index 个输出的 runtime_tensor。 |
+| 其他           | 如果失败，将抛出 C++ 异常。      |
 
 #### 2.3.6 run
 
-【描述】
+**描述**
 
-启动kmodel推理
+启动 kmodel 推理过程。
 
-【语法】
+**语法**
 
-```Python
+```python
 run()
 ```
 
-【返回值】
+**返回值**
 
 | 返回值 | 描述                |
 | :----- | ------------------- |
 | 无     | 推理成功            |
-| 其他   | 失败，抛出C++异常。 |
+| 其他   | 如果失败，将抛出 C++ 异常。 |
 
 #### 2.3.7 inputs_size
 
-【描述】
+**描述**
 
-获取kmodel的输入个数。
+获取 kmodel 的输入个数。
 
-【语法】
+**语法**
 
-```Python
+```python
 inputs_size()
 ```
 
-【返回值】
+**返回值**
 
 | 返回值 | 描述                |
 | :----- | ------------------- |
-| size_t | kmodel的输入个数。  |
-| 其他   | 失败，抛出C++异常。 |
+| size_t | kmodel 的输入个数。  |
+| 其他   | 如果失败，将抛出 C++ 异常。 |
 
 #### 2.3.8 outputs_size
 
-【描述】
+**描述**
 
-获取kmodel的输出个数。
+获取 kmodel 的输出个数。
 
-【语法】
+**语法**
 
-```Python
+```python
 outputs_size()
 ```
 
-【返回值】
+**返回值**
 
 | 返回值 | 描述                |
 | :----- | ------------------- |
-| size_t | kmodel的输出个数。  |
-| 其他   | 失败，抛出C++异常。 |
+| size_t | kmodel 的输出个数。  |
+| 其他   | 如果失败，将抛出 C++ 异常。 |
 
 #### 2.3.9 get_input_desc
 
-【描述】
+**描述**
 
-获取指定索引的输入的描述信息。
+获取指定索引的输入描述信息。
 
-【语法】
+**语法**
 
-```Python
+```python
 get_input_desc(index)
 ```
 
-【参数】
+**参数**
 
 | 参数名称 | 描述               | 输入/输出 |
 | -------- | ------------------ | --------- |
-| index    | kmodel的输入索引。 | 输入      |
+| index    | kmodel 的输入索引   | 输入      |
 
-【返回值】
+**返回值**
 
-| 返回值      | 描述                                         |
-| :---------- | -------------------------------------------- |
-| MemoryRange | 第index个输入信息:`dtype`, `start`, `size`。 |
+| 返回值      | 描述                                          |
+| :---------- | --------------------------------------------- |
+| MemoryRange | 第 index 个输入的信息，包括 `dtype`, `start`, `size`。 |
 
 #### 2.3.10 get_output_desc
 
-【描述】
+**描述**
 
-获取指定索引的输出的描述信息。
+获取指定索引的输出描述信息。
 
-【语法】
+**语法**
 
-```Python
+```python
 get_output_desc(index)
 ```
 
-【参数】
+**参数**
 
 | 参数名称 | 描述               | 输入/输出 |
 | -------- | ------------------ | --------- |
-| index    | kmodel的输入索引。 | 输入      |
+| index    | kmodel 的输出索引   | 输入      |
 
-【返回值】
+**返回值**
 
-| 返回值      | 描述                                         |
-| :---------- | -------------------------------------------- |
-| MemoryRange | 第index个输出信息:`dtype`, `start`, `size`。 |
+| 返回值      | 描述                                          |
+| :---------- | --------------------------------------------- |
+| MemoryRange | 第 index 个输出的信息，包括 `dtype`, `start`, `size`。 |
 
 ### 2.4 nncase_runtime.ai2d
 
 #### 2.4.1 build
 
-【描述】
+**描述**
 
-ai2d_builder的构造函数.
+构造 ai2d_builder 对象。
 
-【语法】
+**语法**
 
-```Python
+```python
 build(input_shape, output_shape)
 ```
 
-【参数】
+**参数**
 
 | 名称         | 描述     |
 | ------------ | -------- |
 | input_shape  | 输入形状 |
 | output_shape | 输出形状 |
 
-【返回值 】
+**返回值**
 
-| 返回值       | 描述                         |
-| :----------- | ---------------------------- |
-| ai2d_builder | 返回ai2d_builder，用于执行。 |
-| 其他         | 失败，抛出C++异常。          |
+| 返回值       | 描述                          |
+| :----------- | ----------------------------- |
+| ai2d_builder | 返回用于执行的 ai2d_builder 对象。 |
+| 其他         | 如果失败，将抛出 C++ 异常。    |
 
 #### 2.4.2 run
 
-配置寄存器并启动AI2D的计算.
+**描述**
 
-【定义】
+配置寄存器并启动 AI2D 计算。
 
-```Python
+**语法**
+
+```python
 ai2d_builder.run(input_tensor, output_tensor)
 ```
 
-【参数】
+**参数**  
 
 | 名称          | 描述       |
 | ------------- | ---------- |
-| input_tensor  | 输入tensor |
-| output_tensor | 输出tensor |
+| input_tensor  | 输入 tensor |
+| output_tensor | 输出 tensor |
 
-【返回值】
+**返回值**  
 
 | 返回值 | 描述                |
 | ------ | ------------------- |
 | 无     | 成功。              |
-| 其他   | 失败，抛出C++异常。 |
+| 其他   | 如果失败，将抛出 C++ 异常。 |
 
 #### 2.4.3 set_dtype
 
-【描述】
+**描述**
 
-用于设置AI2D计算过程中的数据类型.
+设置 AI2D 计算过程中的数据类型。
 
-【定义】
+**语法**  
 
-```Python
+```python
 set_dtype(src_format, dst_format, src_type, dst_type)
 ```
 
-【参数】
+**参数**
 
 | 名称       | 类型        | 描述         |
 | ---------- | ----------- | ------------ |
@@ -419,171 +370,78 @@ set_dtype(src_format, dst_format, src_type, dst_type)
 
 #### 2.4.4 set_crop_param
 
-【描述】
+**描述**
 
-用于配置crop相关的参数.
+配置裁剪相关参数。
 
-【定义】
+**语法**  
 
-```Python
+```python
 set_crop_param(crop_flag, start_x, start_y, width, height)
 ```
 
-【参数】
+**参数**  
 
 | 名称      | 类型 | 描述               |
-| --------- | ---- | ------------------ |
-| crop_flag | bool | 是否开启crop功能   |
+| --------- |
+
+ ---- | ------------------ |
+| crop_flag | bool | 是否启用裁剪功能   |
 | start_x   | int  | 宽度方向的起始像素 |
 | start_y   | int  | 高度方向的起始像素 |
-| width     | int  | 宽度方向的crop长度 |
-| height    | int  | 高度方向的crop长度 |
+| width     | int  | 宽度               |
+| height    | int  | 高度               |
 
-#### 2.4.5 set_shift_param
+### 2.5 nncase_runtime 其他功能
 
-【描述】
+- **图像处理功能：**  
+  nncase_runtime 还提供了多种图像处理功能，包括图像缩放、旋转、翻转等。
 
-用于配置shift相关的参数.
+- **深度学习推理：**  
+  该模块支持多种深度学习模型的推理，具有良好的兼容性。
 
-【定义】
+## 3. 参考示例
 
-```Python
-set_shift_param(shift_flag, shift_val)
+### 3.1 使用 KPU 进行推理
+
+```python
+import nncase_runtime as runtime
+
+# 加载模型
+with open("model.kmodel", "rb") as f:
+    model_data = f.read()
+runtime.load_kmodel(model_data)
+
+# 设置输入
+input_tensor = runtime.from_numpy(input_data)
+runtime.set_input_tensor(0, input_tensor)
+
+# 执行推理
+runtime.run()
+
+# 获取输出
+output_tensor = runtime.get_output_tensor(0)
+result = output_tensor.to_numpy()
 ```
 
-【参数】
+### 3.2 使用 AI2D 进行图像处理
 
-| 名称       | 类型 | 描述              |
-| ---------- | ---- | ----------------- |
-| shift_flag | bool | 是否开启shift功能 |
-| shift_val  | int  | 右移的比特数      |
+```python
+import nncase_runtime as runtime
 
-#### 2.4.6 set_pad_param
+# 构建 AI2D
+builder = runtime.build((input_height, input_width, channels), (output_height, output_width, channels))
 
-【描述】
+# 设置数据类型
+builder.set_dtype(runtime.AI2D_FORMAT_RGB, runtime.AI2D_FORMAT_RGB, runtime.DTYPE_UINT8, runtime.DTYPE_UINT8)
 
-用于配置pad相关的参数.
+# 配置裁剪
+builder.set_crop_param(True, 10, 10, 100, 100)
 
-【定义】
-
-```Python
-set_pad_param(pad_flag, paddings, pad_mode, pad_val)
+# 执行计算
+builder.run(input_tensor, output_tensor)
 ```
 
-【参数】
+## 4. 结论
 
-| 名称     | 类型 | 描述                                                                                          |
-| -------- | ---- | --------------------------------------------------------------------------------------------- |
-| pad_flag | bool | 是否开启pad功能                                                                               |
-| paddings | list | 各个维度的padding, size=8，分别表示dim0到dim4的前后padding的个数，其中dim0/dim1固定配置{0, 0} |
-| pad_mode | int  | 只支持pad constant，配置0即可                                                                 |
-| pad_val  | list | 每个channel的padding value                                                                    |
-
-#### 2.4.7 set_resize_param
-
-【描述】
-
-用于配置resize相关的参数.
-
-【定义】
-
-```Python
-set_resize_param(resize_flag, ai2d_interp_method, ai2d_interp_mode)
-```
-
-【参数】
-
-| 名称          | 类型               | 描述               |
-| ------------- | ------------------ | ------------------ |
-| resize_flag   | bool               | 是否开启resize功能 |
-| ai2d_interp_method | interp_method | resize插值方法     |
-| ai2d_interp_mode   | interp_mode   | resize模式         |
-
-#### 2.4.8 set_affine_param
-
-【描述】
-
-用于配置affine相关的参数.
-
-【定义】
-
-```Python
-set_affine_param(affine_flag, ai2d_interp_method, cord_round, bound_ind, bound_val, bound_smooth, M)
-```
-
-【参数】
-
-| 名称          | 类型               | 描述                                                                                                                     |
-| ------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| affine_flag   | bool               | 是否开启affine功能                                                                                                       |
-| ai2d_interp_method | interp_method | Affine采用的插值方法                                                                                                     |
-| cord_round    | uint32_t           | 整数边界0或者1                                                                                                           |
-| bound_ind     | uint32_t           | 边界像素模式0或者1                                                                                                       |
-| bound_val     | uint32_t           | 边界填充值                                                                                                               |
-| bound_smooth  | uint32_t           | 边界平滑0或者1                                                                                                           |
-| M             | list               | 仿射变换矩阵对应的vector，仿射变换为Y=\[a_0, a_1; a_2, a_3\] \cdot  X + \[b_0, b_1\] $, 则  M=[a_0,a_1,b_0,a_2,a_3,b_1 ] |
-
-#### 2.4.9 ai2d_format
-
-【描述】
-
-ai2d_format用于配置输入输出的可选数据格式.
-
-【定义】
-
-```Python
-class ai2d_format
-    YUV420_NV12 = 0
-    YUV420_NV21 = 1
-    YUV420_I420 = 2
-    NCHW_FMT = 3
-    RGB_packed = 4
-    RAW16 = 5
-```
-
-#### 2.4.10 interp_method
-
-【描述】
-
-interp_method用于配置可选的插值方式.
-
-【定义】
-
-```Python
-class interp_method:
-    tf_nearest = 0
-    tf_bilinear = 1
-    cv2_nearest = 2
-    cv2_bilinear = 3
-```
-
-#### 2.4.11 interp_mode
-
-【描述】
-
-interp_mode 用于配置可选的插值模式.
-
-【定义】
-
-```Python
-class interp_mode:
-    none = 0
-    align_corner = 1
-    half_pixel = 2
-```
-
-### 2.5 shrink_memory_pool
-
-【描述】
-
-清理nncase_runtime产生的内存池，释放内存。
-
-【语法】
-
-```Python
-import gc
-import nncase_runtime
-
-gc.collect()
-nncase_runtime.shrink_memory_pool()
-```
+通过使用 nncase_runtime 模块，开发人员能够在 CanMV 平台上实现高效的深度学习推理和图像处理功能。本手册提供了 API 的详细描述和使用示例，旨在帮助开发人员快速上手并高效开发相关应用。

@@ -2,27 +2,54 @@
 
 ## 1. 概述
 
-K230内部包含两个PWM硬件模块，每个模块有3个输出通道，模块输出频率可调，但3通道共用，通道占空比独立可调。因此通道0、1、2共用频率，通道3、4、5共用频率。
-通道输出IO配置参考IOMUX模块。
+K230 内部集成了两个 PWM 硬件模块，每个模块提供 3 个输出通道。这些通道共用时钟，但占空比可以独立调节。因此，通道 0、1、2 共享一个时钟，通道 3、4、5 共享另一个时钟。输出 IO 的配置可以通过 IOMUX 模块进行设置。
 
 ## 2. 示例
 
+以下示例展示了如何使用 PWM 接口进行输出控制。
+
+**示例**
+
 ```python
 from machine import PWM
-# channel 0 output freq 1kHz duty 50%, enable
-pwm0 = PWM(0, 1000, 50, enable = True)
-# disable channel 0 output
+
+# 初始化通道 0，设置输出频率为 1 kHz，占空比为 50%，并启用
+pwm0 = PWM(0, 1000, 50, enable=True)
+
+# 禁用通道 0 输出
 pwm0.enable(False)
-# set channel 0 output freq 2kHz
+
+# 设置通道 0 输出频率为 2 kHz
 pwm0.freq(2000)
-# set channel 0 output duty 10%
+
+# 设置通道 0 输出占空比为 10%
 pwm0.duty(10)
-# enable channel 0 output
+
+# 启用通道 0 输出
 pwm0.enable(True)
-# release channel 0
+
+# 释放通道 0
 pwm0.deinit()
 ```
 
+## 3. 代码说明
+
+1. **初始化 PWM 通道**：
+   - 创建 `PWM` 对象，指定通道号（此例为 0），设置初始频率为 1 kHz，占空比为 50%，并立即启用输出。
+
+1. **禁用 PWM 输出**：
+   - 调用 `enable(False)` 方法禁用通道 0 的输出，这在某些情况下可能需要临时停止信号输出。
+
+1. **调整频率和占空比**：
+   - 使用 `freq(2000)` 方法将通道 0 的输出频率修改为 2 kHz。
+   - 使用 `duty(10)` 方法将占空比调整为 10%。
+
+1. **启用 PWM 输出**：
+   - 通过 `enable(True)` 方法重新启用 PWM 输出，以开始发送新的频率和占空比信号。
+
+1. **释放通道资源**：
+   - 调用 `deinit()` 方法释放通道，通常在不再需要 PWM 功能时使用，以释放资源。
+
 ```{admonition} 提示
-PWM模块具体接口请参考[API文档](../../api/machine/K230_CanMV_PWM模块API手册.md)
+有关 PWM 模块的详细接口和使用方法，请参考[API文档](../../api/machine/K230_CanMV_PWM模块API手册.md)
 ```

@@ -2,13 +2,13 @@
 
 ## 1. 概述
 
-K230 CanMV 人脸检测是通过python语言开发实现的一个简单的具备摄像头数据采集预览，人脸检测画框功能的应用。该示例程序应用到了K230 CanMV 平台的多个硬件模块：AI2D，KPU，Camera，Display等。
+K230 CanMV 人脸检测是通过 Python 语言开发实现的一个简单应用，具备摄像头数据采集预览和人脸检测画框功能。该示例程序应用到了 K230 CanMV 平台的多个硬件模块：AI2D、KPU、Camera、Display 等。
 
 ## 2. 硬件环境
 
 运行该示例程序需要如下硬件环境：
 
-- K230 CanMV开发板及配套的Sensor模组
+- K230 CanMV开发板及配套的 Sensor 模组
 
 ## 3. 示例代码
 
@@ -166,17 +166,10 @@ def get_result(output_data):
         conf[:,start_i:start_i + int(sum_shape/conf.shape[2]),:] = output_data[_i]
         start_i = start_i + int(sum_shape/conf.shape[2])
     conf = softmax(conf)
-    #landms = []
-    #for _i in range(6, 9):
-        ##landms.append(np.reshape(np.transpose(output_data[_i], [0, 2, 3, 1]), [1, -1, 10]))
-        #landms.append(np.reshape(output_data[_i],(1, -1, 10)))
-    #landms = np.hstack(landms)
 
     boxes = decode(loc[0], prior_data, variance)
     boxes = boxes * scale
     scores = conf[:, 1]
-    #landms = decode_landm(np.squeeze(landms, axis=0), prior_data, variance)
-    #landms = landms * scale1
 
     # ignore low scores
     inds = []
@@ -201,11 +194,8 @@ def get_result(output_data):
         scores_order.append(scores_ind[order_i])
     if len(boxes_order)==0:
         return []
-    #print('***',boxes_order,len(boxes_order))
-    #print('***',scores_order,len(scores_order))
     boxes_order = np.array(boxes_order)
     scores_order = np.array(scores_order).reshape((-1,1))
-    #landms = landms[order]
 
     # do NMS
     dets = np.concatenate((boxes_order, scores_order), axis=1)
@@ -215,12 +205,9 @@ def get_result(output_data):
     for keep_i in keep:
         dets_out.append(dets[keep_i])
     dets_out = np.array(dets_out)
-    #landms = landms[keep]
-
+   
     # keep top-K faster NMS
     dets_out = dets_out[:keep_top_k, :]
-    #landms = landms[:args.keep_top_k, :]
-    # dets = np.concatenate((dets, landms), axis=1)
     return dets_out
 
 
@@ -247,18 +234,18 @@ def face_detect_test():
     sensor.set_vflip(False)
     # 通道0直接给到显示VO，格式为YUV420
     sensor.set_framesize(width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT)
-    sensor.set_pixformat(PIXEL_FORMAT_YUV_SEMIPLANAR_420)
-    # 通道2给到AI做算法处理，格式为RGB888
+    sensor.set_pixformat(Sensor.YUV420SP)
+    # 通道2给到AI做算法处理，格式为RGBP888
     sensor.set_framesize(width = OUT_RGB888P_WIDTH , height = OUT_RGB888P_HEIGH, chn=CAM_CHN_ID_2)
-    # set chn2 output format
-    sensor.set_pixformat(PIXEL_FORMAT_RGB_888_PLANAR, chn=CAM_CHN_ID_2)
+    sensor.set_pixformat(Sensor.RGBP888, chn=CAM_CHN_ID_2)
 
     # OSD图像初始化
     osd_img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
 
     sensor_bind_info = sensor.bind_info(x = 0, y = 0, chn = CAM_CHN_ID_0)
     Display.bind_layer(**sensor_bind_info, layer = Display.LAYER_VIDEO1)
-    # 设置为LT9611显示，默认1920x1080
+
+    # 设置为LT9611显示，默认1920x1080，
     Display.init(Display.LT9611, to_ide = True)
 
     try:

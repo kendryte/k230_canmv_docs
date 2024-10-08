@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath('exts'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = os.getenv('PROJECT') or 'K230 CanMV'
-copyright = str(datetime.datetime.now().year) + ' ' + (os.getenv('COPYRIGHT') or 'Canaan Inc.')
+copyright = str(datetime.datetime.now().year) + ' ' + (os.getenv('COPYRIGHT') or 'Canaan Inc')
 author = os.getenv('AUTHOR') or 'Canaan'
 # release = '0.1'
 root_doc = os.getenv('ROOT_DOC') or 'index'
@@ -27,18 +27,19 @@ extensions = [
     'sphinxcontrib.mermaid'
 ]
 html_js_files = [
-    'https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.13.8/mermaid.min.js',
+    'mermaid.min.js',
     'init_mermaid.js',
 ]
 source_suffix = {
    '.rst': 'restructuredtext',  
     '.md': 'markdown',
 }
-
+html_title = 'K230 CanMV'
 templates_path = ['_templates']
 exclude_patterns = ['.github/*', '.gitlab/*', '**/--*']
 
-language = 'zh_CN'
+# language = 'zh_CN'
+language = os.getenv('SPHINX_LANGUAGE', 'en')
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -69,4 +70,11 @@ html_theme_options = {
     'navigation_depth': 7,
     "use_repository_button": True,
     "primary_sidebar_end": ["versionsFlex.html"],
+    "footer_start": ["Fleft.html"],
+	"footer_center": ["Footer.html"],
+	"footer_end" : ["Fright.html"]
 }
+if language == 'en':
+    html_theme_options["footer_start"] = ["FleftEn.html"]
+    html_theme_options["footer_center"] = ["FooterEn.html"]
+    html_theme_options["footer_end"] = ["FrightEn.html"]

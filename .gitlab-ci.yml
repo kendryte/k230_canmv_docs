@@ -165,13 +165,13 @@ build web docs:
     - python3 preprocess.py
     - git config --global user.email "auto@canaan-creative.com"
     - git config --global user.name "GitLab CI"
-    - git commit "*.md" -m "remove cover"
+    - git commit "*.md" -m "remove cover" || true
     - git checkout dev
     - git reset --hard origin/dev
     - python3 preprocess.py
     - git config --global user.email "auto@canaan-creative.com"
     - git config --global user.name "GitLab CI"
-    - git commit "*.md" -m "remove cover"
+    - git commit "*.md" -m "remove cover" || true
     - make mhtml
     - rm -rf /data1/k230/k230_canmv_docs/*
     - cp -r _build/* /data1/k230/k230_canmv_docs

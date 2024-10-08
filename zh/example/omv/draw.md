@@ -55,7 +55,7 @@ img.draw_line(10, 10, 100, 100, color=(255, 0, 0))  # 绘制红色线
 ```
 
 ### 2.3 draw_rectangle
-  
+
 `draw_rectangle` 函数可实现在图像上绘制一个矩形。
 
 - 语法
@@ -126,7 +126,7 @@ image.draw_cross(x, y, color, size=5, thickness=1)
 ```
 
 ### 2.6 draw_arrow
-  
+
 `draw_arrow`函数可实现在图像上绘制一条箭头线。
 
 - 语法
@@ -149,7 +149,7 @@ img.draw_arrow(10, 10, 100, 100, color=(255, 0, 0), thickness=2)  # 绘制红色
 ```
 
 ### 2.7 draw_ellipse
-  
+
 `draw_ellipse`函数可实现在图像上绘制一个椭圆。
 
 - 语法
@@ -172,7 +172,7 @@ img.draw_ellipse(60, 60, 30, 20, color=(0, 0, 255), thickness=3)  # 绘制蓝色
 ```
 
 ### 2.8 draw_image
-  
+
 `draw_image`函数可实现在当前图像上绘制另一个图像。
 
 - 语法
@@ -196,7 +196,7 @@ image.draw_image(img, x, y, alpha=128, scale=1.0)
 ```
 
 ### 2.9 draw_keypoints
-  
+
 `draw_keypoints`函数可实现在图像上绘制关键点。
 
 - 语法
@@ -220,7 +220,7 @@ img.draw_keypoints(keypoints, size=10, color=(255, 255, 0), thickness=2)  # 绘�
 ```
 
 ### 2.10 flood_fill
-  
+
 `flood_fill`函数可实现在图像上执行洪水填充算法，从指定的起点开始填充指定的颜色。
 
 - 语法
@@ -244,7 +244,7 @@ img.flood_fill(30, 30, color=(255, 0, 0), threshold=30, invert=False, clear_back
 ```
 
 ### 2.11 draw_string
-  
+
 `draw_string`函数可实现在图像上绘制字符串。
 
 - 语法
@@ -281,43 +281,42 @@ DISPLAY_IS_LCD = True
 DISPLAY_IS_IDE = False
 
 try:
-    # default size
+    # 设置默认大小
     width = 640
     height = 480
     if DISPLAY_IS_HDMI:
-        # use hdmi as display output, set to 1080P
+        # 使用HDMI作为显示输出，设置1080P
         Display.init(Display.LT9611, width = 1920, height = 1080, to_ide = True)
         width = 1920
         height = 1080
     elif DISPLAY_IS_LCD:
-        # use lcd as display output
+        # 使用LCD作为显示输出
         Display.init(Display.ST7701, width = 800, height = 480, to_ide = True)
         width = 800
         height = 480
     elif DISPLAY_IS_IDE:
-        # use IDE as output
+        # 使用IDE作为显示输出
         Display.init(Display.VIRT, width = 800, height = 480, fps = 100)
         width = 800
         height = 480
     else:
         raise ValueError("Shoule select a display.")
-    # init media manager
+    # 初始化媒体管理器
     MediaManager.init()
 
     fps = time.clock()
-    # create image for drawing
+    # 创建绘制的图像
     img = image.Image(width, height, image.ARGB8888)
 
     while True:
         fps.tick()
-
-        # check if should exit.
+        # 检查是否在退出点
         os.exitpoint()
-
         img.clear()
+
         # 绘制红色线
         img.draw_line(10, 10, 100, 100, color=(255, 0, 0))
-        
+
         # 绘制绿色矩形
         img.draw_rectangle(20, 20, 50, 30, color=(0, 255, 0), thickness=2)
 
@@ -327,10 +326,10 @@ try:
         # 绘制黄色交叉
         img.draw_cross(40, 40, color=(255, 255, 0), size=10, thickness=2)
 
+        # 绘制红色字符串
+        img.draw_string_advanced(50, 50, 32, "你好世界", color=(255, 0, 0))
         # 绘制白色字符串
-        img.draw_string_advanced(50, 50, 32, "你好世界", color=(255, 0, 0)) 
-        # 绘制白色字符串
-        img.draw_string(50, 100, "Hello CanMV", color=(255, 255, 255), scale=2)
+        img.draw_string_advanced(50, 100, 32, "Hello CanMV", color=(255, 255, 255), scale=2)
 
         # 绘制红色箭头
         img.draw_arrow(60, 60, 100, 100, color=(255, 0, 0), thickness=2)
@@ -344,7 +343,7 @@ try:
         # 绘制另一个图像
         # overlay = image.Image("overlay.bmp")
         # img.draw_image(overlay, 10, 10, alpha=128, scale=1.0)
-        
+
         # 绘制黄色关键点
         keypoints = [(30, 30), (50, 50), (70, 70)]
         img.draw_keypoints([(30, 40, rot)], color = (255, 255, 0), size = 20, thickness = 2, fill = False)
@@ -352,10 +351,10 @@ try:
         # 执行洪水填充
         img.flood_fill(90, 90, color=(255, 0, 0), threshold=30, invert=False, clear_background=False)
 
-        # draw result to screen
+        # 显示绘制结果
         Display.show_image(img)
 
-        print(fps.fps())
+        #print(fps.fps())
 
         time.sleep_ms(10)
 except KeyboardInterrupt as e:
@@ -363,13 +362,13 @@ except KeyboardInterrupt as e:
 except BaseException as e:
     print(f"Exception '{e}'")
 finally:
-    # deinit display
+    # 销毁 display
     Display.deinit()
 
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
 
-    # release media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 ```
 

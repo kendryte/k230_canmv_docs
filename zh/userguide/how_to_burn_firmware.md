@@ -2,73 +2,68 @@
 
 ## 1. 概述
 
-本章节讲述如何下载CanMV固件到开发板
+本章节将介绍如何将 CanMV 固件烧录到开发板上。
 
 ## 2. 固件获取
 
-CanMV-K230 固件下载地址：[github](https://github.com/kendryte/k230_canmv/releases) 或者 [开发者社区](https://developer.canaan-creative.com/resource)
+您可以通过以下链接获取 CanMV-K230 固件：[Github](https://github.com/kendryte/k230_canmv/releases) 或 [嘉楠开发者社区](https://developer.canaan-creative.com/resource)。
 
-请下载“CanMV-K230_micropython”开头的gz压缩包，解压得到sysimage-sdcard.img文件，即为CanMV-K230的固件。
+请下载文件名以 “CanMV-K230_micropython” 开头的 `.gz` 压缩包，解压后会得到 `sysimage-sdcard.img` 文件，该文件即为 CanMV-K230 的固件镜像。
 
 ```{admonition} 注意
-下载获得的镜像一般为`gz`压缩文件，需要解压之后获得`img`文件再进行烧录
+下载的固件文件通常为 gz 压缩格式，需要解压后才能获得可用于烧录的 img 文件。
 ```
 
 ## 3. 固件烧录
 
-### 3.1 Windows下烧录
+### 3.1 在 Windows 平台上进行烧录
 
-Windows下可通过rufus工具对TF卡进行烧录（rufus工具下载地址 [http://rufus.ie/downloads/](http://rufus.ie/downloads/)）。
+在 Windows 系统中，您可以使用 Rufus 工具将固件烧录到 TF 卡。Rufus 工具的下载地址为：[Rufus官网下载](http://rufus.ie/downloads/)。
 
-1）将TF卡插入PC，然后启动rufus工具，点击工具界面的"选择”按钮，选择待烧写的固件。
+1. 将 TF 卡插入电脑，启动 Rufus 工具。点击界面中的 “选择” 按钮，选择需要烧录的固件文件。
+   ![rufus-flash-from-file](images/rufus_select.png)
+1. 点击 “开始” 按钮，Rufus 将自动进行烧录。进度条会显示烧录的进度，烧录完成后，系统会提示 “准备就绪”。
+   ![rufus-flash](images/rufus_start.png)
+   ![rufus-sure](images/rufus_sure.png)
+   ![rufus-warning](images/rufus_warning.png)
+   ![rufus-finish](images/rufus_finish.png)
 
-![rufus-flash-from-file](images/rufus_select.png)
+### 3.2 在 Linux 平台上进行烧录
 
-2）点击“开始”按钮开始烧写，烧写过程有进度条展示，烧写结束后会提示“准备就绪”。
+在插入 TF 卡之前，首先运行以下命令查看当前的存储设备：
 
-![rufus-flash](images/rufus_start.png)
-![rufus-sure](images/rufus_sure.png)
-![rufus-warning](images/rufus_warning.png)
-![rufus-finish](images/rufus_finish.png)
+```bash
+ls -l /dev/sd\*
+```
 
-### 3.2 Linux下烧录
+随后，将 TF 卡插入宿主机，再次运行相同命令，找出新增的设备节点，即为 TF 卡的设备节点。
 
-在TF卡插到宿主机之前，输入：
+假设 TF 卡的设备节点为 `/dev/sdc`，可使用以下命令将固件烧录到 TF 卡：
 
-`ls -l /dev/sd\*`
-
-查看当前的存储设备。
-
-将TF卡插入宿主机后，再次输入：
-
-`ls -l /dev/sd\*`
-
-查看此时的存储设备，新增加的就是TF卡设备节点。
-
-假设/dev/sdc就是TF卡设备节点，执行如下命令烧录TF卡：
-
-`sudo dd if=sysimage-sdcard.img of=/dev/sdc bs=1M oflag=sync`
+```bash
+sudo dd if=sysimage-sdcard.img of=/dev/sdc bs=1M oflag=sync
+```
 
 ## 4. 启动设备
 
-烧录固件成功后，将开发板连接到电脑，可以看到一个虚拟U盘`CanMV`以及`1`个虚拟串口
+固件成功烧录后，将开发板连接至电脑，系统会自动识别一个名为 `CanMV` 的虚拟 U 盘以及一个虚拟串口。
 
 ```{note}
-部分开发板需要同时连接2个USB，如果没有看到对应的虚拟U盘和虚拟串口，检查是否正确连接
+部分开发板需要同时连接 2 条 USB 线。如果没有看到相应的虚拟 U 盘和虚拟串口，请检查连接是否正确。
 ```
 
-### 4.1 Windows下查看设备
+### 4.1 在 Windows 系统下查看设备
 
-查看设备管理器
+打开设备管理器，您将看到如下设备：
 
 ![conn_succ_windows](images/canmv_connect_succ_windows.png)
 
-- `USB串行设备（COM3）`为micropython REPL串口 是CanMV-IDE需要连接的串口。连接，TF卡烧录的固件是否为“CanMV-K230_micropython”开头的固件。
+- USB 串行设备（COM3）为 Micropython 的 REPL 串口，该串口是 CanMV-IDE 需要连接的接口。请确保您烧录的固件文件名以 “CanMV-K230_micropython” 开头。
 
-### 4.2 Linux下查看设备
+### 4.2 在 Linux 系统下查看设备
 
-Linux串口显示如下：
+在 Linux 系统中，串口设备会显示为：
 
 ![conn_succ_linux](images/canmv_connect_succ_linux.png)
 
-- `/dev/ttyACM0`为micropython REPL串口 是CanMV-IDE需要连接的串口。TF卡烧录的固件是否为“CanMV-K230_micropython”开头的固件。
+- `/dev/ttyACM0` 为 Micropython 的 REPL 串口，也是 CanMV-IDE 需要连接的接口。请确保您烧录的固件文件名以 “CanMV-K230_micropython” 开头。

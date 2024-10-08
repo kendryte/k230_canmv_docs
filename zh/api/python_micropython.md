@@ -6,4 +6,6 @@
 cipher/K230_CanMV_Ucryptolib模块API手册.md
 cipher/K230_CanMV_Hashlib模块API手册.md
 stdlib/utime.md
+stdlib/gc.md
+stdlib/os.md
 ```

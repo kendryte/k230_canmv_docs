@@ -1,187 +1,134 @@
-# 2.3 socket 模块API手册
-
-![cover](../images/canaan-cover.png)
-
-版权所有©2023北京嘉楠捷思信息技术有限公司
-
-<div style="page-break-after:always"></div>
-
-## 免责声明
-
-您购买的产品、服务或特性等应受北京嘉楠捷思信息技术有限公司（“本公司”，下同）及其关联公司的商业合同和条款的约束，本文档中描述的全部或部分产品、服务或特性可能不在您的购买或使用范围之内。除非合同另有约定，本公司不对本文档的任何陈述、信息、内容的正确性、可靠性、完整性、适销性、符合特定目的和不侵权提供任何明示或默示的声明或保证。除非另有约定，本文档仅作为使用指导参考。
-
-由于产品版本升级或其他原因，本文档内容将可能在未经任何通知的情况下，不定期进行更新或修改。
-
-## 商标声明
-
-![logo](../images/logo.png)、“嘉楠”和其他嘉楠商标均为北京嘉楠捷思信息技术有限公司及其关联公司的商标。本文档可能提及的其他所有商标或注册商标，由各自的所有人拥有。
-
-**版权所有 © 2023北京嘉楠捷思信息技术有限公司。保留一切权利。**
-非经本公司书面许可，任何单位和个人不得擅自摘抄、复制本文档内容的部分或全部，并不得以任何形式传播。
-
-<div style="page-break-after:always"></div>
-
-## 目录
-
-[TOC]
-
-## 前言
-
-### 概述
-
-本文档主要介绍soccket模块API。
-
-### 读者对象
-
-本文档（本指南）主要适用于以下人员：
-
-- 技术支持工程师
-- 软件开发工程师
-
-### 缩略词定义
-
-| 简称 | 说明 |
-| ---- | ---- |
-
-### 修订记录
-
-| 文档版本号 | 修改说明 | 修改者 | 日期       |
-| ---------- | -------- | ------ | ---------- |
-| V1.0       | 初版     | 软件部 | 2023-11-09 |
+# 2.3 socket 模块 API 手册
 
 ## 1. 概述
 
-封装socket库，需要通过核间通信调用小核的socket接口。
+该模块封装了 `socket` 库，用户可以通过调用 `socket` 库进行网络应用程序开发。
 
-## 2.示例
+## 2. 示例
 
 ```python
-#配置 tcp/udp socket调试工具
+# 配置 tcp/udp socket 调试工具
 import socket
 import time
 
-PORT=60000
+PORT = 60000
 
 def client():
-    #获取地址及端口号 对应地址
+    # 获取 IP 地址及端口号
     ai = socket.getaddrinfo("10.100.228.5", PORT)
-    #ai = socket.getaddrinfo("10.10.1.94", PORT)
-    print("Address infos:", ai)
+    # ai = socket.getaddrinfo("10.10.1.94", PORT)
+    print("地址信息:", ai)
     addr = ai[0][-1]
 
-    print("Connect address:", addr)
-    #建立socket
+    print("连接地址:", addr)
+    # 创建 socket 对象
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-    #连接地址
+    # 连接到指定地址
     s.connect(addr)
 
     for i in range(10):
-        str="K230 tcp client send test {0} \r\n".format(i)
-        print(str)
-        #print(s.send(str))
-        #发送字符串
-        print(s.write(str))
+        msg = "K230 TCP 客户端发送测试 {0} \r\n".format(i)
+        print(msg)
+        # 发送字符串数据
+        print(s.write(msg))
         time.sleep(0.2)
-        #time.sleep(1)
-        #print(s.recv(4096))
-        #print(s.read())
-    #延时1秒
+
+    # 延时 1 秒后关闭 socket
     time.sleep(1)
-    #关闭socket
     s.close()
-    print("end")
+    print("结束")
 
-
-
-#main()
+# 运行客户端程序
 client()
 ```
 
-## 3. api定义
+## 3. API 定义
 
-详见`https://docs.micropython.org/en/latest/library/socket.html`
+详见 [Micropython socket module](https://docs.micropython.org/en/latest/library/socket.html)
 
-### 3.1 定义
+### 3.1 构造函数
 
-- *class*socket.socket(*af=AF_INET*, *type=SOCK_STREAM*, *proto=IPPROTO_TCP*, */*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket)
+- **class** socket.socket(*af=AF_INET*, *type=SOCK_STREAM*, *proto=IPPROTO_TCP*)  
 
-  Create a new socket using the given address family, socket type and protocol number. Note that specifying *proto* in most cases is not required (and not recommended, as some MicroPython ports may omit `IPPROTO_*` constants). Instead, *type* argument will select needed protocol automatically:`# Create STREAM TCP socket socket(AF_INET, SOCK_STREAM) # Create DGRAM UDP socket socket(AF_INET, SOCK_DGRAM)`
+  创建一个新的套接字对象，使用指定的地址族（`af`）、套接字类型（`type`）和协议（`proto`）。通常，**无需**显式指定 `proto` 参数，MicroPython 会根据 `type` 自动选择相应的协议类型。示例：
+  - 创建一个 TCP 流套接字：`socket(AF_INET, SOCK_STREAM)`
+  - 创建一个 UDP 数据报套接字：`socket(AF_INET, SOCK_DGRAM)`
 
-### 3.2 函数
+### 3.2 方法
 
-- socket.close()[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.close)
+- **socket.close()**
 
-  Mark the socket closed and release all resources. Once that happens, all future operations on the socket object will fail. The remote end will receive EOF indication if supported by protocol.Sockets are automatically closed when they are garbage-collected, but it is recommended to [`close()`](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.close) them explicitly as soon you finished working with them.
+  关闭套接字并释放其相关资源。关闭后，所有对该套接字对象的操作将会失败。协议支持时，远程端会收到 EOF 指示。尽管套接字在被垃圾回收时会自动关闭，但建议在使用完后显式调用 `close()` 方法。
 
-- socket.bind(*address*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.bind)
+- **socket.bind(address)**
 
-  Bind the socket to *address*. The socket must not already be bound.
+  将套接字绑定到指定的 IP 地址和端口。调用前确保套接字未被绑定。
 
-- socket.listen(**[***backlog***]**)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.listen)
+- **socket.listen([backlog])**
 
-  Enable a server to accept connections. If *backlog* is specified, it must be at least 0 (if it’s lower, it will be set to 0); and specifies the number of unaccepted connections that the system will allow before refusing new connections. If not specified, a default reasonable value is chosen.
+  使服务器套接字开始监听连接请求。`backlog` 指定等待连接的最大数目，最小为 0（小于 0 的值将视为 0），如果未指定，则使用系统默认值。
 
-- socket.accept()[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.accept)
+- **socket.accept()**
 
-  Accept a connection. The socket must be bound to an address and listening for connections. The return value is a pair (conn, address) where conn is a new socket object usable to send and receive data on the connection, and address is the address bound to the socket on the other end of the connection.
+  接受客户端连接。此方法返回 `(conn, address)`，其中 `conn` 是一个新套接字对象，可用于在该连接上发送和接收数据，`address` 是客户端的地址。
 
-- socket.connect(*address*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.connect)
+- **socket.connect(address)**
 
-  Connect to a remote socket at *address*.
+  连接到指定的服务端套接字地址。
 
-- socket.send(*bytes*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.send)
+- **socket.send(bytes)**
 
-  Send data to the socket. The socket must be connected to a remote socket. Returns number of bytes sent, which may be smaller than the length of data (“short write”).
+  向套接字发送数据，套接字必须已连接。返回发送的字节数，这可能小于数据的总长度（即“短写”情况）。
 
-- socket.sendall(*bytes*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.sendall)
+- **socket.sendall(bytes)**
 
-  Send all data to the socket. The socket must be connected to a remote socket. Unlike [`send()`](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.send), this method will try to send all of data, by sending data chunk by chunk consecutively.The behaviour of this method on non-blocking sockets is undefined. Due to this, on MicroPython, it’s recommended to use [`write()`](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.write) method instead, which has the same “no short writes” policy for blocking sockets, and will return number of bytes sent on non-blocking sockets.
+  向套接字发送完整数据，套接字必须已连接。与 `send()` 不同，此方法会尝试连续发送所有数据，直至传输完成。该方法在非阻塞套接字上行为未定义，因此建议在 MicroPython 中使用 `write()` 方法。
 
-- socket.recv(*bufsize*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.recv)
+- **socket.recv(bufsize)**
 
-  Receive data from the socket. The return value is a bytes object representing the data received. The maximum amount of data to be received at once is specified by bufsize.
+  从套接字接收数据，返回接收到的数据字节对象。`bufsize` 指定单次接收的最大字节数。
 
-- socket.sendto(*bytes*, *address*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.sendto)
+- **socket.sendto(bytes, address)**
 
-  Send data to the socket. The socket should not be connected to a remote socket, since the destination socket is specified by *address*.
+  向未连接的套接字发送数据，目标地址由 `address` 指定。
 
-- socket.recvfrom(*bufsize*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.recvfrom)
+- **socket.recvfrom(bufsize)**
 
-  Receive data from the socket. The return value is a pair *(bytes, address)* where *bytes* is a bytes object representing the data received and *address* is the address of the socket sending the data.
+  从未连接的套接字接收数据，返回 `(bytes, address)`，其中 `bytes` 是接收到的数据，`address` 是发送数据的源地址。
 
-- socket.setsockopt(*level*, *optname*, *value*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.setsockopt)
+- **socket.setsockopt(level, optname, value)**
 
-  Set the value of the given socket option. The needed symbolic constants are defined in the socket module (SO_* etc.). The *value* can be an integer or a bytes-like object representing a buffer.
+  设置套接字选项。`value` 可以是整数或字节类对象。
 
-- socket.settimeout(*value*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.settimeout)
+- **socket.settimeout(value)**
 
-  **Note**: Not every port supports this method, see below.Set a timeout on blocking socket operations. The value argument can be a nonnegative floating point number expressing seconds, or None. If a non-zero value is given, subsequent socket operations will raise an [`OSError`](https://docs.micropython.org/en/latest/library/builtins.html#OSError) exception if the timeout period value has elapsed before the operation has completed. If zero is given, the socket is put in non-blocking mode. If None is given, the socket is put in blocking mode.Not every [MicroPython port](https://docs.micropython.org/en/latest/reference/glossary.html#term-MicroPython-port) supports this method. A more portable and generic solution is to use [`select.poll`](https://docs.micropython.org/en/latest/library/select.html#select.poll) object. This allows to wait on multiple objects at the same time (and not just on sockets, but on generic [`stream`](https://docs.micropython.org/en/latest/reference/glossary.html#term-stream) objects which support polling). Example:`# Instead of: s.settimeout(1.0)  # time in seconds s.read(10)  # may timeout # Use: poller = select.poll() poller.register(s, select.POLLIN) res = poller.poll(1000)  # time in milliseconds if not res:    # s is still not ready for input, i.e. operation timed out`Difference to CPythonCPython raises a `socket.timeout` exception in case of timeout, which is an [`OSError`](https://docs.micropython.org/en/latest/library/builtins.html#OSError) subclass. MicroPython raises an OSError directly instead. If you use `except OSError:` to catch the exception, your code will work both in MicroPython and CPython.
+  设置套接字操作的超时时间（以秒为单位）。`value` 可以是一个正数、零或 `None`。若超时，操作将引发 `OSError`。在非阻塞模式下，设置 `value` 为零；在阻塞模式下，设置为 `None`。
 
-- socket.setblocking(*flag*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.setblocking)
+- **socket.setblocking(flag)**
 
-  Set blocking or non-blocking mode of the socket: if flag is false, the socket is set to non-blocking, else to blocking mode.This method is a shorthand for certain [`settimeout()`](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.settimeout) calls:`sock.setblocking(True)` is equivalent to `sock.settimeout(None)``sock.setblocking(False)` is equivalent to `sock.settimeout(0)`
+  设置套接字的阻塞模式。`flag` 为 `False` 时为非阻塞模式，为 `True` 时为阻塞模式。
 
-- socket.makefile(*mode='rb'*, *buffering=0*, */*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.makefile)
+- **socket.makefile(mode='rb', buffering=0)**
 
-  Return a file object associated with the socket. The exact returned type depends on the arguments given to makefile(). The support is limited to binary modes only (‘rb’, ‘wb’, and ‘rwb’). CPython’s arguments: *encoding*, *errors* and *newline* are not supported.Difference to CPythonAs MicroPython doesn’t support buffered streams, values of *buffering* parameter is ignored and treated as if it was 0 (unbuffered).Difference to CPythonClosing the file object returned by makefile() WILL close the original socket as well.
+  返回与套接字关联的文件对象。仅支持二进制模式（如 `rb`、`wb` 和 `rwb`），`buffering` 参数在 MicroPython 中被忽略。
 
-- socket.read(**[***size***]**)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.read)
+- **socket.read([size])**
 
-  Read up to size bytes from the socket. Return a bytes object. If *size* is not given, it reads all data available from the socket until EOF; as such the method will not return until the socket is closed. This function tries to read as much data as requested (no “short reads”). This may be not possible with non-blocking socket though, and then less data will be returned.
+  从套接字读取数据，返回字节对象。若未指定 `size`，则读取所有可用数据，直至 EOF。
 
-- socket.readinto(*buf***[**, *nbytes***]**)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.readinto)
+- **socket.readinto(buf[, nbytes])**
 
-  Read bytes into the *buf*. If *nbytes* is specified then read at most that many bytes. Otherwise, read at most *len(buf)* bytes. Just as [`read()`](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.read), this method follows “no short reads” policy.Return value: number of bytes read and stored into *buf*.
+  将数据读取到 `buf` 中，若指定 `nbytes`，则读取最多 `nbytes` 字节，否则读取 `len(buf)` 字节。
 
-- socket.readline()[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.readline)
+- **socket.readline()**
 
-  Read a line, ending in a newline character.Return value: the line read.
+  从套接字读取一行数据，返回字节对象。
 
-- socket.write(*buf*)[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.write)
+- **socket.write(buf)**
 
-  Write the buffer of bytes to the socket. This function will try to write all data to a socket (no “short writes”). This may be not possible with a non-blocking socket though, and returned value will be less than the length of *buf*.Return value: number of bytes written.
+  将 `buf` 中的数据写入套接字。尽量写入所有数据，但对于非阻塞套接字，可能只写入部分数据。
 
-- *exception*socket.error[¶](https://docs.micropython.org/en/latest/library/socket.html#socket.socket.error)
+- **socket.error**
 
-  MicroPython does NOT have this exception.Difference to CPythonCPython used to have a `socket.error` exception which is now deprecated, and is an alias of [`OSError`](https://docs.micropython.org/en/latest/library/builtins.html#OSError). In MicroPython, use [`OSError`](https://docs.micropython.org/en/latest/library/builtins.html#OSError) directly.
+  在 MicroPython 中未定义 `socket.error` 异常，直接使用 `OSError`。
   

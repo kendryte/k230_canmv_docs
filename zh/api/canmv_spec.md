@@ -19,4 +19,5 @@ machine/K230_CanMV_UART模块API手册.md
 machine/K230_CanMV_machine模块API手册.md
 machine/K230_CanMV_RTC模块API手册.md
 machine/K230_CanMV_TOUCH模块API手册.md
+machine/K230_CanMV_LED模块API手册.md
 ```

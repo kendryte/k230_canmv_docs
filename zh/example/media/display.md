@@ -1,19 +1,20 @@
-# 2. Display例程讲解
+# 2. Display 示例讲解
 
 ## 1. 概述
 
-K230有1路MIPI-DSI(1x4lane),可驱动mipi屏幕或者通过接口芯片转接驱动HDMI显示器
-
-同时，为了方便调试，我们还添加了虚拟显示器支持，用户如果没有HDMI显示器和LCD屏幕是，也可通过选择`VIRT`输出设备，在CanMV-IDE中进行图像预览
+K230 配备 1 路 MIPI-DSI（1x4 lane），可驱动 MIPI 屏幕或通过接口芯片转换驱动 HDMI 显示器。此外，为了方便调试，我们还支持虚拟显示器，用户可以选择 `VIRT` 输出设备，即使没有 HDMI 显示器或 LCD 屏幕, 也可在 CanMV-IDE 中进行图像预览。
 
 ## 2. 示例
 
-### 2.1 使用HDMI输出图像
+### 2.1 使用 HDMI 输出图像
 
-驱动HDMI显示屏输出1080P图像
+本示例通过 HDMI 显示屏输出 1080P 图像。
 
 ```python
-import time, os, urandom, sys
+import time
+import os
+import urandom
+import sys
 
 from media.display import *
 from media.media import *
@@ -24,12 +25,11 @@ DISPLAY_HEIGHT = 1080
 def display_test():
     print("display test")
 
-    # create image for drawing
+    # 创建用于绘图的图像
     img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
-
-    # use hdmi as display output
-    Display.init(Display.LT9611, to_ide = True)
-    # init media manager
+    # 使用 HDMI 作为显示输出
+    Display.init(Display.LT9611, to_ide=True)
+    # 初始化媒体管理器
     MediaManager.init()
 
     try:
@@ -42,26 +42,24 @@ def display_test():
                 g = (urandom.getrandbits(8))
                 b = (urandom.getrandbits(8))
                 size = (urandom.getrandbits(30) % 64) + 32
-                # If the first argument is a scaler then this method expects
-                # to see x, y, and text. Otherwise, it expects a (x,y,text) tuple.
-                # Character and string rotation can be done at 0, 90, 180, 270, and etc. degrees.
-                img.draw_string_advanced(x,y,size, "Hello World!，你好世界！！！", color = (r, g, b),)
+                # 在图像的坐标点绘制文字
+                img.draw_string_advanced(x, y, size, "Hello World!，你好世界！！！", color=(r, g, b))
 
-            # draw result to screen
+            # 将结果绘制到屏幕上
             Display.show_image(img)
 
             time.sleep(1)
             os.exitpoint()
     except KeyboardInterrupt as e:
-        print("user stop: ", e)
+        print("用户停止: ", e)
     except BaseException as e:
-        print(f"Exception {e}")
+        print(f"异常: {e}")
 
-    # deinit display
+    # 销毁显示
     Display.deinit()
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # release media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 
 if __name__ == "__main__":
@@ -69,12 +67,15 @@ if __name__ == "__main__":
     display_test()
 ```
 
-### 2.2 使用LCD输出图像
+### 2.2 使用 LCD 输出图像
 
-通过LCD（ST7701）输出800x480图像
+本示例通过 LCD（ST7701）输出 800x480 图像。
 
 ```python
-import time, os, urandom, sys
+import time
+import os
+import urandom
+import sys
 
 from media.display import *
 from media.media import *
@@ -85,12 +86,12 @@ DISPLAY_HEIGHT = 480
 def display_test():
     print("display test")
 
-    # create image for drawing
+    # 创建用于绘图的图像
     img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
 
-    # use lcd as display output
-    Display.init(Display.ST7701, width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT, to_ide = True)
-    # init media manager
+    # 使用 LCD 作为显示输出
+    Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
+    # 初始化媒体管理器
     MediaManager.init()
 
     try:
@@ -103,26 +104,24 @@ def display_test():
                 g = (urandom.getrandbits(8))
                 b = (urandom.getrandbits(8))
                 size = (urandom.getrandbits(30) % 64) + 32
-                # If the first argument is a scaler then this method expects
-                # to see x, y, and text. Otherwise, it expects a (x,y,text) tuple.
-                # Character and string rotation can be done at 0, 90, 180, 270, and etc. degrees.
-                img.draw_string_advanced(x,y,size, "Hello World!，你好世界！！！", color = (r, g, b),)
+                # 在图像的坐标点绘制文字
+                img.draw_string_advanced(x, y, size, "Hello World!，你好世界！！！", color=(r, g, b))
 
-            # draw result to screen
+            # 将绘制的图像显示
             Display.show_image(img)
 
             time.sleep(1)
             os.exitpoint()
     except KeyboardInterrupt as e:
-        print("user stop: ", e)
+        print("用户停止: ", e)
     except BaseException as e:
-        print(f"Exception {e}")
+        print(f"异常: {e}")
 
-    # deinit display
+    # 销毁显示
     Display.deinit()
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # release media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 
 if __name__ == "__main__":
@@ -130,12 +129,15 @@ if __name__ == "__main__":
     display_test()
 ```
 
-### 2.3 使用VIRT调试预览图像
+### 2.3 使用 VIRT 调试预览图像
 
-使用虚拟显示输出设备，用户可自定义分辨了和帧率，方便使用CanMV-IDE调试使用
+本示例使用虚拟显示输出设备，用户可以自定义分辨率和帧率，以便在 CanMV-IDE 中进行调试。
 
 ```python
-import time, os, urandom, sys
+import time
+import os
+import urandom
+import sys
 
 from media.display import *
 from media.media import *
@@ -146,12 +148,12 @@ DISPLAY_HEIGHT = 480
 def display_test():
     print("display test")
 
-    # create image for drawing
+    # 创建用于绘制的图像
     img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
 
-    # use lcd as display output
-    Display.init(Display.VIRT, width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT, fps = 60)
-    # init media manager
+    # 使用 IDE 作为输出显示，可以设定任意分辨率
+    Display.init(Display.VIRT, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, fps=60)
+    # 初始化媒体管理器
     MediaManager.init()
 
     try:
@@ -164,26 +166,24 @@ def display_test():
                 g = (urandom.getrandbits(8))
                 b = (urandom.getrandbits(8))
                 size = (urandom.getrandbits(30) % 64) + 32
-                # If the first argument is a scaler then this method expects
-                # to see x, y, and text. Otherwise, it expects a (x,y,text) tuple.
-                # Character and string rotation can be done at 0, 90, 180, 270, and etc. degrees.
-                img.draw_string_advanced(x,y,size, "Hello World!，你好世界！！！", color = (r, g, b),)
+                # 在图像的坐标点绘制文字
+                img.draw_string_advanced(x, y, size, "Hello World!，你好世界！！！", color=(r, g, b))
 
-            # draw result to screen
+            # 将绘制的图像显示
             Display.show_image(img)
 
             time.sleep(1)
             os.exitpoint()
     except KeyboardInterrupt as e:
-        print("user stop: ", e)
+        print("用户停止: ", e)
     except BaseException as e:
-        print(f"Exception {e}")
+        print(f"异常: {e}")
 
-    # deinit display
+    # 销毁显示
     Display.deinit()
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # release media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 
 if __name__ == "__main__":
@@ -192,5 +192,5 @@ if __name__ == "__main__":
 ```
 
 ```{admonition} 提示
-Display模块具体接口请参考[API文档](../../api/mpp/K230_CanMV_Display模块API手册.md)
+有关 Display 模块的详细接口，请参考 [API 文档](../../api/mpp/K230_CanMV_Display模块API手册.md)。
 ```

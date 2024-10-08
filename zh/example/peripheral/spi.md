@@ -2,12 +2,11 @@
 
 ## 1. 概述
 
-K230内部包含三个SPI硬件模块，片选的极性可配置；支持时钟速率可配。
-通道输出IO配置参考IOMUX模块。
+K230 内部集成了三个 SPI 硬件模块，支持配置片选的极性和时钟速率。SPI 通道的输出 IO 可以通过 IOMUX 模块进行配置，非常适合高速数据传输。
 
 ## 2. 示例
 
-本示例程序用于对 CanMV 开发板进行spi读取flash id的功能展示。
+以下示例展示了如何使用 SPI 接口读取 Flash 存储器的 ID。
 
 ```python
 from machine import SPI
@@ -67,6 +66,19 @@ spi.write_readinto(a,b)
 print(b)
 ```
 
+## 3.代码说明
+
+1. **FPIOA 配置**：
+   - 通过 `FPIOA` 模块，配置用于 SPI 的 GPIO 引脚（如 CS、CLK 和数据线）。
+   - 使用 `help()` 函数查看 GPIO 引脚的当前状态，确保其正确设置。
+
+1. **SPI 初始化**：
+   - 实例化 `SPI` 对象，设置波特率为 5 MHz，极性和相位均为 0，数据位宽为 8 位。
+
+1. **Flash 存储器操作**：
+   - 发送复位命令（0x66 和 0x99）以初始化 Flash 存储器。
+   - 读取存储器 ID，使用命令 0x9F 和 0x90，读取 ID 并打印结果。
+
 ```{admonition} 提示
-SPI模块具体接口请参考[API文档](../../api/machine/K230_CanMV_SPI模块API手册.md)
+有关 SPI 模块的详细接口和使用方法，请参考[API文档](../../api/machine/K230_CanMV_SPI模块API手册.md)
 ```

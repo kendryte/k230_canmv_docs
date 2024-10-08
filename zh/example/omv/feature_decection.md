@@ -121,16 +121,16 @@ line = img.get_regression(threshold=1000, min_length=10, max_distance=5)
 这里只列举一个寻找线段的demo，具体demo还请查看固件自带虚拟U盘中的例程
 
 ```python
-# Find Lines Example
+# 直线检测示例
 #
-# This example shows off how to find lines in the image. For each line object
-# found in the image a line object is returned which includes the line's rotation.
+# 这个示例展示了如何在图像中找到直线。对于在图像中找到的每个直线对象，
+# 将返回一个包含该直线旋转的直线对象。
 
-# Note: Line detection is done by using the Hough Transform:
+# 注意：直线检测是通过霍夫变换完成的：
 # http://en.wikipedia.org/wiki/Hough_transform
-# Please read about it above for more information on what `theta` and `rho` are.
+# 请阅读上述链接以获取有关 `theta` 和 `rho` 的更多信息。
 
-# find_lines() finds infinite length lines. Use find_line_segments() to find non-infinite lines.
+# find_lines() 找到的是无限长的直线。使用 find_line_segments() 可以找到非无限长的直线。
 import time, os, gc, sys
 
 from media.sensor import *
@@ -140,53 +140,53 @@ from media.media import *
 DETECT_WIDTH = ALIGN_UP(640, 16)
 DETECT_HEIGHT = 480
 
-# All line objects have a `theta()` method to get their rotation angle in degrees.
-# You can filter lines based on their rotation angle.
+# 所有的直线对象都有一个 `theta()` 方法来获取其旋转角度（以度为单位）。
+# 你可以根据其旋转角度来过滤直线。
 
 min_degree = 0
 max_degree = 179
 
-# All lines also have `x1()`, `y1()`, `x2()`, and `y2()` methods to get their end-points
-# and a `line()` method to get all the above as one 4 value tuple for `draw_line()`.
+# 所有的直线对象还有 `x1()`, `y1()`, `x2()`, 和 `y2()` 方法来获取它们的端点，
+# 以及一个 `line()` 方法来将上述所有值作为一个包含 4 个值的元组返回给 `draw_line()` 使用。
 
-# About negative rho values:
+# 关于负的 rho 值：
 #
-# A [theta+0:-rho] tuple is the same as [theta+180:+rho].
+# 一个 [theta+0:-rho] 元组与 [theta+180:+rho] 是一样的。
 sensor = None
 
 def camera_init():
     global sensor
 
-    # construct a Sensor object with default configure
+    # 使用默认配置构造一个Sensor对象
     sensor = Sensor(width=DETECT_WIDTH,height=DETECT_HEIGHT)
-    # sensor reset
+    # sensor复位
     sensor.reset()
-    # set hmirror
+    # 设置水平镜像
     # sensor.set_hmirror(False)
-    # sensor vflip
+    # 设置垂直翻转
     # sensor.set_vflip(False)
 
-    # set chn0 output size
+    # 设置通道 0 输出大小
     sensor.set_framesize(width=DETECT_WIDTH,height=DETECT_HEIGHT)
-    # set chn0 output format
+    # 设置通道 0 输出格式
     sensor.set_pixformat(Sensor.GRAYSCALE)
-    # use IDE as display output
+    # 使用 IDE 作为显示输出，如果您选择的屏幕无法点亮，请参考API文档中的K230_CanMV_Display模块API手册自行配置
     Display.init(Display.VIRT, width= DETECT_WIDTH, height = DETECT_HEIGHT,fps=100,to_ide = True)
-    # init media manager
+    # 初始化媒体管理器
     MediaManager.init()
-    # sensor start run
+    # sensor开始运行
     sensor.run()
 
 def camera_deinit():
     global sensor
-    # sensor stop run
+    # sensor停止运行
     sensor.stop()
-    # deinit display
+    # 销毁显示
     Display.deinit()
-    # sleep
+    # 休眠
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # release media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 
 def capture_picture():
@@ -199,29 +199,25 @@ def capture_picture():
             global sensor
             img = sensor.snapshot()
 
-            # `threshold` controls how many lines in the image are found. Only lines with
-            # edge difference magnitude sums greater than `threshold` are detected...
+            # `threshold` 控制在图像中找到的直线数量。只有边缘差异幅度和大于 `threshold` 的直线才会被检测到。
 
-            # More about `threshold` - each pixel in the image contributes a magnitude value
-            # to a line. The sum of all contributions is the magintude for that line. Then
-            # when lines are merged their magnitudes are added togheter. Note that `threshold`
-            # filters out lines with low magnitudes before merging. To see the magnitude of
-            # un-merged lines set `theta_margin` and `rho_margin` to 0...
+            # 关于 `threshold` 的更多信息 - 图像中的每个像素都会为直线贡献一个幅度值。
+            # 所有贡献的总和就是该直线的幅度。然后，当直线合并时，它们的幅度会被相加。
+            # 注意，`threshold` 会在合并前过滤掉低幅度的直线。要查看未合并直线的幅度，请将 `theta_margin` 和 `rho_margin` 设置为 0。
 
-            # `theta_margin` and `rho_margin` control merging similar lines. If two lines
-            # theta and rho value differences are less than the margins then they are merged.
+            # `theta_margin` 和 `rho_margin` 控制合并相似的直线。如果两条直线的 theta 和 rho 值差异小于该边界，它们会被合并。
 
             for l in img.find_lines(threshold = 1000, theta_margin = 25, rho_margin = 25):
                 if (min_degree <= l.theta()) and (l.theta() <= max_degree):
                     img.draw_line([v for v in l.line()], color = (255, 0, 0))
                     print(l)
 
-            # draw result to screen
+            # 将结果绘制到屏幕上
             Display.show_image(img)
             img = None
 
             gc.collect()
-            print(fps.fps())
+            #print(fps.fps())
         except KeyboardInterrupt as e:
             print("user stop: ", e)
             break
@@ -247,7 +243,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 ```
 
 ```{admonition} 提示
