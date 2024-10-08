@@ -19,7 +19,7 @@ The chip also supports a rich array of peripheral interfaces and integrates mult
   - Photo
   - Description
 * - [CanMV-K230](./userguide/boards/canmv_k230.md)
-  - ```{image} images/CanMV-K230_front.png
+  - ```{image} ../zh/images/CanMV-K230_front.png
     :width: 400
     :height: 400
     :align: "center"

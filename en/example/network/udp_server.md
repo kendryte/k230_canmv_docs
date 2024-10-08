@@ -13,7 +13,7 @@ To ensure a smooth demonstration of UDP communication, we need to confirm that t
 
 - To prevent the firewall from blocking UDP communication, it is recommended to temporarily disable the firewall on your computer.
 
-```{image} ../images/network/image-20240722145319713.png
+```{image} ../../../zh/images/network/image-20240722145319713.png
 :scale: 50 %
 ```
 
@@ -25,7 +25,7 @@ To ensure a smooth demonstration of UDP communication, we need to confirm that t
 
 - Open the command prompt (CMD), enter `ipconfig`, and query and record the IP address of the computer's network card for subsequent configuration and testing.
 
-```{image} ../images/network/image-20240722145500693.png
+```{image} ../../../zh/images/network/image-20240722145500693.png
 :scale: 50 %
 ```
 
@@ -191,12 +191,12 @@ After running the code, the serial terminal will output the server's IP address 
 
 In the network debugging assistant, select UDP and configure the connection parameters:
 
-```{image} ../images/network/image-20240722170233348.png
+```{image} ../../../zh/images/network/image-20240722170233348.png
 :scale: 50 %
 ```
 
 Send data and observe the server's response:
 
-```{image} ../images/network/image-20240722170412175.png
+```{image} ../../../zh/images/network/image-20240722170412175.png
 :scale:  50 %
 ```

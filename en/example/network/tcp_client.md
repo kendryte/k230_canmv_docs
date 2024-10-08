@@ -13,7 +13,7 @@ To ensure a smooth demonstration of TCP communication, we need to confirm that t
 
 - To avoid the firewall blocking TCP communication, it is recommended to temporarily disable the computer's firewall.
 
-```{image} ../images/network/image-20240722145319713.png
+```{image} ../../../zh/images/network/image-20240722145319713.png
 :scale: 50 %
 ```
 
@@ -25,7 +25,7 @@ To ensure a smooth demonstration of TCP communication, we need to confirm that t
 
 - Open the Command Prompt (CMD), enter `ipconfig`, and query and record the IP address of the computer's network card for subsequent configuration and testing.
 
-```{image} ../images/network/image-20240722145500693.png
+```{image} ../../../zh/images/network/image-20240722145500693.png
 :scale: 50 %
 ```
 
@@ -193,7 +193,7 @@ client()
 
 1. Open the NetAssist Network Debugging Assistant, configure it as a TCP server, and wait for the connection:
 
-```{image} ../images/network/image-20240722152102440.png
+```{image} ../../../zh/images/network/image-20240722152102440.png
 :scale: 50 %
 ```
 
@@ -205,6 +205,6 @@ ai = socket.getaddrinfo("172.16.1.174", 8080)
 
 1. Run the client code, and NetAssist will display the messages sent by the client:
 
-```{image} ../images/network/image-20240722151843380.png
+```{image} ../../../zh/images/network/image-20240722151843380.png
 :scale: 50 %
 ```
