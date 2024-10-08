@@ -13,7 +13,7 @@ To ensure a smooth demonstration of UDP communication, we need to confirm that t
 
 - To avoid the firewall blocking UDP communication, it is recommended to temporarily disable the computer's firewall.
 
-```{image} ../../../zh/images/network/image-20240722145319713.png
+```{image} ../../../zh/example/images/network/image-20240722145319713.png
 :scale: 50 %
 ```
 
@@ -25,7 +25,7 @@ To ensure a smooth demonstration of UDP communication, we need to confirm that t
 
 - Open the command prompt (CMD), enter `ipconfig`, and record the IP address of the computer's network card for subsequent configuration and testing.
 
-```{image} ../../../zh/images/network/image-20240722145500693.png
+```{image} ../../../zh/example/images/network/image-20240722145500693.png
 :scale: 50 %
 ```
 
@@ -174,7 +174,7 @@ udpclient()
 
 1. Use NetAssist Network Debugging Assistant to establish a UDP connection:
 
-```{image} ../../../zh/images/network/image-20240722171950467.png
+```{image} ../../../zh/example/images/network/image-20240722171950467.png
 :scale: 50 %
 ```
 
@@ -186,6 +186,6 @@ ai = socket.getaddrinfo("172.16.1.174", 8080)
 
 1. After running the example, NetAssist will display the received UDP packets:
 
-```{image} ../../../zh/images/network/image-20240722172037608.png
+```{image} ../../../zh/example/images/network/image-20240722172037608.png
 :scale: 50 %
 ```

@@ -13,7 +13,7 @@ To ensure a smooth demonstration of TCP communication, we need to confirm that t
 
 - To avoid the firewall blocking TCP communication, it is recommended to temporarily disable the firewall on your computer.
 
-```{image} ../../../zh/images/network/image-20240722145319713.png
+```{image} ../../../zh/example/images/network/image-20240722145319713.png
 :scale: 50%
 ```
 
@@ -25,7 +25,7 @@ To ensure a smooth demonstration of TCP communication, we need to confirm that t
 
 - Open the Command Prompt (CMD), enter `ipconfig`, and query and record the IP address of the computer's network card for subsequent configuration and testing.
 
-```{image} ../../../zh/images/network/image-20240722145500693.png
+```{image} ../../../zh/example/images/network/image-20240722145500693.png
 :scale: 50%
 ```
 
@@ -185,13 +185,13 @@ server()
 
 1. Run the above server code and observe that the serial terminal will print the server's IP address and port number.
 
-```{image} ../../../zh/images/network/image-20240722162100719.png
+```{image} ../../../zh/example/images/network/image-20240722162100719.png
 :scale: 50%
 ```
 
 1. Open NetAssist Network Debugging Assistant, configure it as a TCP client, and enter the IP address and port number displayed by the server terminal, then click "Connect":
 
-```{image} ../../../zh/images/network/image-20240722162513633.png
+```{image} ../../../zh/example/images/network/image-20240722162513633.png
 :scale: 50%
 ```
 
