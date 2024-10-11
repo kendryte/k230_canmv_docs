@@ -1,4 +1,4 @@
-# Welcome to K230 CanMV's documentation
+# Welcome to CanMV K230's documentation
 
 ```{toctree}
 :maxdepth: 1

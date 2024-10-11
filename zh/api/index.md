@@ -7,4 +7,5 @@ python_micropython.md
 canmv_spec.md
 image_video.md
 nncase.md
+aidemo_libs.md
 ```

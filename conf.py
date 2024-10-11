@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath('exts'))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = os.getenv('PROJECT') or 'K230 CanMV'
+project = os.getenv('PROJECT') or 'CanMV K230'
 copyright = str(datetime.datetime.now().year) + ' ' + (os.getenv('COPYRIGHT') or 'Canaan Inc')
 author = os.getenv('AUTHOR') or 'Canaan'
 # release = '0.1'
@@ -34,7 +34,7 @@ source_suffix = {
    '.rst': 'restructuredtext',  
     '.md': 'markdown',
 }
-html_title = 'K230 CanMV'
+html_title = 'CanMV K230'
 templates_path = ['_templates']
 exclude_patterns = ['.github/*', '.gitlab/*', '**/--*']
 
