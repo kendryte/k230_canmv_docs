@@ -29,7 +29,7 @@ fpioa.help(FPIOA.IIC0_SDA, func=True)
 fpioa.set_function(0, FPIOA.GPIO0)
 
 # 设置 Pin2 为 GPIO2，同时配置其它参数
-fpioa.set_function(2, FPIOA.GPIO2, ie=1, oe=1, pu=0, pd=0, st=1, sl=0, ds=7)
+fpioa.set_function(2, FPIOA.GPIO2, ie=1, oe=1, pu=0, pd=0, st=1, ds=7)
 
 # 获取指定功能当前所用的引脚
 fpioa.get_pin_num(FPIOA.UART0_TXD)
@@ -51,7 +51,7 @@ fpioa = FPIOA()
 ### `set_function` 方法
 
 ```python
-FPIOA.set_function(pin, func, ie=-1, oe=-1, pu=-1, pd=-1, st=-1, sl=-1, ds=-1)
+FPIOA.set_function(pin, func, ie=-1, oe=-1, pu=-1, pd=-1, st=-1, ds=-1)
 ```
 
 设置引脚的功能。
@@ -64,9 +64,8 @@ FPIOA.set_function(pin, func, ie=-1, oe=-1, pu=-1, pd=-1, st=-1, sl=-1, ds=-1)
 - `oe`: 输出使能，可选参数
 - `pu`: 上拉使能，可选参数
 - `pd`: 下拉使能，可选参数
-- `st`: st 使能，可选参数
-- `sl`: sl 使能，可选参数
-- `ds`: 驱动能力，可选参数
+- `st`: 施密特触发器使能，可选参数
+- `ds`: 驱动能力，可选参数，参见[IO 驱动能力](#31-io-配置说明)
 
 **返回值**
 
@@ -124,3 +123,9 @@ fpioa.help([number, func=False])
 1. 所有引脚的配置信息（未设置 `number`）
 1. 指定引脚的详细配置信息（设置了 `number`，未设置 `func` 或设置为 `False`）
 1. 指定功能的所有可配置引脚号（设置了 `number`，并将 `func` 设置为 `True`）
+
+## 3. 附录
+
+### 3.1 IO 配置说明
+
+![io-ds](https://developer.canaan-creative.com/api/post/attachment?id=436)

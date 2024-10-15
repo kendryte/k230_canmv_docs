@@ -4,7 +4,7 @@
 
 The CanMV-K230 development board is based on the latest generation AIoT SoC K230 series chip from Canaan Technology's Kendryte® series AIoT chips. This chip adopts a new multi-heterogeneous unit accelerated computing architecture, integrates 2 RISC-V high-efficiency computing cores, and features a new generation KPU (Knowledge Process Unit) intelligent computing unit. It has multi-precision AI computing power, widely supports general AI computing frameworks, and achieves over 70% utilization in some typical networks.
 
-The chip also supports a rich array of peripheral interfaces and integrates multiple dedicated hardware acceleration units such as 2D, 2.5D, etc., capable of accelerating various tasks such as image, video, audio, and AI. It features low latency, high performance, low power consumption, quick startup, and high security.
+The chip also supports a rich array of peripheral interfaces and integrates multiple dedicated hardware acceleration units such as 2D, 2.5D, etc., capable of accelerating various tasks such as image, video, audio, and AI. It features low latency, high performance, low power consumption and quick startup.
 
 ![K230_block_diagram](../zh/images/K230_block_diagram.png)
 
@@ -12,23 +12,10 @@ The chip also supports a rich array of peripheral interfaces and integrates mult
 
 ### 2.1 Acquiring the Development Board
 
-```{list-table}
-:header-rows: 1
-
-* - Development Board
-  - Photo
-  - Description
-* - [CanMV-K230](./userguide/boards/canmv_k230.md)
-  - ```{image} ../zh/images/CanMV-K230_front.png
-    :width: 400
-    :height: 400
-    :align: "center"
-    ```
-  - Based on K230, with external 512MB LPDDR for larger memory
-* - [CanMV-K230D](./userguide/boards/canmv_k230d.md)
-  - TODO
-  - Based on K230D, with built-in 128MB LPDDR4, compact size
-```
+| Development Board          | Photo                                                   | Description                                   |
+|-----------------|--------------------------------------------------------|----------------------------------------|
+| [CanMV-K230](./userguide/boards/canmv_k230.md)   | ![CanMV-K230](../zh/images/CanMV-K230_front.png) | Based on K230, with external 512MB LPDDR for larger memory   |
+| [BPI-K230D-ZERO](./userguide/boards/canmv_k230d.md) | ![Bpi-K230D-Zero](../zh/images/BPI_K230D_Zero.png)| Based on K230D, with built-in 128MB LPDDR4, compact size |
 
 ### 2.2 Flashing the Firmware
 

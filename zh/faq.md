@@ -19,6 +19,12 @@
 
 这种情况通常是由于烧录了错误的固件，导致 U-Boot 启动失败。请重新烧录正确的固件并重启设备，以解决该问题。
 
+### 1.2 CanMV-K230 V1.1 如何点亮LED灯(WS2812)
+
+`CanmV-K230-V1.1` 开发板需要修改硬件才可以点亮板载`LED`灯
+
+![how-to-fix](https://developer.canaan-creative.com/api/post/attachment?id=435)
+
 ## 2. SDK 问题
 
 ### 2.1 IDE 无法连接 Canmv-K230 开发板

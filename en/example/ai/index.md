@@ -5,5 +5,5 @@
 
 nncase_usage.md
 face_detection.md
-AI_Demo_Description_Document.md
+AI_Demo_User_Manual.md
 ```

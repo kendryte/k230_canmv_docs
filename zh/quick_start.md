@@ -4,7 +4,7 @@
 
 CanMV-K230 开发板基于嘉楠科技 Kendryte ® 系列 AIoT 芯片中的最新一代 AIoT SoC K230 系列芯片。该芯片采用全新的多异构单元加速计算架构，集成了 2 个 RISC-V 高能效计算核心，内置新一代 KPU（ Knowledge Process Unit）智能计算单元，具备多精度 AI 算力，广泛支持通用的 AI 计算框架，部分典型网络的利用率超过了 70%。
 
-该芯片还支持丰富的外设接口，并集成了 2D、 2.5D 等多个种专用硬件加速单元，能够对图像、视频、音频、 AI 等多类型任务进行加速，具备低延迟、高性能、低功耗、快速启动以及高安全性等多项特性。
+该芯片还支持丰富的外设接口，并集成了 2D、 2.5D 等多个种专用硬件加速单元，能够对图像、视频、音频、 AI 等多类型任务进行加速，具备低延迟、高性能、低功耗、快速启动等多项特性。
 
 ![K230_block_diagram](./images/K230_block_diagram.png)
 
@@ -12,23 +12,10 @@ CanMV-K230 开发板基于嘉楠科技 Kendryte ® 系列 AIoT 芯片中的最�
 
 ### 2.1 获取开发板
 
-```{list-table}
-:header-rows: 1
-
-* - 开发板
-  - 照片
-  - 简介
-* - [CanMV-K230](./userguide/boards/canmv_k230.md)
-  - ```{image} images/CanMV-K230_front.png
-    :width: 400
-    :height: 400
-    :align: "center"
-    ```
-  - 基于 K230 ，外置 512MB LPDDR，内存更大
-* - [CanMV-K230D](./userguide/boards/canmv_k230d.md)
-  - TODO
-  - 基于 K230D，芯片内置 128MB LPDDR4 ， 开发板尺寸小巧
-```
+| 开发板          | 照片                                                   | 简介                                   |
+|-----------------|--------------------------------------------------------|----------------------------------------|
+| [CanMV-K230](./userguide/boards/canmv_k230.md)   | ![CanMV-K230](images/CanMV-K230_front.png) | 基于 K230，外置 512MB LPDDR，内存更大   |
+| [BPI-K230D-ZERO](./userguide/boards/canmv_k230d.md) | ![Bpi-K230D-Zero](images/BPI_K230D_Zero.png)| 基于 K230D，芯片内置 128MB LPDDR4，开发板尺寸小巧 |
 
 ### 2.2 烧录固件
 
