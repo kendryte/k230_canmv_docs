@@ -19,7 +19,7 @@
 ```C
 [config]
 # pclk in hz
-pclk=33000000
+pclk_hz=33000000
 
 # target fps
 fps=60
