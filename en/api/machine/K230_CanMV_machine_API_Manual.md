@@ -39,3 +39,19 @@ Copies a specified amount of data from the source memory address to the destinat
 **Return Value**
 
 None
+
+### 2.3 `temperature` Method
+
+```python
+temp = machine.temperature()
+```
+
+Get chip temperature from tsensor.
+
+**Parameters**
+
+None
+
+**Return Value**
+
+Temperature.
