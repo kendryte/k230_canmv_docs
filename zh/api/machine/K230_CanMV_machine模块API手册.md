@@ -39,3 +39,19 @@ machine.mem_copy(dst, src, size)
 **返回值**
 
 无
+
+### 2.3 `temperature` 方法
+
+```python
+temp = machine.temperature()
+```
+
+获取芯片内部温度传感器结果
+
+**参数**
+
+无
+
+**返回值**
+
+温度值，浮点数
