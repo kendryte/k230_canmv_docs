@@ -55,3 +55,19 @@ temp = machine.temperature()
 **返回值**
 
 温度值，浮点数
+
+### 2.4 `chipid` 方法
+
+```python
+chipid = machine.chipid()
+```
+
+获取芯片 `ID`
+
+**参数**
+
+无
+
+**返回值**
+
+`bytearray` 长度 `32`
