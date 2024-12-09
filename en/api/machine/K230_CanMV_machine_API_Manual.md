@@ -55,3 +55,19 @@ None
 **Return Value**
 
 Temperature.
+
+### 2.4 `chipid` Method
+
+```python
+chipid = machine.chipid()
+```
+
+get chip ID
+
+**Parameters**
+
+None
+
+**Return Value**
+
+bytearray, lenght 32.
