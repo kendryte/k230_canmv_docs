@@ -34,17 +34,18 @@ None
 ### 2.3 `init` Method
 
 ```python
-rtc.init(year, mon, day, hour, min, sec, microsec)
+rtc.init(year, month, day, weekday, hours, minutes, seconds, microsec)
 ```
 
 **Parameters**
 
 - `year`: Year
-- `mon`: Month
+- `month`: Month
 - `day`: Day
-- `hour`: Hour
-- `min`: Minute
-- `sec`: Second
+- `weekday`: weekday, 1-7
+- `hours`: Hour
+- `minutes`: Minute
+- `seconds`: Second
 - `microsec`: Microsecond
 
 **Return Value**
@@ -66,9 +67,10 @@ None
 Returns the current date and time information, including:
 
 - `year`: Year
-- `mon`: Month
+- `month`: Month
 - `day`: Day
-- `hour`: Hour
-- `min`: Minute
-- `sec`: Second
+- `weekday`: weekday, 1-7
+- `hours`: Hour
+- `minutes`: Minute
+- `seconds`: Second
 - `microsec`: Microsecond
