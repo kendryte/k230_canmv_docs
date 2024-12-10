@@ -34,17 +34,18 @@ rtc = RTC()
 ### 2.3 `init` 方法
 
 ```python
-rtc.init(year, mon, day, hour, min, sec, microsec)
+rtc.init(year, month, day, weekday, hours, minutes, seconds, microsec)
 ```
 
 **参数**
 
 - `year`: 年
-- `mon`: 月
+- `month`: 月
 - `day`: 日
-- `hour`: 时
-- `min`: 分
-- `sec`: 秒
+- `weekday`: 星期几，[1-7]
+- `hours`: 时
+- `minutes`: 分
+- `seconds`: 秒
 - `microsec`: 微秒
 
 **返回值**
@@ -68,6 +69,7 @@ print(rtc.datetime())
 - `year`: 年
 - `mon`: 月
 - `day`: 日
+- `wday`: 星期几
 - `hour`: 时
 - `min`: 分
 - `sec`: 秒
