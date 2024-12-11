@@ -136,6 +136,8 @@ uos.statvfs(path)
 - `f_flag` – 挂载标志。
 - `f_namemax` – 最大文件名长度。
 
+> 目前仅 `f_bsize`， `f_blocks` 和 `f_bfree` 有效
+
 #### 1.14 `sync`
 
 ```python
