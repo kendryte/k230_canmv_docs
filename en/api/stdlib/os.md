@@ -136,6 +136,8 @@ Gets the status of the file system at the specified path, returning a tuple with
 - `f_flag` – Mount flags.
 - `f_namemax` – Maximum length of filenames.
 
+> only `f_bsize`, `f_blocks` and `f_bfree` valid.
+
 #### 1.14 `sync`
 
 ```python
