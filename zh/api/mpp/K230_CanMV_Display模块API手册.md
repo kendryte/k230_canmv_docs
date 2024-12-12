@@ -8,7 +8,7 @@
 
 本手册旨在指导开发人员使用 Micro Python API 调用 CanMV Display 模块，实现图像显示功能。
 
-如需增加自定义屏幕，可参考[Display Debugger](../../example/media/how_to_debug_display.md)
+如需增加自定义屏幕，可参考[Display Debugger](../../example/media/how_to_add_new_mipi_panel.md)
 
 ## 2. API 介绍
 
