@@ -31,7 +31,7 @@ print(p)
 touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1)
 
 # when index is 1
-touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1, range_x = -1, range_y = -1, i2c : I2C = None, rst : Pin = None, int : Pin = None)
+touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1, range_x = -1, range_y = -1, i2c : I2C = None, slave_addr = None, rst : Pin = None, int : Pin = None)
 ```
 
 **参数**
@@ -42,6 +42,7 @@ touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1, range_x = -1, range_
 - `range_x`: `index=1` 时有效，触摸输出坐标的宽度最大值
 - `range_y`: `index=1` 时有效，触摸输出坐标的高度最大值
 - `i2c`: `index=1` 时有效，触摸使用 `I2C` 总线对象
+- `slave_addr`: `index=1` 时有效，触摸芯片的从机地址，可选参数，不传入使用驱动默认值
 - `rst`: `index=1` 时有效，触摸复位引脚对象
 - `int`: `index=1` 时有效，触摸中断引脚对象，当前不支持
 
@@ -106,6 +107,6 @@ TOUCH_INFO 类用于存储触摸点的信息，用户可通过相关只读属性
 
 ### 4.3 触摸类型
 
-- `TYPE_CST128`: 系统自带触摸驱动
 - `TYPE_CST328`: `CanMV` 专有触摸驱动
-- `TYPE_FT5x16`: 系统自带触摸驱动
+- `TYPE_CST226SE`: `CanMV` 专有触摸驱动
+- `TYPE_GT911`: `CanMV` 专有触摸驱动
