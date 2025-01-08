@@ -31,7 +31,7 @@ print(p)
 touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1)
 
 # when index is 1
-touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1, range_x = -1, range_y = -1, i2c : I2C = None, rst : Pin = None, int : Pin = None)
+touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1, range_x = -1, range_y = -1, i2c : I2C = None, slave_addr = None, rst : Pin = None, int : Pin = None)
 ```
 
 **Parameters**
@@ -42,6 +42,7 @@ touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1, range_x = -1, range_
 - `range_x`: Valid when `index=1`. The maximum width of the touch output coordinates.
 - `range_y`: Valid when `index=1`. The maximum height of the touch output coordinates.
 - `i2c`: Valid when `index=1`. The I2C bus object used for touch.
+- `slave_addr`: Valid when `index=1`. The touch device i2c slave address, if not set, use driver default.
 - `rst`: Valid when `index=1`. The reset pin object for the touch device.
 - `int`: Valid when `index=1`. The interrupt pin object for the touch device, `currently not supported`.
 
@@ -106,6 +107,6 @@ The TOUCH_INFO class is used to store information about touch points, which user
 
 ### 4.3 Touch device Type
 
-- `TYPE_CST128`: System Drive Touch
 - `TYPE_CST328`: `CanMV` Drive Touch
-- `TYPE_FT5x16`: System Drive Touch
+- `TYPE_CST226SE`: `CanMV` Drive Touch
+- `TYPE_GT911`: `CanMV` Drive Touch
