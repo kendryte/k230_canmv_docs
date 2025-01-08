@@ -28,17 +28,17 @@ print(p)
 
 ```python
 # when index is 0
-touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotation = -1)
+touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1)
 
 # when index is 1
-touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotation = -1, range_x = -1, range_y = -1, i2c : I2C = None, rst : Pin = None, int : Pin = None)
+touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1, range_x = -1, range_y = -1, i2c : I2C = None, rst : Pin = None, int : Pin = None)
 ```
 
 **Parameters**
 
 - `index`: TOUCH device number. When `0`, it indicates the use of the system's built-in touch. When `1`, it indicates the use of the CanMV-specific touch driver.
 - `type`: The touch driver type, refer to [Touch Types](#43-touch-device-type) for specific definitions.
-- `rotation`: The rotation of the panel output coordinates relative to the screen coordinates, range [0-3]. Refer to [Coordinate Rotation](#42-coordinate-rotation) for specific definitions.
+- `rotate`: The rotation of the panel output coordinates relative to the screen coordinates, range [0-3]. Refer to [Coordinate Rotation](#42-coordinate-rotation) for specific definitions.
 - `range_x`: Valid when `index=1`. The maximum width of the touch output coordinates.
 - `range_y`: Valid when `index=1`. The maximum height of the touch output coordinates.
 - `i2c`: Valid when `index=1`. The I2C bus object used for touch.
