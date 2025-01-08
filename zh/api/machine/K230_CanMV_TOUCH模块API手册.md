@@ -28,17 +28,17 @@ print(p)
 
 ```python
 # when index is 0
-touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotation = -1)
+touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1)
 
 # when index is 1
-touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotation = -1, range_x = -1, range_y = -1, i2c : I2C = None, rst : Pin = None, int : Pin = None)
+touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1, range_x = -1, range_y = -1, i2c : I2C = None, rst : Pin = None, int : Pin = None)
 ```
 
 **参数**
 
 - `index`: `TOUCH` 设备号，为 `0` 时，表示使用系统自带的触摸，为 `1` 时，表示使用 `CanMV` 专有的触摸驱动
 - `type`: 触摸驱动类型，具体定义参考[触摸类型](#43-触摸类型)
-- `rotation`: 面板输出坐标与屏幕坐标的旋转，取值范围为 [0-3]，具体定义参考[坐标旋转](#42-坐标旋转)。
+- `rotate`: 面板输出坐标与屏幕坐标的旋转，取值范围为 [0-3]，具体定义参考[坐标旋转](#42-坐标旋转)。
 - `range_x`: `index=1` 时有效，触摸输出坐标的宽度最大值
 - `range_y`: `index=1` 时有效，触摸输出坐标的高度最大值
 - `i2c`: `index=1` 时有效，触摸使用 `I2C` 总线对象
