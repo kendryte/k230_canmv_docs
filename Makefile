@@ -12,8 +12,8 @@ BUILDDIR      = _build
 SOURCEDIR_EN  = en
 SOURCEDIR_ZH  = zh
 WEB_DOCS_BUILDER_URL ?= https://ai.b-bug.org/~zhengshanshan/web-docs-builder
-TEMPLATE = _static/init_mermaid.js _static/mermaid.min.js _templates/versionsFlex.html _templates/Fleft.html _templates/Footer.html _templates/Fright.html  _templates/layout.html _static/topbar.css _static/custom-theme.css
-TEMPLATE_EN = _static/init_mermaid.js _static/mermaid.min.js _templates/versionsFlex.html _templates/FleftEn.html _templates/FooterEn.html _templates/FrightEn.html  _templates/layout.html _static/topbar.css _static/custom-theme.css
+TEMPLATE = _static/init_mermaid.js _static/mermaid.min.js _templates/versionsFlex.html _templates/Fleft.html _templates/Footer.html _templates/Fright.html  _templates/layout.html _static/topbar.css _static/custom-theme.css _templates/content.html
+TEMPLATE_EN = _static/init_mermaid.js _static/mermaid.min.js _templates/versionsFlex.html _templates/FleftEn.html _templates/FooterEn.html _templates/FrightEn.html  _templates/layout.html _static/topbar.css _static/custom-theme.css _templates/contentEn.html
 # Put it first so that "make" without argument is like "make help".
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
@@ -78,6 +78,12 @@ _templates/FooterEn.html: _templates
 	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
 
 _templates/FrightEn.html: _templates
+	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
+
+_templates/contentEn.html: _templates
+	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
+
+_templates/content.html: _templates
 	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
 
 _static/mermaid.min.js: 
