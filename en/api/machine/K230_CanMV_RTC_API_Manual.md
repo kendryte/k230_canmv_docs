@@ -18,7 +18,7 @@ rtc = RTC()
 # Get the current time
 print(rtc.datetime())
 # Set the current time
-rtc.init((2024, 2, 28, 2, 23, 59, 0, 0))
+rtc.init((2024, 2, 28, 23, 59, 0, 0))
 ```
 
 ### 2.2 Constructor
@@ -34,7 +34,7 @@ None
 ### 2.3 `init` Method
 
 ```python
-rtc.init(year, month, day, weekday, hours, minutes, seconds, microsec)
+rtc.init(year, month, day, hour, minute, second, microsecond, tzinfo)
 ```
 
 **Parameters**
@@ -42,11 +42,11 @@ rtc.init(year, month, day, weekday, hours, minutes, seconds, microsec)
 - `year`: Year
 - `month`: Month
 - `day`: Day
-- `weekday`: weekday, 1-7
-- `hours`: Hour
-- `minutes`: Minute
-- `seconds`: Second
-- `microsec`: Microsecond
+- `hour`: Hour
+- `minute`: Minute
+- `second`: Second
+- `microsecond`: Microsecond, now ignore this argument
+- `tzinfo`: Timezone, value is [-12 ~ 12]
 
 **Return Value**
 
@@ -70,7 +70,7 @@ Returns the current date and time information, including:
 - `month`: Month
 - `day`: Day
 - `weekday`: weekday, 1-7
-- `hours`: Hour
-- `minutes`: Minute
-- `seconds`: Second
-- `microsec`: Microsecond
+- `hour`: Hour
+- `minute`: Minute
+- `second`: Second
+- `microsecond`: Microsecond
