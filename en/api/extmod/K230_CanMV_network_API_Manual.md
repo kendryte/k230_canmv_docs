@@ -79,17 +79,20 @@ nic.connect('your-ssid', 'your-password')
 
 ### 3.2 Methods
 
-- **WLAN.active([is_active])**
+- **WLAN.active()**
 
-  Activates (`True`) or deactivates (`False`) the network interface by passing a boolean parameter. If no parameter is passed, it returns the current state of the interface.
+  Queries whether the current interface is active.
 
-- **WLAN.connect(ssid=None, password=None, bssid=None)**
+- **WLAN.connect(ssid=None, key=None, [info=None])**
 
-  Connects to a WiFi network using the specified SSID and password. If `bssid` is provided, it connects only to the access point with that MAC address (SSID must also be specified in this case).
+  Connects to the specified `ssid` or `info`, where `info` is the result returned by `scan`.
+
+  > Only available in `STA` mode.
 
 - **WLAN.disconnect()**
 
-  Disconnects from the current WiFi network.
+  In `STA` mode, disconnects from the current WiFi network.
+  In `AP` mode, a specific `mac` can be passed to disconnect a device.
 
 - **WLAN.scan()**
 
@@ -97,26 +100,24 @@ nic.connect('your-ssid', 'your-password')
 
   ```bash
   # print(sta.scan())
-  bssid / frequency / signal strength / security protocol / ssid
-  da:c5:47:12:80:ab       2462    -30     [WPA2-PSK-CCMP][ESS]    Redmi Note 11 Pro
-  72:a8:d3:ab:c8:2c       2412    -42     [WPA2-PSK-CCMP][WPS][ESS]       wifi_test
+  [{"ssid":"XCTech", "bssid":xxxxxxxxx, "channel":3, "rssi":-76, "security":"SECURITY_WPA_WPA2_MIXED_PSK", "band":"2.4G", "hidden":0},...]
   ```
 
 - **WLAN.status([param])**
 
   Returns the current network connection status. When no parameter is passed, it returns detailed connection information, including BSSID, frequency, SSID, encryption type, IP address, etc. For example:
 
-  ```bash
-  # print(sta.status())
-  bssid=c6:b5:b6:86:64:d7
-  freq=2462
-  ssid=wjx_pc
-  ip_address=192.168.137.221
-  ```
+  - In `STA` mode:
+    - `rssi`: Signal strength of the connection.
+    - `ap`: Name of the connected hotspot.
+  - In `AP` mode:
+    - `stations`: Returns information about connected devices.
 
 - **WLAN.isconnected()**
 
-  In STA mode, returns `True` if connected to a WiFi access point and has a valid IP address, otherwise returns `False`. In AP mode, returns `True` if devices are connected to the access point.
+  Returns whether the device is connected to a hotspot.
+
+  > Only available in `STA` mode.
 
 - **WLAN.ifconfig([(ip, subnet, gateway, dns)])**
 
@@ -130,21 +131,23 @@ nic.connect('your-ssid', 'your-password')
 
   Gets or sets the network interface configuration parameters. Supported parameters include MAC address, SSID, WiFi channel, whether to hide SSID, password, etc. Use keyword argument syntax to set parameters; to query a parameter, pass the parameter name. For example:
 
-  ```python
-  # Set access point SSID and channel
-  ap.config(ssid='k230_ap_wjx', channel=11, key='12345678')
-  # Query configuration parameters
-  print(ap.config('ssid'))
-  print(ap.config('channel'))
-  ```
-
   Supported configuration parameters include:
 
-  | Parameter | Description                  |
-  | --------- | ---------------------------- |
-  | mac       | MAC address (bytes)          |
-  | ssid      | WiFi access point name (string) |
-  | channel   | WiFi channel (integer)       |
-  | hidden    | Whether to hide SSID (boolean) |
-  | password  | WiFi connection password (string) |
-  
+  - In `STA` mode:
+    - `mac`: MAC address.
+    - `auto_reconnect`: Whether to automatically reconnect.
+  - In `AP` mode:
+    - `info`: Current hotspot information (read-only).
+    - `country`: Country code.
+
+- **WLAN.stop()**
+
+  Stops the hotspot.
+
+  > Only available in `AP` mode.
+
+- **WLAN.info()**
+
+  Queries current hotspot information.
+
+  > Only available in `AP` mode.

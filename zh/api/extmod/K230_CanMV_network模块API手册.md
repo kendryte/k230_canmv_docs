@@ -79,17 +79,20 @@ nic.connect('your-ssid', 'your-password')
 
 ### 3.2 方法
 
-- **WLAN.active([is_active])**
+- **WLAN.active()**
 
-  通过传递布尔参数来激活（`True`）或停用（`False`）网络接口。如果未传递参数，则返回接口的当前状态。
+  查询当前接口是否激活
 
-- **WLAN.connect(ssid=None, password=None, bssid=None)**
+- **WLAN.connect(ssid=None, key=None, [info = None])**
 
-  使用指定的 SSID 和密码连接到 WiFi 网络。如果提供了 `bssid`，则只连接到该 MAC 地址的接入点（此时也需要指定 `ssid`）。
+  连接到指定 `ssid` 或者 `info`，`info` 是通过 `scan` 返回的结果。
+
+  > 仅 `Sta` 模式可用
 
 - **WLAN.disconnect()**
 
-  断开当前的 WiFi 网络连接。
+  `Sta` 模式时断开当前的 WiFi 网络连接。
+  `Ap` 模式时，可传入指定 `mac` 来断开设备的连接。
 
 - **WLAN.scan()**
 
@@ -97,26 +100,24 @@ nic.connect('your-ssid', 'your-password')
 
   ```bash
   # print(sta.scan())
-  bssid / 频率 / 信号强度 / 安全协议 / ssid
-  da:c5:47:12:80:ab       2462    -30     [WPA2-PSK-CCMP][ESS]    Redmi Note 11 Pro
-  72:a8:d3:ab:c8:2c       2412    -42     [WPA2-PSK-CCMP][WPS][ESS]       wifi_test
+  [{"ssid":"XCTech", "bssid":xxxxxxxxx, "channel":3, "rssi":-76, "security":"SECURITY_WPA_WPA2_MIXED_PSK", "band":"2.4G", "hidden":0},...]
   ```
   
 - **WLAN.status([param])**
 
   返回当前网络连接的状态。当不传参数时，返回详细的连接信息，包括 BSSID、频率、SSID、加密方式、IP 地址等。例如：
 
-  ```bash
-  # print(sta.status())
-  bssid=c6:b5:b6:86:64:d7
-  freq=2462
-  ssid=wjx_pc
-  ip_address=192.168.137.221
-  ```
+  - `Sta` 模式时
+    - `rssi`: 连接信号质量
+    - `ap`: 连接的热点名称
+  - `Ap` 模式时
+    - `stations`: 返回连接的设备信息
   
 - **WLAN.isconnected()**
 
-  在 STA 模式下，如果已连接到 WiFi 接入点并拥有有效的 IP 地址，返回 `True`，否则返回 `False`。在 AP 模式下，如果有设备连接到接入点，则返回 `True`。
+  返回是否连接到热点
+
+  > 仅 `Sta` 模式可用
 
 - **WLAN.ifconfig([(ip, subnet, gateway, dns)])**
 
@@ -130,20 +131,23 @@ nic.connect('your-ssid', 'your-password')
 
   获取或设置网络接口的配置参数。支持的参数包括 MAC 地址、SSID、WiFi 通道、是否隐藏 SSID、密码等。设置参数时使用关键字参数语法；查询参数时，传递参数名即可。例如：
 
-  ```python
-  # 设置接入点的 SSID 和频道
-  ap.config(ssid='k230_ap_wjx', channel=11, key='12345678')
-  # 查询配置参数
-  print(ap.config('ssid'))
-  print(ap.config('channel'))
-  ```
-
   支持的配置参数包括：
 
-  | 参数     | 描述                      |
-  | -------- | ------------------------- |
-  | mac      | MAC 地址（字节）           |
-  | ssid     | WiFi 接入点名称（字符串） |
-  | channel  | WiFi 频道（整数）         |
-  | hidden   | 是否隐藏 SSID（布尔值）   |
-  | password | WiFi 连接密码（字符串）   |
+  - `Sta` 模式时
+    - `mac`: `mac` 地址
+    - `auto_reconnect`: 是否自动重连
+  - `Ap` 模式时
+    - `info`: 当前热点信息，仅可查询
+    - `country`: 国家代码
+  
+- **WLAN.stop()**
+
+  停止开启热点
+
+  > 仅 `Ap` 模式可用
+
+- **WLAN.info()**
+
+  查询当前热点信息
+
+  > 仅 `Ap` 模式可用
