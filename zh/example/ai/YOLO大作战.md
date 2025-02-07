@@ -1976,15 +1976,15 @@ python test_cls_kmodel.py
 
 | 模型    | 输入分辨率 | 任务 | 量化参数[data,weights] | kpu推理耗时 | kpu推理帧率 | 整帧推理耗时 | 整帧推理帧率 |
 | ------- | ---------- | ---- | ---------------------- | ----------- | ----------- | ------------ | ------------ |
-| yolov5n | 320×320    | det  | [uint8,uint8]          | 25ms        | 333fps      | 105ms        | 58fps        |
-| yolov5n | 320×320    | det  | [uint8,int16]          | 25ms        | 200fps      | 103ms        | 55fps        |
-| yolov5n | 320×320    | det  | [int16,uint8]          | 30ms        | 40fps       | 110ms        | 9fps         |
-| yolov8n | 320×320    | det  | [uint8,uint8]          | 25ms        | 13fps       | 62ms         | 3fps         |
-| yolov8n | 320×320    | det  | [uint8,int16]          | 27ms        | 14fps       | 65ms         | 5fps         |
-| yolov8n | 320×320    | det  | [int16,uint8]          | 33ms        | 3fps        | 72ms         | 2fps         |
-| yolo11n | 320×320    | det  | [uint8,uint8]          | 28ms        | 166fps      | 63ms         | 62fps        |
-| yolo11n | 320×320    | det  | [uint8,int16]          | 33ms        | 142fps      | 71ms         | 47fps        |
-| yolo11n | 320×320    | det  | [int16,uint8]          | 35ms        | 40fps       | 78ms         | 16fps        |
+| yolov5n | 320×320    | det  | [uint8,uint8]          | 25ms        | 40fps       | 105ms        | 9fps        |
+| yolov5n | 320×320    | det  | [uint8,int16]          | 25ms        | 40fps       | 103ms        | 9fps        |
+| yolov5n | 320×320    | det  | [int16,uint8]          | 30ms        | 33fps       | 110ms        | 9fps         |
+| yolov8n | 320×320    | det  | [uint8,uint8]          | 25ms        | 40fps       | 62ms         | 16fps         |
+| yolov8n | 320×320    | det  | [uint8,int16]          | 27ms        | 37fps       | 65ms         | 15fps         |
+| yolov8n | 320×320    | det  | [int16,uint8]          | 33ms        | 30fps       | 72ms         | 13fps         |
+| yolo11n | 320×320    | det  | [uint8,uint8]          | 28ms        | 35fps       | 63ms         | 15fps        |
+| yolo11n | 320×320    | det  | [uint8,int16]          | 33ms        | 30fps       | 71ms         | 14fps        |
+| yolo11n | 320×320    | det  | [int16,uint8]          | 35ms        | 28fps       | 78ms         | 12fps        |
 
 ### 11.5 提高数据质量
 
