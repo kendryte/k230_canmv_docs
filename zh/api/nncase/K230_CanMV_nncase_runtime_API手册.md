@@ -4,6 +4,12 @@
 
 本手册旨在介绍 CanMV 平台的 nncase_runtime 模块，指导开发人员在 MicroPython 环境下调用 KPU（神经网络处理单元）及 AI2D 模块，以实现高效的深度学习推理和图像处理功能。
 
+| 简称                | 说明                                        |
+| ------------------- | ------------------------------------------- |
+| nncase_runtime      | k230 nncase runtime包,包含KPU模块和AI2D模块 |
+| nncase_runtime.kpu  | kpu模块                                     |
+| nncase_runtime.ai2d | ai2d模块                                    |
+
 ## 2. API 介绍
 
 ### 2.1 from_numpy
@@ -392,13 +398,105 @@ set_crop_param(crop_flag, start_x, start_y, width, height)
 | width     | int  | 宽度               |
 | height    | int  | 高度               |
 
-### 2.5 nncase_runtime 其他功能
+#### 2.4.5 set_shift_param
 
-- **图像处理功能：**  
-  nncase_runtime 还提供了多种图像处理功能，包括图像缩放、旋转、翻转等。
+【描述】
 
-- **深度学习推理：**  
-  该模块支持多种深度学习模型的推理，具有良好的兼容性。
+用于配置shift相关的参数.
+
+【定义】
+
+```Python
+set_shift_param(shift_flag, shift_val)
+```
+
+【参数】
+
+| 名称       | 类型 | 描述              |
+| ---------- | ---- | ----------------- |
+| shift_flag | bool | 是否开启shift功能 |
+| shift_val  | int  | 右移的比特数      |
+
+#### 2.4.6 set_pad_param
+
+【描述】
+
+用于配置pad相关的参数.
+
+【定义】
+
+```Python
+set_pad_param(pad_flag, paddings, pad_mode, pad_val)
+```
+
+【参数】
+
+| 名称     | 类型 | 描述                                                                                          |
+| -------- | ---- | --------------------------------------------------------------------------------------------- |
+| pad_flag | bool | 是否开启pad功能                                                                               |
+| paddings | list | 各个维度的padding, size=8，分别表示dim0到dim4的前后padding的个数，其中dim0/dim1固定配置{0, 0} |
+| pad_mode | int  | 只支持pad constant，配置0即可                                                                 |
+| pad_val  | list | 每个channel的padding value                                                                    |
+
+#### 2.4.7 set_resize_param
+
+【描述】
+
+用于配置resize相关的参数.
+
+【定义】
+
+```Python
+set_resize_param(resize_flag, interp_method, interp_mode)
+```
+
+【参数】
+
+| 名称          | 类型               | 描述               |
+| ------------- | ------------------ | ------------------ |
+| resize_flag   | bool               | 是否开启resize功能 |
+| interp_method | ai2d_interp_method | resize插值方法     |
+| interp_mode   | ai2d_interp_mode   | resize模式         |
+
+#### 2.4.8 set_affine_param
+
+【描述】
+
+用于配置affine相关的参数.
+
+【定义】
+
+```Python
+set_affine_param(affine_flag, interp_method, cord_round, bound_ind, bound_val, bound_smooth, M)
+```
+
+【参数】
+
+| 名称          | 类型               | 描述                                                                                                                     |
+| ------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| affine_flag   | bool               | 是否开启affine功能                                                                                                       |
+| interp_method | ai2d_interp_method | Affine采用的插值方法                                                                                                     |
+| cord_round    | uint32_t           | 整数边界0或者1                                                                                                           |
+| bound_ind     | uint32_t           | 边界像素模式0或者1                                                                                                       |
+| bound_val     | uint32_t           | 边界填充值                                                                                                               |
+| bound_smooth  | uint32_t           | 边界平滑0或者1                                                                                                           |
+| M             | list               | 仿射变换矩阵对应的vector，仿射变换为Y=\[a_0, a_1; a_2, a_3\] \cdot  X + \[b_0, b_1\] $, 则  M=[a_0,a_1,b_0,a_2,a_3,b_1 ] |
+
+### 2.5 shrink_memory_pool
+
+【描述】
+
+清理nncase_runtime产生的内存池，释放内存。
+
+【语法】
+
+```Python
+import gc
+import nncase_runtime
+
+gc.collect()
+nncase_runtime.shrink_memory_pool()
+```
 
 ## 3. 参考示例
 
