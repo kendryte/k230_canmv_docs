@@ -30,8 +30,8 @@ init(type=None, width=None, height=None, osd_num=1, to_ide=False, fps=None, qual
 | 参数名称 | 描述                          | 输入 / 输出 | 说明 |
 |----------|-------------------------------|-----------|------|
 | type     | [显示设备类型](#31-type)     | 输入      | 必选 |
-| width    | 分辨率宽度                   | 输入      | 默认值根据 `type` 决定 |
-| height   | 分辨率高度                   | 输入      | 默认值根据 `type` 决定 |
+| width    | 分辨率宽度                   | 输入      | 可选参数,默认值根据 `type` 决定 |
+| height   | 分辨率高度                   | 输入      | 可选参数,默认值根据 `type` 决定 |
 | osd_num  | 在 [show_image](#22-show_image) 时支持的 LAYER 数量 | 输入 | 越大占用内存越多 |
 | to_ide   | 是否将屏幕显示传输到 IDE 显示 | 输入      | 开启时占用更多内存 |
 | fps      | 显示帧率                     | 输入      | 仅支持 `VIRT` 类型 |
@@ -105,7 +105,7 @@ deinit()
 bind_layer(src=(mod, dev, layer), dstlayer, rect=(x, y, w, h), pix_format, alpha, flag)
 ```
 
-**参数**  
+**参数**
 
 | 参数名称 | 描述                          | 输入 / 输出 | 说明 |
 |----------|-------------------------------|-----------|------|
@@ -122,20 +122,80 @@ bind_layer(src=(mod, dev, layer), dstlayer, rect=(x, y, w, h), pix_format, alpha
 |--------|---------------------------------|
 | 无     |                                 |
 
+### 2.5 width
+
+**描述**
+
+获取屏幕或某一图层的显示宽度
+
+**语法**
+
+```python
+width(layer = None):
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| layer | 指定获取 [显示层](#32-layer) 的宽度,如果不传则表示获取屏幕的分辨率宽度 | | |
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| width  | 屏幕或显示层的宽度信息 |
+
+### 2.6 height
+
+**描述**
+
+获取屏幕或某一图层的显示高度
+
+**语法**
+
+```python
+height(layer = None):
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| layer | 指定获取 [显示层](#32-layer) 的高度,如果不传则表示获取屏幕的分辨率高度 | | |
+
+**返回值**
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| height  | 屏幕或显示层的高度信息 |
+
 ## 3. 数据结构描述
 
 ### 3.1 type
 
-| 类型    | 分辨率 <br>(width x height @ fps) | 备注                              |
+| 类型    | 参数取值 | 备注                              |
 |---------|-----------------------------------|-----------------------------------|
-| LT9611  | 1920x1080@30                      | *默认值*                          |
-|         | 1280x720@30                       |                                   |
-|         | 640x480@60                        |                                   |
-| HX8377  | 1080x1920@30                      | *默认值*                          |
-| ST7701  | 800x480@30                        | *默认值*<br> 可设置为竖屏 480x800  |
-|         | 854x480@30                        | 可设置为竖屏 480x854               |
-| VIRT    | 640x480@90                        | *默认值*                          |
-|         |                                   | `IDE` 调试专用，不在外接屏幕上显示内容 <br> 用户可自定义设置分辨率 (64x64)-(4096x4096) 和帧率 (1-200) |
+| VIRT    | 640x480@90                        | *默认值* <br> `IDE` 调试专用，不在外接屏幕上显示内容 <br> 用户可自定义设置分辨率 (64x64)-(4096x4096) 和帧率 (1-200) |
+| DEBUGGER | | 调试屏幕专用 |
+| ST7701  | Display.init(Display.ST7701, width = 800, height = 480) | *默认值*<br>800x480 |
+|         | Display.init(Display.ST7701, width = 480, height = 800) | 480x800 |
+|         | Display.init(Display.ST7701, width = 854, height = 480) | 854x480 |
+|         | Display.init(Display.ST7701, width = 480, height = 854) | 480x854 |
+|         | Display.init(Display.ST7701, width = 640, height = 480) | 640x480 |
+|         | Display.init(Display.ST7701, width = 480, height = 640) | 480x640 |
+|         | Display.init(Display.ST7701, width = 368, height = 552) | 368x552 |
+|         | Display.init(Display.ST7701, width = 552, height = 368) | 552x368 |
+| HX8399  | Display.init(Display.HX8399, width = 1920, height = 1080) | *默认值*<br>1920x1080 |
+|         | Display.init(Display.HX8399, width = 1080, height = 1920) | 1920x1080 |
+| ILI9806 | Display.init(Display.ILI9806, width = 800, height = 480) | *默认值*<br>800x480 |
+|         | Display.init(Display.ILI9806, width = 480, height = 800) | 480x800 |
+| LT9611  | Display.init(Display.LT9611, width = 1920, height = 1080, fps = 30) | *默认值*<br>1920x1080@30 |
+|         | Display.init(Display.LT9611, width = 1920, height = 1080, fps = 60) | 1920x1080@60 |
+|         | Display.init(Display.LT9611, width = 1280, height = 720, fps = 60) | 1280x720@60 |
+|         | Display.init(Display.LT9611, width = 1280, height = 720, fps = 50) | 1280x720@50 |
+|         | Display.init(Display.LT9611, width = 1280, height = 720, fps = 30) | 1280x720@30 |
+|         | Display.init(Display.LT9611, width = 640, height = 480, fps = 60) | 640x480@60 |
 
 ### 3.2 layer
 
@@ -143,8 +203,8 @@ K230 提供 2 层视频图层支持和 4 层 OSD 图层支持。分列如下：
 
 | 显示层     | 说明                                     | 备注          |
 |------------|------------------------------------------|---------------|
-| LAYER_VIDEO1 |                                          | 仅可在 [bind_layer](#24-bind_layer) 中使用 |
-| LAYER_VIDEO2 |                                          | 仅可在 [bind_layer](#24-bind_layer) 中使用 |
+| LAYER_VIDEO1 |                                          | 仅可在 [bind_layer](#24-bind_layer) 中使用,支持硬件旋转 |
+| LAYER_VIDEO2 |                                          | 仅可在 [bind_layer](#24-bind_layer) 中使用,不支持硬件旋转 |
 | LAYER_OSD0  |                                          | 支持 [show_image](#22-show_image) 和 [bind_layer](#24-bind_layer) 使用 |
 | LAYER_OSD1  |                                          | 支持 [show_image](#22-show_image) 和 [bind_layer](#24-bind_layer) 使用 |
 | LAYER_OSD2  |                                          | 支持 [show_image](#22-show_image) 和 [bind_layer](#24-bind_layer) 使用 |
@@ -164,8 +224,6 @@ K230 提供 2 层视频图层支持和 4 层 OSD 图层支持。分列如下：
 | FLAG_MIRROR_BOTH  | 水平与垂直镜像  |      |
 
 ## 4. 示例程序
-
-以下为示例程序：
 
 ```python
 from media.display import *  # 导入 display 模块，使用 display 相关接口
