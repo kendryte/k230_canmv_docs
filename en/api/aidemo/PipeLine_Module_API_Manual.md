@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-This manual aims to guide developers in using MicroPython to develop AI Demos by constructing a complete Media pipeline to achieve the functionality of capturing images from a Camera and displaying AI inference results. The module encapsulates a single-camera dual-channel default configuration, with one channel sending the Camera's images directly to the Display module, and the other channel using the `get_frame` interface to obtain an image frame for the AI program.
+This manual is intended to guide developers to build a complete Media process when developing AI Demos using MicroPython, achieving the functions of acquiring images from the Camera and displaying AI inference results. This module encapsulates the default configuration of a single camera with dual channels. One channel directly sends the images from the Camera to the Display module for display; the other channel uses the `get_frame` interface to obtain a frame of image for use by the AI program.
 
 ## 2. API Introduction
 
@@ -10,158 +10,165 @@ This manual aims to guide developers in using MicroPython to develop AI Demos by
 
 **Description**
 
-The PipeLine constructor, which initializes the resolution for image acquisition by the AI program and parameters related to display.
+The PipeLine constructor, which initializes the resolution of the images acquired by the AI program and the parameters related to display.
 
-**Syntax**
+**Syntax**  
 
 ```python
 from libs.PipeLine import PipeLine
 
-pl = PipeLine(rgb888p_size=[1920,1080], display_size=[1920,1080], display_mode='hdmi', debug_mode=0)
+pl=PipeLine(rgb888p_size=[1920,1080],display_mode='hdmi',display_size=None,osd_layer_num=1,debug_mode=0)
 ```
 
-**Parameters**
+**Parameters**  
 
-| Parameter Name | Description | Input / Output | Notes |
-|----------------|-------------|----------------|-------|
-| rgb888p_size   | The input image resolution for the AI program, a list type including width and height, such as [1920,1080] | Input | Default is [224,224], determined by the AI program |
-| display_size   | Display resolution, a list type including width and height, such as [1920,1080] | Input | Default is [1920,1080], determined by the display screen |
-| display_mode   | Display mode, supports `hdmi` and `lcd`, string type | Input | Default is `lcd`, based on display configuration |
-| debug_mode     | Debug timing mode, 0 for timing, 1 for no timing, integer type | Input | Default is 0 |
+| Parameter Name | Description | Input / Output | Remarks |
+|----------|-------------------------------|-----------|------|
+| rgb888p_size | The input image resolution of the AI program, of list type, including width and height, such as [1920,1080] | Input | Default is [224,224], determined by the AI program |
+| display_size | The display resolution, of list type, including width and height, such as [1920,1080]. If it is None, it is determined by the display screen; otherwise, it is set according to the input. | Input | Default is None, determined by the display screen |
+| display_mode | The display mode, supporting `hdmi` and `lcd`, of str type | Input | Default is `lcd`, determined by the display configuration |
+| osd_layer_num| The number of OSD display layers, the number of layers superimposed by the user program on the original image | Input | Default is 1 |
+| debug_mode   | The debugging timing mode, 0 for timing, 1 for no timing, of int type | Input | Default is 0 |
 
-**Return Value**
+**Return Value**  
 
 | Return Value | Description |
-|--------------|-------------|
-| PipeLine     | PipeLine instance |
+|--------|---------------------------------|
+| PipeLine | PipeLine instance |
 
 ### 2.2 create
 
 **Description**
 
-PipeLine initialization function, initializes the Sensor/Display/OSD configuration in the Media pipeline.
+The PipeLine initialization function, which initializes the Sensor/Display/OSD configuration in the Media process.
 
-**Syntax**
+**Syntax**  
 
 ```python
+# Default configuration
 pl.create()
+# Users can also create an instance and pass it in by themselves
+from media.Sensor import *
+sensor=Sensor()
+pl.create(sensor=sensor)
 ```
 
-**Parameters**
+**Parameters**  
 
-| Parameter Name | Description | Input / Output | Notes |
-|----------------|-------------|----------------|-------|
-| sensor         | Sensor instance | Input | Optional, different development boards have default configurations |
-| hmirror        | Horizontal mirror parameter | Input | Optional, default is `None`, based on different development board defaults; set as bool type, True or False |
-| vflip          | Vertical flip parameter | Input | Optional, default is `None`, based on different development board defaults; set as bool type, True or False |
-| fps            | Sensor frame rate parameter | Input | Optional, default is 60, sets the Sensor's frame rate |
+| Parameter Name | Description | Input / Output | Remarks |
+|----------|-------------------------------|-----------|------|
+| sensor   | Sensor instance. Users can create a sensor instance externally and pass it in. | Input | Optional, there are default configurations for different development boards |
+| hmirror  | Horizontal mirroring parameter | Input | Optional, the default is `None`, determined by the default configuration of different development boards; when setting, it is of bool type, set to True or False |
+| vflip    | Vertical flipping parameter | Input | Optional, the default is `None`, determined by the default configuration of different development boards; when setting, it is of bool type, set to True or False |
+| fps      | Sensor frame rate parameter | Input | Optional, the default is 60, used to set the frame rate of the Sensor |
 
-**Return Value**
+**Return Value**  
 
 | Return Value | Description |
-|--------------|-------------|
-| None         |             |
+|--------|---------------------------------|
+| None |  |
 
 ### 2.3 get_frame
 
 **Description**
 
-Obtains an image frame for use by the AI program, with image resolution set by the PipeLine constructor's rgb888p_size. The image format is Sensor.RGBP888, and it is converted to ulab.numpy.ndarray format upon return.
+Obtain a frame of image for use by the AI program. The resolution of the obtained image is the rgb888p_size set by the PipeLine constructor, and the image format is Sensor.RGBP888. It is converted to the ulab.numpy.ndarray format when returned.
 
-**Syntax**
+**Syntax**  
 
 ```python
-img = pl.get_frame()
+img=pl.get_frame()
 ```
 
-**Return Value**
+**Return Value**  
 
 | Return Value | Description |
-|--------------|-------------|
-| img          | Image data in ulab.numpy.ndarray format, with resolution of rgb888p_size |
+|--------|---------------------------------|
+| img | Image data in the format of ulab.numpy.ndarray with a resolution of rgb888p_size |
 
 ### 2.4 show_image
 
 **Description**
 
-Displays the AI result drawn on `pl.osd_img` overlaid on the Display. `pl.osd_img` is a blank image initialized by the `create` interface in the `image.ARGB8888` format, used for drawing AI results.
+Superimpose and display the AI results drawn on `pl.osd_img` on the Display. `pl.osd_img` is a blank image in the format of `image.ARGB8888` initialized by the `create` interface, used for drawing AI results.
 
-**Syntax**
+**Syntax**  
 
 ```python
 pl.show_image()
 ```
 
-**Return Value**
+**Return Value**  
 
 | Return Value | Description |
-|--------------|-------------|
-| None         |             |
+|--------|---------------------------------|
+| None |  |
 
-### 2.5 destroy
+### 2.5 get_display_size
 
 **Description**
 
-Deinitializes the PipeLine instance.
+Get the width and height of the current screen configuration.
 
-**Syntax**
+**Syntax**  
 
 ```python
-img = pl.destroy()
+display_size=pl.get_display_size()
 ```
 
-**Return Value**
+**Return Value**  
 
 | Return Value | Description |
-|--------------|-------------|
-| None         |             |
+|--------|---------------------------------|
+| list | Return the display width and height [display_width, display_height] of the screen configuration |
+
+### 2.6 destroy
+
+**Description**
+
+De-initialize the PipeLine instance.
+
+**Syntax**  
+
+```python
+img=pl.destroy()
+```
+
+**Return Value**  
+
+| Return Value | Description |
+|--------|---------------------------------|
+| None |  |
 
 ## 3. Example Program
 
-Below is an example program:
+The following is an example program:
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
+from libs.Utils import ScopedTiming
 from media.media import *
 import gc
-import sys, os
+import sys,os
 
 if __name__ == "__main__":
-    # Display mode, default is "hdmi", can choose between "hdmi" and "lcd"
-    display_mode = "hdmi"
-    if display_mode == "hdmi":
-        display_size = [1920, 1080]
-    else:
-        display_size = [800, 480]
-
-    # Initialize PipeLine for image processing pipeline
-    pl = PipeLine(rgb888p_size=[1920, 1080], display_size=display_size, display_mode=display_mode)
-    pl.create()  # Create PipeLine instance
+    # Display mode, default is "hdmi", you can choose "hdmi" or "lcd"
+    display_mode="hdmi"
+    # Initialize PipeLine for image processing process
+    pl = PipeLine(rgb888p_size=[1920,1080], display_mode=display_mode)
+    pl.create()  # Create a PipeLine instance
+    display_size = pl.get_display_size()
     try:
         while True:
-            os.exitpoint()                      # Check for exit signal
-            with ScopedTiming("total", 1):
-                img = pl.get_frame()            # Get current frame data
+            os.exitpoint()                      # Check if there is an exit signal
+            with ScopedTiming("total",1):
+                img = pl.get_frame()            # Get the current frame data
                 print(img.shape)
                 gc.collect()                    # Garbage collection
     except Exception as e:
         sys.print_exception(e)                  # Print exception information
     finally:
-        pl.destroy()                            # Destroy PipeLine instance
+        pl.destroy()                            # Destroy the PipeLine instance
 ```
 
-In the code above, the `pl.get_frame()` interface is used to obtain an image frame with a resolution of rgb888p_size, in the format of ulab.numpy.ndarray, arranged as CHW. Based on this code, you can focus on the operations involved in AI inference.
-
-> **Timing Tool ScopedTiming**
->
-> The ScopedTiming class in the PipeLine.py module is a context manager used to measure the execution time of a code block. Context managers are created by defining a class with `__enter__` and `__exit__` methods. When using an instance of this class in a with statement, `__enter__` is called upon entering the with block, and `__exit__` is called upon leaving.
->
-> ```python
-> from libs.PipeLine import ScopedTiming
-> 
-> def test_time():
->    with ScopedTiming("test", 1):
->        ##### Code #####
->        # ...
->        ##############
-> ```
+In the above code, a frame of image with a resolution of rgb888p_size is obtained through the `pl.get_frame()` interface. The type is ulab.numpy.ndarray, and the arrangement is CHW. Based on this code, you can focus on the operations of the AI inference part.
