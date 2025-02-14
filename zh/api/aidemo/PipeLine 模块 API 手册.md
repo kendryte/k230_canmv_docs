@@ -48,7 +48,7 @@ PipeLine 初始化函数，初始化 Media 流程中的 Sensor/Display/OSD配置
 # 默认配置
 pl.create()
 # 用户也可以自行创建实例传入
-from media.Sensor import *
+from media.sensor import *
 sensor=Sensor()
 pl.create(sensor=sensor)
 ```
