@@ -225,7 +225,7 @@ sensor.set_vflip(True)
 
 **Description**
 
-Start the output of the image sensor. **This must be done before calling `MediaManager.init()`**.
+Start the output of the image sensor. **This must be done after calling `MediaManager.init()`**.
 
 **Syntax**
 
