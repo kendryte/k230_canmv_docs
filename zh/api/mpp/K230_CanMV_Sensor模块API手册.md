@@ -225,7 +225,7 @@ sensor.set_vflip(True)
 
 **描述**
 
-启动图像传感器的输出。**必须在调用 `MediaManager.init()` 之前执行此操作。**
+启动图像传感器的输出。**必须在调用 `MediaManager.init()` 之后执行此操作。**
 
 **语法**
 
