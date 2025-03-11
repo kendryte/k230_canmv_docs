@@ -311,6 +311,254 @@ sensor.snapshot(chn=CAM_CHN_ID_0)
 sensor.snapshot()
 ```
 
+### 2.9 sensor.bind_info
+
+**描述**
+
+获取传感器通道的绑定信息，用于与其他模块（如显示模块）进行绑定。
+
+**语法**
+
+```python
+sensor.bind_info(x=0, y=0, chn=CAM_CHN_ID_0)
+```
+
+**参数**
+
+| 参数名称 | 描述                   | 输入/输出 |
+|----------|------------------------|-----------|
+| x        | 绑定区域的水平起始坐标 | 输入      |
+| y        | 绑定区域的垂直起始坐标 | 输入      |
+| chn      | 传感器输出通道号       | 输入      |
+
+**返回值**
+
+| 返回值       | 描述                                 |
+|--------------|--------------------------------------|
+| dict 对象    | 包含通道的源信息、区域尺寸和像素格式 |
+
+**举例**
+
+```python
+# 获取传感器通道0的绑定信息
+info = sensor.bind_info(chn=CAM_CHN_ID_0)
+print(info)  # 输出如 {'src': (0, 0, 0), 'rect': (0, 0, 640, 480), 'pix_format': 2}
+```
+
+### 2.10 sensor.get_hmirror
+
+**描述**  
+
+获取当前水平镜像功能的启用状态。
+
+**语法**  
+
+```python
+sensor.get_hmirror()
+```
+
+**返回值**  
+
+| 返回值  | 描述               |
+|---------|--------------------|
+| bool    | `True` 表示启用，`False` 表示关闭 |
+
+**举例**  
+
+```python
+hmirror_enabled = sensor.get_hmirror()
+print("水平镜像已启用:", hmirror_enabled)
+```
+
+### 2.11 sensor.get_vflip
+
+**描述**  
+
+获取当前垂直翻转功能的启用状态。
+
+**语法**  
+
+```python
+sensor.get_vflip()
+```
+
+**返回值**
+
+| 返回值  | 描述               |
+|---------|--------------------|
+| bool    | `True` 表示启用，`False` 表示关闭 |
+
+**举例**
+
+```python
+vflip_enabled = sensor.get_vflip()
+print("垂直翻转已启用:", vflip_enabled)
+```
+
+### 2.12 sensor.width
+
+**描述**  
+
+获取指定通道的当前输出图像宽度。
+
+**语法**  
+
+```python
+sensor.width(chn=CAM_CHN_ID_0)
+```
+
+**参数**  
+
+| 参数名称 | 描述              | 输入/输出 |
+|----------|-------------------|-----------|
+| chn      | 传感器输出通道号  | 输入      |
+
+**返回值**  
+
+| 返回值  | 描述        |
+|---------|-------------|
+| int     | 图像宽度（像素） |
+
+**举例**  
+
+```python
+current_width = sensor.width(chn=CAM_CHN_ID_0)
+print("当前宽度:", current_width)
+```
+
+### 2.13 sensor.height
+
+**描述**  
+
+获取指定通道的当前输出图像高度。
+
+**语法**  
+
+```python
+sensor.height(chn=CAM_CHN_ID_0)
+```
+
+**参数**  
+
+| 参数名称 | 描述              | 输入/输出 |
+|----------|-------------------|-----------|
+| chn      | 传感器输出通道号  | 输入      |
+
+**返回值**  
+
+| 返回值  | 描述        |
+|---------|-------------|
+| int     | 图像高度（像素） |
+
+**举例**  
+
+```python
+current_height = sensor.height(chn=CAM_CHN_ID_0)
+print("当前高度:", current_height)
+```
+
+### 2.14 sensor.get_pixformat
+
+**描述**  
+
+获取指定通道的当前像素格式。
+
+**语法**  
+
+```python
+sensor.get_pixformat(chn=CAM_CHN_ID_0)
+```
+
+**参数**  
+
+| 参数名称 | 描述              | 输入/输出 |
+|----------|-------------------|-----------|
+| chn      | 传感器输出通道号  | 输入      |
+
+**返回值**  
+
+| 返回值     | 描述           |
+|------------|----------------|
+| int        | 像素格式枚举值（如 `sensor.RGB888`） |
+
+**举例**  
+
+```python
+current_format = sensor.get_pixformat(chn=CAM_CHN_ID_0)
+print("当前像素格式:", current_format)
+```
+
+### 2.15 sensor.get_type
+
+**描述**  
+获取当前传感器的类型标识符。
+
+**语法**  
+
+```python
+sensor.get_type()
+```
+
+**返回值**  
+
+| 返回值     | 描述           |
+|------------|----------------|
+| int        | 传感器类型枚举值 |
+
+**举例**  
+
+```python
+sensor_type = sensor.get_type()
+print("传感器类型:", sensor_type)
+```
+
+### 2.16 sensor.again
+
+**描述**  
+
+获取或设置传感器的模拟增益值（单位：dB）。
+
+**语法**  
+
+```python
+# 获取增益
+gain = sensor.again()
+
+# 设置增益
+sensor.again(desired_gain)
+```
+
+**参数**  
+
+| 参数名称      | 描述                 | 输入/输出 |
+|---------------|----------------------|-----------|
+| desired_gain  | 目标增益值（设置时使用） | 输入      |
+
+**返回值**  
+
+| 返回值        | 描述                     |
+|---------------|--------------------------|
+| k_sensor_gain | 当前增益对象（获取时返回） |
+| int           | 操作结果（设置时返回）    |
+
+**注意事项**  
+
+- 仅部分 sensor 支持，如 `sc132gs`
+- 设置增益时需确保传感器已初始化且处于运行状态。
+
+**举例**  
+
+```python
+# 获取当前增益
+current_gain = sensor.again()
+print("当前增益:", current_gain)
+
+# 设置增益为10 dB
+result = sensor.again(10)
+if result == 0:
+    print("增益设置成功")
+```
+
 ## 3. 数据结构描述
 
 ### 3.1 frame_size
@@ -349,7 +597,7 @@ sensor.snapshot()
 | WQXGA      | 2560x1600    |
 | WQXGA2     | 2592x1944    |
 
-### 3.2 pixel_format
+### 3.2 pixel_formatgc
 
 | 像素格式  | 说明         |
 |-----------|--------------|
