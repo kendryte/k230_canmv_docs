@@ -311,6 +311,255 @@ sensor.snapshot(chn=CAM_CHN_ID_0)
 sensor.snapshot()
 ```
 
+### 2.9 sensor.bind_info
+
+**Description**
+
+Get the binding information of the sensor channel for integration with other modules (e.g., display module).
+
+**Syntax**
+
+```python
+sensor.bind_info(x=0, y=0, chn=CAM_CHN_ID_0)
+```
+
+**Parameters**
+
+| Parameter Name | Description | Input/Output |
+|----------------|-------------|--------------|
+| x              | Horizontal start coordinate of the binding area | Input |
+| y              | Vertical start coordinate of the binding area | Input |
+| chn            | Sensor output channel number | Input |
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| dict         | Contains source information, region size, and pixel format of the channel |
+
+**Examples**
+
+```python
+# Get binding information of channel 0
+info = sensor.bind_info(chn=CAM_CHN_ID_0)
+print(info)  # Output: {'src': (0, 0, 0), 'rect': (0, 0, 640, 480), 'pix_format': 2}
+```
+
+### 2.10 sensor.get_hmirror
+
+**Description**
+
+Get the current status of horizontal mirroring.
+
+**Syntax**
+
+```python
+sensor.get_hmirror()
+```
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| bool         | `True` if enabled, `False` otherwise |
+
+**Examples**
+
+```python
+hmirror_enabled = sensor.get_hmirror()
+print("Horizontal mirror enabled:", hmirror_enabled)
+```
+
+### 2.11 sensor.get_vflip
+
+**Description**
+
+Get the current status of vertical flipping.
+
+**Syntax**
+
+```python
+sensor.get_vflip()
+```
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| bool         | `True` if enabled, `False` otherwise |
+
+**Examples**
+
+```python
+vflip_enabled = sensor.get_vflip()
+print("Vertical flip enabled:", vflip_enabled)
+```
+
+### 2.12 sensor.width
+
+**Description**
+
+Get the current output image width of the specified channel.
+
+**Syntax**
+
+```python
+sensor.width(chn=CAM_CHN_ID_0)
+```
+
+**Parameters**
+
+| Parameter Name | Description | Input/Output |
+|----------------|-------------|--------------|
+| chn            | Sensor output channel number | Input |
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| int          | Image width in pixels |
+
+**Examples**
+
+```python
+current_width = sensor.width(chn=CAM_CHN_ID_0)
+print("Current width:", current_width)
+```
+
+### 2.13 sensor.height
+
+**Description**
+
+Get the current output image height of the specified channel.
+
+**Syntax**
+
+```python
+sensor.height(chn=CAM_CHN_ID_0)
+```
+
+**Parameters**
+
+| Parameter Name | Description | Input/Output |
+|----------------|-------------|--------------|
+| chn            | Sensor output channel number | Input |
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| int          | Image height in pixels |
+
+**Examples**
+
+```python
+current_height = sensor.height(chn=CAM_CHN_ID_0)
+print("Current height:", current_height)
+```
+
+### 2.14 sensor.get_pixformat
+
+**Description**
+
+Get the current pixel format of the specified channel.
+
+**Syntax**
+
+```python
+sensor.get_pixformat(chn=CAM_CHN_ID_0)
+```
+
+**Parameters**
+
+| Parameter Name | Description | Input/Output |
+|----------------|-------------|--------------|
+| chn            | Sensor output channel number | Input |
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| int          | Pixel format enum value (e.g., `sensor.RGB888`) |
+
+**Examples**
+
+```python
+current_format = sensor.get_pixformat(chn=CAM_CHN_ID_0)
+print("Current pixel format:", current_format)
+```
+
+### 2.15 sensor.get_type
+
+**Description**
+
+Get the type identifier of the current sensor.
+
+**Syntax**
+
+```python
+sensor.get_type()
+```
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| int          | Sensor type enum value |
+
+**Examples**
+
+```python
+sensor_type = sensor.get_type()
+print("Sensor type:", sensor_type)
+```
+
+### 2.16 sensor.again
+
+**Description**
+
+Get or set the analog gain value of the sensor (unit: dB).
+
+**Syntax**
+
+```python
+# Get gain
+gain = sensor.again()
+
+# Set gain
+sensor.again(desired_gain)
+```
+
+**Parameters**
+
+| Parameter Name | Description | Input/Output |
+|----------------|-------------|--------------|
+| desired_gain   | Target gain value (for setting) | Input |
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| k_sensor_gain | Current gain object (when getting) |
+| int          | Operation result (when setting) |
+
+**Notes**
+
+- Only supported by specific sensors (e.g., `sc132gs`).
+- Ensure the sensor is initialized and running before setting gain.
+
+**Examples**
+
+```python
+# Get current gain
+current_gain = sensor.again()
+print("Current gain:", current_gain)
+
+# Set gain to 10 dB
+result = sensor.again(10)
+if result == 0:
+    print("Gain set successfully")
+```
+
 ## 3. Data Structure Description
 
 ### 3.1 frame_size
