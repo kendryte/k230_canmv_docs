@@ -190,6 +190,8 @@ height(layer = None):
 |         | Display.init(Display.HX8399, width = 1080, height = 1920) | 1920x1080 |
 | ILI9806 | Display.init(Display.ILI9806, width = 800, height = 480) | *默认值*<br>800x480 |
 |         | Display.init(Display.ILI9806, width = 480, height = 800) | 480x800 |
+| ILI9881 | Display.init(Display.ILI9881, width = 1280, height = 800) | *默认值*<br>1280x800 |
+|         | Display.init(Display.ILI9881, width = 800, height = 1280) | 800x1280 |
 | LT9611  | Display.init(Display.LT9611, width = 1920, height = 1080, fps = 30) | *默认值*<br>1920x1080@30 |
 |         | Display.init(Display.LT9611, width = 1920, height = 1080, fps = 60) | 1920x1080@60 |
 |         | Display.init(Display.LT9611, width = 1280, height = 720, fps = 60) | 1280x720@60 |
