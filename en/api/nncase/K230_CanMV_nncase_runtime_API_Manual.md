@@ -293,102 +293,186 @@ get_output_desc(index)
 | ------------- | ----------------------------------------------------- |
 | MemoryRange   | Information of the specified output index, including `dtype`, `start`, `size`. |
 
-### 2.4 nncase_runtime.ai2d
+### 2.4 nncase_runtime.ai2d  
 
-#### 2.4.1 build
+#### 2.4.1 build  
 
-**Description**
+**Description**  
 
-Constructs an ai2d_builder object.
+Constructs an `ai2d_builder` object.  
 
-**Syntax**
+**Syntax**  
 
 ```python
 build(input_shape, output_shape)
-```
-
-**Parameters**
-
-| Name         | Description |
-| ------------ | ----------- |
-| input_shape  | Input shape |
-| output_shape | Output shape |
-
-**Return Value**
-
-| Return Value | Description                              |
-| ------------ | ---------------------------------------- |
-| ai2d_builder | Returns the ai2d_builder object for execution. |
-| Others       | Throws a C++ exception if it fails.      |
-
-#### 2.4.2 run
-
-**Description**
-
-Configures the register and starts the AI2D computation.
-
-**Syntax**
-
-```python
-ai2d_builder.run(input_tensor, output_tensor)
-```
+```  
 
 **Parameters**  
 
-| Name          | Description   |
-| ------------- | ------------- |
-| input_tensor  | Input tensor  |
-| output_tensor | Output tensor |
+| Name         | Description        |
+| ------------ | ----------------- |
+| input_shape  | Input shape       |
+| output_shape | Output shape      |
 
 **Return Value**  
 
-| Return Value | Description            |
-| ------------ | ---------------------- |
-| None         | Successful execution.  |
-| Others       | Throws a C++ exception if it fails. |
+| Return Value  | Description                            |
+| ------------- | -------------------------------------- |
+| ai2d_builder  | Returns an `ai2d_builder` object for execution. |
+| Others        | If the function fails, a C++ exception will be thrown. |
 
-#### 2.4.3 set_dtype
+#### 2.4.2 run  
 
-**Description**
+**Description**  
 
-Sets the data type for the AI2D computation process.
+Configures registers and starts the AI2D computation.  
+
+**Syntax**  
+
+```python
+ai2d_builder.run(input_tensor, output_tensor)
+```  
+
+**Parameters**  
+
+| Name          | Description       |
+| ------------- | ---------------- |
+| input_tensor  | Input tensor      |
+| output_tensor | Output tensor     |
+
+**Return Value**  
+
+| Return Value | Description                        |
+| ------------ | --------------------------------- |
+| None         | Success.                          |
+| Others       | If the function fails, a C++ exception will be thrown. |
+
+#### 2.4.3 set_dtype  
+
+**Description**  
+
+Sets the data type for the AI2D computation process.  
 
 **Syntax**  
 
 ```python
 set_dtype(src_format, dst_format, src_type, dst_type)
-```
+```  
 
-**Parameters**
+**Parameters**  
 
-| Name       | Type        | Description     |
-| ---------- | ----------- | --------------- |
-| src_format | ai2d_format | Input data format |
+| Name       | Type         | Description          |
+| ---------- | ----------- | ------------------- |
+| src_format | ai2d_format | Input data format  |
 | dst_format | ai2d_format | Output data format |
-| src_type   | datatype_t  | Input data type |
-| dst_type   | datatype_t  | Output data type |
+| src_type   | datatype_t  | Input data type    |
+| dst_type   | datatype_t  | Output data type   |
 
-#### 2.4.4 set_crop_param
+#### 2.4.4 set_crop_param  
 
-**Description**
+**Description**  
 
-Configures the cropping parameters.
+Configures cropping-related parameters.  
 
 **Syntax**  
 
 ```python
 set_crop_param(crop_flag, start_x, start_y, width, height)
-```
+```  
 
 **Parameters**  
 
-| Name      | Type | Description         |
-| --------- | ---- | ------------------- |
+| Name      | Type  | Description                |
+| --------- | ---- | ------------------------- |
 | crop_flag | bool | Whether to enable cropping |
 | start_x   | int  | Starting pixel in width direction |
 | start_y   | int  | Starting pixel in height direction |
-| width     | int  | Width               |
-| height    | int  | Height              |
+| width     | int  | Crop width                 |
+| height    | int  | Crop height                |
+
+#### 2.4.5 set_shift_param  
+
+**Description**  
+
+Configures shift-related parameters.  
+
+**Definition**  
+
+```python
+set_shift_param(shift_flag, shift_val)
+```  
+
+**Parameters**  
+
+| Name       | Type | Description                     |
+| ---------- | ---- | ----------------------------- |
+| shift_flag | bool | Whether to enable shift       |
+| shift_val  | int  | Number of bits to shift right |
+
+#### 2.4.6 set_pad_param  
+
+**Description**  
+
+Configures padding-related parameters.  
+
+**Definition**  
+
+```python
+set_pad_param(pad_flag, paddings, pad_mode, pad_val)
+```  
+
+**Parameters**  
+
+| Name     | Type  | Description                                                                                       |
+| -------- | ----- | ------------------------------------------------------------------------------------------------- |
+| pad_flag | bool  | Whether to enable padding                                                                         |
+| paddings | list  | Padding for each dimension (size = 8), representing front and back padding for dim0 to dim4. `dim0/dim1` are fixed as `{0, 0}`. |
+| pad_mode | int   | Supports only `pad constant`, set to `0`.                                                         |
+| pad_val  | list  | Padding values for each channel.                                                                 |
+
+#### 2.4.7 set_resize_param  
+
+**Description**  
+
+Configures resize-related parameters.  
+
+**Definition**  
+
+```python
+set_resize_param(resize_flag, interp_method, interp_mode)
+```  
+
+**Parameters**  
+
+| Name          | Type               | Description          |
+| ------------- | ------------------ | -------------------- |
+| resize_flag   | bool               | Whether to enable resizing |
+| interp_method | ai2d_interp_method | Resize interpolation method |
+| interp_mode   | ai2d_interp_mode   | Resize mode |
+
+#### 2.4.8 set_affine_param  
+
+**Description**  
+
+Configures affine transformation-related parameters.  
+
+**Definition**  
+
+```python
+set_affine_param(affine_flag, interp_method, cord_round, bound_ind, bound_val, bound_smooth, M)
+```  
+
+**Parameters**  
+
+| Name          | Type               | Description                                                                 |
+| ------------- | ------------------ | --------------------------------------------------------------------------- |
+| affine_flag   | bool               | Whether to enable affine transformation                                    |
+| interp_method | ai2d_interp_method | Interpolation method used in affine transformation                         |
+| cord_round    | uint32_t           | Integer boundary (0 or 1)                                                  |
+| bound_ind     | uint32_t           | Boundary pixel mode (0 or 1)                                               |
+| bound_val     | uint32_t           | Boundary fill value                                                        |
+| bound_smooth  | uint32_t           | Boundary smoothing (0 or 1)                                                |
+| M             | list               | Affine transformation matrix vector. The transformation is given by:  \[Y = \begin{bmatrix} a_0 & a_1 \\ a_2 & a_3 \end{bmatrix}\cdot X + \begin{bmatrix} b_0 \\ b_1 \end{bmatrix}\] Thus, `M = [a_0, a_1, b_0, a_2, a_3, b_1]`. |
 
 ### 2.5 Other Functions of nncase_runtime
 
