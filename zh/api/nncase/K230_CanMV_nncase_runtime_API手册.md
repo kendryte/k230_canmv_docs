@@ -389,9 +389,7 @@ set_crop_param(crop_flag, start_x, start_y, width, height)
 **参数**  
 
 | 名称      | 类型 | 描述               |
-| --------- |
-
- ---- | ------------------ |
+| --------- |---- | ------------------ |
 | crop_flag | bool | 是否启用裁剪功能   |
 | start_x   | int  | 宽度方向的起始像素 |
 | start_y   | int  | 高度方向的起始像素 |
