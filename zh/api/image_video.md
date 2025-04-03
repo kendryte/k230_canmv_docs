@@ -15,4 +15,5 @@ mpp/K230_CanMV_RTSP模块API手册.md
 mpp/K230_CanMV_PM模块API手册.md
 openmv/image.md
 lvgl/lvgl.md
+mpp/media_uvc.md
 ```
