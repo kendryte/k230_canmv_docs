@@ -288,7 +288,7 @@ sensor.stop()
 **语法**
 
 ```python
-sensor.snapshot(chn=CAM_CHN_ID_0)
+sensor.snapshot(chn=CAM_CHN_ID_0, timeout = 1000, dump_frame = False)
 ```
 
 **参数**
@@ -296,12 +296,14 @@ sensor.snapshot(chn=CAM_CHN_ID_0)
 | 参数名称 | 描述              | 输入/输出 |
 |----------|-------------------|-----------|
 | chn      | sensor 输出通道号  | 输入      |
+| timeout  | sensor 获取一帧超时时间， 默认 1000 ms | 输入 |
+| dump_frame | 如果为 True 返回 py_video_frame_info, 否则返回 Image | 输入 |
 
 **返回值**
 
 | 返回值    | 描述            |
 |-----------|-----------------|
-| image 对象 | 捕获的图像数据  |
+| image 对象 或 py_video_frame_info | 捕获的图像数据  |
 | 其他      | 捕获失败        |
 
 **举例**
