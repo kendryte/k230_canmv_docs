@@ -16,4 +16,5 @@ mpp/K230_CanMV_PM_Module_API_Manual.md
 openmv/image.md
 lvgl/lvgl.md
 mpp/media_uvc.md
+mpp/nonai2d_csc.md
 ```

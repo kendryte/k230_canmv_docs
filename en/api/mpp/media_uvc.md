@@ -1,8 +1,8 @@
-# 3.13 UVC API Manual  
+# 3.13 UVC API Manual (Updated)
 
 ## 1. Overview  
 
-The UVC module provides USB camera detection, configuration, and image capture functionality, supporting single-camera operation.  
+The UVC module provides USB camera detection, configuration, and image capture functionality, supporting single-camera operation.
 
 ## 2. API Reference  
 
@@ -22,8 +22,8 @@ plugin, devname = UVC.probe()
 
 | Parameter | Type | Description |  
 |-----------|------|-------------|  
-| plugin    | bool | Whether a camera is detected |  
-| devname   | str  | Camera device information (Manufacturer#Product) |  
+| plugin    | bool | True if camera is detected, False otherwise |  
+| devname   | str  | Camera device information in "Manufacturer#Product" format |  
 
 **Example**  
 
@@ -51,10 +51,10 @@ mode = UVC.video_mode(width, height, format, fps)
 
 | Parameter | Type | Description |  
 |-----------|------|-------------|  
-| width     | int  | Resolution width (pixels) |  
-| height    | int  | Resolution height (pixels) |  
+| width     | int  | Resolution width in pixels |  
+| height    | int  | Resolution height in pixels |  
 | format    | int  | Image format (see constant definitions) |  
-| fps       | int  | Frame rate (fps) |  
+| fps       | int  | Frame rate in fps |  
 
 **Return Value**  
 Returns a `uvc_video_mode` object.  
@@ -95,14 +95,14 @@ succ, actual_mode = UVC.select_video_mode(mode)
 
 | Parameter | Type | Description |  
 |-----------|------|-------------|  
-| mode      | uvc_video_mode | Video mode to set |  
+| mode      | uvc_video_mode | Video mode configuration to set |  
 
 **Return Values**  
 
 | Parameter | Type | Description |  
 |-----------|------|-------------|  
-| succ      | bool | Whether the setting was successful |  
-| actual_mode | uvc_video_mode | The actual mode applied |  
+| succ      | bool | True if setting was successful |  
+| actual_mode | uvc_video_mode | The actual mode that was applied |  
 
 ### 2.5 UVC.start - Start Video Stream  
 
@@ -112,11 +112,18 @@ Starts the camera video stream output.
 **Syntax**  
 
 ```python  
-success = UVC.start()  
+success = UVC.start(delay_ms=0, cvt=True)  
 ```  
 
+**Parameters**  
+
+| Parameter | Type | Description |  
+|-----------|------|-------------|  
+| delay_ms  | int  | Delay in milliseconds to wait for UVC camera data output (default: 0) |  
+| cvt       | bool | Whether to hardware-decode snapshot images to NV12 format (default: True) |  
+
 **Return Value**  
-Returns a boolean indicating whether the stream started successfully.  
+Returns True if the stream started successfully.  
 
 ### 2.6 UVC.stop - Stop Video Stream  
 
@@ -137,11 +144,17 @@ Captures a single frame from the video stream.
 **Syntax**  
 
 ```python  
-frame = UVC.snapshot()  
+frame = UVC.snapshot(timeout_ms=1000)  
 ```  
 
+**Parameters**  
+
+| Parameter | Type | Description |  
+|-----------|------|-------------|  
+| timeout_ms | int  | Timeout in milliseconds for frame capture (default: 1000) |  
+
 **Return Value**  
-Returns image data in YUV422 or JPEG format.  
+Returns image data in NV12 Frame format (if hardware decoding enabled) or JPEG/YUV422 format.  
 
 ## 3. Data Structures  
 
@@ -149,18 +162,18 @@ Returns image data in YUV422 or JPEG format.
 
 ```python  
 class uvc_video_mode:  
-    width: int    # Resolution width  
-    height: int   # Resolution height  
-    format: int   # Image format  
-    fps: int      # Frame rate (fps)  
+    width: int    # Resolution width in pixels  
+    height: int   # Resolution height in pixels  
+    format: int   # Image format (see constants)  
+    fps: int      # Frame rate in fps  
 ```  
 
 ## 4. Constant Definitions  
 
 | Constant | Value | Description |  
 |----------|-------|-------------|  
-| UVC.FORMAT_MJPEG | 1 | MJPG compressed format (recommended, low bandwidth) |  
-| UVC.FORMAT_UNCOMPRESS | 2 | YUV422 uncompressed format (high bandwidth) |  
+| UVC.FORMAT_MJPEG | 1 | MJPG compressed format (recommended for low bandwidth) |  
+| UVC.FORMAT_UNCOMPRESS | 2 | YUV422 uncompressed format (requires higher bandwidth) |  
 
 ## 5. Recommended Workflow  
 
@@ -173,9 +186,10 @@ class uvc_video_mode:
 
 ## 6. Best Practices  
 
-```python  
-import time, os, urandom, sys  
+### 6.1 Software Decoding Example  
 
+```python  
+import time  
 from media.display import *  
 from media.media import *  
 from media.uvc import *  
@@ -183,34 +197,93 @@ from media.uvc import *
 DISPLAY_WIDTH = ALIGN_UP(800, 16)  
 DISPLAY_HEIGHT = 480  
 
-# Use LCD as display output  
+# Initialize LCD display  
 Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)  
 # Initialize media manager  
 MediaManager.init()  
 
+# Detect camera  
 while True:  
     plugin, dev = UVC.probe()  
     if plugin:  
-        print(f"Detected USB Camera {dev}")  
+        print(f"Detected USB Camera: {dev}")  
         break  
 
+# Set video mode  
 mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)  
-
 succ, mode = UVC.select_video_mode(mode)  
-print(f"Select mode success: {succ}, mode: {mode}")  
+print(f"Mode selection: {'Success' if succ else 'Failed'}, Actual mode: {mode}")  
 
+# Start video stream  
 UVC.start()  
 
-while True:  
-    img = UVC.snapshot()  
-    if img is not None:  
-        img = img.to_rgb565()  
-        Display.show_image(img)  
+try:  
+    while True:  
+        img = UVC.snapshot()  
+        if img is not None:  
+            img = img.to_rgb565()  # Convert to RGB565 format  
+            Display.show_image(img)  # Display image  
+finally:  
+    # Cleanup resources  
+    Display.deinit()  
+    UVC.stop()  
+    time.sleep_ms(100)  
+    MediaManager.deinit()  
+```  
 
-# Deinitialize display  
-Display.deinit()  
-UVC.stop()  
-time.sleep_ms(100)  
-# Release media buffer  
-MediaManager.deinit()  
-```
+### 6.2 Hardware Decoding Example  
+
+```python  
+import time  
+from media.display import *  
+from media.media import *  
+from media.uvc import *  
+from nonai2d import CSC  # Hardware Color Space Converter  
+
+DISPLAY_WIDTH = ALIGN_UP(800, 16)  
+DISPLAY_HEIGHT = 480  
+
+# Initialize hardware color space converter  
+csc = CSC(0, CSC.PIXEL_FORMAT_RGB_565)  
+
+# Initialize LCD display  
+Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)  
+# Initialize media manager  
+MediaManager.init()  
+
+# Detect camera  
+while True:  
+    plugin, dev = UVC.probe()  
+    if plugin:  
+        print(f"Detected USB Camera: {dev}")  
+        break  
+    time.sleep_ms(100)  
+
+# Set video mode  
+mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)  
+succ, mode = UVC.select_video_mode(mode)  
+print(f"Mode selection: {'Success' if succ else 'Failed'}, Actual mode: {mode}")  
+
+# Start video stream with hardware decoding  
+UVC.start(cvt=True)  
+
+clock = time.clock()  # For FPS calculation  
+
+try:  
+    while True:  
+        clock.tick()  
+        
+        img = UVC.snapshot()  
+        if img is not None:  
+            img = csc.convert(img)  # Hardware color space conversion  
+            Display.show_image(img)  
+        
+        print(f"Current FPS: {clock.fps()}")  
+finally:  
+    # Cleanup resources  
+    Display.deinit()  
+    csc.destroy()  
+    UVC.stop()  
+    time.sleep_ms(100)  
+    MediaManager.deinit()  
+```  
