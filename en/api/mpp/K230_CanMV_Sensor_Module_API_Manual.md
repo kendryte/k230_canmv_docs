@@ -288,7 +288,7 @@ Capture a frame of image data from the specified output channel.
 **Syntax**
 
 ```python
-sensor.snapshot(chn=CAM_CHN_ID_0)
+sensor.snapshot(chn=CAM_CHN_ID_0, timeout = 1000, dump_frame = False)
 ```
 
 **Parameters**
@@ -296,12 +296,14 @@ sensor.snapshot(chn=CAM_CHN_ID_0)
 | Parameter Name | Description | Input/Output |
 |----------------|-------------|--------------|
 | chn            | Sensor output channel number | Input |
+| timeout        | Sensor dump one frame timeout, Default 1000 ms | Input |
+| dump_frame     | If set True return py_video_frame_info else return Image | Input |
 
 **Return Value**
 
 | Return Value  | Description          |
 |---------------|----------------------|
-| image object  | Captured image data  |
+| image object or py_video_frame_info object | Captured image data  |
 | other         | Capture failed       |
 
 **Examples**
