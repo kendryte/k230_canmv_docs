@@ -26,7 +26,7 @@ pin.value(0)
 ### Constructor
 
 ```python
-pin = Pin(index, mode, pull=Pin.PULL_NONE, drive=7)
+pin = Pin(index, mode, pull=Pin.PULL_NONE, value = -1, drive=7, alt = -1)
 ```
 
 **Parameters**
@@ -35,6 +35,8 @@ pin = Pin(index, mode, pull=Pin.PULL_NONE, drive=7)
 - `mode`: Pin mode, supports input or output mode.
 - `pull`: Pull-up/down configuration (optional), defaults to `Pin.PULL_NONE`.
 - `drive`: Drive capability configuration (optional), default value is 7.
+- `value`: Default output value
+- `alt`: not used
 
 ### `init` Method
 
@@ -181,3 +183,63 @@ None
 **Return Value**
 
 None
+
+### `irq` Method
+
+```python
+Pin.irq(handler=None, trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING, *, priority=1, wake=None, hard=False, debounce=10)
+```
+
+Enables IO interrupt functionality.
+
+- `handler`: Callback function (must be specified)
+- `trigger`: Trigger mode
+- `priority`: Not supported
+- `wake`: Not supported
+- `hard`: Not supported
+- `debounce`: Minimum trigger interval (in milliseconds) for high/low level triggering. Minimum value is `5`.
+
+**Return Value**  
+mq_irq object
+
+## 3. Constant Definitions
+
+### Modes
+
+- `Pin.IN`: Input mode  
+- `Pin.OUT`: Output mode  
+
+### Pull-up/Pull-down Modes
+
+- `PULL_NONE`: Disable pull-up/pull-down  
+- `PULL_UP`: Enable pull-up  
+- `PULL_DOWN`: Enable pull-down  
+
+### Interrupt Trigger Modes
+
+- `IRQ_FALLING`: Falling edge trigger  
+- `IRQ_RISING`: Rising edge trigger  
+- `IRQ_LOW_LEVEL`: Low-level trigger  
+- `IRQ_HIGH_LEVEL`: High-level trigger  
+- `IRQ_BOTH`: Edge trigger (both rising and falling)  
+
+### Drive Strength  
+
+(Refer to [fpioa](./K230_CanMV_FPIOA_API_Manual.md#31-io-configuration-instructions) for corresponding current output capabilities)  
+
+- `DRIVE_0`  
+- `DRIVE_1`  
+- `DRIVE_2`  
+- `DRIVE_3`  
+- `DRIVE_4`  
+- `DRIVE_5`  
+- `DRIVE_6`  
+- `DRIVE_7`  
+- `DRIVE_8`  
+- `DRIVE_9`  
+- `DRIVE_10`  
+- `DRIVE_11`  
+- `DRIVE_12`  
+- `DRIVE_13`  
+- `DRIVE_14`  
+- `DRIVE_15`
