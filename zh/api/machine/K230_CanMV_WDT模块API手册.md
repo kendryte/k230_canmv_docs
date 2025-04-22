@@ -23,13 +23,14 @@ wdt1.feed()
 ### 2.2 构造函数
 
 ```python
-wdt = WDT(id=1, timeout=5)
+wdt = WDT(id=1, timeout=5, auto_close = True)
 ```
 
 **参数**
 
 - `id`: WDT 模块编号，取值范围为 [0, 1]，默认为 1。
 - `timeout`: 超时值，单位为秒（s），默认为 5。
+- `auto_close`: 在 `python` 解释器停止运行的时候自动停止看门狗，防止系统被重启
 
 **注意：** WDT0 暂不可用。
 

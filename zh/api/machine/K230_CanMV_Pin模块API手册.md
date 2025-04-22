@@ -26,7 +26,7 @@ pin.value(0)
 ### 构造函数
 
 ```python
-pin = Pin(index, mode, pull=Pin.PULL_NONE, drive=7)
+pin = Pin(index, mode, pull=Pin.PULL_NONE, value = -1, drive=7, alt = -1)
 ```
 
 **参数**
@@ -35,6 +35,8 @@ pin = Pin(index, mode, pull=Pin.PULL_NONE, drive=7)
 - `mode`: 引脚的模式，支持输入模式或输出模式。
 - `pull`: 上下拉配置（可选），默认为 `Pin.PULL_NONE`。
 - `drive`: 驱动能力配置（可选），默认值为 7。
+- `value`: 设置引脚默认输出值
+- `alt`: 目前未使用
 
 ### `init` 方法
 
@@ -181,3 +183,64 @@ Pin.low()
 **返回值**
 
 无
+
+### `irq` 方法
+
+```python
+Pin.irq(handler=None, trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING, *, priority=1, wake=None, hard=False, debounce = 10)
+```
+
+使能 IO 中断功能
+
+- `handler`: 回调函数，必须设置
+- `trigger`: 触发模式
+- `priority`: 不支持
+- `wake`: 不支持
+- `hard`: 不支持
+- `debounce`: 高电平和低电平触发时，最小触发间隔，单位为 `ms`，最小值为 `5`
+
+**返回值**
+
+mq_irq 对象
+
+## 3. 常量定义
+
+### 模式
+
+- Pin.IN: 输入模式
+- Pin.OUT: 输出模式
+
+### 上下拉模式
+
+- PULL_NONE: 关掉上下拉
+- PULL_UP: 使能上拉
+- PULL_DOWN: 使能下拉
+
+### 中断触发模式
+
+- IRQ_FALLING: 下降沿触发
+- IRQ_RISING: 上升沿触发
+- IRQ_LOW_LEVEL: 低电平触发
+- IRQ_HIGH_LEVEL: 高电平触发
+- IRQ_BOTH: 边沿触发
+
+### 驱动能力
+
+具体配置对应的电流输出能力参见[fpioa](./K230_CanMV_FPIOA模块API手册.md#31-io-配置说明)
+
+- DRIVE_0
+- DRIVE_1
+- DRIVE_2
+- DRIVE_3
+- DRIVE_4
+- DRIVE_5
+- DRIVE_6
+- DRIVE_7
+- DRIVE_8
+- DRIVE_9
+- DRIVE_10
+- DRIVE_11
+- DRIVE_12
+- DRIVE_13
+- DRIVE_14
+- DRIVE_15

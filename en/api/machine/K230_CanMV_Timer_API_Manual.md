@@ -29,7 +29,7 @@ tim.deinit()
 ### 2.2 Constructor
 
 ```python
-timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg=None)
+timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)
 ```
 
 **Parameters**
@@ -39,14 +39,11 @@ timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg
 - `freq`: Timer operating frequency, supports floating-point numbers, unit is Hertz (Hz), this parameter has a higher priority than `period` (optional parameter).
 - `period`: Timer operating period, unit is milliseconds (ms) (optional parameter).
 - `callback`: Timeout callback function, must be set and should have one parameter.
-- `arg`: Argument for the timeout callback function (optional parameter).
-
-**Note:** Hardware timers [0-5] are currently unavailable.
 
 ### 2.3 `init` Method
 
 ```python
-Timer.init(mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg=None)
+Timer.init(mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)
 ```
 
 Initialize timer parameters.

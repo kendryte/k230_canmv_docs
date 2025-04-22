@@ -29,7 +29,7 @@ tim.deinit()
 ### 2.2 构造函数
 
 ```python
-timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg=None)
+timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)
 ```
 
 **参数**
@@ -39,14 +39,11 @@ timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg
 - `freq`: 定时器运行频率，支持浮点数，单位为赫兹（Hz），此参数优先级高于 `period`（可选参数）。
 - `period`: 定时器运行周期，单位为毫秒（ms）（可选参数）。
 - `callback`: 超时回调函数，必须设置并应带有一个参数。
-- `arg`: 超时回调函数的参数（可选参数）。
-
-**注意：** 硬件定时器 [0-5] 暂不可用。
 
 ### 2.3 `init` 方法
 
 ```python
-Timer.init(mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg=None)
+Timer.init(mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)
 ```
 
 初始化定时器参数。
@@ -57,7 +54,6 @@ Timer.init(mode=Timer.PERIODIC, freq=-1, period=-1, callback=None, arg=None)
 - `freq`: 定时器运行频率，支持浮点数，单位为赫兹（Hz），此参数优先级高于 `period`（可选参数）。
 - `period`: 定时器运行周期，单位为毫秒（ms）（可选参数）。
 - `callback`: 超时回调函数，必须设置并应带有一个参数。
-- `arg`: 超时回调函数的参数（可选参数）。
 
 **返回值**
 
