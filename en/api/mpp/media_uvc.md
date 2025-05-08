@@ -1,4 +1,4 @@
-# 3.13 UVC API Manual (Updated)
+# 3.13 `UVC` API Manual
 
 ## 1. Overview  
 

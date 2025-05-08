@@ -21,4 +21,5 @@ machine/K230_CanMV_RTC模块API手册.md
 machine/K230_CanMV_TOUCH模块API手册.md
 machine/K230_CanMV_LED模块API手册.md
 machine/K230_CanMV_SPI_LCD_Module_API.md
+extmod/usb_serial.md
 ```
