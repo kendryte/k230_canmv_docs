@@ -23,7 +23,7 @@
 
 `CanmV-K230-V1.1` 开发板需要修改硬件才可以点亮板载`LED`灯
 
-![how-to-fix](https://developer.canaan-creative.com/api/post/attachment?id=435)
+![how-to-fix](https://www.kendryte.com/api/post/attachment?id=435)
 
 ## 2. SDK 问题
 

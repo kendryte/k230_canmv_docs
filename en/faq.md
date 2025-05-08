@@ -23,7 +23,7 @@ This situation is usually caused by flashing the wrong firmware, resulting in U-
 
 The `CanmV-K230-V1.1` development board needs to modify the hardware to light up the onboard `LED` light
 
-![how-to-fix](https://developer.canaan-creative.com/api/post/attachment?id=435)
+![how-to-fix](https://www.kendryte.com/api/post/attachment?id=435)
 
 ## 2. SDK Issues
 

@@ -923,7 +923,7 @@ if __name__ == "__main__":
 
 #### 2.4.1. k230 canmv文档
 
-文档链接：[Welcome to K230 CanMV’s documentation! — K230 CanMV 文档 (canaan-creative.com)](https://developer.canaan-creative.com/k230_canmv/dev/index.html)
+文档链接：[Welcome to K230 CanMV’s documentation! — K230 CanMV 文档 (canaan-creative.com)](https://www.kendryte.com/k230_canmv/dev/index.html)
 
 #### 2.4.2. Ulab库支持
 
@@ -937,7 +937,7 @@ github链接：[v923z/micropython-ulab: a numpy-like fast vector module for micr
 K230D芯片的开发板运行上述demo需要更改`__main__`中的`display_mode`为`lcd`适配显示输出，同时需要按照注释降低分辨率运行。同时部分demo无法在K230D上运行，详情见上述表格。
 ```
 
-请在[K230 MicroPython镜像下载列表](https://developer.canaan-creative.com/resource?selected=0-0-3-0)和[K230D MicroPython镜像下载列表](https://developer.canaan-creative.com/resource?selected=1-0-2-0)按照您手中的开发板类型下载最新版本镜像，并完成烧录。烧录方法请参考文档：[烧录固件](../../../zh/userguide/how_to_burn_firmware.md)。
+请在[K230 MicroPython镜像下载列表](https://www.kendryte.com/resource?selected=0-0-3-0)和[K230D MicroPython镜像下载列表](https://www.kendryte.com/resource?selected=1-0-2-0)按照您手中的开发板类型下载最新版本镜像，并完成烧录。烧录方法请参考文档：[烧录固件](../../../zh/userguide/how_to_burn_firmware.md)。
 
 镜像烧录结束后，链接IDE，IDE使用方法参考文档：[如何使用IDE](../../../zh/userguide/how_to_use_ide.md)。
 

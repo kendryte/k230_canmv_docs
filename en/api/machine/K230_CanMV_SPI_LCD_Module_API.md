@@ -272,4 +272,4 @@ lcd.show()
 
 This example will display "Hello World~" in red, green, and blue on the screen.
 
-![hello-world](https://developer.canaan-creative.com/api/post/attachment?id=438)
+![hello-world](https://www.kendryte.com/api/post/attachment?id=438)

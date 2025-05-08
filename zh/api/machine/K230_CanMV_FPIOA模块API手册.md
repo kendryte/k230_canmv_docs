@@ -130,4 +130,4 @@ fpioa.help([number, func=False])
 
 ### 3.1 IO 配置说明
 
-![io-ds](https://developer.canaan-creative.com/api/post/attachment?id=436)
+![io-ds](https://www.kendryte.com/api/post/attachment?id=436)

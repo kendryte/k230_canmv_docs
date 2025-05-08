@@ -184,7 +184,7 @@ deploy production:
     - k230
   environment:
     name: production
-    url: https://developer.canaan-creative.com/k230_canmv/main/index.html
+    url: https://www.kendryte.com/k230_canmv/main/index.html
   retry: 2
   script:
     - scp -P $AWS_PORT -C -r _build/* $AWS/data/webapp/k230_canmv/

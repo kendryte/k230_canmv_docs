@@ -19,7 +19,7 @@ CanMV-K230 开发板基于嘉楠科技 Kendryte ® 系列 AIoT 芯片中的最�
 
 ### 2.2 烧录固件
 
-用户可在 [Github](https://github.com/kendryte/canmv_k230/releases) 或 [嘉楠开发者社区](https://developer.canaan-creative.com/resource?selected=0-0-3-0) 下载固件。下载对应开发板的固件完成后，
+用户可在 [Github](https://github.com/kendryte/canmv_k230/releases) 或 [嘉楠开发者社区](https://www.kendryte.com/resource?selected=0-0-3-0) 下载固件。下载对应开发板的固件完成后，
 请参考[固件下载指南](./userguide/how_to_burn_firmware.md#2-烧录固件) 将固件烧录到开发板。
 
 ### 2.3 下载 IDE
