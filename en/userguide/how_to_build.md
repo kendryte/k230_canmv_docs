@@ -51,7 +51,7 @@ pip3 config set global.extra-index-url "https://mirrors.aliyun.com/pypi/simple h
 - Install Python dependencies
 
 ```shell
-pip3 install -U pyyaml pycryptodome gmssl
+pip3 install -U pyyaml pycryptodome gmssl jsonschema jinja2
 ```
 
 - Install the repo tool
