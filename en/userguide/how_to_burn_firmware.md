@@ -6,7 +6,7 @@ This chapter will introduce how to flash the CanMV firmware onto the development
 
 ## 2. Obtaining the Firmware
 
-You can obtain the CanMV-K230 firmware from the following links: [Github](https://github.com/kendryte/k230_canmv/releases) or [Canaan Developer Community](https://developer.canaan-creative.com/resource).
+You can obtain the CanMV-K230 firmware from the following links: [Github](https://github.com/kendryte/k230_canmv/releases) or [Canaan Developer Community](https://www.kendryte.com/resource).
 
 Please download the `.gz` archive file that starts with "CanMV-K230_micropython". After extracting it, you will get a `sysimage-sdcard.img` file, which is the firmware image for CanMV-K230.
 

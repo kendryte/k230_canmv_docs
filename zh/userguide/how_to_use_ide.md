@@ -6,7 +6,7 @@ CanMV IDE 基于 OpenMV 项目开发，与 OpenMV IDE 基本一致，主要区�
 
 ![IDE](images/ide.png)
 
-CanMV IDE 适用于 K230，要求版本为 4.0.5 或更高版本，您可以在 [Github](https://github.com/kendryte/canmv_ide/releases) 或 [嘉楠开发者社区](https://developer.canaan-creative.com/resource) 下载。
+CanMV IDE 适用于 K230，要求版本为 4.0.5 或更高版本，您可以在 [Github](https://github.com/kendryte/canmv_ide/releases) 或 [嘉楠开发者社区](https://www.kendryte.com/resource) 下载。
 
 用户也可以选择使用 [OpenMV IDE](https://github.com/openmv/openmv-ide/releases)，但请注意，OpenMV IDE 仅支持连接 K230，不能连接 K210。使用 4.0 及以上版本的 OpenMV IDE 可获得更高的图像显示帧率。
 

@@ -116,7 +116,7 @@ make menuconfig
 # Disable the CanMV module
 ```
 
-![disable canmv](https://developer.canaan-creative.com/api/post/attachment?id=440)
+![disable canmv](https://www.kendryte.com/api/post/attachment?id=440)
 
 ## 4. Code Directory Description
 

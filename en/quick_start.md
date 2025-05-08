@@ -19,7 +19,7 @@ The chip also supports a rich array of peripheral interfaces and integrates mult
 
 ### 2.2 Flashing the Firmware
 
-Users can download the firmware from [Github](https://github.com/kendryte/canmv_k230/releases) or the [Canaan Developer Community](https://developer.canaan-creative.com/resource). After downloading the firmware for the corresponding development board, refer to the [Firmware Download Guide](./userguide/how_to_burn_firmware.md#2-烧录固件) to flash the firmware onto the development board.
+Users can download the firmware from [Github](https://github.com/kendryte/canmv_k230/releases) or the [Canaan Developer Community](https://www.kendryte.com/resource). After downloading the firmware for the corresponding development board, refer to the [Firmware Download Guide](./userguide/how_to_burn_firmware.md#2-烧录固件) to flash the firmware onto the development board.
 
 ### 2.3 Downloading the IDE
 

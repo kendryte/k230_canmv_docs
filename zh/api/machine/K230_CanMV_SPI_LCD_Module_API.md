@@ -275,4 +275,4 @@ lcd.show()
 
 该例程会在屏幕上显示红绿蓝三种颜色的 `你好世界~` 字符串
 
-![hello-world](https://developer.canaan-creative.com/api/post/attachment?id=438)
+![hello-world](https://www.kendryte.com/api/post/attachment?id=438)

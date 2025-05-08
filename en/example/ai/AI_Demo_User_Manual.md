@@ -917,7 +917,7 @@ For example code, please refer to the license plate detection and recognition: b
 
 #### 2.4.1. K230 CanMV Documentation
 
-Documentation link: [Welcome to K230 CanMV’s documentation! — K230 CanMV 文档 (canaan-creative.com)](https://developer.canaan-creative.com/k230_canmv/dev/index.html)
+Documentation link: [Welcome to K230 CanMV’s documentation! — K230 CanMV 文档 (canaan-creative.com)](https://www.kendryte.com/k230_canmv/dev/index.html)
 
 ### 2.4.2. Ulab Library Support
 
@@ -931,7 +931,7 @@ GitHub Link: [v923z/micropython-ulab: a numpy-like fast vector module for microp
 To run the above demos on the K230D chip development board, you need to change the `display_mode` in `__main__` to `lcd` to adapt to the display output. Additionally, you need to reduce the resolution as per the comments. Some demos may not run on the K230D, please refer to the table above for details.
 ```
 
-Please download the latest version of the firmware according to your development board type from the [K230 MicroPython Image Download List](https://developer.canaan-creative.com/resource?selected=0-0-3-0) and [K230D MicroPython Image Download List](https://developer.canaan-creative.com/resource?selected=1-0-2-0) and complete the burning process. For burning instructions, please refer to the documentation: [Burn Firmware](../../../zh/userguide/how_to_burn_firmware.md).
+Please download the latest version of the firmware according to your development board type from the [K230 MicroPython Image Download List](https://www.kendryte.com/resource?selected=0-0-3-0) and [K230D MicroPython Image Download List](https://www.kendryte.com/resource?selected=1-0-2-0) and complete the burning process. For burning instructions, please refer to the documentation: [Burn Firmware](../../../zh/userguide/how_to_burn_firmware.md).
 
 After the image burning is complete, connect the IDE. For IDE usage instructions, refer to the documentation: [How to Use IDE](../../../zh/userguide/how_to_use_ide.md).
 

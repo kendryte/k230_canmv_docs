@@ -6,7 +6,7 @@
 
 ## 2. 固件获取
 
-您可以通过以下链接获取 CanMV-K230 固件：[Github](https://github.com/kendryte/k230_canmv/releases) 或 [嘉楠开发者社区](https://developer.canaan-creative.com/resource)。
+您可以通过以下链接获取 CanMV-K230 固件：[Github](https://github.com/kendryte/k230_canmv/releases) 或 [嘉楠开发者社区](https://www.kendryte.com/resource)。
 
 请下载文件名以 “CanMV-K230_micropython” 开头的 `.gz` 压缩包，解压后会得到 `sysimage-sdcard.img` 文件，该文件即为 CanMV-K230 的固件镜像。
 

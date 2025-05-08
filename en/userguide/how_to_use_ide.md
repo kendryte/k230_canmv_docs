@@ -6,7 +6,7 @@ CanMV IDE is developed based on the OpenMV project and is essentially the same a
 
 ![IDE](../../zh/userguide/images/ide.png)
 
-CanMV IDE is suitable for the K230 and requires version 4.0.5 or higher. You can download it from [Github](https://github.com/kendryte/canmv_ide/releases) or the [Canaan Developer Community](https://developer.canaan-creative.com/resource).
+CanMV IDE is suitable for the K230 and requires version 4.0.5 or higher. You can download it from [Github](https://github.com/kendryte/canmv_ide/releases) or the [Canaan Developer Community](https://www.kendryte.com/resource).
 
 Users can also opt to use the [OpenMV IDE](https://github.com/openmv/openmv-ide/releases), but please note that OpenMV IDE only supports connecting to the K230 and cannot connect to the K210. Using OpenMV IDE version 4.0 and above can achieve a higher image display frame rate.
 

@@ -77,7 +77,7 @@ cd ../../
 
 #### 1.5.1 Burning the Image and Installing CanMV IDE
 
-Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1)), and write code in the IDE to implement deployment.
+Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), and write code in the IDE to implement deployment.
 
 #### 1.5.2 Copying Model Files
 
@@ -277,7 +277,7 @@ cd ../../
 
 #### 2.5.1 Burning the Image and Installing CanMV IDE
 
-Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1)), and write code in the IDE to implement deployment.
+Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), and write code in the IDE to implement deployment.
 
 #### 2.5.2 Copying Model Files
 
@@ -477,7 +477,7 @@ cd ../../
 
 #### 3.5.1 Burning the Image and Installing CanMV IDE
 
-Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](<https://developer.canaan-creative.com/resource?selected=0> - 2 - 1)), and write code in the IDE to implement the deployment.
+Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](<https://www.kendryte.com/resource?selected=0> - 2 - 1)), and write code in the IDE to implement the deployment.
 
 #### 3.5.2 Copying the Model Files
 
@@ -680,7 +680,7 @@ cd ../../
 
 #### 4.5.1 Burning the Image and Installing CanMV IDE
 
-Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](<https://developer.canaan-creative.com/resource?selected=0> - 2 - 1)), and write code in the IDE to implement deployment.
+Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](<https://www.kendryte.com/resource?selected=0> - 2 - 1)), and write code in the IDE to implement deployment.
 
 #### 4.5.2 Copying Model Files
 
@@ -878,7 +878,7 @@ cd ../../
 
 #### 5.5.1 Burning the Image and Installing CanMV IDE
 
-Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](<https://developer.canaan-creative.com/resource?selected=0> - 2 - 1)), and write code in the IDE to implement deployment.
+Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](<https://www.kendryte.com/resource?selected=0> - 2 - 1)), and write code in the IDE to implement deployment.
 
 #### 5.5.2 Copying Model Files
 
@@ -1078,7 +1078,7 @@ cd ../../
 
 #### 6.5.1 Burning the Image and Installing CanMV IDE
 
-Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](<https://developer.canaan-creative.com/resource?selected=0> - 2 - 1)), and write code in the IDE to implement deployment.
+Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](<https://www.kendryte.com/resource?selected=0> - 2 - 1)), and write code in the IDE to implement deployment.
 
 #### 6.5.2 Copying Model Files
 
@@ -1280,7 +1280,7 @@ cd ../../
 
 #### 7.5.1 Burning the Image and Installing CanMV IDE
 
-Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](<https://developer.canaan-creative.com/resource?selected=0> - 2 - 1)), and write code in the IDE to implement deployment.
+Please download the image according to the development board download link and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](<https://www.kendryte.com/resource?selected=0> - 2 - 1)), and write code in the IDE to implement deployment.
 
 #### 7.5.2 Copying Model Files
 
@@ -1478,7 +1478,7 @@ cd ../../
 
 #### 8.5.1 Burning the Image and Installing CanMV IDE
 
-Please download the image according to the link provided for the development board and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1)), and write code in the IDE to implement the deployment.
+Please download the image according to the link provided for the development board and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), and write code in the IDE to implement the deployment.
 
 #### 8.5.2 Copying the Model Files
 
@@ -1678,7 +1678,7 @@ cd ../../
 
 #### 9.5.1 Burning the Image and Installing CanMV IDE
 
-Please download the image according to the link provided for the development board and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1)), and write code in the IDE to implement the deployment.
+Please download the image according to the link provided for the development board and burn it: [Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease). Download and install CanMV IDE (download link: [CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), and write code in the IDE to implement the deployment.
 
 #### 9.5.2 Copying the Model Files
 

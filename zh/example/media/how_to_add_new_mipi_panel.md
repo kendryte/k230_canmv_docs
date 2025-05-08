@@ -11,7 +11,7 @@
 
 在工程根目录执行 `make menuconfig`，使能选项 `Enable DSI Debuger`。
 
-![Enable DSI Debuger](https://developer.canaan-creative.com/api/post/attachment?id=488)
+![Enable DSI Debuger](https://www.kendryte.com/api/post/attachment?id=488)
 
 保存配置后，编译生成新的固件，烧录固件。
 
@@ -170,25 +170,25 @@ vfp=250
 
 开机后，将配置文件放入`SDCard`根目录
 
-![SDCard Path](https://developer.canaan-creative.com/api/post/attachment?id=485)
+![SDCard Path](https://www.kendryte.com/api/post/attachment?id=485)
 
 ### 1.1.4 验证并调整配置
 
 #### 1.1.4.1 在 `CanMV IDE K230` 打开 `Display` 相关的Sample
 
-![Open Display Sample](https://developer.canaan-creative.com/api/post/attachment?id=483)
+![Open Display Sample](https://www.kendryte.com/api/post/attachment?id=483)
 
 #### 1.1.4.2 修改Sample代码以使用 `DSI Debugger`
 
-![Mod Sample Code](https://developer.canaan-creative.com/api/post/attachment?id=484)
+![Mod Sample Code](https://www.kendryte.com/api/post/attachment?id=484)
 
 #### 1.1.4.3 运行Sample，查看结果
 
-![Check Sample Result](https://developer.canaan-creative.com/api/post/attachment?id=487)
+![Check Sample Result](https://www.kendryte.com/api/post/attachment?id=487)
 
 因为本文档给的参数是适配对应屏幕后的，所以屏幕会正确输出图像，如果读者得不到预期结果，那么需要修改SDCard的配置文件调整参数，重复运行Sample，查看结果，最后调整到合适的参数。
 
-![Check Panel Result](https://developer.canaan-creative.com/api/post/attachment?id=499)
+![Check Panel Result](https://www.kendryte.com/api/post/attachment?id=499)
 
 ## 1.2 配置文件参数调整
 
@@ -221,7 +221,7 @@ vfp=250
 
 我们提供了一个协助计算时序的工具 [K230 MIPI DSI Connector Info Generator](https://kendryte-download.canaan-creative.com/developer/common/K230_MIPI_DSI_Connector_Info_Generator.html)，下面演示如何利用计算时序的工具来算出上面的值
 
-![Calc Timing](https://developer.canaan-creative.com/api/post/attachment?id=489)
+![Calc Timing](https://www.kendryte.com/api/post/attachment?id=489)
 
 ### 1.2.2 初始化序列
 
@@ -306,9 +306,9 @@ vfp=250
 
 在 [CanMV-K230](https://github.com/kendryte/canmv_k230) 工程中的子仓库 [mpp](https://github.com/canmv-k230/mpp/) 里，仿造其他屏幕添加类似如下代码：（初始化序列来自屏幕厂家，屏幕时序是我们调整出来的，最后把计算工具生成的代码贴过去即可）
 
-![User Timing](https://developer.canaan-creative.com/api/post/attachment?id=490)
-![Kernal Init](https://developer.canaan-creative.com/api/post/attachment?id=491)
+![User Timing](https://www.kendryte.com/api/post/attachment?id=490)
+![Kernal Init](https://www.kendryte.com/api/post/attachment?id=491)
 
 在 [CanMV-K230](https://github.com/kendryte/canmv_k230) 工程中的子仓库 [canmv](https://github.com/canmv-k230/canmv) 里，仿造其他屏幕添加类似如下代码：
 
-![Canmv Add Panle](https://developer.canaan-creative.com/api/post/attachment?id=492)
+![Canmv Add Panle](https://www.kendryte.com/api/post/attachment?id=492)

@@ -77,7 +77,7 @@ cd ../../
 
 #### 1.5.1 烧录镜像并安装CanMV IDE
 
-请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
+请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
 
 #### 1.5.2 模型文件拷贝
 
@@ -277,7 +277,7 @@ cd ../../
 
 #### 2.5.1 烧录镜像并安装CanMV IDE
 
-请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
+请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
 
 #### 2.5.2 模型文件拷贝
 
@@ -477,7 +477,7 @@ cd ../../
 
 #### 3.5.1 烧录镜像并安装CanMV IDE
 
-请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
+请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
 
 #### 3.5.2 模型文件拷贝
 
@@ -680,7 +680,7 @@ cd ../../
 
 #### 4.5.1 烧录镜像并安装CanMV IDE
 
-请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
+请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
 
 #### 4.5.2 模型文件拷贝
 
@@ -878,7 +878,7 @@ cd ../../
 
 #### 5.5.1 烧录镜像并安装CanMV IDE
 
-请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
+请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
 
 #### 5.5.2 模型文件拷贝
 
@@ -1078,7 +1078,7 @@ cd ../../
 
 #### 6.5.1 烧录镜像并安装CanMV IDE
 
-请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
+请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
 
 #### 6.5.2 模型文件拷贝
 
@@ -1280,7 +1280,7 @@ cd ../../
 
 #### 7.5.1 烧录镜像并安装CanMV IDE
 
-请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
+请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
 
 #### 7.5.2 模型文件拷贝
 
@@ -1478,7 +1478,7 @@ cd ../../
 
 #### 8.5.1 烧录镜像并安装CanMV IDE
 
-请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
+请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
 
 #### 8.5.2 模型文件拷贝
 
@@ -1678,7 +1678,7 @@ cd ../../
 
 #### 9.5.1 烧录镜像并安装CanMV IDE
 
-请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://developer.canaan-creative.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
+请按照开发板下载链接下的镜像，并烧录：[Release PreRelease · kendryte/canmv_k230](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease)。下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码实现部署。
 
 #### 9.5.2 模型文件拷贝
 

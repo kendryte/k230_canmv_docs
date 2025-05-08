@@ -10,7 +10,7 @@ In the [CanMV-K230](https://github.com/kendryte/canmv_k230) project, a panel deb
 
 In the project root directory, execute `make menuconfig` and enable the option `Enable DSI Debugger`.
 
-![Enable DSI Debugger](https://developer.canaan-creative.com/api/post/attachment?id=488)
+![Enable DSI Debugger](https://www.kendryte.com/api/post/attachment?id=488)
 
 After saving the configuration, compile and generate the new firmware, then flash it.
 
@@ -169,25 +169,25 @@ vfp=250
 
 After booting, place the configuration file in the root directory of the SD card.
 
-![SDCard Path](https://developer.canaan-creative.com/api/post/attachment?id=485)
+![SDCard Path](https://www.kendryte.com/api/post/attachment?id=485)
 
 ### 1.1.4 Verifying and Adjusting the Configuration
 
 #### 1.1.4.1 Open the `Display` Sample in `CanMV IDE K230`
 
-![Open Display Sample](https://developer.canaan-creative.com/api/post/attachment?id=483)
+![Open Display Sample](https://www.kendryte.com/api/post/attachment?id=483)
 
 #### 1.1.4.2 Modify the Sample Code to Use `DSI Debugger`
 
-![Mod Sample Code](https://developer.canaan-creative.com/api/post/attachment?id=484)
+![Mod Sample Code](https://www.kendryte.com/api/post/attachment?id=484)
 
 #### 1.1.4.3 Run the Sample and Check the Results
 
-![Check Sample Result](https://developer.canaan-creative.com/api/post/attachment?id=487)
+![Check Sample Result](https://www.kendryte.com/api/post/attachment?id=487)
 
 Since the parameters provided in this document are adapted for the corresponding panel, the panel will output the image correctly. If the reader does not get the expected result, they need to modify the configuration file on the SD card, adjust the parameters, and repeat running the sample until the correct parameters are found.
 
-![Check Panel Result](https://developer.canaan-creative.com/api/post/attachment?id=499)
+![Check Panel Result](https://www.kendryte.com/api/post/attachment?id=499)
 
 ## 1.2 Adjusting Configuration File Parameters
 
@@ -220,7 +220,7 @@ vfp=250
 
 We provide a tool to assist in calculating the timing: [K230 MIPI DSI Connector Info Generator](https://kendryte-download.canaan-creative.com/developer/common/K230_MIPI_DSI_Connector_Info_Generator.html). Below is a demonstration of how to use this tool to calculate the values above.
 
-![Calc Timing](https://developer.canaan-creative.com/api/post/attachment?id=489)
+![Calc Timing](https://www.kendryte.com/api/post/attachment?id=489)
 
 ### 1.2.2 Initialization Sequence
 

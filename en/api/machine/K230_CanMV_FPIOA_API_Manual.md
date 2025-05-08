@@ -130,4 +130,4 @@ May be one of the following three:
 
 ### 3.1 IO configuration instructions
 
-![io-ds](https://developer.canaan-creative.com/api/post/attachment?id=436)
+![io-ds](https://www.kendryte.com/api/post/attachment?id=436)
