@@ -1,4 +1,4 @@
-# 3.11 `Image` Processing API Manual`
+# 3.11 `Image` Processing API Manual
 
 This module is ported from `openmv` with similar functionalities. For more details, please refer to the [official documentation](https://docs.openmv.io/library/omv.image.html). This document lists the differences from the official API and the newly added APIs, and includes references to some native APIs.
 
