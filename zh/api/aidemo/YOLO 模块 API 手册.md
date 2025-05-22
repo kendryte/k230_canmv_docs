@@ -124,89 +124,67 @@ yolo.draw_result(res,img_ori)
 
 ```python
 from libs.YOLO import YOLOv5
+from libs.Utils import *
 import os,sys,gc
 import ulab.numpy as np
 import image
 
-# 从本地读入图片，并实现HWC转CHW
-def read_img(img_path):
-    img_data = image.Image(img_path)
-    img_data_rgb888=img_data.to_rgb888()
-    img_hwc=img_data_rgb888.to_numpy_ref()
-    shape=img_hwc.shape
-    img_tmp = img_hwc.reshape((shape[0] * shape[1], shape[2]))
-    img_tmp_trans = img_tmp.transpose()
-    img_res=img_tmp_trans.copy()
-    img_return=img_res.reshape((shape[2],shape[0],shape[1]))
-    return img_return,img_data_rgb888
-
 if __name__=="__main__":
-    # 路径可以自行修改适配您自己的模型
-    img_path="/data/test_images/test.jpg"
-    kmodel_path="/data/yolo_kmodels/det_yolov5n_320.kmodel"
+    # 这里仅为示例，自定义场景请修改为您自己的测试图片、模型路径、标签名称、模型输入大小
+    img_path="/sdcard/examples/utils/test_fruit.jpg"
+    kmodel_path="/sdcard/examples/kmodel/fruit_det_yolov5n_320.kmodel"
     labels = ["apple","banana","orange"]
+    model_input_size=[320,320]
+
     confidence_threshold = 0.5
     nms_threshold=0.45
-    model_input_size=[320,320]
-    img,img_ori=read_img(img_path)
+    img,img_ori=read_image(img_path)
     rgb888p_size=[img.shape[2],img.shape[1]]
     # 初始化YOLOv5实例
     yolo=YOLOv5(task_type="detect",mode="image",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,max_boxes_num=50,debug_mode=0)
     yolo.config_preprocess()
-    try:
-        res=yolo.run(img)
-        yolo.draw_result(res,img_ori)
-        gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
+    res=yolo.run(img)
+    yolo.draw_result(res,img_ori)
+    yolo.deinit()
+    gc.collect()
 ```
 
 上述代码给出了使用 `YOLOv5` 进行图片推理的代码。
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.YOLO import YOLOv5
+from libs.Utils import *
 import os,sys,gc
 import ulab.numpy as np
 import image
 
 if __name__=="__main__":
-    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
-    display_mode="hdmi"
-    rgb888p_size=[1280,720]
-    if display_mode=="hdmi":
-        display_size=[1920,1080]
-    else:
-        display_size=[800,480]
-    # 路径可以自行修改适配您自己的模型
-    kmodel_path="/data/yolo_kmodels/det_yolov5n_320.kmodel"
+    # 这里仅为示例，自定义场景请修改为您自己的模型路径、标签名称、模型输入大小
+    kmodel_path="/sdcard/examples/kmodel/fruit_det_yolov5n_320.kmodel"
     labels = ["apple","banana","orange"]
+    model_input_size=[320,320]
+
+    # 添加显示模式，默认hdmi，可选hdmi/lcd/lt9611/st7701/hx8399,其中hdmi默认置为lt9611，分辨率1920*1080；lcd默认置为st7701，分辨率800*480
+    display_mode="lcd"
+    rgb888p_size=[640,360]
     confidence_threshold = 0.8
     nms_threshold=0.45
-    model_input_size=[320,320]
-    # 初始化PipeLine
-    pl=PipeLine(rgb888p_size=rgb888p_size,display_size=display_size,display_mode=display_mode)
+    pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode)
     pl.create()
+    display_size=pl.get_display_size()
     # 初始化YOLOv5实例
     yolo=YOLOv5(task_type="detect",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,max_boxes_num=50,debug_mode=0)
     yolo.config_preprocess()
-    try:
-        while True:
-            os.exitpoint()
-            with ScopedTiming("total",1):
-                # 逐帧推理
-                img=pl.get_frame()
-                res=yolo.run(img)
-                yolo.draw_result(res,pl.osd_img)
-                pl.show_image()
-                gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
-        pl.destroy()
+    while True:
+        with ScopedTiming("total",1):
+            img=pl.get_frame()
+            res=yolo.run(img)
+            yolo.draw_result(res,pl.osd_img)
+            pl.show_image()
+            gc.collect()
+    yolo.deinit()
+    pl.destroy()
 ```
 
 上述代码给出了使用 `YOLOv5` 进行视频推理的代码。
@@ -231,7 +209,7 @@ yolo=YOLOv8(task_type="classify",mode="image",kmodel_path="yolov8_det.kmodel",la
 
 | 参数名称         | 描述           | 说明                                                         | 类型         |
 | ---------------- | -------------- | ------------------------------------------------------------ | ------------ |
-| task_type        | 任务类型       | 支持三类任务，可选项为'classify'/'detect'/'segment'；        | str          |
+| task_type        | 任务类型       | 支持四类任务，可选项为'classify'/'detect'/'segment'/'obb'；        | str          |
 | mode             | 推理模式       | 支持两种推理模式，可选项为'image'/'video'，'image'表示推理图片，'video'表示推理摄像头采集的实时视频流； | str          |
 | kmodel_path      | kmodel路径     | 拷贝到开发板上kmodel路径；                                   | str          |
 | labels           | 类别标签列表   | 不同类别的标签名称；                                         | list[str]    |
@@ -329,42 +307,29 @@ yolo.draw_result(res,img_ori)
 
 ```python
 from libs.YOLO import YOLOv8
+from libs.Utils import *
 import os,sys,gc
 import ulab.numpy as np
 import image
 
-# 从本地读入图片，并实现HWC转CHW
-def read_img(img_path):
-    img_data = image.Image(img_path)
-    img_data_rgb888=img_data.to_rgb888()
-    img_hwc=img_data_rgb888.to_numpy_ref()
-    shape=img_hwc.shape
-    img_tmp = img_hwc.reshape((shape[0] * shape[1], shape[2]))
-    img_tmp_trans = img_tmp.transpose()
-    img_res=img_tmp_trans.copy()
-    img_return=img_res.reshape((shape[2],shape[0],shape[1]))
-    return img_return,img_data_rgb888
-
 if __name__=="__main__":
-    # 可以根据您的模型自行修改路径参数
-    img_path="/data/test_images/test_apple.jpg"
-    kmodel_path="/data/yolo_kmodels/cls_yolov8n_224.kmodel"
+    # 这里仅为示例，自定义场景请修改为您自己的测试图片、模型路径、标签名称、模型输入大小
+    img_path="/sdcard/examples/utils/test_fruit.jpg"
+    kmodel_path="/sdcard/examples/kmodel/fruit_det_yolov8n_320.kmodel"
     labels = ["apple","banana","orange"]
+    model_input_size=[320,320]
+
     confidence_threshold = 0.5
-    model_input_size=[224,224]
-    img,img_ori=read_img(img_path)
+    nms_threshold=0.45
+    img,img_ori=read_image(img_path)
     rgb888p_size=[img.shape[2],img.shape[1]]
     # 初始化YOLOv8实例
-    yolo=YOLOv8(task_type="classify",mode="image",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,conf_thresh=confidence_threshold,debug_mode=0)
+    yolo=YOLOv8(task_type="detect",mode="image",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,max_boxes_num=50,debug_mode=0)
     yolo.config_preprocess()
-    try:
-        res=yolo.run(img)
-        yolo.draw_result(res,img_ori)
-        gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
+    res=yolo.run(img)
+    yolo.draw_result(res,img_ori)
+    yolo.deinit()
+    gc.collect()
 ```
 
 上述代码给出了使用 `YOLOv8` 进行图片推理的代码。
@@ -377,39 +342,33 @@ import ulab.numpy as np
 import image
 
 if __name__=="__main__":
-    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
-    display_mode="hdmi"
-    rgb888p_size=[1280,720]
-    if display_mode=="hdmi":
-        display_size=[1920,1080]
-    else:
-        display_size=[800,480]
-    # 可以根据您的模型自行修改路径参数
-    kmodel_path="/data/yolo_kmodels/cls_yolov8n_224.kmodel"
+    # 这里仅为示例，自定义场景请修改为您自己的模型路径、标签名称、模型输入大小
+    kmodel_path="/sdcard/examples/kmodel/fruit_det_yolov8n_320.kmodel"
     labels = ["apple","banana","orange"]
-    confidence_threshold = 0.8
-    model_input_size=[224,224]
+    model_input_size=[320,320]
+
+    # 添加显示模式，默认hdmi，可选hdmi/lcd/lt9611/st7701/hx8399,其中hdmi默认置为lt9611，分辨率1920*1080；lcd默认置为st7701，分辨率800*480
+    display_mode="lcd"
+    rgb888p_size=[640,360]
+    confidence_threshold = 0.5
+    nms_threshold=0.45
     # 初始化PipeLine
-    pl=PipeLine(rgb888p_size=rgb888p_size,display_size=display_size,display_mode=display_mode)
+    pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode)
     pl.create()
+    display_size=pl.get_display_size()
     # 初始化YOLOv8实例
-    yolo=YOLOv8(task_type="classify",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,debug_mode=0)
+    yolo=YOLOv8(task_type="detect",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,max_boxes_num=50,debug_mode=0)
     yolo.config_preprocess()
-    try:
-        while True:
-            os.exitpoint()
-            with ScopedTiming("total",1):
-                # 逐帧推理
-                img=pl.get_frame()
-                res=yolo.run(img)
-                yolo.draw_result(res,pl.osd_img)
-                pl.show_image()
-                gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
-        pl.destroy()
+    while True:
+        with ScopedTiming("total",1):
+            # 逐帧推理
+            img=pl.get_frame()
+            res=yolo.run(img)
+            yolo.draw_result(res,pl.osd_img)
+            pl.show_image()
+            gc.collect()
+    yolo.deinit()
+    pl.destroy()
 ```
 
 上述代码给出了使用 `YOLOv8` 进行视频推理的代码。
@@ -434,7 +393,7 @@ yolo=YOLO11(task_type="segment",mode="image",kmodel_path="yolo11_det.kmodel",lab
 
 | 参数名称         | 描述           | 说明                                                         | 类型         |
 | ---------------- | -------------- | ------------------------------------------------------------ | ------------ |
-| task_type        | 任务类型       | 支持三类任务，可选项为'classify'/'detect'/'segment'；        | str          |
+| task_type        | 任务类型       | 支持四类任务，可选项为'classify'/'detect'/'segment'/'obb'；        | str          |
 | mode             | 推理模式       | 支持两种推理模式，可选项为'image'/'video'，'image'表示推理图片，'video'表示推理摄像头采集的实时视频流； | str          |
 | kmodel_path      | kmodel路径     | 拷贝到开发板上kmodel路径；                                   | str          |
 | labels           | 类别标签列表   | 不同类别的标签名称；                                         | list[str]    |
@@ -532,91 +491,69 @@ yolo.draw_result(res,img_ori)
 
 ```python
 from libs.YOLO import YOLO11
+from libs.Utils import *
 import os,sys,gc
 import ulab.numpy as np
 import image
 
-# 从本地读入图片，并实现HWC转CHW
-def read_img(img_path):
-    img_data = image.Image(img_path)
-    img_data_rgb888=img_data.to_rgb888()
-    img_hwc=img_data_rgb888.to_numpy_ref()
-    shape=img_hwc.shape
-    img_tmp = img_hwc.reshape((shape[0] * shape[1], shape[2]))
-    img_tmp_trans = img_tmp.transpose()
-    img_res=img_tmp_trans.copy()
-    img_return=img_res.reshape((shape[2],shape[0],shape[1]))
-    return img_return,img_data_rgb888
-
 if __name__=="__main__":
-    # 可以根据您的模型自行修改路径参数
-    img_path="/data/test_images/test.jpg"
-    kmodel_path="/data/yolo_kmodels/seg_yolo11n_320.kmodel"
+    # 这里仅为示例，自定义场景请修改为您自己的测试图片、模型路径、标签名称、模型输入大小
+    img_path="/sdcard/examples/utils/test_fruit.jpg"
+    kmodel_path="/sdcard/examples/kmodel/fruit_det_yolo11n_320.kmodel"
     labels = ["apple","banana","orange"]
+    model_input_size=[320,320]
+
     confidence_threshold = 0.5
     nms_threshold=0.45
-    mask_threshold=0.5
-    model_input_size=[320,320]
-    img,img_ori=read_img(img_path)
+    img,img_ori=read_image(img_path)
     rgb888p_size=[img.shape[2],img.shape[1]]
     # 初始化YOLO11实例
-    yolo=YOLO11(task_type="segment",mode="image",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,mask_thresh=mask_threshold,max_boxes_num=50,debug_mode=0)
+    yolo=YOLO11(task_type="detect",mode="image",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,max_boxes_num=50,debug_mode=0)
     yolo.config_preprocess()
-    try:
-        res=yolo.run(img)
-        yolo.draw_result(res,img_ori)
-        gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
+    res=yolo.run(img)
+    yolo.draw_result(res,img_ori)
+    yolo.deinit()
+    gc.collect()
 ```
 
 上述代码给出了使用 `YOLO11` 进行图片推理的代码。
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.YOLO import YOLO11
+from libs.Utils import *
 import os,sys,gc
 import ulab.numpy as np
 import image
 
 if __name__=="__main__":
-    # 显示模式，默认"hdmi",可以选择"hdmi"和"lcd"
-    display_mode="hdmi"
-    rgb888p_size=[320,320]
-    if display_mode=="hdmi":
-        display_size=[1920,1080]
-    else:
-        display_size=[800,480]
-    # 可以根据您的模型自行修改路径参数
-    kmodel_path="/data/yolo_kmodels/seg_yolo11n_320.kmodel"
+    # 这里仅为示例，自定义场景请修改为您自己的模型路径、标签名称、模型输入大小
+    kmodel_path="/sdcard/examples/kmodel/fruit_det_yolo11n_320.kmodel"
     labels = ["apple","banana","orange"]
+    model_input_size=[320,320]
+
+    # 添加显示模式，默认hdmi，可选hdmi/lcd/lt9611/st7701/hx8399,其中hdmi默认置为lt9611，分辨率1920*1080；lcd默认置为st7701，分辨率800*480
+    display_mode="lcd"
+    rgb888p_size=[640,360]
     confidence_threshold = 0.5
     nms_threshold=0.45
-    mask_threshold=0.5
-    model_input_size=[320,320]
     # 初始化PipeLine
-    pl=PipeLine(rgb888p_size=rgb888p_size,display_size=display_size,display_mode=display_mode)
+    pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode)
     pl.create()
+    display_size=pl.get_display_size()
     # 初始化YOLO11实例
-    yolo=YOLO11(task_type="segment",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,mask_thresh=mask_threshold,max_boxes_num=50,debug_mode=0)
+    yolo=YOLO11(task_type="detect",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,max_boxes_num=50,debug_mode=0)
     yolo.config_preprocess()
-    try:
-        while True:
-            os.exitpoint()
-            with ScopedTiming("total",1):
-                # 逐帧推理
-                img=pl.get_frame()
-                res=yolo.run(img)
-                yolo.draw_result(res,pl.osd_img)
-                pl.show_image()
-                gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
-        pl.destroy()
+    while True:
+        with ScopedTiming("total",1):
+            # 逐帧推理
+            img=pl.get_frame()
+            res=yolo.run(img)
+            yolo.draw_result(res,pl.osd_img)
+            pl.show_image()
+            gc.collect()
+    yolo.deinit()
+    pl.destroy()
 ```
 
 上述代码给出了使用 `YOLO11` 进行视频推理的代码。

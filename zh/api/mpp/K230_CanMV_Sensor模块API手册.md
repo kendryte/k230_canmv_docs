@@ -599,7 +599,7 @@ if result == 0:
 | WQXGA      | 2560x1600    |
 | WQXGA2     | 2592x1944    |
 
-### 3.2 pixel_formatgc
+### 3.2 pixel_format
 
 | 像素格式  | 说明         |
 |-----------|--------------|

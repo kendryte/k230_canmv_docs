@@ -185,22 +185,6 @@ Writes data to a slave register, used for I2C memory-type devices.
 
 None
 
-### 2.10 `deinit` Method
-
-```python
-i2c.deinit()
-```
-
-Releases I2C resources.
-
-**Parameters**
-
-None
-
-**Return Value**
-
-None
-
 ## 3. Slave Device API Introduction
 
 The `I2C_Slave` class is located in the `machine` module.
