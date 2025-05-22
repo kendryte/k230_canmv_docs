@@ -6,6 +6,7 @@ K230 支持丰富的 AI 应用。为了方便用户体验试用，CanMV K230 镜
 
 | Demo 名称                | 场景            | 任务类型   | K230 | K230D |
 | ----------------------- | --------------- | ---------- | ---- | ---- |
+| body_seg                | 人体部位分割    | 单模型任务 | √ |  |
 | dynamic_gesture         | 动态手势识别    | 多模型任务 | √ | √ |
 | eye_gaze                | 注视估计        | 多模型任务 | √ |  |
 | face_detection          | 人脸检测        | 单模型任务 | √ | √ |
@@ -13,8 +14,10 @@ K230 支持丰富的 AI 应用。为了方便用户体验试用，CanMV K230 镜
 | face_mesh               | 人脸3D网格      | 多模型任务 | √ |  |
 | face_parse              | 人脸解析        | 多模型任务 | √ |  |
 | face_pose               | 人脸姿态        | 多模型任务 | √ | √ |
-| face_registration       | 人脸注册        | 多模型任务 | √ | √ |
-| face_recognition        | 人脸识别        | 多模型任务 | √ | √ |
+| face_registration       | 人脸注册        | 多模型任务 | √ |  |
+| face_recognition        | 人脸识别        | 多模型任务 | √ |  |
+| face_registration_lite  | 轻量人脸注册     | 多模型任务 | √ | √ |
+| face_recognition_lite   | 轻量人脸识别     | 多模型任务 | √ | √ |
 | falldown_detection      | 跌倒检测        | 单模型任务 | √ | √ |
 | finger_guessing         | 猜拳游戏        | 多模型任务 | √ | √ |
 | hand_detection          | 手掌检测        | 单模型任务 | √ | √ |
@@ -22,6 +25,7 @@ K230 支持丰富的 AI 应用。为了方便用户体验试用，CanMV K230 镜
 | hand_keypoint_detection | 手掌关键点检测  | 多模型任务 | √ | √ |
 | hand_recognition        | 手势识别        | 多模型任务 | √ | √ |
 | keyword_spotting        | 关键词唤醒      | 单模型任务 | √ | √ |
+| multi_kws               | 多命令关键词唤醒 | 单模型任务 | √ | √ |
 | licence_det             | 车牌检测        | 单模型任务 | √ | √ |
 | licence_det_rec         | 车牌识别        | 多模型任务 | √ | √ |
 | nanotracker             | 单目标跟踪      | 多模型任务 | √ | √ |
@@ -35,6 +39,8 @@ K230 支持丰富的 AI 应用。为了方便用户体验试用，CanMV K230 镜
 | self_learning           | 自学习          | 单模型任务 | √ | √ |
 | space_resize            | 局部放大器      | 多模型任务 | √ | √ |
 | tts_zh                  | 中文文本转语音  | 多模型任务 | √ |  |
+| yolo11n_obb             | yolo11n旋转目标检测| 单模型任务 | √ |√ |
+| yolov8n_obb             | yolov8n旋转目标检测| 单模型任务 | √ |√ |
 
 ```{admonition} 提示
 K230D 芯片的开发板运行上述 demo 需要更改 `__main__` 中的 `display_mode` 为 `lcd` 适配显示输出，同时需要按照注释降低分辨率运行。同时部分 demo 无法在 K230D 上运行，详情见上述表格。
@@ -81,9 +87,10 @@ PipeLine 流程封装主要简化视觉任务的开发过程。您可以使用 '
 单模型任务的伪代码结构如下：
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
+from libs.Utils import *
 import os
 from media.media import *
 import nncase_runtime as nn
@@ -152,42 +159,30 @@ if __name__ == "__main__":
     # 初始化自定义AI任务实例
     my_ai = MyAIApp(kmodel_path, model_input_size=[320, 320],rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     my_ai.config_preprocess()  # 配置预处理
-
-    try:
-        while True:
-            os.exitpoint()                      # 检查是否有退出信号
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # 获取当前帧数据
-                res = my_ai.run(img)            # 推理当前帧
-                my_ai.draw_result(pl, res)      # 绘制结果
-                pl.show_image()                 # 显示结果
-                gc.collect()                    # 垃圾回收
-    except Exception as e:
-        sys.print_exception(e)                  # 打印异常信息
-    finally:
-        my_ai.deinit()                          # 反初始化
-        pl.destroy()                            # 销毁PipeLine实例
+    while True:
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # 获取当前帧数据
+            res = my_ai.run(img)            # 推理当前帧
+            my_ai.draw_result(pl, res)      # 绘制结果
+            pl.show_image()                 # 显示结果
+            gc.collect()                    # 垃圾回收
+    my_ai.deinit()                          # 反初始化
+    pl.destroy()                            # 销毁PipeLine实例
 
 ```
 
 下面以人脸检测为例给出示例代码：
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
-import os
-import ujson
+from libs.Utils import *
 from media.media import *
-from time import *
 import nncase_runtime as nn
 import ulab.numpy as np
-import time
-import utime
+import time,os,sys,ujson,gc,random
 import image
-import random
-import gc
-import sys
 import aidemo
 
 # 自定义人脸检测类，继承自AIBase基类
@@ -284,28 +279,24 @@ if __name__ == "__main__":
     face_det = FaceDetectionApp(kmodel_path, model_input_size=[320, 320], anchors=anchors, confidence_threshold=confidence_threshold, nms_threshold=nms_threshold, rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     face_det.config_preprocess()  # 配置预处理
 
-    try:
-        while True:
-            os.exitpoint()                      # 检查是否有退出信号
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # 获取当前帧数据
-                res = face_det.run(img)         # 推理当前帧
-                face_det.draw_result(pl, res)   # 绘制结果
-                pl.show_image()                 # 显示结果
-                gc.collect()                    # 垃圾回收
-    except Exception as e:
-        sys.print_exception(e)                  # 打印异常信息
-    finally:
-        face_det.deinit()                       # 反初始化
-        pl.destroy()                            # 销毁PipeLine实例
+    while True:
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # 获取当前帧数据
+            res = face_det.run(img)         # 推理当前帧
+            face_det.draw_result(pl, res)   # 绘制结果
+            pl.show_image()                 # 显示结果
+            gc.collect()                    # 垃圾回收
+    face_det.deinit()                       # 反初始化
+    pl.destroy()                            # 销毁PipeLine实例
 ```
 
 多个Ai2d实例时的伪代码如下：
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
+from libs.Utils import *
 import os
 from media.media import *
 import nncase_runtime as nn
@@ -401,21 +392,15 @@ if __name__ == "__main__":
     # 初始化自定义AI任务实例
     my_ai = MyAIApp(kmodel_path, model_input_size=[320, 320],rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     my_ai.config_preprocess()  # 配置预处理
-
-    try:
-        while True:
-            os.exitpoint()                      # 检查是否有退出信号
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # 获取当前帧数据
-                res = my_ai.run(img)            # 推理当前帧
-                my_ai.draw_result(pl, res)      # 绘制结果
-                pl.show_image()                 # 显示结果
-                gc.collect()                    # 垃圾回收
-    except Exception as e:
-        sys.print_exception(e)                  # 打印异常信息
-    finally:
-        my_ai.deinit()                          # 反初始化
-        pl.destroy()                            # 销毁PipeLine实例
+    while True:
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # 获取当前帧数据
+            res = my_ai.run(img)            # 推理当前帧
+            my_ai.draw_result(pl, res)      # 绘制结果
+            pl.show_image()                 # 显示结果
+            gc.collect()                    # 垃圾回收
+    my_ai.deinit()                          # 反初始化
+    pl.destroy()                            # 销毁PipeLine实例
 ```
 
 #### 2.3.3. 自定义预处理任务
@@ -423,9 +408,10 @@ if __name__ == "__main__":
 对于需要重写前处理（不使用提供的ai2d类，自己手动写预处理）的AI任务伪代码如下：
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
+from libs.Utils import *
 import os
 from media.media import *
 import nncase_runtime as nn
@@ -491,28 +477,22 @@ if __name__ == "__main__":
     # 初始化自定义AI任务实例
     my_ai = MyAIApp(kmodel_path, model_input_size=[320, 320],rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     my_ai.config_preprocess()  # 配置预处理
-
-    try:
-        while True:
-            os.exitpoint()                      # 检查是否有退出信号
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # 获取当前帧数据
-                res = my_ai.run(img)            # 推理当前帧
-                my_ai.draw_result(pl, res)      # 绘制结果
-                pl.show_image()                 # 显示结果
-                gc.collect()                    # 垃圾回收
-    except Exception as e:
-        sys.print_exception(e)                  # 打印异常信息
-    finally:
-        my_ai.deinit()                          # 反初始化
-        pl.destroy()                            # 销毁PipeLine实例
+    while True:
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # 获取当前帧数据
+            res = my_ai.run(img)            # 推理当前帧
+            my_ai.draw_result(pl, res)      # 绘制结果
+            pl.show_image()                 # 显示结果
+            gc.collect()                    # 垃圾回收
+    my_ai.deinit()                          # 反初始化
+    pl.destroy()                            # 销毁PipeLine实例
 
 ```
 
 以关键词唤醒keyword_spotting为例：
 
 ```python
-from libs.PipeLine import ScopedTiming
+from libs.Utils import ScopedTiming
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
 from media.pyaudio import *                     # 音频模块
@@ -628,9 +608,10 @@ if __name__ == "__main__":
 对于不需要预处理（直接输入推理）的AI任务伪代码如下：
 
 ```python
- from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
+from libs.Utils import * 
 import os
 from media.media import *
 import nncase_runtime as nn
@@ -698,20 +679,15 @@ if __name__ == "__main__":
     my_ai = MyAIApp(kmodel_path, model_input_size=[320, 320],rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     my_ai.config_preprocess()  # 配置预处理
 
-    try:
-        while True:
-            os.exitpoint()                      # 检查是否有退出信号
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # 获取当前帧数据
-                res = my_ai.run(img)            # 推理当前帧
-                my_ai.draw_result(pl, res)      # 绘制结果
-                pl.show_image()                 # 显示结果
-                gc.collect()                    # 垃圾回收
-    except Exception as e:
-        sys.print_exception(e)                  # 打印异常信息
-    finally:
-        my_ai.deinit()                          # 反初始化
-        pl.destroy()                            # 销毁PipeLine实例
+    while True:
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # 获取当前帧数据
+            res = my_ai.run(img)            # 推理当前帧
+            my_ai.draw_result(pl, res)      # 绘制结果
+            pl.show_image()                 # 显示结果
+            gc.collect()                    # 垃圾回收
+    my_ai.deinit()                          # 反初始化
+    pl.destroy()                            # 销毁PipeLine实例
 
 ```
 
@@ -765,9 +741,10 @@ class TrackerApp(AIBase):
 这里以双模型串联推理为例，给出的伪代码如下：
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
+from libs.Utils import *
 import os
 from media.media import *
 import nncase_runtime as nn
@@ -899,21 +876,16 @@ if __name__ == "__main__":
     my_ai = MyApp(kmodel1_path,kmodel2_path, kmodel1_input_size,kmodel2_input_size,rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     my_ai.config_preprocess()  # 配置预处理
 
-    try:
-        while True:
-            os.exitpoint()                      # 检查是否有退出信号
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # 获取当前帧数据
-                outputs_1,outputs_2 = my_ai.run(img)            # 推理当前帧
-                my_ai.draw_result(pl, outputs_1,outputs_2)      # 绘制结果
-                pl.show_image()                 # 显示结果
-                gc.collect()                    # 垃圾回收
-    except Exception as e:
-        sys.print_exception(e)                  # 打印异常信息
-    finally:
-        my_ai.app_1.deinit()                    # 反初始化
-        my_ai.app_2.deinit()
-        pl.destroy()                            # 销毁PipeLine实例
+    while True:
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # 获取当前帧数据
+            outputs_1,outputs_2 = my_ai.run(img)            # 推理当前帧
+            my_ai.draw_result(pl, outputs_1,outputs_2)      # 绘制结果
+            pl.show_image()                 # 显示结果
+            gc.collect()                    # 垃圾回收
+    my_ai.app_1.deinit()                    # 反初始化
+    my_ai.app_2.deinit()
+    pl.destroy()                            # 销毁PipeLine实例
 
 ```
 
@@ -1478,3 +1450,63 @@ yolov8n分割应用使用yolov8n模型对视频中出现的COCO数据集80个类
 #### 3.29.3 演示效果
 
 请插入耳机或者音响，运行程序，生成结束后会播放生成的音频。请自行体验!
+
+### 3.30 人体分割
+
+#### 3.30.1 demo说明
+
+人体分割任务将整个人体划分为15部分，并用不同的颜色表示出来。
+
+#### 3.30.2 代码
+
+打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->body_seg.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
+
+### 3.31 多命令词唤醒
+
+#### 3.31.1 demo说明
+
+多命令词唤醒是关键词唤醒的扩展版，它支持`xiaonanxiaonan`、`go`、`stop`、`wow`四个关键词的唤醒，适用于语音命令控制的场景。
+
+#### 3.31.2 代码
+
+打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->multi_kws.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
+
+### 3.32 轻量版人脸注册
+
+#### 3.32.1 demo说明
+
+轻量版人脸注册使用了新的人脸识别模型，相比于重量模型（44M），它的模型只有不到3M，适用于K230D人脸识别注册过程！
+
+#### 3.32.2 代码
+
+打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->face_registration_lite.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
+
+### 3.33 轻量版人脸识别
+
+#### 3.33.1 demo说明
+
+轻量版人脸识别使用了新的人脸识别模型，相比于重量模型（44M），它的模型只有不到3M，适用于有帧率要求或者K230D上的人脸识别过程！
+
+#### 3.33.2 代码
+
+打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->face_recognition_lite.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
+
+### 3.33 YOLO11n旋转目标检测
+
+#### 3.33.1 demo说明
+
+YOLO11n旋转目标检测实现了15种目标带角度的检测，包括飞机、船只等等。
+
+#### 3.33.2 代码
+
+打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->yolo11n_obb.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
+
+### 3.34 YOLOv8n旋转目标检测
+
+#### 3.34.1 demo说明
+
+YOLOv8n旋转目标检测实现了15种目标带角度的检测，包括飞机、船只等等。
+
+#### 3.34.2 代码
+
+打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->yolov8n_obb.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。

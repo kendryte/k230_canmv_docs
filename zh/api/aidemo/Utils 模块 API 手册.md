@@ -35,7 +35,62 @@ def test_time():
 |--------|---------------------------------|
 | - | 无返回值                        |
 
-### 2.2 get_colors
+### 2.2 read_json
+
+**描述**
+
+根据json文件路径读取json中的各字段，主要用于读取部署在线训练平台脚本的配置文件。
+
+**语法**  
+
+```python
+import libs.Utils import read_json
+
+json_path="/sdcard/examples/test.json"
+json_data=read_json(json_path)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| json_path | json文件在开发板中的路径   | 输入      | 必填 |
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| dict  |       json字段内容       |
+
+### 2.3 read_image
+
+**描述**
+
+根据图片路径读取图片数据，用于AI推理过程中读取静态图，给到模型完成推理。
+
+**语法**  
+
+```python
+import libs.Utils import read_image
+
+img_path="/sdcard/examples/test.jpg"
+img_chw,img_rgb888=read_image(img_path)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| img_path | 图片文件在开发板中的路径   | 输入      | 必填 |
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| img_chw  |       CHW排布的ulab.numpy.ndarray格式图片数据，可以用于创建nncase_runtime.tensor给AI模型推理       |
+| img_rgb888  |       rgb888格式的Image实例，可以用于绘制结果      |
+
+### 2.4 get_colors
 
 **描述**
 
@@ -62,7 +117,7 @@ colors=get_colors(classes_num)
 |--------|---------------------------------|
 | list[list]  |       ARGB颜色数组       |
 
-### 2.3 center_crop_param
+### 2.5 center_crop_param
 
 **描述**
 
@@ -91,7 +146,7 @@ top,left,m=center_crop_param(input_size)
 | top     | 裁左上角距离上边界距离                   |
 | m       | 裁边长                   |
 
-### 2.4 letterbox_pad_param
+### 2.6 letterbox_pad_param
 
 **描述**
 
@@ -124,7 +179,7 @@ left,right,top,bottom,scale=letterbox_pad_param(input_size,output_size)
 | bottom  |  下侧填充值                     |
 | scale   |  缩放比例                       |
 
-### 2.5 center_pad_param
+### 2.7 center_pad_param
 
 **描述**
 
@@ -157,7 +212,7 @@ left,right,top,bottom,scale=center_pad_param(input_size,output_size)
 | bottom  |  下侧填充值                     |
 | scale   |  缩放比例                       |
 
-### 2.6 softmax
+### 2.8 softmax
 
 **描述**
 
@@ -183,3 +238,84 @@ output_data=softmax(input_data)
 | 返回值 | 描述                            |
 |--------|---------------------------------|
 | softmax_res    |       类别的概率分布      |
+
+### 2.9 sigmoid
+
+**描述**
+
+sigmoid 函数广泛应用于二分类模型中。它的作用是将任意实数映射到 (0, 1) 区间内，常用于将模型输出转换为概率值，从而用于概率判断或分类决策。
+
+**语法**  
+
+```python
+from libs.Utils import sigmoid
+
+input_data = 0.5
+output_data = sigmoid(input_data)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| input_data | 任意实数  | 输入      | 必填|
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| sigmoid_res|映射到 (0, 1) 区间的数值或数组  |
+
+### 2.10 chw2hwc
+
+**描述**
+
+将CHW排布的`ulab.numpy.ndarray`数据转换为HWC排布，仅适用于3维数据。
+
+**语法**  
+
+```python
+from libs.Utils import chw2hwc
+
+# chw_np是CHW排布的ulab.numpy.ndarray数据
+hwc_np = chw2hwc(chw_np)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| chw_np | 3维ulab.numpy.ndarray数据  | 输入      | 必填|
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| hwc_np| 排布维HWC的3维ulab.numpy.ndarray数据 |
+
+### 2.11 hwc2chw
+
+**描述**
+
+将HWC排布的`ulab.numpy.ndarray`数据转换为CHW排布，仅适用于3维数据，常用于将Image实例数据转换后给AI模型使用。
+
+**语法**  
+
+```python
+from libs.Utils import hwc2chw
+
+# hwc_np是CHW排布的ulab.numpy.ndarray数据
+chw_np = hwc2chw(hwc_np)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| hwc_np | 3维ulab.numpy.ndarray数据  | 输入      | 必填|
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| chw_np| 排布维CHW的3维ulab.numpy.ndarray数据 |

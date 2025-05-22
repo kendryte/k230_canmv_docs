@@ -185,22 +185,6 @@ i2c.writeto_mem(addr, memaddr, buf, mem_size=8)
 
 无
 
-### 2.10 `deinit` 方法
-
-```python
-i2c.deinit()
-```
-
-释放 I2C 资源。
-
-**参数**
-
-无
-
-**返回值**
-
-无
-
 ## 3. 从设备 API 介绍
 
 `I2C_Slave` 类位于 `machine` 模块中。
