@@ -1,90 +1,74 @@
-# Minimal makefile for Sphinx documentation
-#
+# Minimal makefile for Sphinx documentation with multi-language support
 
-# You can set these variables from the command line, and also
-# from the environment for the first two.
-SPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
-SPHINXMULTIVERSION ?= sphinx-multiversion
-SOURCEDIR     = .
-CONFDIR       = .
-BUILDDIR      = _build
-SOURCEDIR_EN  = en
-SOURCEDIR_ZH  = zh
+# Configurable variables
+SPHINXOPTS          ?=
+SPHINXBUILD         ?= sphinx-build
+SPHINXMULTIVERSION  ?= sphinx-multiversion
+SOURCEDIR_EN        = en
+SOURCEDIR_ZH        = .
+CONFDIR             = .
+BUILDDIR            = _build
 WEB_DOCS_BUILDER_URL ?= https://ai.b-bug.org/~zhengshanshan/web-docs-builder
-TEMPLATE = _static/init_mermaid.js _static/mermaid.min.js _templates/versionsFlex.html _templates/Fleft.html _templates/Footer.html _templates/Fright.html  _templates/layout.html _static/topbar.css _static/custom-theme.css _templates/content.html
-TEMPLATE_EN = _static/init_mermaid.js _static/mermaid.min.js _templates/versionsFlex.html _templates/FleftEn.html _templates/FooterEn.html _templates/FrightEn.html  _templates/layout.html _static/topbar.css _static/custom-theme.css _templates/contentEn.html
-# Put it first so that "make" without argument is like "make help".
+WGET                = wget -q
+
+# Template files
+STATIC_FILES := \
+    _static/init_mermaid.js \
+    _static/mermaid.min.js \
+    _static/topbar.css \
+    _static/custom-theme.css
+
+TEMPLATE_FILES := \
+    _templates/versionsFlex.html \
+    _templates/layout.html \
+    _templates/Fleft.html \
+    _templates/Footer.html \
+    _templates/Fright.html \
+    _templates/FleftEn.html \
+    _templates/FooterEn.html \
+    _templates/FrightEn.html \
+    _templates/content.html \
+    _templates/contentEn.html \
+    _templates/login.html \
+    _templates/nav.html \
+    _templates/navEn.html \
+    _templates/logo.html \
+    _templates/lang.html
+
+TEMPLATE_ALL := $(STATIC_FILES) $(TEMPLATE_FILES)
+
+# Directory creation
+_static _templates:
+	mkdir -p $@
+
+# Pattern rules for downloads
+_static/%: | _static
+	$(WGET) $(WEB_DOCS_BUILDER_URL)/$@ -O $@
+
+_templates/%: | _templates
+	$(WGET) $(WEB_DOCS_BUILDER_URL)/$@ -O $@
+
+# Ensure all templates are downloaded
+download: $(TEMPLATE_ALL)
+
+# Build targets
 help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@$(SPHINXBUILD) -M help "$(SOURCEDIR_EN)" "$(BUILDDIR)" $(SPHINXOPTS)
 
-.PHONY: help Makefile
+html-en: download
+	SPHINX_LANGUAGE=en $(SPHINXBUILD) -b html "$(SOURCEDIR_EN)" "$(BUILDDIR)/html/en" -c "$(CONFDIR)"
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-# %: Makefile $(TEMPLATE)
-# 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+html-zh: download
+	SPHINX_LANGUAGE=zh_CN $(SPHINXBUILD) -b html "$(SOURCEDIR_ZH)" "$(BUILDDIR)/html/zh" -c "$(CONFDIR)"
 
 html: html-en html-zh
 
-html-zh: Makefile $(TEMPLATE)
-	SPHINX_LANGUAGE=zh_CN $(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)/html/zh" -c "$(CONFDIR)"
-
-html-en: Makefile $(TEMPLATE_EN)
-	SPHINX_LANGUAGE=en $(SPHINXBUILD) -b html "$(SOURCEDIR_EN)" "$(BUILDDIR)/html/en" -c "$(CONFDIR)"
-
-mhtml: mhtml_cn mhtml_en
-
-mhtml_cn: $(TEMPLATE)
-	SPHINX_LANGUAGE=zh_CN $(SPHINXMULTIVERSION) "$(SOURCEDIR)" "$(BUILDDIR)/zh" $(SPHINXOPTS) -c "$(CONFDIR)"
-# 英文
-mhtml_en: $(TEMPLATE_EN)
+mhtml-en: download
 	SPHINX_LANGUAGE=en $(SPHINXMULTIVERSION) "$(SOURCEDIR_EN)" "$(BUILDDIR)/en" $(SPHINXOPTS) -c "$(CONFDIR)"
 
-# mhtml: $(TEMPLATE)
-# 	@$(SPHINXMULTIVERSION) "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+mhtml-zh: download
+	SPHINX_LANGUAGE=zh_CN $(SPHINXMULTIVERSION) "$(SOURCEDIR_ZH)" "$(BUILDDIR)/zh" $(SPHINXOPTS) -c "$(CONFDIR)"
 
-_templates:
-	mkdir $@
+mhtml: mhtml-en mhtml-zh
 
-_static/init_mermaid.js:
-	@wget -q $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_static/topbar.css:
-	@wget -q $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_static/custom-theme.css:
-	@wget -q $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_templates/versionsFlex.html: _templates
-	@wget -q $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_templates/layout.html: _templates
-	@wget -q $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_templates/Fleft.html: _templates
-	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_templates/Footer.html: _templates
-	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_templates/Fright.html: _templates
-	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_templates/FleftEn.html: _templates
-	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_templates/FooterEn.html: _templates
-	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_templates/FrightEn.html: _templates
-	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_templates/contentEn.html: _templates
-	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_templates/content.html: _templates
-	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
-
-_static/mermaid.min.js: 
-	wget $(WEB_DOCS_BUILDER_URL)/$@ -O $@
+.PHONY: help download html html-en html-zh mhtml mhtml-en mhtml-zh
