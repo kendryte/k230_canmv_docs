@@ -48,7 +48,7 @@ The PipeLine initialization function, which initializes the Sensor/Display/OSD c
 # Default configuration
 pl.create()
 # Users can also create an instance and pass it in by themselves
-from media.Sensor import *
+from media.sensor import *
 sensor=Sensor()
 pl.create(sensor=sensor)
 ```
@@ -158,17 +158,12 @@ if __name__ == "__main__":
     pl = PipeLine(rgb888p_size=[1920,1080], display_mode=display_mode)
     pl.create()  # Create a PipeLine instance
     display_size = pl.get_display_size()
-    try:
-        while True:
-            os.exitpoint()                      # Check if there is an exit signal
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # Get the current frame data
-                print(img.shape)
-                gc.collect()                    # Garbage collection
-    except Exception as e:
-        sys.print_exception(e)                  # Print exception information
-    finally:
-        pl.destroy()                            # Destroy the PipeLine instance
+    while True:
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # Get the current frame data
+            print(img.shape)
+            gc.collect()                    # Garbage collection
+    pl.destroy()                            # Destroy the PipeLine instance
 ```
 
 In the above code, a frame of image with a resolution of rgb888p_size is obtained through the `pl.get_frame()` interface. The type is ulab.numpy.ndarray, and the arrangement is CHW. Based on this code, you can focus on the operations of the AI inference part.
