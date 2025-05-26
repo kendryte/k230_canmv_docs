@@ -120,89 +120,68 @@ The following is an example program for the `YOLOv5` detection task:
 
 ```python
 from libs.YOLO import YOLOv5
-import os,sys,gc
+from libs.Utils import *
+import os, sys, gc
 import ulab.numpy as np
 import image
 
-# Read an image from the local disk and convert from HWC to CHW
-def read_img(img_path):
-    img_data = image.Image(img_path)
-    img_data_rgb888=img_data.to_rgb888()
-    img_hwc=img_data_rgb888.to_numpy_ref()
-    shape=img_hwc.shape
-    img_tmp = img_hwc.reshape((shape[0] * shape[1], shape[2]))
-    img_tmp_trans = img_tmp.transpose()
-    img_res=img_tmp_trans.copy()
-    img_return=img_res.reshape((shape[2],shape[0],shape[1]))
-    return img_return,img_data_rgb888
+if __name__ == "__main__":
+    # The following are examples only. Please modify them according to your own test image, model path, label names, and model input size.
+    img_path = "/sdcard/examples/utils/test_fruit.jpg"
+    kmodel_path = "/sdcard/examples/kmodel/fruit_det_yolov5n_320.kmodel"
+    labels = ["apple", "banana", "orange"]
+    model_input_size = [320, 320]
 
-if __name__=="__main__":
-    # You can modify the path to fit your own model
-    img_path="/data/test_images/test.jpg"
-    kmodel_path="/data/yolo_kmodels/det_yolov5n_320.kmodel"
-    labels = ["apple","banana","orange"]
     confidence_threshold = 0.5
-    nms_threshold=0.45
-    model_input_size=[320,320]
-    img,img_ori=read_img(img_path)
-    rgb888p_size=[img.shape[2],img.shape[1]]
-    # Initialize the YOLOv5 instance
-    yolo=YOLOv5(task_type="detect",mode="image",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,max_boxes_num=50,debug_mode=0)
+    nms_threshold = 0.45
+    img, img_ori = read_image(img_path)
+    rgb888p_size = [img.shape[2], img.shape[1]]
+    # Initialize YOLOv5 instance
+    yolo = YOLOv5(task_type="detect", mode="image", kmodel_path=kmodel_path, labels=labels, rgb888p_size=rgb888p_size, model_input_size=model_input_size, conf_thresh=confidence_threshold, nms_thresh=nms_threshold, max_boxes_num=50, debug_mode=0)
     yolo.config_preprocess()
-    try:
-        res=yolo.run(img)
-        yolo.draw_result(res,img_ori)
-        gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
+    res = yolo.run(img)
+    yolo.draw_result(res, img_ori)
+    yolo.deinit()
+    gc.collect()
 ```
 
 The above code shows how to use `YOLOv5` for image inference.
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.YOLO import YOLOv5
-import os,sys,gc
+from libs.Utils import *
+import os, sys, gc
 import ulab.numpy as np
 import image
 
-if __name__=="__main__":
-    # Display mode, default is "hdmi", can choose "hdmi" or "lcd"
-    display_mode="hdmi"
-    rgb888p_size=[1280,720]
-    if display_mode=="hdmi":
-        display_size=[1920,1080]
-    else:
-        display_size=[800,480]
-    # You can modify the path to fit your own model
-    kmodel_path="/data/yolo_kmodels/det_yolov5n_320.kmodel"
-    labels = ["apple","banana","orange"]
+if __name__ == "__main__":
+    # The following are examples only. Please modify them according to your own model path, label names, and model input size.
+    kmodel_path = "/sdcard/examples/kmodel/fruit_det_yolov5n_320.kmodel"
+    labels = ["apple", "banana", "orange"]
+    model_input_size = [320, 320]
+
+    # Add display mode, default is hdmi, options are hdmi/lcd/lt9611/st7701/hx8399.
+    # hdmi defaults to lt9611 with resolution 1920*1080; lcd defaults to st7701 with resolution 800*480.
+    display_mode = "lcd"
+    rgb888p_size = [640, 360]
     confidence_threshold = 0.8
-    nms_threshold=0.45
-    model_input_size=[320,320]
-    # Initialize the PipeLine
-    pl=PipeLine(rgb888p_size=rgb888p_size,display_size=display_size,display_mode=display_mode)
+    nms_threshold = 0.45
+    pl = PipeLine(rgb888p_size=rgb888p_size, display_mode=display_mode)
     pl.create()
-    # Initialize the YOLOv5 instance
-    yolo=YOLOv5(task_type="detect",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,max_boxes_num=50,debug_mode=0)
+    display_size = pl.get_display_size()
+    # Initialize YOLOv5 instance
+    yolo = YOLOv5(task_type="detect", mode="video", kmodel_path=kmodel_path, labels=labels, rgb888p_size=rgb888p_size, model_input_size=model_input_size, display_size=display_size, conf_thresh=confidence_threshold, nms_thresh=nms_threshold, max_boxes_num=50, debug_mode=0)
     yolo.config_preprocess()
-    try:
-        while True:
-            os.exitpoint()
-            with ScopedTiming("total",1):
-                # Infer frame by frame
-                img=pl.get_frame()
-                res=yolo.run(img)
-                yolo.draw_result(res,pl.osd_img)
-                pl.show_image()
-                gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
-        pl.destroy()
+    while True:
+        with ScopedTiming("total", 1):
+            img = pl.get_frame()
+            res = yolo.run(img)
+            yolo.draw_result(res, pl.osd_img)
+            pl.show_image()
+            gc.collect()
+    yolo.deinit()
+    pl.destroy()
 ```
 
 The above code shows how to use `YOLOv5` for video inference.
@@ -226,7 +205,7 @@ yolo=YOLOv8(task_type="classify",mode="image",kmodel_path="yolov8_det.kmodel",la
 
 | Parameter Name | Description | Explanation | Type |
 | --- | --- | --- | --- |
-| task_type | Task type | Supports three types of tasks, with options 'classify'/'detect'/'segment'. | str |
+| task_type | Task type | Supports four types of tasks, with options 'classify'/'detect'/'segment'/'obb'. | str |
 | mode | Inference mode | Supports two inference modes, with options 'image'/'video'. 'image' indicates image inference, and 'video' indicates real - time video stream inference from the camera. | str |
 | kmodel_path | kmodel path | The path of the kmodel copied to the development board. | str |
 | labels | Class label list | The label names of different classes. | list[str] |
@@ -321,87 +300,70 @@ The following is an example program for the `YOLOv8` classification task:
 
 ```python
 from libs.YOLO import YOLOv8
-import os,sys,gc
+from libs.Utils import *
+import os, sys, gc
 import ulab.numpy as np
 import image
 
-# Read an image from the local disk and convert from HWC to CHW
-def read_img(img_path):
-    img_data = image.Image(img_path)
-    img_data_rgb888=img_data.to_rgb888()
-    img_hwc=img_data_rgb888.to_numpy_ref()
-    shape=img_hwc.shape
-    img_tmp = img_hwc.reshape((shape[0] * shape[1], shape[2]))
-    img_tmp_trans = img_tmp.transpose()
-    img_res=img_tmp_trans.copy()
-    img_return=img_res.reshape((shape[2],shape[0],shape[1]))
-    return img_return,img_data_rgb888
+if __name__ == "__main__":
+    # The following are examples only. Please modify them according to your own test image, model path, label names, and model input size.
+    img_path = "/sdcard/examples/utils/test_fruit.jpg"
+    kmodel_path = "/sdcard/examples/kmodel/fruit_det_yolov8n_320.kmodel"
+    labels = ["apple", "banana", "orange"]
+    model_input_size = [320, 320]
 
-if __name__=="__main__":
-    # You can modify the path parameters according to your model
-    img_path="/data/test_images/test_apple.jpg"
-    kmodel_path="/data/yolo_kmodels/cls_yolov8n_224.kmodel"
-    labels = ["apple","banana","orange"]
     confidence_threshold = 0.5
-    model_input_size=[224,224]
-    img,img_ori=read_img(img_path)
-    rgb888p_size=[img.shape[2],img.shape[1]]
-    # Initialize the YOLOv8 instance
-    yolo=YOLOv8(task_type="classify",mode="image",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,conf_thresh=confidence_threshold,debug_mode=0)
+    nms_threshold = 0.45
+    img, img_ori = read_image(img_path)
+    rgb888p_size = [img.shape[2], img.shape[1]]
+    # Initialize YOLOv8 instance
+    yolo = YOLOv8(task_type="detect", mode="image", kmodel_path=kmodel_path, labels=labels, rgb888p_size=rgb888p_size, model_input_size=model_input_size, conf_thresh=confidence_threshold, nms_thresh=nms_threshold, max_boxes_num=50, debug_mode=0)
     yolo.config_preprocess()
-    try:
-        res=yolo.run(img)
-        yolo.draw_result(res,img_ori)
-        gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
+    res = yolo.run(img)
+    yolo.draw_result(res, img_ori)
+    yolo.deinit()
+    gc.collect()
 ```
 
 The above code shows how to use `YOLOv8` for image inference.
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.YOLO import YOLOv8
-import os,sys,gc
+from libs.Utils import *
+import os, sys, gc
 import ulab.numpy as np
 import image
 
-if __name__=="__main__":
-    # Display mode, default is "hdmi", can choose "hdmi" or "lcd"
-    display_mode="hdmi"
-    rgb888p_size=[1280,720]
-    if display_mode=="hdmi":
-        display_size=[1920,1080]
-    else:
-        display_size=[800,480]
-    # You can modify the path parameters according to your model
-    kmodel_path="/data/yolo_kmodels/cls_yolov8n_224.kmodel"
-    labels = ["apple","banana","orange"]
-    confidence_threshold = 0.8
-    model_input_size=[224,224]
-    # Initialize the PipeLine
-    pl=PipeLine(rgb888p_size=rgb888p_size,display_size=display_size,display_mode=display_mode)
+if __name__ == "__main__":
+    # The following are examples only. Please modify them according to your own model path, label names, and model input size.
+    kmodel_path = "/sdcard/examples/kmodel/fruit_det_yolov8n_320.kmodel"
+    labels = ["apple", "banana", "orange"]
+    model_input_size = [320, 320]
+
+    # Add display mode, default is hdmi, options are hdmi/lcd/lt9611/st7701/hx8399.
+    # hdmi defaults to lt9611 with resolution 1920*1080; lcd defaults to st7701 with resolution 800*480.
+    display_mode = "lcd"
+    rgb888p_size = [640, 360]
+    confidence_threshold = 0.5
+    nms_threshold = 0.45
+    # Initialize PipeLine
+    pl = PipeLine(rgb888p_size=rgb888p_size, display_mode=display_mode)
     pl.create()
-    # Initialize the YOLOv8 instance
-    yolo=YOLOv8(task_type="classify",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,debug_mode=0)
+    display_size = pl.get_display_size()
+    # Initialize YOLOv8 instance
+    yolo = YOLOv8(task_type="detect", mode="video", kmodel_path=kmodel_path, labels=labels, rgb888p_size=rgb888p_size, model_input_size=model_input_size, display_size=display_size, conf_thresh=confidence_threshold, nms_thresh=nms_threshold, max_boxes_num=50, debug_mode=0)
     yolo.config_preprocess()
-    try:
-        while True:
-            os.exitpoint()
-            with ScopedTiming("total",1):
-                # Infer frame by frame
-                img=pl.get_frame()
-                res=yolo.run(img)
-                yolo.draw_result(res,pl.osd_img)
-                pl.show_image()
-                gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
-        pl.destroy()
+    while True:
+        with ScopedTiming("total", 1):
+            # Process each frame
+            img = pl.get_frame()
+            res = yolo.run(img)
+            yolo.draw_result(res, pl.osd_img)
+            pl.show_image()
+            gc.collect()
+    yolo.deinit()
+    pl.destroy()
 ```
 
 The above code shows how to use `YOLOv8` for video inference.
@@ -425,7 +387,7 @@ yolo=YOLO11(task_type="segment",mode="image",kmodel_path="yolo11_det.kmodel",lab
 
 | Parameter Name | Description | Explanation | Type |
 | --- | --- | --- | --- |
-| task_type | Task type | Supports three types of tasks, with available options: 'classify', 'detect', 'segment'. | str |
+| task_type | Task type | Supports four types of tasks, with available options: 'classify', 'detect', 'segment', 'obb'. | str |
 | mode | Inference mode | Supports two inference modes, with available options: 'image' and 'video'. 'image' means inferring images, and 'video' means inferring real - time video streams captured by the camera. | str |
 | kmodel_path | kmodel path | The path of the kmodel copied to the development board. | str |
 | labels | Class label list | The label names of different classes. | list[str] |
@@ -520,91 +482,70 @@ The following is an example program for the `YOLO11` segmentation task:
 
 ```python
 from libs.YOLO import YOLO11
-import os,sys,gc
+from libs.Utils import *
+import os, sys, gc
 import ulab.numpy as np
 import image
 
-# Read an image from the local disk and convert from HWC to CHW
-def read_img(img_path):
-    img_data = image.Image(img_path)
-    img_data_rgb888=img_data.to_rgb888()
-    img_hwc=img_data_rgb888.to_numpy_ref()
-    shape=img_hwc.shape
-    img_tmp = img_hwc.reshape((shape[0] * shape[1], shape[2]))
-    img_tmp_trans = img_tmp.transpose()
-    img_res=img_tmp_trans.copy()
-    img_return=img_res.reshape((shape[2],shape[0],shape[1]))
-    return img_return,img_data_rgb888
+if __name__ == "__main__":
+    # The following are examples only. Please modify them according to your own test image, model path, label names, and model input size.
+    img_path = "/sdcard/examples/utils/test_fruit.jpg"
+    kmodel_path = "/sdcard/examples/kmodel/fruit_det_yolo11n_320.kmodel"
+    labels = ["apple", "banana", "orange"]
+    model_input_size = [320, 320]
 
-if __name__=="__main__":
-    # You can modify the path parameters according to your model
-    img_path="/data/test_images/test.jpg"
-    kmodel_path="/data/yolo_kmodels/seg_yolo11n_320.kmodel"
-    labels = ["apple","banana","orange"]
     confidence_threshold = 0.5
-    nms_threshold=0.45
-    mask_threshold=0.5
-    model_input_size=[320,320]
-    img,img_ori=read_img(img_path)
-    rgb888p_size=[img.shape[2],img.shape[1]]
-    # Initialize the YOLO11 instance
-    yolo=YOLO11(task_type="segment",mode="image",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,mask_thresh=mask_threshold,max_boxes_num=50,debug_mode=0)
+    nms_threshold = 0.45
+    img, img_ori = read_image(img_path)
+    rgb888p_size = [img.shape[2], img.shape[1]]
+    # Initialize YOLO11 instance
+    yolo = YOLO11(task_type="detect", mode="image", kmodel_path=kmodel_path, labels=labels, rgb888p_size=rgb888p_size, model_input_size=model_input_size, conf_thresh=confidence_threshold, nms_thresh=nms_threshold, max_boxes_num=50, debug_mode=0)
     yolo.config_preprocess()
-    try:
-        res=yolo.run(img)
-        yolo.draw_result(res,img_ori)
-        gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
+    res = yolo.run(img)
+    yolo.draw_result(res, img_ori)
+    yolo.deinit()
+    gc.collect()
 ```
 
 The above code shows how to use `YOLO11` for image inference.
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.YOLO import YOLO11
-import os,sys,gc
+from libs.Utils import *
+import os, sys, gc
 import ulab.numpy as np
 import image
 
-if __name__=="__main__":
-    # Display mode, default is "hdmi", can choose "hdmi" or "lcd"
-    display_mode="hdmi"
-    rgb888p_size=[320,320]
-    if display_mode=="hdmi":
-        display_size=[1920,1080]
-    else:
-        display_size=[800,480]
-    # You can modify the path parameters according to your model
-    kmodel_path="/data/yolo_kmodels/seg_yolo11n_320.kmodel"
-    labels = ["apple","banana","orange"]
+if __name__ == "__main__":
+    # The following are examples only. Please modify them according to your own model path, label names, and model input size.
+    kmodel_path = "/sdcard/examples/kmodel/fruit_det_yolo11n_320.kmodel"
+    labels = ["apple", "banana", "orange"]
+    model_input_size = [320, 320]
+
+    # Add display mode, default is hdmi, options are hdmi/lcd/lt9611/st7701/hx8399.
+    # hdmi defaults to lt9611 with resolution 1920*1080; lcd defaults to st7701 with resolution 800*480.
+    display_mode = "lcd"
+    rgb888p_size = [640, 360]
     confidence_threshold = 0.5
-    nms_threshold=0.45
-    mask_threshold=0.5
-    model_input_size=[320,320]
-    # Initialize the PipeLine
-    pl=PipeLine(rgb888p_size=rgb888p_size,display_size=display_size,display_mode=display_mode)
+    nms_threshold = 0.45
+    # Initialize PipeLine
+    pl = PipeLine(rgb888p_size=rgb888p_size, display_mode=display_mode)
     pl.create()
-    # Initialize the YOLO11 instance
-    yolo=YOLO11(task_type="segment",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,mask_thresh=mask_threshold,max_boxes_num=50,debug_mode=0)
+    display_size = pl.get_display_size()
+    # Initialize YOLO11 instance
+    yolo = YOLO11(task_type="detect", mode="video", kmodel_path=kmodel_path, labels=labels, rgb888p_size=rgb888p_size, model_input_size=model_input_size, display_size=display_size, conf_thresh=confidence_threshold, nms_thresh=nms_threshold, max_boxes_num=50, debug_mode=0)
     yolo.config_preprocess()
-    try:
-        while True:
-            os.exitpoint()
-            with ScopedTiming("total",1):
-                # Infer frame by frame
-                img=pl.get_frame()
-                res=yolo.run(img)
-                yolo.draw_result(res,pl.osd_img)
-                pl.show_image()
-                gc.collect()
-    except Exception as e:
-        sys.print_exception(e)
-    finally:
-        yolo.deinit()
-        pl.destroy()
+    while True:
+        with ScopedTiming("total", 1):
+            # Process each frame
+            img = pl.get_frame()
+            res = yolo.run(img)
+            yolo.draw_result(res, pl.osd_img)
+            pl.show_image()
+            gc.collect()
+    yolo.deinit()
+    pl.destroy()
 ```
 
 The above code shows how to use `YOLO11` for video inference.

@@ -2,39 +2,45 @@
 
 ## 1. AI Demo Application
 
-The K230 supports a wide range of AI applications. To facilitate user trial experiences, the CanMV K230 image comes with several built-in AI Demo applications. These are categorized into single-model and multi-model applications, covering various fields such as object, face, hand, body, license plate, OCR, audio (KWS, TTS), and more. Users can easily run these applications by opening the source code with CanMV IDE. The source code for AI Demo applications is located in the `/CanMV/sdcard/examples/01-AI-Demo` directory. Below is the list of AI Demo applications; note that some demos cannot run on the K230D chip due to memory limitations. Please refer to the compatibility list.
+The K230 supports a wide range of AI applications. To facilitate user trial experiences, the CanMV K230 image comes with several built-in AI Demo applications. These are categorized into single-model and multi-model applications, covering various fields such as object, face, hand, body, license plate, OCR, audio (KWS, TTS), and more. Users can easily run these applications by opening the source code with CanMV IDE. The source code for AI Demo applications is located in the `/CanMV/sdcard/examples/05-AI-Demo` directory. Below is the list of AI Demo applications; note that some demos cannot run on the K230D chip due to memory limitations. Please refer to the compatibility list.
 
-| Demo Name               | Scenario         | Task Type  | K230 | K230D |
-| ----------------------- | ---------------- | ---------- | ---- | ---- |
-| dynamic_gesture         | Dynamic Gesture Recognition | Multi-Model Task | √ | √ |
-| eye_gaze                | Gaze Estimation  | Multi-Model Task | √ |  |
-| face_detection          | Face Detection   | Single-Model Task | √ | √ |
-| face_landmark           | Face Key Points  | Multi-Model Task | √ | √ |
-| face_mesh               | Face 3D Mesh     | Multi-Model Task | √ |  |
-| face_parse              | Face Parsing     | Multi-Model Task | √ |  |
-| face_pose               | Face Pose        | Multi-Model Task | √ | √ |
-| face_registration       | Face Registration| Multi-Model Task | √ | √ |
-| face_recognition        | Face Recognition | Multi-Model Task | √ | √ |
-| falldown_detection      | Fall Detection   | Single-Model Task | √ | √ |
-| finger_guessing         | Finger Guessing Game | Multi-Model Task | √ | √ |
-| hand_detection          | Palm Detection   | Single-Model Task | √ | √ |
-| hand_keypoint_class     | Palm Key Point Classification | Multi-Model Task | √ | √ |
-| hand_keypoint_detection | Palm Key Point Detection | Multi-Model Task | √ | √ |
-| hand_recognition        | Gesture Recognition | Multi-Model Task | √ | √ |
-| keyword_spotting        | Keyword Spotting | Single-Model Task | √ | √ |
-| licence_det             | License Plate Detection | Single-Model Task | √ | √ |
-| licence_det_rec         | License Plate Recognition | Multi-Model Task | √ | √ |
-| nanotracker             | Single Object Tracking | Multi-Model Task | √ | √ |
-| object_detect_yolov8n   | YOLOv8n Object Detection | Single-Model Task | √ | √ |
-| ocr_det                 | OCR Detection    | Single-Model Task | √ |  |
-| ocr_rec                 | OCR Recognition  | Multi-Model Task | √ |  |
-| person_detection        | Body Detection   | Single-Model Task | √ | √ |
-| person_kp_detect        | Body Key Point Detection | Multi-Model Task | √ | √ |
-| puzzle_game             | Puzzle Game      | Multi-Model Task | √ | √ |
-| segment_yolov8n         | YOLOv8 Segmentation | Single-Model Task | √ |  |
-| self_learning           | Self-Learning    | Single-Model Task | √ | √ |
-| space_resize            | Local Amplifier  | Multi-Model Task | √ | √ |
-| tts_zh                  | Chinese Text-to-Speech | Multi-Model Task | √ |  |
+|Demo Name|Scene|Task Type|K230|K230D|
+| ----------------------- | --------------- | ---------- | ---- | ---- |
+|body_seg|Human body parts segmentation|Single model task|√||
+|dynamic_gesture|Dynamic gesture recognition|Multi-model task|√|√|
+|eye_gaze|Watching estimate|Multi-model task|√||
+|face_detection|Face detection|Single model task|√|√|
+|face_landmark|Key parts of the face|Multi-model task|√|√|
+|face_mesh|Face 3D mesh|Multi-model task|√||
+|face_parse|Face analysis|Multi-model task|√||
+|face_pose|Face posture|Multi-model task|√|√|
+|face_registration|Face registration|Multi-model task|√||
+|face_recognition|Face recognition|Multi-model task|√||
+|face_registration_lite|Lightweight face registration|Multi-model task|√|√|
+|face_recognition_lite|Lightweight face recognition|Multi-model task|√|√|
+|Falldown_detection|Fall detection|Single model task|√|√|
+|finger_guessing|Rock-scissors game|Multi-model task|√|√|
+|hand_detection|Palm detection|Single model task|√|√|
+|hand_keypoint_class|Key points classification of palm|Multi-model task|√|√|
+|hand_keypoint_detection|Palm key point detection|Multi-model task|√|√|
+|hand_recognition|Gesture recognition|Multi-model task|√|√|
+|keyword_spotting|Keyword awakening|Single model task|√|√|
+|multi_kws|Multi-command keyword wake up|Single model task|√|√|
+|licence_det|License plate inspection|Single model task|√|√|
+|licence_det_rec|License plate recognition|Multi-model task|√|√|
+|nanotracker|Single-target tracking|Multi-model task|√|√|
+|object_detect_yolov8n|yolov8n target detection|Single model task|√|√|
+|ocr_det|OCR detection|Single model task|√||
+|ocr_rec|OCR recognition|Multi-model task|√||
+|person_detection|Human body test|Single model task|√|√|
+|person_kp_detect|Human key points detection|Multi-model task|√|√|
+|puzzle_game|Jigsaw puzzle game|Multi-model task|√|√|
+|segment_yolov8n|yolov8 segmentation|Single model task|√||
+|self_learning|Self-study|Single model task|√|√|
+|space_resize|Local amplifier|Multi-model task|√|√|
+|tts_zh|Chinese text to pronunciation|Multi-model task|√||
+|yolo11n_obb|yolo11n Oriented Bounding Boxes|Single model task|√|√|
+|yolov8n_obb|yolov8n Oriented Bounding Boxes|Single model task|√|√|
 
 ```{admonition} Note
 To run the above demos on the K230D chip development board, you need to change the `display_mode` in `__main__` to `lcd` to adapt the display output, and also reduce the resolution as per the comments. Some demos cannot run on the K230D, see the table above for details.
@@ -80,9 +86,10 @@ Introduction to different tasks:
 The pseudocode structure for a single-model task is as follows:
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
+from libs.Utils import *
 import os
 from media.media import *
 import nncase_runtime as nn
@@ -152,29 +159,25 @@ if __name__ == "__main__":
     my_ai = MyAIApp(kmodel_path, model_input_size=[320, 320],rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     my_ai.config_preprocess()  # Configure pre-processing
 
-    try:
-        while True:
-            os.exitpoint()                      # Check for exit signal
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # Get current frame data
-                res = my_ai.run(img)            # Infer current frame
-                my_ai.draw_result(pl, res)      # Draw result
-                pl.show_image()                 # Show result
-                gc.collect()                    # Garbage collection
-    except Exception as e:
-        sys.print_exception(e)                  # Print exception information
-    finally:
-        my_ai.deinit()                          # Deinitialize
-        pl.destroy()                            # Destroy PipeLine instance
-
+    while True:
+        os.exitpoint()                      # Check for exit signal
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # Get current frame data
+            res = my_ai.run(img)            # Infer current frame
+            my_ai.draw_result(pl, res)      # Draw result
+            pl.show_image()                 # Show result
+            gc.collect()                    # Garbage collection
+    my_ai.deinit()                          # Deinitialize
+    pl.destroy()                            # Destroy PipeLine instance
 ```
 
 Below is an example code for face detection:
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
+from libs.Utils import *
 import os
 import ujson
 from media.media import *
@@ -189,9 +192,7 @@ import gc
 import sys
 import aidemo
 
-#
-Custom Face Detection Class, inheriting from the AIBase class
-```python
+#Custom Face Detection Class, inheriting from the AIBase class
 class FaceDetectionApp(AIBase):
     def __init__(self, kmodel_path, model_input_size, anchors, confidence_threshold=0.5, nms_threshold=0.2, rgb888p_size=[224,224], display_size=[1920,1080], debug_mode=0):
         super().__init__(kmodel_path, model_input_size, rgb888p_size, debug_mode)  # Call the constructor of the base class
@@ -285,28 +286,25 @@ if __name__ == "__main__":
     face_det = FaceDetectionApp(kmodel_path, model_input_size=[320, 320], anchors=anchors, confidence_threshold=confidence_threshold, nms_threshold=nms_threshold, rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     face_det.config_preprocess()  # Configure pre-processing
 
-    try:
-        while True:
-            os.exitpoint()                      # Check for exit signal
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # Get current frame data
-                res = face_det.run(img)         # Infer current frame
-                face_det.draw_result(pl, res)   # Draw result
-                pl.show_image()                 # Show result
-                gc.collect()                    # Garbage collection
-    except Exception as e:
-        sys.print_exception(e)                  # Print exception information
-    finally:
-        face_det.deinit()                       # Deinitialize
-        pl.destroy()                            # Destroy PipeLine instance
+    while True:
+        os.exitpoint()                      # Check for exit signal
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # Get current frame data
+            res = face_det.run(img)         # Infer current frame
+            face_det.draw_result(pl, res)   # Draw result
+            pl.show_image()                 # Show result
+            gc.collect()                    # Garbage collection
+    face_det.deinit()                       # Deinitialize
+    pl.destroy()                            # Destroy PipeLine instance
 ```
 
 The pseudocode for multiple Ai2d instances is as follows:
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
+from libs.Utils import *
 import os
 from media.media import *
 import nncase_runtime as nn
@@ -403,20 +401,16 @@ if __name__ == "__main__":
     my_ai = MyAIApp(kmodel_path, model_input_size=[320, 320],rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     my_ai.config_preprocess()  # Configure pre-processing
 
-    try:
-        while True:
-            os.exitpoint()                      # Check for exit signal
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # Get current frame data
-                res = my_ai.run(img)            # Infer current frame
-                my_ai.draw_result(pl, res)      # Draw result
-                pl.show_image()                 # Show result
-                gc.collect()                    # Garbage collection
-    except Exception as e:
-        sys.print_exception(e)                  # Print exception information
-    finally:
-        my_ai.deinit()                          # Deinitialize
-        pl.destroy()                            # Destroy PipeLine instance
+    while True:
+        os.exitpoint()                      # Check for exit signal
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # Get current frame data
+            res = my_ai.run(img)            # Infer current frame
+            my_ai.draw_result(pl, res)      # Draw result
+            pl.show_image()                 # Show result
+            gc.collect()                    # Garbage collection
+    my_ai.deinit()                          # Deinitialize
+    pl.destroy()                            # Destroy PipeLine instance
 ```
 
 #### 2.3.3. Custom Pre-processing Task
@@ -424,9 +418,10 @@ if __name__ == "__main__":
 For AI tasks that require rewriting the pre-processing (not using the provided ai2d class, writing pre-processing manually), the pseudocode is as follows:
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
+from libs.Utils import *
 import os
 from media.media import *
 import nncase_runtime as nn
@@ -493,26 +488,22 @@ if __name__ == "__main__":
     my_ai = MyAIApp(kmodel_path, model_input_size=[320, 320],rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     my_ai.config_preprocess()  # Configure pre-processing
 
-    try:
-        while True:
-            os.exitpoint()                      # Check for exit signal
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # Get current frame data
-                res = my_ai.run(img)            # Infer current frame
-                my_ai.draw_result(pl, res)      # Draw result
-                pl.show_image()                 # Show result
-                gc.collect()                    # Garbage collection
-    except Exception as e:
-        sys.print_exception(e)                  # Print exception information
-    finally:
-        my_ai.deinit()                          # Deinitialize
-        pl.destroy()                            # Destroy PipeLine instance
+    while True:
+        os.exitpoint()                      # Check for exit signal
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # Get current frame data
+            res = my_ai.run(img)            # Infer current frame
+            my_ai.draw_result(pl, res)      # Draw result
+            pl.show_image()                 # Show result
+            gc.collect()                    # Garbage collection
+    my_ai.deinit()                          # Deinitialize
+    pl.destroy()                            # Destroy PipeLine instance
 ```
 
 ### Example of Keyword Spotting with Keyword "XiaonanXiaonan"
 
 ```python
-from libs.PipeLine import ScopedTiming
+from libs.Utils import ScopedTiming
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
 from media.pyaudio import *                     # Audio module
@@ -628,9 +619,10 @@ if __name__ == "__main__":
 For AI tasks that do not require pre-processing (direct input inference), the pseudocode is as follows:
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
+from libs.Utils import *
 import os
 from media.media import *
 import nncase_runtime as nn
@@ -698,20 +690,16 @@ if __name__ == "__main__":
     my_ai = MyAIApp(kmodel_path, model_input_size=[320, 320], rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     my_ai.config_preprocess()  # Configure preprocessing
 
-    try:
-        while True:
-            os.exitpoint()                      # Check for exit signal
-            with ScopedTiming("total", 1):
-                img = pl.get_frame()            # Get current frame data
-                res = my_ai.run(img)            # Infer current frame
-                my_ai.draw_result(pl, res)      # Draw result
-                pl.show_image()                 # Show result
-                gc.collect()                    # Garbage collection
-    except Exception as e:
-        sys.print_exception(e)                  # Print exception information
-    finally:
-        my_ai.deinit()                          # Deinitialize
-        pl.destroy()                            # Destroy PipeLine instance
+    while True:
+        os.exitpoint()                      # Check for exit signal
+        with ScopedTiming("total", 1):
+            img = pl.get_frame()            # Get current frame data
+            res = my_ai.run(img)            # Infer current frame
+            my_ai.draw_result(pl, res)      # Draw result
+            pl.show_image()                 # Show result
+            gc.collect()                    # Garbage collection
+    my_ai.deinit()                          # Deinitialize
+    pl.destroy()                            # Destroy PipeLine instance
 ```
 
 For example, in the single-object tracking module (nanotracker.py), the tracking module only needs the output of the template model and real-time inference model as the input for the tracking model, without requiring preprocessing:
@@ -763,9 +751,10 @@ class TrackerApp(AIBase):
 Here is an example of dual-model cascade inference, with the pseudocode as follows:
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.AIBase import AIBase
 from libs.AI2D import Ai2d
+from libs.Utils import *
 import os
 from media.media import *
 import nncase_runtime as nn
@@ -894,21 +883,17 @@ if __name__ == "__main__":
     my_ai = MyApp(kmodel1_path, kmodel2_path, kmodel1_input_size, kmodel2_input_size, rgb888p_size=rgb888p_size, display_size=display_size, debug_mode=0)
     my_ai.config_preprocess()  # Configure preprocessing
 
-    try:
-        while True:
-            os.exitpoint()                      # Check for exit signal
-            with ScopedTiming("total", 1):
-                img = pl.get_frame()            # Get current frame data
-                outputs_1, outputs_2 = my_ai.run(img)  # Infer current frame
-                my_ai.draw_result(pl, outputs_1, outputs_2)  # Draw result
-                pl.show_image()                 # Show result
-                gc.collect()                    # Garbage collection
-    except Exception as e:
-        sys.print_exception(e)                  # Print exception information
-    finally:
-        my_ai.app_1.deinit()                    # Deinitialize
-        my_ai.app_2.deinit()
-        pl.destroy()                            # Destroy PipeLine instance
+    while True:
+        os.exitpoint()                      # Check for exit signal
+        with ScopedTiming("total", 1):
+            img = pl.get_frame()            # Get current frame data
+            outputs_1, outputs_2 = my_ai.run(img)  # Infer current frame
+            my_ai.draw_result(pl, outputs_1, outputs_2)  # Draw result
+            pl.show_image()                 # Show result
+            gc.collect()                    # Garbage collection
+    my_ai.app_1.deinit()                    # Deinitialize
+    my_ai.app_2.deinit()
+    pl.destroy()                            # Destroy PipeLine instance
 ```
 
 For example code, please refer to the license plate detection and recognition: burn the firmware, open the IDE, select File -> Open File, and choose the corresponding script according to the following path: **This PC -> CanMV -> sdcard -> examples -> 05-AI-Demo -> licence_det_rec.py**.
@@ -1472,3 +1457,63 @@ Open the IDE, select File -> Open File, and choose the corresponding script acco
 #### 3.29.3 Demonstration Effect
 
 Please insert headphones or speakers, run the program, and the generated audio will play after completion. Please experience it yourself!
+
+### 3.30 Human body segmentation
+
+#### 3.30.1 demo description
+
+The human body segmentation task divides the entire human body into 15 parts and represents it in different colors.
+
+#### 3.30.2 Code
+
+Open the IDE, select File->Open File, and select the corresponding script to open according to the following path:**This computer -> CanMV->sdcard->examples->05-AI-Demo->body_seg.py**, you can refer to the source code displayed by the IDE. Click the Run button in the lower left corner of the IDE to demonstrate the demo.
+
+### 3.31 Multiple command word spotting
+
+#### 3.31.1 demo description
+
+Multi-command word spotting is an extended version of keyword wakeup, which supports `xiaonanxiaonan`,`go`,`stop`,`wow` the wake-up of four keywords is suitable for scenes controlled by voice commands.
+
+#### 3.31.2 Code
+
+Open the IDE, select File->Open File, and select the corresponding script to open according to the following path:**This computer -> CanMV->sdcard->examples->05-AI-Demo->multi_kws.py**, you can refer to the source code displayed by the IDE. Click the Run button in the lower left corner of the IDE to demonstrate the demo.
+
+### 3.32 Lightweight version of face registration
+
+#### 3.32.1 demo description
+
+The lightweight version of face registration uses a new face recognition model. Compared with the weight model (44M), its model is less than 3M, which is suitable for the K230D face recognition registration process!
+
+#### 3.32.2 Code
+
+Open the IDE, select File->Open File, and select the corresponding script to open according to the following path:**This computer -> CanMV -> sdcard -> examples -> 05-AI-Demo -> face_registration_lite.py**, you can refer to the source code displayed by the IDE. Click the Run button in the lower left corner of the IDE to demonstrate the demo.
+
+### 3.33 Lightweight Face Recognition
+
+#### 3.33.1 demo description
+
+The lightweight version of face recognition uses a new face recognition model. Compared with the weight model (44M), its model is less than 3M, which is suitable for face recognition processes with frame rate requirements or K230D!
+
+#### 3.33.2 Code
+
+Open the IDE, select File->Open File, and select the corresponding script to open according to the following path:**This computer -> CanMV->sdcard->examples->05-AI-Demo->face_recognition_lite.py**, you can refer to the source code displayed by the IDE. Click the Run button in the lower left corner of the IDE to demonstrate the demo.
+
+### 3.34 YOLO11n Oriented Bounding Boxes
+
+#### 3.34.1 demo description
+
+YOLO11n Oriented Bounding Boxes achieves 15 target angle detection, including aircraft, ships, etc.
+
+#### 3.34.2 Code
+
+Open the IDE, select File->Open File, and select the corresponding script to open according to the following path:**This computer -> CanMV->sdcard->examples->05-AI-Demo->yolo11n_obb.py**, you can refer to the source code displayed by the IDE. Click the Run button in the lower left corner of the IDE to demonstrate the demo.
+
+### 3.35 YOLOv8n Oriented Bounding Boxes
+
+#### 3.35.1 demo description
+
+YOLOv8n Oriented Bounding Boxes achieves 15 target angle detection, including aircraft, ships, etc.
+
+#### 3.35.2 Code
+
+Open the IDE, select File->Open File, and select the corresponding script to open according to the following path:**This computer -> CanMV->sdcard->examples->05-AI-Demo->yolov8n_obb.py**, you can refer to the source code displayed by the IDE. Click the Run button in the lower left corner of the IDE to demonstrate the demo.

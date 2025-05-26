@@ -158,17 +158,12 @@ if __name__ == "__main__":
     pl = PipeLine(rgb888p_size=[1920,1080], display_mode=display_mode)
     pl.create()  # 创建PipeLine实例
     display_size = pl.get_display_size()
-    try:
-        while True:
-            os.exitpoint()                      # 检查是否有退出信号
-            with ScopedTiming("total",1):
-                img = pl.get_frame()            # 获取当前帧数据
-                print(img.shape)
-                gc.collect()                    # 垃圾回收
-    except Exception as e:
-        sys.print_exception(e)                  # 打印异常信息
-    finally:
-        pl.destroy()                            # 销毁PipeLine实例
+    while True:
+        with ScopedTiming("total",1):
+            img = pl.get_frame()            # 获取当前帧数据
+            print(img.shape)
+            gc.collect()                    # 垃圾回收
+    pl.destroy()                            # 销毁PipeLine实例
 ```
 
 上述代码中，通过`pl.get_frame()`接口获取一帧分辨率为rgb888p_size的图像，类型为ulab.numpy.ndarray，排布为CHW。基于这段代码，您可以专注于 AI 推理部分的操作。

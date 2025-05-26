@@ -335,8 +335,9 @@ if __name__=="__main__":
 上述代码给出了使用 `YOLOv8` 进行图片推理的代码。
 
 ```python
-from libs.PipeLine import PipeLine, ScopedTiming
+from libs.PipeLine import PipeLine
 from libs.YOLO import YOLOv8
+from libs.Utils import *
 import os,sys,gc
 import ulab.numpy as np
 import image

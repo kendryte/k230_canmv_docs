@@ -35,7 +35,62 @@ def test_time():
 |--------|---------------------------------|
 | - | No return value |
 
-### 2.2 get_colors
+### 2.2 read_json
+
+**Description**
+
+Reads fields from a JSON file based on the JSON file path, primarily used for reading configuration files for deploying online training platform scripts.
+
+**Syntax**  
+
+```python
+import libs.Utils import read_json
+
+json_path="/sdcard/examples/test.json"
+json_data=read_json(json_path)
+```
+
+**Parameters**  
+
+| Parameter Name | Description                          | Input / Output | Notes |
+|----------------|--------------------------------------|----------------|-------|
+| json_path      | Path of the JSON file on the development board   | Input          | Required |
+
+**Return Value**  
+
+| Return Value | Description                            |
+|--------------|-----------------------------------------|
+| dict         | Content of JSON fields                  |
+
+### 2.3 read_image
+
+**Description**
+
+Reads image data based on the image path, used for reading static images during AI inference and providing them to the model for completion of inference.
+
+**Syntax**  
+
+```python
+import libs.Utils import read_image
+
+img_path="/sdcard/examples/test.jpg"
+img_chw,img_rgb888=read_image(img_path)
+```
+
+**Parameters**  
+
+| Parameter Name | Description                          | Input / Output | Notes |
+|----------------|--------------------------------------|----------------|-------|
+| img_path       | Path of the image file on the development board   | Input          | Required |
+
+**Return Value**  
+
+| Return Value | Description                            |
+|--------------|-----------------------------------------|
+| img_chw      | Image data in CHW arrangement in ulab.numpy.ndarray format, which can be used to create an nncase_runtime.tensor for AI model inference |
+| img_rgb888   | Image instance in rgb888 format, which can be used for drawing results |
+
+### 2.4 get_colors
 
 **Description**
 
@@ -62,7 +117,7 @@ colors = get_colors(classes_num)
 |--------|---------------------------------|
 | list[list]  | ARGB color array |
 
-### 2.3 center_crop_param
+### 2.5 center_crop_param
 
 **Description**
 
@@ -91,7 +146,7 @@ top, left, m = center_crop_param(input_size)
 | top     | Distance from the top-left corner of the cropping area to the top border |
 | m       | Side length of the cropping area |
 
-### 2.4 letterbox_pad_param
+### 2.6 letterbox_pad_param
 
 **Description**
 
@@ -124,7 +179,7 @@ left, right, top, bottom, scale = letterbox_pad_param(input_size, output_size)
 | bottom  | Bottom padding value |
 | scale   | Scaling ratio |
 
-### 2.5 center_pad_param
+### 2.7 center_pad_param
 
 **Description**
 
@@ -157,7 +212,7 @@ left, right, top, bottom, scale = center_pad_param(input_size, output_size)
 | bottom  | Bottom padding value |
 | scale   | Scaling ratio |
 
-### 2.6 softmax
+### 2.8 softmax
 
 **Description**
 
@@ -183,3 +238,84 @@ output_data = softmax(input_data)
 | Return Value | Description |
 |--------|---------------------------------|
 | softmax_res    | Probability distribution of classes |
+
+### 2.9 sigmoid
+
+**Description**
+
+The sigmoid function is widely used in binary classification models. Its role is to map any real number to the interval (0, 1), commonly used to convert model outputs into probability values for probability judgment or classification decision-making.
+
+**Syntax**  
+
+```python
+from libs.Utils import sigmoid
+
+input_data = 0.5
+output_data = sigmoid(input_data)
+```
+
+**Parameters**  
+
+| Parameter Name | Description                          | Input / Output | Notes |
+|----------------|--------------------------------------|----------------|-------|
+| input_data     | Any real number                      | Input          | Required |
+
+**Return Value**  
+
+| Return Value | Description                            |
+|--------------|-----------------------------------------|
+| sigmoid_res  | Value or array mapped to the interval (0, 1) |
+
+### 2.10 chw2hwc
+
+**Description**
+
+Converts `ulab.numpy.ndarray` data arranged in CHW format to HWC format, applicable only to 3-dimensional data.
+
+**Syntax**  
+
+```python
+from libs.Utils import chw2hwc
+
+# chw_np is 3D ulab.numpy.ndarray data arranged in CHW format
+hwc_np = chw2hwc(chw_np)
+```
+
+**Parameters**  
+
+| Parameter Name | Description                          | Input / Output | Notes |
+|----------------|--------------------------------------|----------------|-------|
+| chw_np         | 3D ulab.numpy.ndarray data           | Input          | Required |
+
+**Return Value**  
+
+| Return Value | Description                            |
+|--------------|-----------------------------------------|
+| hwc_np       | 3D ulab.numpy.ndarray data arranged in HWC format |
+
+### 2.11 hwc2chw
+
+**Description**
+
+Converts `ulab.numpy.ndarray` data arranged in HWC format to CHW format, applicable only to 3-dimensional data, often used to convert Image instance data for use with AI models.
+
+**Syntax**  
+
+```python
+from libs.Utils import hwc2chw
+
+# hwc_np is 3D ulab.numpy.ndarray data arranged in HWC format
+chw_np = hwc2chw(hwc_np)
+```
+
+**Parameters**  
+
+| Parameter Name | Description                          | Input / Output | Notes |
+|----------------|--------------------------------------|----------------|-------|
+| hwc_np         | 3D ulab.numpy.ndarray data           | Input          | Required |
+
+**Return Value**  
+
+| Return Value | Description                            |
+|--------------|-----------------------------------------|
+| chw_np       | 3D ulab.numpy.ndarray data arranged in CHW format |
