@@ -75,10 +75,10 @@ CanMV-K230 的源码托管在 Github 上，用户可以通过 repo 工具下载�
 mkdir -p ~/canmv_k230 && cd ~/canmv_k230
 
 # 下载 RT-Smart + CanMV 工程
-repo init -u https://github.com/canmv-k230/manifest --repo-url=https://github.com/canmv-k230/git-repo.git
+repo init -u https://github.com/canmv-k230/manifest -b master --repo-url=https://github.com/canmv-k230/git-repo.git --repo-branch stable
 
 # 从 Gitee 下载代码（推荐国内用户，需配置 SSH 密钥）
-# repo init -u git@gitee.com:canmv-k230/manifest.git --repo-url=git@gitee.com:canmv-k230/git-repo.git
+# repo init -u git@gitee.com:canmv-k230/manifest.git -b master --repo-url=git@gitee.com:canmv-k230/git-repo.git --repo-branch stable
 
 # 同步代码
 repo sync
