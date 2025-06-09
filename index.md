@@ -7,6 +7,7 @@ zh/index.md
 zh/userguide/index.md
 zh/example/index.md
 zh/api/index.md
+zh/ai_dev_doc.md
 zh/faq.md
 zh/changelog.md
 ```
