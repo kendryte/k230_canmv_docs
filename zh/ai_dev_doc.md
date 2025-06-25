@@ -280,7 +280,7 @@ nncase 支持从主流深度学习框架导出的以下模型格式：
 
 **架构概览**
 
-![nncase架构](https://developer.canaan-creative.com/api/post/attachment?id=509)
+![nncase架构](https://www.kendryte.com/api/post/attachment?id=509)
 
 nncase 的软件栈主要包括以下两大组成部分：
 
@@ -3073,7 +3073,7 @@ if __name__=="__main__":
 
 Canaan开发者社区模型训练功能是为简化开发流程，提高开发效率开放的训练平台。该平台使用户关注视觉场景的落地实现，更加快捷的完成从数据标注到获得部署包中的KModel模型的过程，并在搭载嘉楠科技Kendryte®系列AIoT芯片中K230、K230D芯片开发板上进行部署。用户仅需上传数据集，简单的配置参数就可以开始训练了。
 
-![plat](https://developer.canaan-creative.com/api/post/attachment?id=600)
+![plat](https://www.kendryte.com/api/post/attachment?id=600)
 
 📌平台地址：**[嘉楠云训练平台](https://www.kendryte.com/zh/training/start)**
 
@@ -3114,7 +3114,7 @@ Canaan开发者社区模型训练功能是为简化开发流程，提高开发�
 
 内容如图所示：
 
-![部署包](https://developer.canaan-creative.com/api/post/attachment?id=597)
+![部署包](https://www.kendryte.com/api/post/attachment?id=597)
 
 其中`mp_deployment_source.zip`即是在K230 MicroPython 镜像上部署的代码包，内部包含部署的配置文件和部署的KModel模型。
 

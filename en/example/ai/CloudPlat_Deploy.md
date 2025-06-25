@@ -6,7 +6,7 @@
 
 The Canaan developer community model training function is an open training platform to simplify the development process and improve development efficiency. The platform allows users to pay attention to the implementation of visual scenes, and complete the process from data annotation to obtaining the KModel model in the deployment package more quickly, and deploy it on the K230 and K230D chip development boards equipped with Canaan Technology Kendryte® series AIoT chips. Users only need to upload the data set and simply configure the parameters to start training.
 
- ![plat](https://developer.canaan-creative.com/api/post/attachment?id=600)
+ ![plat](https://www.kendryte.com/api/post/attachment?id=600)
 
 📌Platform address:**[Canaan Cloud Training Platform](https://www.kendryte.com/zh/training/start)**
 
@@ -47,7 +47,7 @@ After training, you can download the deployment package corresponding to the tra
 
 The content is shown in the picture:
 
- ![Deployment package](https://developer.canaan-creative.com/api/post/attachment?id=597)
+ ![Deployment package](https://www.kendryte.com/api/post/attachment?id=597)
 
 in `mp_deployment_source.zip` that is, the code package deployed on the K230 MicroPython image, which internally contains the deployed configuration files and the deployed KModel model.
 
