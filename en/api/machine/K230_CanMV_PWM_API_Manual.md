@@ -1,110 +1,153 @@
-# 2.9 `PWM` Module API Manual
+# 2.9 `PWM` Module API Manual  
 
-## 1. Overview
+## 1. Overview  
 
-The K230 contains two PWM hardware modules, each with three output channels. The output frequency of each module is adjustable, but the three channels share the same clock, while the duty cycle can be adjusted independently. Therefore, channels 0, 1, and 2 have the same output frequency, and channels 3, 4, and 5 also have the same output frequency. For I/O configuration of channel outputs, please refer to the IOMUX module.
+The K230 integrates two PWM hardware modules, each with three output channels. The output frequency of each module is adjustable, but the three channels share the same clock, while the duty cycle can be independently configured. Therefore, channels 0, 1, and 2 share the same output frequency, and channels 3, 4, and 5 also share the same output frequency. For the I/O configuration of the channel outputs, refer to the IOMUX module.  
 
-## 2. API Introduction
+## 2. API Introduction  
 
-The PWM class is located in the `machine` module.
+The PWM class is located in the `machine` module.  
 
-### 2.1 Example Code
+### 2.1 Example Code  
 
-```python
-from machine import PWM
+```python  
+import time  
+from machine import PWM  
+from machine import FPIOA  
 
-# Initialize channel 0 with an output frequency of 1 kHz, 50% duty cycle, and enable output
-pwm0 = PWM(0, 1000, 50, enable=True)
+# Instantiate FPIOA  
+fpioa = FPIOA()  
 
-# Disable channel 0 output
-pwm0.enable(False)
+# Set PIN42 as PWM channel 0  
+fpioa.set_function(42, fpioa.PWM0)  
 
-# Set channel 0 output frequency to 2 kHz
-pwm0.freq(2000)
+# Instantiate PWM channel 0 with a frequency of 1000Hz and a duty cycle of 50% (enabled by default)  
+pwm0 = PWM(0)  
 
-# Set channel 0 output duty cycle to 10%
-pwm0.duty(10)
+# Adjust the frequency of channel 0 to 2000Hz  
+pwm0.freq(2000)  
 
-# Re-enable channel 0 output
-pwm0.enable(True)
+# Adjust the duty cycle of channel 0 to 50% (32768 / 65535)  
+pwm0.duty_u16(32768)  
+print(pwm0.duty_u16())  
 
-# Release channel 0
-pwm0.deinit()
-```
+# Output for 1 second and then disable  
+time.sleep(1)  
+pwm0.deinit()  
+time.sleep(1)  
 
-### 2.2 Constructor
+# Adjust channel 0 frequency to 10KHz with a duty cycle of 30%  
+pwm0.freq(10000)  
+pwm0.duty(30)  
+print(pwm0.duty())  
 
-```python
-pwm = PWM(channel, freq, duty=50, enable=False)
-```
+# Output for 1 second and then disable  
+time.sleep(1)  
+pwm0.deinit()  
+```  
 
-**Parameters**
+### 2.2 Constructor  
 
-- `channel`: PWM channel number, ranging from [0, 5]
-- `freq`: PWM channel output frequency
-- `duty`: PWM channel output duty cycle, representing the percentage of the high level in the entire period, ranging from [0, 100], optional parameter, default value is 50
-- `enable`: Whether to immediately enable PWM channel output, optional parameter, default value is False
+```python  
+pwm = PWM(channel, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)  
+```  
 
-### 2.3 `freq` Method
+**Parameters**  
 
-```python
-PWM.freq([freq])
-```
+- `channel`: PWM channel number, range [0, 5]  
+- `freq`: PWM channel output frequency  
+- `duty`: PWM channel duty cycle, representing the percentage of high-level duration in the entire period, range [0, 100]  
+- `duty_ns`: PWM channel high-level duration in nanoseconds (`ns`)  
+- `duty_u16`: PWM channel high-level duration, range [0, 65535]  
 
-Get or set the output frequency of the PWM channel.
+> Only one of `duty`, `duty_ns`, or `duty_u16` can be set at a time.  
 
-**Parameters**
+### 2.3 `init` Method  
 
-- `freq`: PWM channel output frequency, optional parameter. If no parameter is passed, the current frequency is returned.
+```python  
+PWM.init(freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)  
+```  
 
-**Return Value**
+**Parameters**  
 
-Returns the current output frequency of the PWM channel or None.
+Refer to [Constructor](#22-constructor).  
 
-### 2.4 `duty` Method
+### 2.4 `deinit` Method  
 
-```python
-PWM.duty([duty])
-```
+```python  
+PWM.deinit()  
+```  
 
-Get or set the duty cycle of the PWM channel.
+Release the resources of the PWM channel.  
 
-**Parameters**
+**Parameters**  
 
-- `duty`: PWM channel output duty cycle, optional parameter. If no parameter is passed, the current duty cycle is returned.
+None  
 
-**Return Value**
+**Return Value**  
 
-Returns the current output duty cycle of the PWM channel or None.
+None  
 
-### 2.5 `enable` Method
+### 2.5 `freq` Method  
 
-```python
-PWM.enable(enable)
-```
+```python  
+PWM.freq([freq])  
+```  
 
-Enable or disable the output of the PWM channel.
+Get or set the output frequency of the PWM channel.  
 
-**Parameters**
+**Parameters**  
 
-- `enable`: Whether to enable PWM channel output.
+- `freq`: PWM channel output frequency (optional). If no argument is provided, returns the current frequency.  
 
-**Return Value**
+**Return Value**  
 
-None
+Returns the current PWM channel output frequency or `None`.  
 
-### 2.6 `deinit` Method
+### 2.6 `duty` Method  
 
-```python
-PWM.deinit()
-```
+```python  
+PWM.duty([duty])  
+```  
 
-Release the resources of the PWM channel.
+Get or set the duty cycle of the PWM channel.  
 
-**Parameters**
+**Parameters**  
 
-None
+- `duty`: PWM channel duty cycle (optional). If no argument is provided, returns the current duty cycle.  
 
-**Return Value**
+**Return Value**  
 
-None
+Returns the current PWM channel duty cycle or `None`.  
+
+### 2.7 `duty_u16` Method  
+
+```python  
+PWM.duty_u16([duty_u16])  
+```  
+
+Get or set the duty cycle of the PWM channel.  
+
+**Parameters**  
+
+- `duty_u16`: PWM channel duty cycle (optional). If no argument is provided, returns the current duty cycle.  
+
+**Return Value**  
+
+Returns the current PWM channel duty cycle or `None`.  
+
+### 2.8 `duty_ns` Method  
+
+```python  
+PWM.duty_ns([duty_ns])  
+```  
+
+Get or set the duty cycle of the PWM channel.  
+
+**Parameters**  
+
+- `duty_ns`: PWM channel duty cycle in nanoseconds (optional). If no argument is provided, returns the current duty cycle.  
+
+**Return Value**  
+
+Returns the current PWM channel duty cycle or `None`.
