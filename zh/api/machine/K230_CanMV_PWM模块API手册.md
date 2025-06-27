@@ -11,41 +11,84 @@ PWM 类位于 `machine` 模块中。
 ### 2.1 示例代码
 
 ```python
+import time
 from machine import PWM
+from machine import FPIOA
 
-# 初始化通道 0，输出频率 1 kHz，占空比 50%，并使能输出
-pwm0 = PWM(0, 1000, 50, enable=True)
+# 实例化FPIOA
+fpioa = FPIOA()
 
-# 禁用通道 0 输出
-pwm0.enable(False)
+# 设置PIN42为PWM通道0
+fpioa.set_function(42, fpioa.PWM0)
 
-# 设置通道 0 输出频率为 2 kHz
+# 实例化PWM通道0，频率为1000Hz，占空比为50%，默认使能输出
+pwm0 = PWM(0)
+
+# 调整通道0频率为2000Hz
 pwm0.freq(2000)
 
-# 设置通道 0 输出占空比为 10%
-pwm0.duty(10)
+# 调整通道0的占空比为 50% (32768 / 65535)
+pwm0.duty_u16(32768)
+print(pwm0.duty_u16())
 
-# 重新启用通道 0 输出
-pwm0.enable(True)
+# 输出1s之后关闭输出
+time.sleep(1)
+pwm0.deinit()
+time.sleep(1)
 
-# 释放通道 0
+# 调整通道0频率为10KHz，占空比为 30%
+pwm0.freq(10000)
+pwm0.duty(30)
+print(pwm0.duty())
+
+# 输出1s之后关闭输出
+time.sleep(1)
 pwm0.deinit()
 ```
 
 ### 2.2 构造函数
 
 ```python
-pwm = PWM(channel, freq, duty=50, enable=False)
+pwm = PWM(channel, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
 ```
 
 **参数**
 
 - `channel`: PWM 通道号，取值范围为 [0, 5]
 - `freq`: PWM 通道输出频率
-- `duty`: PWM 通道输出占空比，表示高电平在整个周期中的百分比，取值范围为 [0, 100]，可选参数，默认值为 50
-- `enable`: PWM 通道输出是否立即使能，可选参数，默认值为 False
+- `duty`: PWM 通道输出占空比，表示高电平在整个周期中的百分比，取值范围为 [0, 100]
+- `duty_ns`: PWM 通道输出高电平的时间，单位为 `ns`
+- `duty_u16`: PWM通道输出高电平的时间，取值范围为 [0,65535]
 
-### 2.3 `freq` 方法
+> `duty` 和 `duty_ns` 以及 `duty_u16` 只能设置其中的一个。
+
+### 2.3 `init` 方法
+
+```python
+PWM.init(freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
+```
+
+**参数**
+
+参考 [构造函数](#22-构造函数)
+
+### 2.4 `deinit` 方法
+
+```python
+PWM.deinit()
+```
+
+释放 PWM 通道的资源。
+
+**参数**
+
+无
+
+**返回值**
+
+无
+
+### 2.5 `freq` 方法
 
 ```python
 PWM.freq([freq])
@@ -61,7 +104,7 @@ PWM.freq([freq])
 
 返回当前 PWM 通道的输出频率或空。
 
-### 2.4 `duty` 方法
+### 2.6 `duty` 方法
 
 ```python
 PWM.duty([duty])
@@ -77,33 +120,45 @@ PWM.duty([duty])
 
 返回当前 PWM 通道的输出占空比或空。
 
-### 2.5 `enable` 方法
+**返回值**
+
+无
+
+### 2.7 `duty_u16` 方法
 
 ```python
-PWM.enable(enable)
+PWM.duty_u16([duty_u16])
 ```
 
-使能或禁用 PWM 通道的输出。
+获取或设置 PWM 通道的输出占空比。
 
 **参数**
 
-- `enable`: 是否使能 PWM 通道输出。
+- `duty_u16`: PWM 通道输出占空比，可选参数。如果不传入参数，则返回当前占空比。
+
+**返回值**
+
+返回当前 PWM 通道的输出占空比或空。
 
 **返回值**
 
 无
 
-### 2.6 `deinit` 方法
+### 2.8 `duty_ns` 方法
 
 ```python
-PWM.deinit()
+PWM.duty_ns([duty_ns])
 ```
 
-释放 PWM 通道的资源。
+获取或设置 PWM 通道的输出占空比。
 
 **参数**
 
-无
+- `duty_ns`: PWM 通道输出占空比，可选参数。如果不传入参数，则返回当前占空比。
+
+**返回值**
+
+返回当前 PWM 通道的输出占空比或空。
 
 **返回值**
 
