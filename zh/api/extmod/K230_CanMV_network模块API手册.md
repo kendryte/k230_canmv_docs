@@ -64,11 +64,31 @@ print(nic.ifconfig())
 
 ```python
 import network
-# 启用 STA 模式并连接到 WiFi 接入点
-nic = network.WLAN(network.STA_IF)
-nic.active(True)
-nic.connect('your-ssid', 'your-password')
-# 配置完成后，即可像往常一样使用 socket
+
+def sta_test():
+    sta=network.WLAN(network.STA_IF)
+    if(sta.active() == False):
+        sta.active(1)
+    # 查看 sta 是否激活
+    print(sta.active())
+    # 查看 sta 状态
+    print(sta.status())
+    #sta 连接 ap
+    print(sta.connect("Canaan","Canaan314"))
+    # 状态
+    print(sta.status())
+    # 查看 ip 配置
+    print(sta.ifconfig())
+    # 查看是否连接
+    print(sta.isconnected())
+    # 断开连接
+    print(sta.disconnect())
+    # 连接 ap
+    print(sta.connect("Canaan","Canaan314"))
+    # 查看状态
+    print(sta.status())
+
+sta_test()
 ```
 
 ### 3.1 构造函数
@@ -105,7 +125,17 @@ nic.connect('your-ssid', 'your-password')
   
 - **WLAN.status([param])**
 
-  返回当前网络连接的状态。当不传参数时，返回详细的连接信息，包括 BSSID、频率、SSID、加密方式、IP 地址等。例如：
+  返回当前网络连接的信息。当不传参数时，返回当前的连接状态。例如：
+
+  ```python
+  # 查看连接状态 等同与 sta.isconnected()
+  print(sta.status())
+
+  # 查看连接的信号质量
+  print(sta.status("rssi"))
+  ```
+
+  支持的配置参数包括：
 
   - `Sta` 模式时
     - `rssi`: 连接信号质量
@@ -124,12 +154,20 @@ nic.connect('your-ssid', 'your-password')
   获取或设置 IP 级别的网络接口参数。无参数调用时，返回包含 IP 地址、子网掩码、网关和 DNS 服务器的四元组；传入参数则设置这些值。例如：
 
   ```python
-  nic.ifconfig(('192.168.0.4', '255.255.255.0', '192.168.0.1', '8.8.8.8'))
+  sta.ifconfig(('192.168.0.4', '255.255.255.0', '192.168.0.1', '8.8.8.8'))
   ```
 
 - **WLAN.config(param)**
 
   获取或设置网络接口的配置参数。支持的参数包括 MAC 地址、SSID、WiFi 通道、是否隐藏 SSID、密码等。设置参数时使用关键字参数语法；查询参数时，传递参数名即可。例如：
+
+  ```python
+  # 查看 auto_reconnect 配置
+  print(sta.config('auto_reconnect'))
+
+  # 设置自动重连
+  sta.config(auto_reconnect = True)
+  ```
 
   支持的配置参数包括：
 
