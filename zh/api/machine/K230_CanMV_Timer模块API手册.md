@@ -12,17 +12,20 @@ Timer 类位于 `machine` 模块中。
 
 ```python
 from machine import Timer
+import time
 
 # 实例化一个软定时器
 tim = Timer(-1)
 
 # 配置定时器，单次模式，周期 100 毫秒，回调函数打印 1
 tim.init(period=100, mode=Timer.ONE_SHOT, callback=lambda t: print(1))
+time.sleep(0.2)
 
 # 配置定时器，周期模式，周期 1000 毫秒，回调函数打印 2
-tim.init(period=1000, mode=Timer.PERIODIC, callback=lambda t: print(2))
+tim.init(freq=1, mode=Timer.PERIODIC, callback=lambda t: print(2))
+time.sleep(2)
 
-# 关闭定时器
+# 释放定时器资源
 tim.deinit()
 ```
 
