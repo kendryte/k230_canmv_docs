@@ -1,12 +1,12 @@
-# 5.5 Utils 模块 API 手册
+# Utils 模块 API 手册
 
-## 1. 概述
+## 概述
 
 本手册旨在提供给开发人员使用 MicroPython 开发 AI Demo 时使用的一些共用处理方法。
 
-## 2. API 介绍
+## API 介绍
 
-### 2.1 计时模块 ScopedTiming
+### 计时模块 ScopedTiming
 
 **描述**
 
@@ -35,7 +35,7 @@ def test_time():
 |--------|---------------------------------|
 | - | 无返回值                        |
 
-### 2.2 read_json
+### read_json
 
 **描述**
 
@@ -62,7 +62,7 @@ json_data=read_json(json_path)
 |--------|---------------------------------|
 | dict  |       json字段内容       |
 
-### 2.3 read_image
+### read_image
 
 **描述**
 
@@ -90,7 +90,7 @@ img_chw,img_rgb888=read_image(img_path)
 | img_chw  |       CHW排布的ulab.numpy.ndarray格式图片数据，可以用于创建nncase_runtime.tensor给AI模型推理       |
 | img_rgb888  |       rgb888格式的Image实例，可以用于绘制结果      |
 
-### 2.4 get_colors
+### get_colors
 
 **描述**
 
@@ -117,7 +117,7 @@ colors=get_colors(classes_num)
 |--------|---------------------------------|
 | list[list]  |       ARGB颜色数组       |
 
-### 2.5 center_crop_param
+### center_crop_param
 
 **描述**
 
@@ -146,7 +146,7 @@ top,left,m=center_crop_param(input_size)
 | top     | 裁左上角距离上边界距离                   |
 | m       | 裁边长                   |
 
-### 2.6 letterbox_pad_param
+### letterbox_pad_param
 
 **描述**
 
@@ -179,7 +179,7 @@ left,right,top,bottom,scale=letterbox_pad_param(input_size,output_size)
 | bottom  |  下侧填充值                     |
 | scale   |  缩放比例                       |
 
-### 2.7 center_pad_param
+### center_pad_param
 
 **描述**
 
@@ -212,7 +212,7 @@ left,right,top,bottom,scale=center_pad_param(input_size,output_size)
 | bottom  |  下侧填充值                     |
 | scale   |  缩放比例                       |
 
-### 2.8 softmax
+### softmax
 
 **描述**
 
@@ -239,7 +239,7 @@ output_data=softmax(input_data)
 |--------|---------------------------------|
 | softmax_res    |       类别的概率分布      |
 
-### 2.9 sigmoid
+### sigmoid
 
 **描述**
 
@@ -266,7 +266,7 @@ output_data = sigmoid(input_data)
 |--------|---------------------------------|
 | sigmoid_res|映射到 (0, 1) 区间的数值或数组  |
 
-### 2.10 chw2hwc
+### chw2hwc
 
 **描述**
 
@@ -293,7 +293,7 @@ hwc_np = chw2hwc(chw_np)
 |--------|---------------------------------|
 | hwc_np| 排布维HWC的3维ulab.numpy.ndarray数据 |
 
-### 2.11 hwc2chw
+### hwc2chw
 
 **描述**
 

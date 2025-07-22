@@ -1,8 +1,8 @@
-# 5. K230 YOLO 大作战
+# K230 YOLO 大作战
 
-## 1. YOLOv5水果分类
+## YOLOv5水果分类
 
-### 1.1 YOLOv5源码及训练环境搭建
+### YOLOv5源码及训练环境搭建
 
 `YOLOv5` 训练环境搭建请参考[ultralytics/yolov5: YOLOv5 🚀 in PyTorch > ONNX > CoreML > TFLite (github.com)](https://github.com/ultralytics/yolov5)
 
@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 如果您已搭建好环境，请忽略此步骤。
 
-### 1.2 训练数据准备
+### 训练数据准备
 
 请下载提供的示例数据集，示例数据集中包含以三类水果（apple，banana，orange）为场景分别提供了分类、检测和分割数据集。将数据集解压到 `yolov5` 目录下，请使用 `fruits_cls` 作为水果分类任务的数据集。示例数据集中还包含一个旋转目标检测的桌面签字笔场景数据集 `yolo_pen_obb`，该任务在k230 的 `YOLOv5` 模块中不支持。
 
@@ -28,7 +28,7 @@ unzip datasets.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-### 1.3 使用YOLOv5训练水果分类模型
+### 使用YOLOv5训练水果分类模型
 
 在 `yolov5` 目录下执行命令，使用 `yolov5` 训练三类水果分类模型：
 
@@ -36,7 +36,7 @@ unzip datasets.zip
 python classify/train.py --model yolov5n-cls.pt --data datasets/fruits_cls --epochs 100 --batch-size 8 --imgsz 224 --device '0'
 ```
 
-### 1.4 转换水果分类kmodel
+### 转换水果分类kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -86,19 +86,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-### 1.5 在k230上使用MicroPython部署模型
+### 在k230上使用MicroPython部署模型
 
-#### 1.5.1 烧录镜像并安装CanMV IDE
+#### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](../../userguide/how_to_build.md)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-#### 1.5.2 模型文件拷贝
+#### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-#### 1.5.3 YOLOv5 模块
+#### YOLOv5 模块
 
 `YOLOv5` 类集成了 `YOLOv5` 的三种任务，包括分类(classify)、检测(detect)、分割(segment)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLOv5` 的 kmodel 推理流程。
 
@@ -125,7 +125,7 @@ from libs.YOLO import YOLOv5
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-#### 1.5.4 部署模型实现图片推理
+#### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -155,7 +155,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 1.5.5 部署模型实现视频推理
+#### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -194,9 +194,9 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-## 2. YOLOv5水果检测
+## YOLOv5水果检测
 
-### 2.1 YOLOv5源码及训练环境搭建
+### YOLOv5源码及训练环境搭建
 
 `YOLOv5` 训练环境搭建请参考[ultralytics/yolov5: YOLOv5 🚀 in PyTorch > ONNX > CoreML > TFLite (github.com)](https://github.com/ultralytics/yolov5)
 
@@ -208,7 +208,7 @@ pip install -r requirements.txt
 
 如果您已搭建好环境，请忽略此步骤。
 
-### 2.2 训练数据准备
+### 训练数据准备
 
 请下载提供的示例数据集，示例数据集中包含以三类水果（apple，banana，orange）为场景分别提供了分类、检测和分割数据集。将数据集解压到 `yolov5` 目录下，请使用 `fruits_yolo` 作为水果检测任务的数据集。示例数据集中还包含一个旋转目标检测的桌面签字笔场景数据集 `yolo_pen_obb`，该任务在k230 的 `YOLOv5` 模块中不支持。
 
@@ -222,7 +222,7 @@ unzip datasets.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-### 2.3 使用YOLOv5训练水果检测模型
+### 使用YOLOv5训练水果检测模型
 
 在 `yolov5` 目录下执行命令，使用 `yolov5` 训练三类水果检测模型：
 
@@ -230,7 +230,7 @@ unzip datasets.zip
 python train.py --weight yolov5n.pt --cfg models/yolov5n.yaml --data datasets/fruits_yolo.yaml --epochs 300 --batch-size 8 --imgsz 320 --device '0'
 ```
 
-### 2.4 转换水果检测kmodel
+### 转换水果检测kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -280,19 +280,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-### 2.5 在k230上使用MicroPython部署模型
+### 在k230上使用MicroPython部署模型
 
-#### 2.5.1 烧录镜像并安装CanMV IDE
+#### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](../../userguide/how_to_build.md)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-#### 2.5.2 模型文件拷贝
+#### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-#### 2.5.3 YOLOv5 模块
+#### YOLOv5 模块
 
 `YOLOv5` 类集成了 `YOLOv5` 的三种任务，包括分类(classify)、检测(detect)、分割(segment)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLOv5` 的 kmodel 推理流程。
 
@@ -319,7 +319,7 @@ from libs.YOLO import YOLOv5
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-#### 2.5.4  部署模型实现图片推理
+#### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -350,7 +350,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 2.5.5  部署模型实现视频推理
+#### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -390,9 +390,9 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-## 3. YOLOv5水果分割
+## YOLOv5水果分割
 
-### 3.1 YOLOv5源码及训练环境搭建
+### YOLOv5源码及训练环境搭建
 
 `YOLOv5` 训练环境搭建请参考[ultralytics/yolov5: YOLOv5 🚀 in PyTorch > ONNX > CoreML > TFLite (github.com)](https://github.com/ultralytics/yolov5)
 
@@ -404,7 +404,7 @@ pip install -r requirements.txt
 
 如果您已搭建好环境，请忽略此步骤。
 
-### 3.2 训练数据准备
+### 训练数据准备
 
 请下载提供的示例数据集，示例数据集中包含以三类水果（apple，banana，orange）为场景分别提供了分类、检测和分割数据集。将数据集解压到 `yolov5` 目录下，请使用 `fruits_seg` 作为水果分割任务的数据集。示例数据集中还包含一个旋转目标检测的桌面签字笔场景数据集 `yolo_pen_obb`，该任务在k230 的 `YOLOv5` 模块中不支持。
 
@@ -418,7 +418,7 @@ unzip datasets.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-### 3.3 使用YOLOv5训练水果分割模型
+### 使用YOLOv5训练水果分割模型
 
 在 `yolov5` 目录下执行命令，使用 `yolov5` 训练三类水果分割模型：
 
@@ -426,7 +426,7 @@ unzip datasets.zip
 python segment/train.py --weight yolov5n-seg.pt --cfg models/segment/yolov5n-seg.yaml --data datasets/fruits_seg.yaml --epochs 100 --batch-size 8 --imgsz 320 --device '0'
 ```
 
-### 3.4 转换水果分割kmodel
+### 转换水果分割kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -475,19 +475,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-### 3.5 在k230上使用MicroPython部署模型
+### 在k230上使用MicroPython部署模型
 
-#### 3.5.1 烧录镜像并安装CanMV IDE
+#### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](../../userguide/how_to_build.md)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-#### 3.5.2 模型文件拷贝
+#### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-#### 3.5.3 YOLOv5 模块
+#### YOLOv5 模块
 
 `YOLOv5` 类集成了 `YOLOv5` 的三种任务，包括分类(classify)、检测(detect)、分割(segment)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLOv5` 的 kmodel 推理流程。
 
@@ -514,7 +514,7 @@ from libs.YOLO import YOLOv5
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-#### 3.5.4 部署模型实现图片推理
+#### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -546,7 +546,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 3.5.5 部署模型实现视频推理
+#### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -587,9 +587,9 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-## 4. YOLOv8水果分类
+## YOLOv8水果分类
 
-### 4.1 YOLOv8源码及训练环境搭建
+### YOLOv8源码及训练环境搭建
 
 `YOLOv8` 训练环境搭建请参考[ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics)
 
@@ -600,7 +600,7 @@ pip install ultralytics
 
 如果您已搭建好环境，请忽略此步骤。
 
-### 4.2 训练数据准备
+### 训练数据准备
 
 您可以先创建一个新文件夹 `yolov8`， 请下载提供的示例数据集，示例数据集中包含以三类水果（apple，banana，orange）为场景分别提供了分类、检测和分割数据集。将数据集解压到 `yolov8` 目录下，请使用 `fruits_cls` 作为水果分类任务的数据集。示例数据集中还包含一个旋转目标检测的桌面签字笔场景数据集 `yolo_pen_obb`。
 
@@ -614,7 +614,7 @@ unzip datasets.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-### 4.3 使用YOLOv8训练水果分类模型
+### 使用YOLOv8训练水果分类模型
 
 在 `yolov8` 目录下执行命令，使用 `yolov8` 训练三类水果分类模型：
 
@@ -622,7 +622,7 @@ unzip datasets.zip
 yolo classify train data=datasets/fruits_cls model=yolov8n-cls.pt epochs=100 imgsz=224
 ```
 
-### 4.4 转换水果分类kmodel
+### 转换水果分类kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -672,19 +672,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-### 4.5 在k230上使用MicroPython部署模型
+### 在k230上使用MicroPython部署模型
 
-#### 4.5.1 烧录镜像并安装CanMV IDE
+#### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](../../userguide/how_to_build.md)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-#### 4.5.2 模型文件拷贝
+#### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-#### 4.5.3 YOLOv8 模块
+#### YOLOv8 模块
 
 `YOLOv8` 类集成了 `YOLOv8` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLOv8` 的 kmodel 推理流程。
 
@@ -711,7 +711,7 @@ from libs.YOLO import YOLOv8
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-#### 4.5.4 部署模型实现图片推理
+#### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -741,7 +741,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 4.5.5 部署模型实现视频推理
+#### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -782,9 +782,9 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-## 5. YOLOv8水果检测
+## YOLOv8水果检测
 
-### 5.1 YOLOv8源码及训练环境搭建
+### YOLOv8源码及训练环境搭建
 
 `YOLOv8` 训练环境搭建请参考[ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics)
 
@@ -795,7 +795,7 @@ pip install ultralytics
 
 如果您已搭建好环境，请忽略此步骤。
 
-### 5.2 训练数据准备
+### 训练数据准备
 
 您可以先创建一个新文件夹 `yolov8`， 请下载提供的示例数据集，示例数据集中包含以三类水果（apple，banana，orange）为场景分别提供了分类、检测和分割数据集。将数据集解压到 `yolov8` 目录下，请使用 `fruits_yolo` 作为水果检测任务的数据集。示例数据集中还包含一个旋转目标检测的桌面签字笔场景数据集 `yolo_pen_obb`。
 
@@ -809,7 +809,7 @@ unzip datasets.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-### 5.3 使用YOLOv8训练水果检测模型
+### 使用YOLOv8训练水果检测模型
 
 在 `yolov8` 目录下执行命令，使用 `yolov8` 训练三类水果检测模型：
 
@@ -817,7 +817,7 @@ unzip datasets.zip
 yolo detect train data=datasets/fruits_yolo.yaml model=yolov8n.pt epochs=300 imgsz=320
 ```
 
-### 5.4 转换水果检测kmodel
+### 转换水果检测kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -867,19 +867,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-### 5.5 在k230上使用MicroPython部署模型
+### 在k230上使用MicroPython部署模型
 
-#### 5.5.1 烧录镜像并安装CanMV IDE
+#### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](../../userguide/how_to_build.md)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-#### 5.5.2 模型文件拷贝
+#### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-#### 5.5.3 YOLOv8 模块
+#### YOLOv8 模块
 
 `YOLOv8` 类集成了 `YOLOv8` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLOv8` 的 kmodel 推理流程。
 
@@ -906,7 +906,7 @@ from libs.YOLO import YOLOv8
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-#### 5.5.4 部署模型实现图片推理
+#### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -937,7 +937,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 5.5.5 部署模型实现视频推理
+#### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -979,9 +979,9 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-## 6. YOLOv8水果分割
+## YOLOv8水果分割
 
-### 6.1 YOLOv8源码及训练环境搭建
+### YOLOv8源码及训练环境搭建
 
 `YOLOv8` 训练环境搭建请参考[ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics)
 
@@ -992,7 +992,7 @@ pip install ultralytics
 
 如果您已搭建好环境，请忽略此步骤。
 
-### 6.2 训练数据准备
+### 训练数据准备
 
 您可以先创建一个新文件夹 `yolov8`， 请下载提供的示例数据集，示例数据集中包含以三类水果（apple，banana，orange）为场景分别提供了分类、检测和分割数据集。将数据集解压到 `yolov8` 目录下，请使用 `fruits_seg` 作为水果分割任务的数据集。示例数据集中还包含一个旋转目标检测的桌面签字笔场景数据集 `yolo_pen_obb`。
 
@@ -1006,7 +1006,7 @@ unzip datasets.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-### 6.3 使用YOLOv8训练水果分割模型
+### 使用YOLOv8训练水果分割模型
 
 在 `yolov8` 目录下执行命令，使用 `yolov8` 训练三类水果分割模型：
 
@@ -1014,7 +1014,7 @@ unzip datasets.zip
 yolo segment train data=datasets/fruits_seg.yaml model=yolov8n-seg.pt epochs=100 imgsz=320
 ```
 
-### 6.4 转换水果分割kmodel
+### 转换水果分割kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -1064,19 +1064,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-### 6.5 在k230上使用MicroPython部署模型
+### 在k230上使用MicroPython部署模型
 
-#### 6.5.1 烧录镜像并安装CanMV IDE
+#### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](../../userguide/how_to_build.md)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-#### 6.5.2 模型文件拷贝
+#### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-#### 6.5.3 YOLOv8 模块
+#### YOLOv8 模块
 
 `YOLOv8` 类集成了 `YOLOv8` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLOv8` 的 kmodel 推理流程。
 
@@ -1103,7 +1103,7 @@ from libs.YOLO import YOLOv8
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-#### 6.5.4 部署模型实现图片推理
+#### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -1135,7 +1135,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 6.5.5 部署模型实现视频推理
+#### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -1176,9 +1176,9 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-## 7. YOLOv8旋转目标检测
+## YOLOv8旋转目标检测
 
-### 7.1 YOLOv8源码及训练环境搭建
+### YOLOv8源码及训练环境搭建
 
 `YOLOv8` 训练环境搭建请参考[ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics)
 
@@ -1189,7 +1189,7 @@ pip install ultralytics
 
 如果您已搭建好环境，请忽略此步骤。
 
-### 7.2 训练数据准备
+### 训练数据准备
 
 您可以先创建一个新文件夹 `yolov8`， 请下载提供的示例数据集，示例数据集中包含以一种旋转目标检测类别（pen）为场景分别提供了数据集。将数据集解压到 `yolov8` 目录下，请使用 `yolo_pen_obb` 作为旋转目标检测任务的数据集。
 
@@ -1203,7 +1203,7 @@ unzip datasets.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-### 7.3 使用YOLOv8训练旋转目标检测模型
+### 使用YOLOv8训练旋转目标检测模型
 
 在 `yolov8` 目录下执行命令，使用 `yolov8` 训练一类旋转目标检测模型：
 
@@ -1211,7 +1211,7 @@ unzip datasets.zip
 yolo obb train data=datasets/pen_obb.yaml model=yolov8n-obb.pt epochs=100 imgsz=320
 ```
 
-### 4.4 转换旋转目标检测kmodel
+### 转换旋转目标检测kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -1261,19 +1261,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-### 7.5 在k230上使用MicroPython部署模型
+### 在k230上使用MicroPython部署模型
 
-#### 7.5.1 烧录镜像并安装CanMV IDE
+#### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](../../userguide/how_to_build.md)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-#### 7.5.2 模型文件拷贝
+#### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-#### 7.5.3 YOLOv8 模块
+#### YOLOv8 模块
 
 `YOLOv8` 类集成了 `YOLOv8` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLOv8` 的 kmodel 推理流程。
 
@@ -1300,7 +1300,7 @@ from libs.YOLO import YOLOv8
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-#### 7.5.4 部署模型实现图片推理
+#### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -1331,7 +1331,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 7.5.5 部署模型实现视频推理
+#### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -1373,9 +1373,9 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-## 8. YOLO11水果分类
+## YOLO11水果分类
 
-### 8.1 YOLO11源码及训练环境搭建
+### YOLO11源码及训练环境搭建
 
 `YOLO11` 训练环境搭建请参考[ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics)
 
@@ -1386,7 +1386,7 @@ pip install ultralytics
 
 如果您已搭建好环境，请忽略此步骤。
 
-### 8.2 训练数据准备
+### 训练数据准备
 
 您可以先创建一个新文件夹 `yolo11`， 请下载提供的示例数据集，示例数据集中包含以三类水果（apple，banana，orange）为场景分别提供了分类、检测和分割数据集。将数据集解压到 `yolo11` 目录下，请使用 `fruits_cls` 作为水果分类任务的数据集。示例数据集中还包含一个旋转目标检测的桌面签字笔场景数据集 `yolo_pen_obb`。
 
@@ -1400,7 +1400,7 @@ unzip datasets.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-### 8.3 使用YOLO11训练水果分类模型
+### 使用YOLO11训练水果分类模型
 
 在 `yolo11` 目录下执行命令，使用 `yolo11` 训练三类水果分类模型：
 
@@ -1408,7 +1408,7 @@ unzip datasets.zip
 yolo classify train data=datasets/fruits_cls model=yolo11n-cls.pt epochs=100 imgsz=224
 ```
 
-### 8.4 转换水果分类kmodel
+### 转换水果分类kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -1458,19 +1458,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-### 8.5 在k230上使用MicroPython部署模型
+### 在k230上使用MicroPython部署模型
 
-#### 8.5.1 烧录镜像并安装CanMV IDE
+#### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](../../userguide/how_to_build.md)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-#### 8.5.2 模型文件拷贝
+#### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-#### 8.5.3 YOLO11 模块
+#### YOLO11 模块
 
 `YOLO11` 类集成了 `YOLO11` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLO11` 的 kmodel 推理流程。
 
@@ -1497,7 +1497,7 @@ from libs.YOLO import YOLO11
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-#### 8.5.4 部署模型实现图片推理
+#### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -1527,7 +1527,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 8.5.5 部署模型实现视频推理
+#### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -1566,9 +1566,9 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-## 9. YOLO11水果检测
+## YOLO11水果检测
 
-### 9.1 YOLO11源码及训练环境搭建
+### YOLO11源码及训练环境搭建
 
 `YOLO11` 训练环境搭建请参考[ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics)
 
@@ -1579,7 +1579,7 @@ pip install ultralytics
 
 如果您已搭建好环境，请忽略此步骤。
 
-### 9.2 训练数据准备
+### 训练数据准备
 
 您可以先创建一个新文件夹 `yolo11`， 请下载提供的示例数据集，示例数据集中包含以三类水果（apple，banana，orange）为场景分别提供了分类、检测和分割数据集。将数据集解压到 `yolo11` 目录下，请使用 `fruits_yolo` 作为水果检测任务的数据集。示例数据集中还包含一个旋转目标检测的桌面签字笔场景数据集 `yolo_pen_obb`。
 
@@ -1593,7 +1593,7 @@ unzip datasets.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-### 9.3 使用YOLO11训练水果检测模型
+### 使用YOLO11训练水果检测模型
 
 在 `yolo11` 目录下执行命令，使用 `yolo11` 训练三类水果检测模型：
 
@@ -1601,7 +1601,7 @@ unzip datasets.zip
 yolo detect train data=datasets/fruits_yolo.yaml model=yolo11n.pt epochs=300 imgsz=320
 ```
 
-### 9.4 转换水果检测kmodel
+### 转换水果检测kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -1651,19 +1651,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-### 9.5 在k230上使用MicroPython部署模型
+### 在k230上使用MicroPython部署模型
 
-#### 9.5.1 烧录镜像并安装CanMV IDE
+#### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](../../userguide/how_to_build.md)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-#### 9.5.2 模型文件拷贝
+#### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-#### 9.5.3 YOLO11 模块
+#### YOLO11 模块
 
 `YOLO11` 类集成了 `YOLO11` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLO11` 的 kmodel 推理流程。
 
@@ -1690,7 +1690,7 @@ from libs.YOLO import YOLO11
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-#### 9.5.4 部署模型实现图片推理
+#### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -1721,7 +1721,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 9.5.5 部署模型实现视频推理
+#### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -1763,9 +1763,9 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-## 10. YOLO11水果分割
+## YOLO11水果分割
 
-### 10.1 YOLO11源码及训练环境搭建
+### YOLO11源码及训练环境搭建
 
 `YOLO11` 训练环境搭建请参考[ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics)
 
@@ -1776,7 +1776,7 @@ pip install ultralytics
 
 如果您已搭建好环境，请忽略此步骤。
 
-### 10.2 训练数据准备
+### 训练数据准备
 
 您可以先创建一个新文件夹 `yolo11`， 请下载提供的示例数据集，示例数据集中包含以三类水果（apple，banana，orange）为场景分别提供了分类、检测和分割数据集。将数据集解压到 `yolo11` 目录下，请使用 `fruits_seg` 作为水果分割任务的数据集。示例数据集中还包含一个旋转目标检测的桌面签字笔场景数据集 `yolo_pen_obb`。
 
@@ -1790,7 +1790,7 @@ unzip datasets.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-### 10.3 使用YOLO11训练水果分割模型
+### 使用YOLO11训练水果分割模型
 
 在 `yolo11` 目录下执行命令，使用 `yolo11` 训练三类水果分割模型：
 
@@ -1798,7 +1798,7 @@ unzip datasets.zip
 yolo segment train data=datasets/fruits_seg.yaml model=yolo11n-seg.pt epochs=100 imgsz=320
 ```
 
-### 10.4 转换水果分割kmodel
+### 转换水果分割kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -1848,19 +1848,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-### 10.5 在k230上使用MicroPython部署模型
+### 在k230上使用MicroPython部署模型
 
-#### 10.5.1 烧录镜像并安装CanMV IDE
+#### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](../../userguide/how_to_build.md)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-#### 10.5.2 模型文件拷贝
+#### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-#### 10.5.3 YOLO11 模块
+#### YOLO11 模块
 
 `YOLO11` 类集成了 `YOLO11` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLO11` 的 kmodel 推理流程。
 
@@ -1887,7 +1887,7 @@ from libs.YOLO import YOLO11
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-#### 10.5.4 部署模型实现图片推理
+#### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -1919,7 +1919,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 10.5.5 部署模型实现视频推理
+#### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -1962,9 +1962,9 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-## 11. YOLO11旋转目标检测
+## YOLO11旋转目标检测
 
-### 11.1 YOLO11源码及训练环境搭建
+### YOLO11源码及训练环境搭建
 
 `YOLO11` 训练环境搭建请参考[ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics)
 
@@ -1975,7 +1975,7 @@ pip install ultralytics
 
 如果您已搭建好环境，请忽略此步骤。
 
-### 11.2 训练数据准备
+### 训练数据准备
 
 您可以先创建一个新文件夹 `yolo11`， 请下载提供的示例数据集，示例数据集中包含以单类旋转笔检测（pen）为场景分别提供了旋转目标检测数据集。将数据集解压到 `yolo11` 目录下，请使用 `yolo_pen_obb` 作为旋转目标检测任务的数据集。
 
@@ -1989,7 +1989,7 @@ unzip datasets.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-### 11.3 使用YOLO11旋转目标检测模型
+### 使用YOLO11旋转目标检测模型
 
 在 `yolo11` 目录下执行命令，使用 `yolo11` 训练单类旋转目标检测模型：
 
@@ -1997,7 +1997,7 @@ unzip datasets.zip
 yolo obb train data=datasets/pen_obb.yaml model=yolo11n-obb.pt epochs=100 imgsz=320
 ```
 
-### 11.4 转换旋转目标检测kmodel
+### 转换旋转目标检测kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -2047,19 +2047,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-### 11.5 在k230上使用MicroPython部署模型
+### 在k230上使用MicroPython部署模型
 
-#### 11.5.1 烧录镜像并安装CanMV IDE
+#### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](../../userguide/how_to_build.md)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-#### 11.5.2 模型文件拷贝
+#### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-#### 11.5.3 YOLO11 模块
+#### YOLO11 模块
 
 `YOLO11` 类集成了 `YOLO11` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLO11` 的 kmodel 推理流程。
 
@@ -2086,7 +2086,7 @@ from libs.YOLO import YOLO11
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-#### 11.5.4 部署模型实现图片推理
+#### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -2117,7 +2117,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 11.5.5 部署模型实现视频推理
+#### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -2159,7 +2159,7 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-## 12. kmodel转换验证
+## kmodel转换验证
 
 不同模型下载的模型转换脚本工具包( `test_yolov5/test_yolov8/test_yolo11` )中包含 kmodel 验证的脚本。
 
@@ -2178,9 +2178,9 @@ if __name__=="__main__":
 >
 >将安装 `nncase` 的 `Python` 环境下的 `Lib/site-packages` 路径添加到环境变量的系统变量 `Path` 中。
 
-### 12.1 对比onnx输出和kmodel输出
+### 对比onnx输出和kmodel输出
 
-#### 12.1.1 生成输入bin文件
+#### 生成输入bin文件
 
 进入到 `classify/detect/segment` 目录下，执行下述命令：
 
@@ -2190,7 +2190,7 @@ python save_bin.py --image ../test_images/test.jpg --input_width 224 --input_hei
 
 执行脚本将在当前目录下生成bin文件 `onnx_input_float32.bin` 和 `kmodel_input_uint8.bin` ，作为 onnx 模型和 kmodel 模型的输入文件。
 
-#### 12.1.2 对比输出
+#### 对比输出
 
 将转换的模型 `best.onnx`  和 `best.kmodel`  拷贝到 `calssify/detect/segment`  目录下，然后执行验证脚本，执行命令如下：
 
@@ -2211,7 +2211,7 @@ output 0 cosine similarity : 0.9999530911445618
 output 1 cosine similarity : 0.9983288645744324
 ```
 
-### 12.2 onnx模型推理图片
+### onnx模型推理图片
 
 进入 `classify/detect/segment` 目录下，打开 `test_cls_onnx.py`，修改 `main()` 中的参数以适配你的模型，然后执行命令：
 
@@ -2223,7 +2223,7 @@ python test_cls_onnx.py
 
 > 检测任务和分割任务类似，分别执行 `test_det_onnx.py` 和 `test_seg_onnx.py` 。
 
-### 12.3 kmodel模型推理图片
+### kmodel模型推理图片
 
 进入 `classify/detect/segment` 目录下，打开 `test_cls_kmodel.py` , 修改 `main()` 中的参数以适配你的模型，然后执行命令：
 
@@ -2235,15 +2235,15 @@ python test_cls_kmodel.py
 
 > 检测任务、分割任务和旋转目标检测任务类似，分别执行 `test_det_kmodel.py` 、`test_seg_kmodel.py`、`test_obb_kmodel.py` 。
 
-## 13. 调优指南
+## 调优指南
 
 当模型在 K230 上运行效果不理想时，一般考虑从阈值设置、模型大小、输入分辨率、量化方法、训练数据质量等方面入手进行调优。
 
-### 13.1 调整阈值
+### 调整阈值
 
 调整置信度阈值、nms 阈值、mask 阈值，在不改变模型的前提下调优部署效果。在检测任务中，提高置信度阈值和降低nms阈值会导致检测框的数量减少，反之，降低置信度阈值和提高nms阈值会导致检测框的数量增多。在分割任务中mask阈值会影响分割区域的划分。您可以根据实际场景先进行调整，找到较优效果下的阈值。
 
-### 13.2 更换模型
+### 更换模型
 
 选择不同大小的模型以平衡速度、内存占用和准确性。可以根据实际需求选择n/s/m/l的模型进行训练和转换。
 
@@ -2299,7 +2299,7 @@ python test_cls_kmodel.py
 | yolo11m | 320×320    | obb  | 14fps       | 11fps        |
 | yolo11l | 320×320    | obb  | 12fps       | 9fps         |
 
-### 13.3 更改输入分辨率
+### 更改输入分辨率
 
 更改模型的输入分辨率以适配您的场景，较大的分辨率可能可以提升部署效果，但会耗费更多的推理时间。
 
@@ -2335,7 +2335,7 @@ python test_cls_kmodel.py
 | yolo11n | 320×320    | obb  | 40fps       | 25fps        |
 | yolo11n | 640×640    | obb  | 12fps       | 9fps         |
 
-### 13.4 修改量化方法
+### 修改量化方法
 
 模型转换脚本中提供了3种量化参数，对 `data` 和 `weights` 进行 `uint8` 量化或 `int16` 量化。
 
@@ -2363,11 +2363,11 @@ python test_cls_kmodel.py
 | yolo11n | 320×320    | det  | [uint8,int16]          |  38fps       |  24fps       |
 | yolo11n | 320×320    | det  | [int16,uint8]          |  32fps       |  22fps       |
 
-### 13.5 提高数据质量
+### 提高数据质量
 
 如果训练结果较差，请提高数据集质量，从数据量、合理的数据分布、标注质量、训练参数设置等方面优化。
 
-### 13.6 调优技巧
+### 调优技巧
 
 - 量化参数在YOLOv8和YOLO11上对效果的影响比YOLOv5大，对比不同量化模型可见；
 - 输入分辨率比模型大小对推理速度的影响更大；

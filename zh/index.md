@@ -1,6 +1,6 @@
 # CanMV-K230 快速入门指南
 
-## 1. CanMV-K230 介绍
+## CanMV-K230 介绍
 
 CanMV-K230 开发板基于嘉楠科技 Kendryte ® 系列 AIoT 芯片中的最新一代 AIoT SoC K230 系列芯片。该芯片采用全新的多异构单元加速计算架构，集成了 2 个 RISC-V 高能效计算核心，内置新一代 KPU（ Knowledge Process Unit）智能计算单元，具备多精度 AI 算力，广泛支持通用的 AI 计算框架，部分典型网络的利用率超过了 70%。
 
@@ -8,31 +8,31 @@ CanMV-K230 开发板基于嘉楠科技 Kendryte ® 系列 AIoT 芯片中的最�
 
 ![K230_block_diagram](./images/K230_block_diagram.png)
 
-## 2. 快速上手
+## 快速上手
 
-### 2.1 获取开发板
+### 获取开发板
 
 | 开发板          | 照片                                                   | 简介                                   |
 |-----------------|--------------------------------------------------------|----------------------------------------|
 | [CanMV-K230](./userguide/boards/canmv_k230.md)   | ![CanMV-K230](images/CanMV-K230_front.png) | 基于 K230，外置 512MB LPDDR，内存更大   |
 | [BPI-K230D-ZERO](./userguide/boards/canmv_k230d.md) | ![Bpi-K230D-Zero](images/BPI_K230D_Zero.png)| 基于 K230D，芯片内置 128MB LPDDR4，开发板尺寸小巧 |
 
-### 2.2 烧录固件
+### 烧录固件
 
 用户可在 [Github](https://github.com/kendryte/canmv_k230/releases) 或 [嘉楠开发者社区](https://www.kendryte.com/resource?selected=0-0-3-0) 下载固件。下载对应开发板的固件完成后，
 请参考[固件下载指南](./userguide/how_to_burn_firmware.md#2-烧录固件) 将固件烧录到开发板。
 
-### 2.3 下载 IDE
+### 下载 IDE
 
 CanMV-K230 支持使用 CanMV-IDE 进行开发，用户可通过 IDE 运行代码，查看运行结果以及预览图像。详细使用方法请参考 [IDE 下载指南](./userguide/how_to_use_ide.md#1-概述)
 
-### 2.4 运行 Demo
+### 运行 Demo
 
 CanMV-K230 固件中预置了大量 Demo 程序，用户无需从网络下载即可体验。使用 IDE 打开虚拟 U 盘中的示例即可快速运行。
 
 请参考 [如何运行 Demo 程序](./userguide/how_to_run_examples.md#2-运行示例程序)
 
-## 3. 摄像头图像预览
+## 摄像头图像预览
 
 使用摄像头捕捉图像并通过 HDMI 输出显示：
 
@@ -90,7 +90,7 @@ finally:
     MediaManager.deinit()
 ```
 
-## 4. AI Demo
+## AI Demo
 
 这是一个人脸检测 demo
 

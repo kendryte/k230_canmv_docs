@@ -1,12 +1,12 @@
-# 5.3 AIBase 模块 API 手册
+# AIBase 模块 API 手册
 
-## 1. 概述
+## 概述
 
 本手册旨在指导开发人员使用 MicroPython 开发 AI Demo 时，构建完整的 AI 推理流程，实现从加载模型、预处理、推理、获取模型输出、后处理的功能。该模块封装了单个模型的推理过程，将预处理、推理、获取输出操作封装在框架内，用户在开发 AI 应用时只需要关注预处理配置和后处理过程即可。
 
-## 2. API 介绍
+## API 介绍
 
-### 2.1 init
+### init
 
 **描述**
 
@@ -35,7 +35,7 @@ aibase=AIBase(kmodel_path="**.kmodel", model_input_size=[224,224], rgb888p_size=
 |--------|---------------------------------|---|
 | AIBase | AIBase实例                  | 该类一般作为父类被子类继承，基于该类编写不同场景的 AI Demo 类 |
 
-### 2.2 get_kmodel_inputs_num
+### get_kmodel_inputs_num
 
 **描述**
 
@@ -53,7 +53,7 @@ aibase.get_kmodel_inputs_num()
 |--------|--------------------------------|
 | inputs_num     |  kmodel输入数目         |
 
-### 2.3 get_kmodel_outputs_num
+### get_kmodel_outputs_num
 
 **描述**
 
@@ -71,7 +71,7 @@ aibase.get_kmodel_outputs_num()
 |--------|--------------------------------|
 | outputs_num     |  kmodel输出数目        |
 
-### 2.3 preprocess
+### preprocess
 
 **描述**
 
@@ -95,7 +95,7 @@ aibase.preprocess(input_np)
 |--------|---------------------------------|
 | input_tensors   | ai2d预处理后得到的输入tensor列表 |
 
-### 2.4 inference
+### inference
 
 **描述**
 
@@ -113,7 +113,7 @@ results=aibase.inference()
 |--------|---------------------------------|
 | results| kmodel推理输出的列表，每个输出为 `ulab.numpy.ndarray` 格式 |
 
-### 2.5 postprocess
+### postprocess
 
 **描述**
 
@@ -131,7 +131,7 @@ aibase.postprocess()
 |--------|---------------------------------|
 | 无    |                                  |
 
-### 2.6 run
+### run
 
 **描述**
 
@@ -155,7 +155,7 @@ aibase.run(input_np)
 |--------|---------------------------------|
 | 无    |                                  |
 
-### 2.7 deinit
+### deinit
 
 **描述**
 
@@ -173,7 +173,7 @@ aibase.deinit()
 |--------|---------------------------------|
 | 无    |                                  |
 
-## 3. 示例程序
+## 示例程序
 
 ```{attention}
 AIBase 类基本上不单独使用，其作为 AI Demo 应用开发的父类，提供基础接口，子类继承 AIBase， 按照任务类型重写部分方法实现具体场景的开发。开发时需要在子类定义 draw_result 方法按照任务绘制结果。 
@@ -304,7 +304,7 @@ if __name__ == "__main__":
         pl.destroy()                            # 销毁PipeLine实例
 ```
 
-## 4. 开发Tips
+## 开发Tips
 
 对于开发中常见的数据类型转换，这里给出对应的示例供参考。
 

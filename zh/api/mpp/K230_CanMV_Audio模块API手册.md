@@ -1,12 +1,12 @@
-# 3.3 `音频`模块 API 手册
+# `音频`模块 API 手册
 
-## 1. 概述
+## 概述
 
 本手册旨在详细介绍 CanMV 音频模块，指导开发人员如何通过调用 Python API 接口实现音频的采集与播放功能。
 
-## 2. API 介绍
+## API 介绍
 
-### 2.1 mpp.wave
+### mpp.wave
 
 `wave` 模块提供了一种简便的方法来读取和处理 WAV 文件。使用 `wave.open` 函数可以打开 WAV 文件并返回相应的类对象。
 
@@ -15,7 +15,7 @@
 
 该模块与 `pyaudio` 模块结合使用，可以轻松实现 WAV 文件音频的播放与采集及保存 WAV 音频文件。
 
-#### 2.1.1 open
+#### open
 
 **描述**
 
@@ -41,11 +41,11 @@ def open(f, mode=None)
 | Wave_read 或 Wave_write 类对象   | 成功       |
 | 其他                           | 失败，抛出异常 |
 
-#### 2.1.2 wave.Wave_read
+#### wave.Wave_read
 
 `Wave_read` 类提供获取 WAV 文件的元数据（如采样率、采样点、声道数和采样精度）以及从文件读取 WAV 音频数据的方法。
 
-##### 2.1.2.1 get_channels
+##### get_channels
 
 **描述**
 
@@ -68,7 +68,7 @@ def get_channels(self)
 | >0     | 成功       |
 | 0      | 失败       |
 
-##### 2.1.2.2 get_sampwidth
+##### get_sampwidth
 
 **描述**
 
@@ -91,7 +91,7 @@ def get_sampwidth(self)
 | >0 （有效范围 [1, 2, 3, 4] 分别对应采样精度 [8, 16, 24, 32]） | 成功       |
 | 0                                          | 失败       |
 
-##### 2.1.2.3 get_framerate
+##### get_framerate
 
 **描述**
 
@@ -114,7 +114,7 @@ def get_framerate(self)
 | >0 （有效范围 (8000~192000)） | 成功       |
 | 0                  | 失败       |
 
-##### 2.1.2.4 read_frames
+##### read_frames
 
 **描述**
 
@@ -138,11 +138,11 @@ def read_frames(self, nframes)
 |----------------|------------|
 | bytes 字节序列  |            |
 
-#### 2.1.3 wave.Wave_write
+#### wave.Wave_write
 
 `Wave_write` 类提供设置 WAV 文件的元数据（如采样率、采样点、声道数和采样精度）以及保存 PCM 音频数据到 WAV 文件的方法。
 
-##### 2.1.3.1 set_channels
+##### set_channels
 
 **描述**
 
@@ -164,7 +164,7 @@ def set_channels(self, nchannels)
 
 无
 
-##### 2.1.3.2 set_sampwidth
+##### set_sampwidth
 
 **描述**
 
@@ -186,7 +186,7 @@ def set_sampwidth(self, sampwidth)
 
 无
 
-##### 2.1.3.3 set_framerate
+##### set_framerate
 
 **描述**
 
@@ -208,7 +208,7 @@ def set_framerate(self, framerate)
 
 无
 
-##### 2.1.3.4 write_frames
+##### write_frames
 
 **描述**
 
@@ -230,15 +230,15 @@ def write_frames(self, data)
 
 无
 
-### 2.2 mpp.pyaudio
+### mpp.pyaudio
 
-`pyaudio` 模块用于音频处理，负责采集和播放二进制 PCM 音频数据。如需播放 WAV 格式文件或将采集到的数据保存为 WAV 文件，需与 `mpp.wave` 库结合使用，详见 [示例程序](#3-示例程序) 部分。
+`pyaudio` 模块用于音频处理，负责采集和播放二进制 PCM 音频数据。如需播放 WAV 格式文件或将采集到的数据保存为 WAV 文件，需与 `mpp.wave` 库结合使用，详见 [示例程序](#示例程序) 部分。
 
-#### 2.2.1 pyaudio.PyAudio
+#### pyaudio.PyAudio
 
 负责管理多路音频输入和输出通路，每路通路均以流（ Stream）类对象体现。
 
-##### 2.2.1.1 open
+##### open
 
 **描述**
 
@@ -261,7 +261,7 @@ def open(self, *args, **kwargs)
 | py:class:`Stream`    | 成功       |
 | 其他                 | 失败，抛出异常 |
 
-##### 2.2.1.2 close
+##### close
 
 **描述**
 
@@ -285,7 +285,7 @@ def close(self, stream)
 
 该函数会调用 Stream 对象中的 `close` 方法，并将 Stream 对象从 PyAudio 对象中删除。因此，该函数可以不调用，直接调用 Stream.close 方法即可。
 
-##### 2.2.1.3 terminate
+##### terminate
 
 **描述**
 
@@ -309,11 +309,11 @@ def terminate(self)
 
 该函数会调用 Stream 对象中的 `close` 方法，并将 Stream 对象从 PyAudio 对象中删除。因此，该函数可以不调用，直接调用 Stream.close 方法即可。
 
-#### 2.2.2 pyaudio.Stream
+#### pyaudio.Stream
 
 `Stream` 类对象用于管理一路音频输入或输出通路。
 
-##### 2.2.2.1 `__init__`
+##### `__init__`
 
 **描述**
 
@@ -360,7 +360,7 @@ def __init__(self,
 
 无
 
-##### 2.2.2.2 start_stream
+##### start_stream
 
 **描述**
 
@@ -380,7 +380,7 @@ def start_stream(self)
 
 无
 
-##### 2.2.2.3 stop_stream
+##### stop_stream
 
 **描述**
 
@@ -400,7 +400,7 @@ def stop_stream(self)
 
 无
 
-##### 2.2.2.4 read
+##### read
 
 **描述**
 
@@ -424,7 +424,7 @@ def read(self, frames)
 |----------------|------------|
 | bytes          | 读取的音频数据 |
 
-##### 2.2.2.5 write
+##### write
 
 **描述**
 
@@ -446,7 +446,7 @@ def write(self, data)
 
 无
 
-##### 2.2.2.6 volume
+##### volume
 
 **描述**
 
@@ -470,7 +470,7 @@ def volume(self,vol = None, channel = LEFT_RIGHT)
 设置音量时，返回值：无
 获取音量时，返回值：‌tuple
 
-##### 2.2.2.7 enable_audio3a
+##### enable_audio3a
 
 **描述**
 
@@ -492,7 +492,7 @@ def enable_audio3a(self, audio3a_value)
 
 无
 
-##### 2.2.2.8 audio3a_send_far_echo_frame
+##### audio3a_send_far_echo_frame
 
 **描述**
 
@@ -515,9 +515,9 @@ audio3a_send_far_echo_frame(self, frame_data,data_len)
 
 无
 
-### 3. 示例程序
+### 示例程序
 
-#### 3.1 播放 WAV 文件示例
+#### 播放 WAV 文件示例
 
 ```python
 import pyaudio
@@ -549,7 +549,7 @@ def play_wav(file_path):
     p.terminate()
 ```
 
-#### 3.2 采集音频并保存为 WAV 文件示例
+#### 采集音频并保存为 WAV 文件示例
 
 ```python
 import pyaudio
@@ -588,6 +588,6 @@ def record_wav(file_path, duration):
     wf.close()
 ```
 
-### 4. 总结
+### 总结
 
 通过本手册，开发者可以轻松地利用 CanMV 音频模块实现音频的播放与采集功能。该模块结合了 `wave` 和 `pyaudio` 库的优势，提供了便捷的接口和清晰的 API 文档，便于快速开发和应用音频相关项目。

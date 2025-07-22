@@ -1,12 +1,12 @@
-# 1. nncase_runtime 模块使用说明
+# nncase_runtime 模块使用说明
 
-## 1. 概述
+## 概述
 
 此文档介绍 CanMV nncase_runtime 模块，指导开发人员使用 MicroPython 调用 `KPU` 和 `AI2D` 模块。
 
-## 2. 功能介绍
+## 功能介绍
 
-### 2.1. 导入库
+### 导入库
 
 在使用nncase_runtime模块之前，需要导入相关库：
 
@@ -15,7 +15,7 @@ import nncase_runtime as nn
 import ulab.numpy as np
 ```
 
-### 2.2. KPU 初始化
+### KPU 初始化
 
 初始化模型推理模块：
 
@@ -23,7 +23,7 @@ import ulab.numpy as np
 kpu = nn.kpu()
 ```
 
-### 2.3. AI2D初始化
+### AI2D初始化
 
 初始化图像处理模块：
 
@@ -31,7 +31,7 @@ kpu = nn.kpu()
 ai2d = nn.ai2d()
 ```
 
-### 2.4. 读取模型
+### 读取模型
 
 读取模型有两种方式：通过文件路径或二进制数据。
 
@@ -45,9 +45,9 @@ with open("test.kmodel", "rb") as f:
     kpu.load_kmodel(data)
 ```
 
-### 2.5. 单独使用 KPU 进行推理
+### 单独使用 KPU 进行推理
 
-#### 2.5.1. 设置模型输入
+#### 设置模型输入
 
 在模型推理之前，需要设置对应的模型输入数据：
 
@@ -61,7 +61,7 @@ kpu.set_input_tensor(1, kpu_input_1)
 kpu.set_input_tensor(2, kpu_input_2)
 ```
 
-#### 2.5.2. 执行推理并获取推理结果
+#### 执行推理并获取推理结果
 
 执行推理并获取结果：
 
@@ -72,11 +72,11 @@ result = kpu.get_output_tensor(i)  # 返回第i个输出tensor
 data = result.to_numpy()  # 将输出tensor转换为numpy对象
 ```
 
-### 2.6. 使用 AI2D+KPU 进行推理
+### 使用 AI2D+KPU 进行推理
 
 使用 AI2D 对摄像头采集的数据进行预处理，然后使用 KPU 进行推理。有关摄像头等输入设备的配置，请参考[AI Demo说明文档](./AI_Demo说明文档.md)。
 
-#### 2.6.1. 配置 AI2D 参数
+#### 配置 AI2D 参数
 
 AI2D 功能包括`crop`、`shift`、`pad`、`resize`、`affine`。根据需求配置相应参数，未使用的功能可忽略。
 
@@ -94,7 +94,7 @@ ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pi
 ai2d_builder = ai2d.build([1, 3, 224, 224], [1, 3, 256, 256])
 ```
 
-#### 2.6.2. AI2D+KPU 推理
+#### AI2D+KPU 推理
 
 执行 AI2D 与 KPU 结合的推理：
 
@@ -114,7 +114,7 @@ result = kpu.get_output_tensor(i)  # 返回第i个输出tensor
 data = result.to_numpy()  # 将输出tensor转换为numpy对象
 ```
 
-### 2.7. 释放内存
+### 释放内存
 
 确保在程序结束前，所有`global`变量的引用计数为0，以避免内存泄漏。也可以在程序开始时调用`gc.collect()`，释放未被释放的内存。
 
@@ -139,6 +139,6 @@ gc.collect()
 nn.shrink_memory_pool()
 ```
 
-## 3. 总结
+## 总结
 
 本模块提供了使用 KPU 和 AI2D 进行深度学习推理的基本框架。开发人员可以根据具体需求配置模型和参数，执行图像处理和推理任务，并注意内存管理以提高程序的稳定性和性能。

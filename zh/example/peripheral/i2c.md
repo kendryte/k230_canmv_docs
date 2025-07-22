@@ -1,6 +1,6 @@
 # I2C 使用教程(主机模式)
 
-## 1. 概述
+## 概述
 
 I2C（Inter-Integrated Circuit）是一种二线式通信协议，通过 SDA 和 SCL 两条线路进行数据传输。
 
@@ -18,7 +18,7 @@ K230 芯片内部集成5个硬件 I2C 控制器，支持下列通信模式：
 > 1. 与官方 API 相比，K230 所有 I2C API 函数不支持 `stop=False` 参数, 即每个上层 API 调用后均会发送一个 I2C STOP 信号，相当于 `stop=True`。
 > 1. 不提供 start(), stop(), readinto(), write() 4个底层 I2C API 的直接调用。
 
-## 2. I2C 使用示例
+## I2C 使用示例
 
 ### 常规 I2C 操作 API
 
@@ -156,7 +156,7 @@ i2c.readfrom_mem_into(0x50, 0x0000, buf, addrsize=16)
 i2c.writeto_mem(0x3b, 0xff, b'\x80', mem_size=8)  # 页地址 0xFF = 0x80
 ```
 
-## 3. 常见问题 FAQ
+## 常见问题 FAQ
 
 ### Q1: `i2c.scan()` 没有返回设备？
 
@@ -185,7 +185,7 @@ K230 采用 **7 位地址模式**，而某些设备手册或示例中使用的�
 * 电路中是否添加了 4.7k \~ 10k 的上拉电阻
 * 所连接的 I2C 设备是否供电正常
 
-## 4. 延伸阅读
+## 延伸阅读
 
 * [FPIOA 模块教程](./fpioa.md)
 * [K230 I2C API 手册](../../api/machine/K230_CanMV_I2C模块API手册.md)

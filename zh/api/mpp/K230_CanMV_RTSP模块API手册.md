@@ -1,10 +1,10 @@
-# 3.9 `RTSP` 模块 API 手册
+# `RTSP` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 本文档旨在详细介绍 K230_CanMV RTSP 模块 API 的使用方法和功能。 RTSP 模块专用于创建和管理 RTSP 服务器，支持视频和音频数据的发送与接收。
 
-## 2. API 介绍
+## API 介绍
 
 多媒体模块提供以下 RTSP 接口：
 
@@ -22,7 +22,7 @@
 
 这些接口可以用于创建和管理 RTSP 服务器、创建和销毁 RTSP 会话、向服务器发送视频和音频数据，以及获取用于流媒体的 RTSP URL。
 
-### 2.1 multimedia.rtspserver_create
+### multimedia.rtspserver_create
 
 **描述**
 用于创建 RTSP 服务器。
@@ -44,7 +44,7 @@ rtspserver_create()
 | 0       | 创建成功                        |
 | 非 0    | 创建失败                        |
 
-### 2.2 multimedia.rtspserver_destroy
+### multimedia.rtspserver_destroy
 
 **描述**
 用于销毁 RTSP 服务器。
@@ -66,7 +66,7 @@ rtspserver_destroy()
 | 0       | 销毁成功                        |
 | 非 0    | 销毁失败                        |
 
-### 2.3 multimedia.rtspserver_init
+### multimedia.rtspserver_init
 
 **描述**
 初始化 RTSP 服务器。
@@ -92,7 +92,7 @@ rtspserver_init(port)
 rtspserver_init(8554)
 ```
 
-### 2.4 multimedia.rtspserver_deinit
+### multimedia.rtspserver_deinit
 
 **描述**
 反初始化 RTSP 服务器。
@@ -116,7 +116,7 @@ rtspserver_deinit()
 rtspserver_deinit()
 ```
 
-### 2.5 multimedia.rtspserver_createsession
+### multimedia.rtspserver_createsession
 
 **描述**
 创建 RTSP 会话。
@@ -144,7 +144,7 @@ rtspserver_createsession(session_name, video_type, enable_audio)
 rtspserver_createsession("session1", "h264", True)
 ```
 
-### 2.6 multimedia.rtspserver_destroysession
+### multimedia.rtspserver_destroysession
 
 **描述**
 销毁 RTSP 会话。
@@ -168,7 +168,7 @@ rtspserver_destroysession(session_name)
 rtspserver_destroysession("session1")
 ```
 
-### 2.7 multimedia.rtspserver_getrtspurl
+### multimedia.rtspserver_getrtspurl
 
 **描述**
 获取 RTSP URL。
@@ -196,7 +196,7 @@ url = rtspserver_getrtspurl()
 print(url)
 ```
 
-### 2.8 multimedia.rtspserver_start
+### multimedia.rtspserver_start
 
 **描述**
 启动 RTSP 服务器。
@@ -220,7 +220,7 @@ rtspserver_start()
 rtspserver_start()
 ```
 
-### 2.9 multimedia.rtspserver_stop
+### multimedia.rtspserver_stop
 
 **描述**
 停止 RTSP 服务器。
@@ -244,7 +244,7 @@ rtspserver_stop()
 rtspserver_stop()
 ```
 
-### 2.10 multimedia.rtspserver_sendvideodata
+### multimedia.rtspserver_sendvideodata
 
 **描述**
 向 RTSP 服务器发送视频数据。
@@ -273,7 +273,7 @@ rtspserver_sendvideodata(session_name, data, size, timestamp)
 rtspserver_sendvideodata("session1", video_data, video_size, video_timestamp)
 ```
 
-### 2.11 multimedia.rtspserver_sendaudiodata
+### multimedia.rtspserver_sendaudiodata
 
 **描述**
 向 RTSP 服务器发送音频数据。
@@ -302,7 +302,7 @@ rtspserver_sendaudiodata(session_name, data, size, timestamp)
 rtspserver_sendaudiodata("session1", audio_data, audio_size, audio_timestamp)
 ```
 
-## 3. 示例程序
+## 示例程序
 
 ```python
 # 示例：演示如何通过 RTSP 服务器向网络流媒体发送视频和音频数据。

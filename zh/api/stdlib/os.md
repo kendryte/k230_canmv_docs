@@ -1,14 +1,14 @@
-# 1.5 `uos` – 基本操作系统服务
+# `uos` – 基本操作系统服务
 
 该模块提供了部分 CPython 操作系统模块的功能子集。有关详细信息，请参阅原始 CPython 文档：[os](https://docs.python.org/3.5/library/os.html#module-os)。
 
 `uos` 模块包含用于文件系统的访问与挂载、终端重定向与复制，以及诸如 `uname` 和 `urandom` 等系统信息和随机数生成函数。
 
-## 1. 函数
+## 函数
 
 ### 基础功能
 
-#### 1.1 `uname`
+#### `uname`
 
 ```python
 uos.uname()
@@ -22,7 +22,7 @@ uos.uname()
 - `version`  – MicroPython 版本及构建日期。
 - `machine`  – 硬件标识符（如主板型号、CPU 类型等）。
 
-#### 1.2 `urandom`
+#### `urandom`
 
 ```python
 uos.urandom(n)
@@ -30,7 +30,7 @@ uos.urandom(n)
 
 生成并返回包含 `n` 个随机字节的字节对象。随机字节尽可能由硬件随机数生成器提供。
 
-#### 1.3 `cpu_usage`
+#### `cpu_usage`
 
 ```python
 uos.cpu_usage()
@@ -40,7 +40,7 @@ uos.cpu_usage()
 
 ### 文件系统操作
 
-#### 1.4 `chdir`
+#### `chdir`
 
 ```python
 uos.chdir(path)
@@ -48,7 +48,7 @@ uos.chdir(path)
 
 更改当前工作目录。
 
-#### 1.5 `getcwd`
+#### `getcwd`
 
 ```python
 uos.getcwd()
@@ -56,7 +56,7 @@ uos.getcwd()
 
 获取当前工作目录的路径。
 
-#### 1.6 `ilistdir`
+#### `ilistdir`
 
 ```python
 uos.ilistdir([dir])
@@ -69,7 +69,7 @@ uos.ilistdir([dir])
 - `inode`：文件系统的 inode 值，对于不支持 inode 的文件系统则为 `0`。
 - `size`（可选）：文件大小，若无法获取则为 `-1`。
 
-#### 1.7 `listdir`
+#### `listdir`
 
 ```python
 uos.listdir([dir])
@@ -77,7 +77,7 @@ uos.listdir([dir])
 
 列出指定目录中的所有条目。如果未指定目录，则列出当前目录。
 
-#### 1.8 `mkdir`
+#### `mkdir`
 
 ```python
 uos.mkdir(path)
@@ -85,7 +85,7 @@ uos.mkdir(path)
 
 在指定路径创建一个新目录。
 
-#### 1.9 `remove`
+#### `remove`
 
 ```python
 uos.remove(path)
@@ -93,7 +93,7 @@ uos.remove(path)
 
 删除指定路径的文件。
 
-#### 1.10 `rmdir`
+#### `rmdir`
 
 ```python
 uos.rmdir(path)
@@ -101,7 +101,7 @@ uos.rmdir(path)
 
 删除指定路径的目录。
 
-#### 1.11 `rename`
+#### `rename`
 
 ```python
 uos.rename(old_path, new_path)
@@ -109,7 +109,7 @@ uos.rename(old_path, new_path)
 
 重命名指定路径的文件或目录。
 
-#### 1.12 `stat`
+#### `stat`
 
 ```python
 uos.stat(path)
@@ -117,7 +117,7 @@ uos.stat(path)
 
 返回指定路径的文件或目录的状态信息。
 
-#### 1.13 `statvfs`
+#### `statvfs`
 
 ```python
 uos.statvfs(path)
@@ -138,7 +138,7 @@ uos.statvfs(path)
 
 > 目前仅 `f_bsize`， `f_blocks` 和 `f_bfree` 有效
 
-#### 1.14 `sync`
+#### `sync`
 
 ```python
 uos.sync()
@@ -146,7 +146,7 @@ uos.sync()
 
 同步所有文件系统，将挂起的写操作写入存储设备。
 
-#### 1.15 `dupterm`
+#### `dupterm`
 
 ```python
 uos.dupterm(stream_object, index = 0)

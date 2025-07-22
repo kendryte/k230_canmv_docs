@@ -1,14 +1,14 @@
-# 2.12 `Timer` 模块 API 手册
+# `Timer` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 K230 内部集成了 6 个 Timer 硬件模块，最小定时周期为 1 毫秒（ms）。
 
-## 2. API 介绍
+## API 介绍
 
 Timer 类位于 `machine` 模块中。
 
-### 2.1 示例代码
+### 示例代码
 
 ```python
 from machine import Timer
@@ -29,7 +29,7 @@ time.sleep(2)
 tim.deinit()
 ```
 
-### 2.2 构造函数
+### 构造函数
 
 ```python
 timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)
@@ -43,7 +43,7 @@ timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)
 - `period`: 定时器运行周期，单位为毫秒（ms）（可选参数）。
 - `callback`: 超时回调函数，必须设置并应带有一个参数。
 
-### 2.3 `init` 方法
+### `init` 方法
 
 ```python
 Timer.init(mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)
@@ -62,7 +62,7 @@ Timer.init(mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)
 
 无
 
-### 2.4 `deinit` 方法
+### `deinit` 方法
 
 ```python
 Timer.deinit()

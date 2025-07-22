@@ -1,4 +1,4 @@
-# 2. Micropython特有库
+# Micropython特有库
 
 ```{toctree}
 :maxdepth: 1

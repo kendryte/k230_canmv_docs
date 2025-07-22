@@ -1,8 +1,8 @@
-# 3.11 `图像处理` API 手册
+# `图像处理` API 手册
 
 此模块移植自 `openmv`，功能基本一致。详情请参考 [官方文档](https://docs.openmv.io/library/omv.image.html)。本文列出与官方 API 的差异部分以及新增 API，同时包含部分原生 API 的参考。
 
-## 1. 类 `Image`
+## 类 `Image`
 
 `Image` 类是机器视觉处理中的基础对象。此类支持从 Micropython GC、MMZ、系统堆、VB 区域等内存区域创建图像对象。此外，还可以通过引用外部内存直接创建图像（ALLOC_REF）。未使用的图像对象会在垃圾回收时自动释放，也可以手动释放内存。
 
@@ -28,7 +28,7 @@
 - **ALLOC_VB**：视频缓冲区
 - **ALLOC_REF**：使用引用对象的内存，不分配新内存
 
-### 1.1 构造函数
+### 构造函数
 
 ```python
 image.Image(path, alloc=ALLOC_MMZ, cache=True, phyaddr=0, virtaddr=0, poolid=0, data=None)
@@ -72,7 +72,7 @@ del img
 gc.collect()
 ```
 
-### 1.2 `phyaddr`
+### `phyaddr`
 
 获取图像数据的物理内存地址。
 
@@ -80,7 +80,7 @@ gc.collect()
 image.phyaddr()
 ```
 
-### 1.3 `virtaddr`
+### `virtaddr`
 
 获取图像数据的虚拟内存地址。
 
@@ -88,7 +88,7 @@ image.phyaddr()
 image.virtaddr()
 ```
 
-### 1.4 `poolid`
+### `poolid`
 
 获取图像的 VB 池 ID。
 
@@ -96,7 +96,7 @@ image.virtaddr()
 image.poolid()
 ```
 
-### 1.5 `to_rgb888`
+### `to_rgb888`
 
 将图像转换为 RGB888 格式，返回新图像对象。
 
@@ -104,7 +104,7 @@ image.poolid()
 image.to_rgb888(x_scale=1.0, y_scale=1.0, roi=None, rgb_channel=-1, alpha=256, color_palette=None, alpha_palette=None, hint=0, alloc=ALLOC_MMZ, cache=True, phyaddr=0, virtaddr=0, poolid=0)
 ```
 
-### 1.6 `copy_from`
+### `copy_from`
 
 将 `src_img` 的内容复制到当前图像对象中。
 
@@ -112,7 +112,7 @@ image.to_rgb888(x_scale=1.0, y_scale=1.0, roi=None, rgb_channel=-1, alpha=256, c
 image.copy_from(src_img)
 ```
 
-### 1.7 `copy_to`
+### `copy_to`
 
 将当前图像对象内容复制到 `dst_img`。
 
@@ -120,7 +120,7 @@ image.copy_from(src_img)
 image.copy_to(dst_img)
 ```
 
-### 1.8 `to_numpy_ref`
+### `to_numpy_ref`
 
 将图像对象转换为 NumPy 数组，返回的 NumPy 数组与原图像对象共享内存。
 
@@ -130,7 +130,7 @@ image.to_numpy_ref()
 
 支持的格式：GRAYSCALE、RGB565、ARGB8888、RGB888、RGBP888。
 
-### 1.9 `draw_string_advanced`
+### `draw_string_advanced`
 
 增强版 `draw_string`，支持中文显示，并允许用户通过 `font` 参数自定义字体。
 
@@ -138,9 +138,9 @@ image.to_numpy_ref()
 image.draw_string_advanced(x, y, char_size, str, [color, font])
 ```
 
-### 1.10 实现有差异的方法
+### 实现有差异的方法
 
-#### 1.10.1  移除 `crop` 参数的 API
+#### 移除 `crop` 参数的 API
 
 如下这些 API 的 `crop` 参数无效，增加了内存分配方式参数，并总是返回新图像对象。
 
@@ -155,23 +155,23 @@ image.draw_string_advanced(x, y, char_size, str, [color, font])
 - `crop` 方法
 - `scale` 方法
 
-#### 1.10.2 画图 API
+#### 画图 API
 
 新增对 `ARGB8888` 和 `RGB888` 格式的支持，其他格式不支持。
 
-#### 1.10.3 BINARY API
+#### BINARY API
 
 `binary` 新增了内存分配方式参数，仅在 `copy=True` 时生效。
 
-#### 1.10.4 POOL API
+#### POOL API
 
 `mean_pooled` 和 `midpoint_pooled` 方法新增了内存分配方式参数。
 
-#### 1.10.5 其他图像算法
+#### 其他图像算法
 
 这些算法仅支持原生图像格式，`RGB888` 格式需转换后方可使用。
 
-### 1.11 `width`
+### `width`
 
 ```python
 image.width()
@@ -179,7 +179,7 @@ image.width()
 
 返回图像的宽度，以像素为单位。
 
-### 1.12 `height`
+### `height`
 
 ```python
 image.height()
@@ -187,7 +187,7 @@ image.height()
 
 返回图像的高度，以像素为单位。
 
-### 1.13 `format`
+### `format`
 
 ```python
 image.format()
@@ -199,7 +199,7 @@ image.format()
 - `sensor.RGB565`：RGB图像
 - `sensor.JPEG`：JPEG压缩图像
 
-### 1.14 `size`
+### `size`
 
 ```python
 image.size()
@@ -207,7 +207,7 @@ image.size()
 
 返回图像的大小，以字节为单位。
 
-### 1.15 `get_pixel`
+### `get_pixel`
 
 ```python
 image.get_pixel(x, y[, rgbtuple])
@@ -223,7 +223,7 @@ image.get_pixel(x, y[, rgbtuple])
 
 > `get_pixel()` 和 `set_pixel()` 是操作Bayer模式图像的唯一方法。Bayer模式图像是一种特殊的格式，在偶数行包含 `R/G/R/G/...`，奇数行包含 `G/B/G/B/...` 像素，每个像素占用8位。
 
-### 1.16 `set_pixel`
+### `set_pixel`
 
 ```python
 image.set_pixel(x, y, pixel)
@@ -238,7 +238,7 @@ image.set_pixel(x, y, pixel)
 
 > `get_pixel()` 和 `set_pixel()` 是操作Bayer模式图像的唯一方法。
 
-### 1.17 `mean_pool`
+### `mean_pool`
 
 ```python
 image.mean_pool(x_div, y_div)
@@ -250,7 +250,7 @@ image.mean_pool(x_div, y_div)
 
 不支持压缩图像和Bayer图像。
 
-### 1.18 `mean_pooled`
+### `mean_pooled`
 
 ```python
 image.mean_pooled(x_div, y_div)
@@ -258,7 +258,7 @@ image.mean_pooled(x_div, y_div)
 
 与 `mean_pool()` 类似，但返回的是一个新的图像副本。
 
-### 1.19 `midpoint_pool`
+### `midpoint_pool`
 
 ```python
 image.midpoint_pool(x_div, y_div[, bias=0.5])
@@ -268,7 +268,7 @@ image.midpoint_pool(x_div, y_div[, bias=0.5])
 
 - 参数 `bias=0.0` 时返回区域的最小值，`bias=1.0` 时返回区域的最大值。
 
-### 1.20 `midpoint_pooled`
+### `midpoint_pooled`
 
 ```python
 image.midpoint_pooled(x_div, y_div[, bias=0.5])
@@ -276,7 +276,7 @@ image.midpoint_pooled(x_div, y_div[, bias=0.5])
 
 类似 `midpoint_pool()`，但返回一个新的图像副本。
 
-### 1.21 `to_grayscale`
+### `to_grayscale`
 
 ```python
 image.to_grayscale([copy=False])
@@ -284,7 +284,7 @@ image.to_grayscale([copy=False])
 
 将图像转换为灰度图像。如果 `copy=True`，会在堆上创建新的图像副本。返回图像对象。
 
-### 1.22 `to_rgb565`
+### `to_rgb565`
 
 ```python
 image.to_rgb565([copy=False])
@@ -292,7 +292,7 @@ image.to_rgb565([copy=False])
 
 将图像转换为RGB565格式彩色图像。如果 `copy=True`，会在堆上创建新的图像副本。返回图像对象。
 
-### 1.23 `to_rainbow`
+### `to_rainbow`
 
 ```python
 image.to_rainbow([copy=False])
@@ -300,7 +300,7 @@ image.to_rainbow([copy=False])
 
 将图像转换为彩虹色图像。返回图像对象。
 
-### 1.24 `compress`
+### `compress`
 
 ```python
 image.compress([quality=50])
@@ -308,7 +308,7 @@ image.compress([quality=50])
 
 以指定的质量 `quality`（0-100）对图像进行JPEG压缩。
 
-### 1.25 `compress_for_ide`
+### `compress_for_ide`
 
 ```python
 image.compress_for_ide([quality=50])
@@ -316,7 +316,7 @@ image.compress_for_ide([quality=50])
 
 对图像进行压缩，并格式化以便在OpenMV IDE中显示。
 
-### 1.26 `compressed`
+### `compressed`
 
 ```python
 image.compressed([quality=50])
@@ -324,7 +324,7 @@ image.compressed([quality=50])
 
 返回JPEG压缩后的图像。
 
-### 1.27 `compressed_for_ide`
+### `compressed_for_ide`
 
 ```python
 image.compressed_for_ide([quality=50])
@@ -332,7 +332,7 @@ image.compressed_for_ide([quality=50])
 
 返回JPEG压缩后的图像，格式化以便在OpenMV IDE中显示。
 
-### 1.28 `copy`
+### `copy`
 
 ```python
 image.copy([roi[, copy_to_fb=False]])
@@ -340,7 +340,7 @@ image.copy([roi[, copy_to_fb=False]])
 
 创建图像对象的副本，支持指定感兴趣区域 `roi`。
 
-### 1.29 `save`
+### `save`
 
 ```python
 image.save(path[, roi[, quality=50]])
@@ -348,7 +348,7 @@ image.save(path[, roi[, quality=50]])
 
 将图像保存到指定路径 `path`，支持指定感兴趣区域 `roi` 及JPEG压缩质量 `quality`。
 
-### 1.30 `clear`
+### `clear`
 
 ```python
 image.clear()
@@ -356,7 +356,7 @@ image.clear()
 
 快速将图像中的所有像素设置为零。返回图像对象。
 
-### 1.31 `draw_line`
+### `draw_line`
 
 ```python
 image.draw_line(x0, y0, x1, y1[, color[, thickness=1]])
@@ -371,7 +371,7 @@ image.draw_line(x0, y0, x1, y1[, color[, thickness=1]])
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.32 `draw_rectangle`
+### `draw_rectangle`
 
 ```python
 image.draw_rectangle(x, y, w, h[, color[, thickness=1[, fill=False]]])
@@ -387,7 +387,7 @@ image.draw_rectangle(x, y, w, h[, color[, thickness=1[, fill=False]]])
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.33 `draw_ellipse`
+### `draw_ellipse-1`
 
 ```python
 image.draw_ellipse(cx, cy, rx, ry, rotation[, color[, thickness=1[, fill=False]]])
@@ -403,7 +403,7 @@ image.draw_ellipse(cx, cy, rx, ry, rotation[, color[, thickness=1[, fill=False]]
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.34 `draw_circle`
+### `draw_circle`
 
 ```python
 image.draw_circle(x, y, radius[, color[, thickness=1[, fill=False]]])
@@ -419,7 +419,7 @@ image.draw_circle(x, y, radius[, color[, thickness=1[, fill=False]]])
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.35 `draw_string`
+### `draw_string`
 
 ```python
 image.draw_string(x, y, text[, color[, scale=1[, x_spacing=0[, y_spacing=0[, mono_space=True]]]]])
@@ -438,7 +438,7 @@ image.draw_string(x, y, text[, color[, scale=1[, x_spacing=0[, y_spacing=0[, mon
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.36 `draw_cross`
+### `draw_cross`
 
 ```python
 image.draw_cross(x, y[, color[, size=5[, thickness=1]]])
@@ -454,7 +454,7 @@ image.draw_cross(x, y[, color[, size=5[, thickness=1]]])
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.37 `draw_arrow`
+### `draw_arrow`
 
 ```python
 image.draw_arrow(x0, y0, x1, y1[, color[, thickness=1]])
@@ -469,7 +469,7 @@ image.draw_arrow(x0, y0, x1, y1[, color[, thickness=1]])
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.38 `draw_image`
+### `draw_image`
 
 ```python
 image.draw_image(image, x, y[, x_scale=1.0[, y_scale=1.0[, mask=None[, alpha=256]]]])
@@ -484,7 +484,7 @@ image.draw_image(image, x, y[, x_scale=1.0[, y_scale=1.0[, mask=None[, alpha=256
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.39 `draw_keypoints`
+### `draw_keypoints`
 
 ```python
 image.draw_keypoints(keypoints[, color[, size=10[, thickness=1[, fill=False]]]])
@@ -501,7 +501,7 @@ image.draw_keypoints(keypoints[, color[, size=10[, thickness=1[, fill=False]]]])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.40 `flood_fill`
+### `flood_fill`
 
 ```python
 image.flood_fill(x, y[, seed_threshold=0.05[, floating_threshold=0.05[, color[, invert=False[, clear_background=False[, mask=None]]]]]])
@@ -520,7 +520,7 @@ image.flood_fill(x, y[, seed_threshold=0.05[, floating_threshold=0.05[, color[, 
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.41 `binary`
+### `binary`
 
 ```python
 image.binary(thresholds[, invert=False[, zero=False[, mask=None]]])
@@ -537,7 +537,7 @@ image.binary(thresholds[, invert=False[, zero=False[, mask=None]]])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.42 `invert`
+### `invert`
 
 ```python
 image.invert()
@@ -549,7 +549,7 @@ image.invert()
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.43 `b_and`
+### `b_and`
 
 ```python
 image.b_and(image[, mask=None])
@@ -564,7 +564,7 @@ image.b_and(image[, mask=None])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.44 `b_nand`
+### `b_nand`
 
 ```python
 image.b_nand(image[, mask=None])
@@ -578,7 +578,7 @@ image.b_nand(image[, mask=None])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.45 `b_or`
+### `b_or`
 
 ```python
 image.b_or(image[, mask=None])
@@ -592,7 +592,7 @@ image.b_or(image[, mask=None])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.46 `b_nor`
+### `b_nor`
 
 ```python
 image.b_nor(image[, mask=None])
@@ -606,7 +606,7 @@ image.b_nor(image[, mask=None])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.47 `b_xor`
+### `b_xor`
 
 ```python
 image.b_xor(image[, mask=None])
@@ -620,7 +620,7 @@ image.b_xor(image[, mask=None])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.48 `b_xnor`
+### `b_xnor`
 
 ```python
 image.b_xnor(image[, mask=None])
@@ -634,7 +634,7 @@ image.b_xnor(image[, mask=None])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.49 `erode`
+### `erode`
 
 ```python
 image.erode(size[, threshold[, mask=None]])
@@ -647,7 +647,7 @@ image.erode(size[, threshold[, mask=None]])
 
 返回图像对象，以便后续方法可以链式调用。
 
-### 1.50 `dilate`
+### `dilate`
 
 ```python
 image.dilate(size[, threshold[, mask=None]])
@@ -659,7 +659,7 @@ image.dilate(size[, threshold[, mask=None]])
 
 返回图像对象，以便后续方法可以链式调用。
 
-### 1.51 `open`
+### `open`
 
 ```python
 image.open(size[, threshold[, mask=None]])
@@ -669,7 +669,7 @@ image.open(size[, threshold[, mask=None]])
 
 返回图像对象，以便后续方法可以链式调用。
 
-### 1.52 `close`
+### `close`
 
 ```python
 image.close(size[, threshold[, mask=None]])
@@ -679,7 +679,7 @@ image.close(size[, threshold[, mask=None]])
 
 返回图像对象，以便后续方法可以链式调用。
 
-### 1.53 `top_hat`
+### `top_hat`
 
 ```python
 image.top_hat(size[, threshold[, mask=None]])
@@ -693,7 +693,7 @@ image.top_hat(size[, threshold[, mask=None]])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.54 `black_hat`
+### `black_hat`
 
 ```python
 image.black_hat(size[, threshold[, mask=None]])
@@ -707,7 +707,7 @@ image.black_hat(size[, threshold[, mask=None]])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.55 `negate`
+### `negate`
 
 ```python
 image.negate()
@@ -719,7 +719,7 @@ image.negate()
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.56 `replace`
+### `replace`
 
 ```python
 image.replace(image[, hmirror=False[, vflip=False[, mask=None]]])
@@ -736,7 +736,7 @@ image.replace(image[, hmirror=False[, vflip=False[, mask=None]]])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.57 `add`
+### `add`
 
 ```python
 image.add(image[, mask=None])
@@ -751,7 +751,7 @@ image.add(image[, mask=None])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.58 `sub`
+### `sub`
 
 ```python
 image.sub(image[, reverse=False[, mask=None]])
@@ -767,7 +767,7 @@ image.sub(image[, reverse=False[, mask=None]])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.59 `mul`
+### `mul`
 
 ```python
 image.mul(image[, invert=False[, mask=None]])
@@ -783,7 +783,7 @@ image.mul(image[, invert=False[, mask=None]])
 
 该方法不支持压缩图像和 Bayer 格式图像。
 
-### 1.60 `div`
+### `div`
 
 ```python
 image.div(image[, invert=False[, mask=None]])
@@ -801,7 +801,7 @@ image.div(image[, invert=False[, mask=None]])
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.61 `min`
+### `min`
 
 ```python
 image.min(image[, mask=None])
@@ -819,7 +819,7 @@ image.min(image[, mask=None])
 
 此方法在 OpenMV4 上不可用。
 
-### 1.62 `max`
+### `max`
 
 ```python
 image.max(image[, mask=None])
@@ -835,7 +835,7 @@ image.max(image[, mask=None])
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.63 `difference`
+### `difference`
 
 ```python
 image.difference(image[, mask=None])
@@ -851,7 +851,7 @@ image.difference(image[, mask=None])
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.64 `blend`
+### `blend`
 
 ```python
 image.blend(image[, alpha=128[, mask=None]])
@@ -869,7 +869,7 @@ image.blend(image[, alpha=128[, mask=None]])
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.65 `histeq`
+### `histeq`
 
 ```python
 image.histeq([adaptive=False[, clip_limit=-1[, mask=None]]])
@@ -887,7 +887,7 @@ image.histeq([adaptive=False[, clip_limit=-1[, mask=None]]])
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.66 `mean`
+### `mean`
 
 ```python
 image.mean(size[, threshold=False[, offset=0[, invert=False[, mask=None]]]])
@@ -905,7 +905,7 @@ image.mean(size[, threshold=False[, offset=0[, invert=False[, mask=None]]]])
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.67 `median`
+### `median`
 
 ```python
 image.median(size, percentile=0.5[, threshold=False[, offset=0[, invert=False[, mask=None]]]])
@@ -925,7 +925,7 @@ image.median(size, percentile=0.5[, threshold=False[, offset=0[, invert=False[, 
 
 不支持压缩图像和 Bayer 格式图像。
 
-### 1.68 `mode`
+### `mode`
 
 ```python
 image.mode(size[, threshold=False, offset=0, invert=False, mask])
@@ -945,7 +945,7 @@ image.mode(size[, threshold=False, offset=0, invert=False, mask])
 
 **注意**：不支持压缩图像和Bayer图像。
 
-### 1.69 `midpoint`
+### `midpoint`
 
 ```python
 image.midpoint(size[, bias=0.5, threshold=False, offset=0, invert=False, mask])
@@ -966,7 +966,7 @@ image.midpoint(size[, bias=0.5, threshold=False, offset=0, invert=False, mask])
 
 **注意**：不支持压缩图像和Bayer图像。
 
-### 1.70 `morph`
+### `morph`
 
 ```python
 image.morph(size, kernel, mul=Auto, add=0)
@@ -987,7 +987,7 @@ image.morph(size, kernel, mul=Auto, add=0)
 
 **注意**：不支持压缩图像和Bayer图像。
 
-### 1.71 `gaussian`
+### `gaussian`
 
 ```python
 image.gaussian(size[, unsharp=False[, mul[, add=0[, threshold=False[, offset=0[, invert=False[, mask=None]]]]]]])
@@ -1008,7 +1008,7 @@ image.gaussian(size[, unsharp=False[, mul[, add=0[, threshold=False[, offset=0[,
 
 **注意**：不支持压缩图像和Bayer图像。
 
-### 1.72 `laplacian`
+### `laplacian`
 
 ```python
 image.laplacian(size[, sharpen=False[, mul[, add=0[, threshold=False[, offset=0[, invert=False[, mask=None]]]]]]])
@@ -1029,7 +1029,7 @@ image.laplacian(size[, sharpen=False[, mul[, add=0[, threshold=False[, offset=0[
 
 **注意**：不支持压缩图像和Bayer图像。
 
-### 1.73 `bilateral`
+### `bilateral`
 
 ```python
 image.bilateral(size[, color_sigma=0.1[, space_sigma=1[, threshold=False[, offset=0[, invert=False[, mask=None]]]]]])
@@ -1047,7 +1047,7 @@ image.bilateral(size[, color_sigma=0.1[, space_sigma=1[, threshold=False[, offse
 
 **注意**：不支持压缩图像和Bayer图像。
 
-### 1.74 `cartoon`
+### `cartoon`
 
 ```python
 image.cartoon(size[, seed_threshold=0.05[, floating_threshold=0.05[, mask=None]]])
@@ -1065,7 +1065,7 @@ image.cartoon(size[, seed_threshold=0.05[, floating_threshold=0.05[, mask=None]]
 
 **注意**：不支持压缩图像和Bayer图像。
 
-### 1.75 `remove_shadows`
+### `remove_shadows`
 
 ```python
 image.remove_shadows([image])
@@ -1082,7 +1082,7 @@ image.remove_shadows([image])
 
 **注意**：仅支持RGB565图像。
 
-### 1.76 `chrominvar`
+### `chrominvar`
 
 ```python
 image.chrominvar()
@@ -1094,7 +1094,7 @@ image.chrominvar()
 
 **注意**：仅支持RGB565图像。
 
-### 1.77 `illuminvar`
+### `illuminvar`
 
 ```python
 image.illuminvar()
@@ -1106,7 +1106,7 @@ image.illuminvar()
 
 **注意**：仅支持RGB565图像。
 
-### 1.78 `linpolar`
+### `linpolar`
 
 ```python
 image.linpolar([reverse=False])
@@ -1121,7 +1121,7 @@ image.linpolar([reverse=False])
 
 **注意**：此功能不支持压缩图像。
 
-### 1.79 `logpolar`
+### `logpolar`
 
 ```python
 image.logpolar([reverse=False])
@@ -1136,7 +1136,7 @@ image.logpolar([reverse=False])
 
 **注意**：此功能不支持压缩图像。
 
-### 1.80 `lens_corr`
+### `lens_corr`
 
 ```python
 image.lens_corr([strength=1.8[, zoom=1.0]])
@@ -1152,7 +1152,7 @@ image.lens_corr([strength=1.8[, zoom=1.0]])
 
 **注意**：此功能不支持压缩图像和 Bayer 图像。
 
-### 1.81 `rotation_corr`
+### `rotation_corr`
 
 ```python
 img.rotation_corr([x_rotation=0.0[, y_rotation=0.0[, z_rotation=0.0[, x_translation=0.0[, y_translation=0.0[, zoom=1.0[, fov=60.0[, corners]]]]]]]])
@@ -1174,7 +1174,7 @@ img.rotation_corr([x_rotation=0.0[, y_rotation=0.0[, z_rotation=0.0[, x_translat
 
 **注意**：此功能不支持压缩图像或 Bayer 图像。
 
-### 1.82 `get_similarity`
+### `get_similarity`
 
 ```python
 image.get_similarity(image)
@@ -1187,7 +1187,7 @@ image.get_similarity(image)
 
 **注意**：此功能不支持压缩图像和 Bayer 图像。
 
-### 1.83 `get_histogram`
+### `get_histogram`
 
 ```python
 image.get_histogram([thresholds[, invert=False[, roi[, bins[, l_bins[, a_bins[, b_bins]]]]]]])
@@ -1203,7 +1203,7 @@ image.get_histogram([thresholds[, invert=False[, roi[, bins[, l_bins[, a_bins[, 
 
 **注意**：此功能不支持压缩图像和 Bayer 图像。
 
-### 1.84 `get_statistics`
+### `get_statistics`
 
 ```python
 image.get_statistics([thresholds[, invert=False[, roi[, bins[, l_bins[, a_bins[, b_bins]]]]]]])
@@ -1219,7 +1219,7 @@ image.get_statistics([thresholds[, invert=False[, roi[, bins[, l_bins[, a_bins[,
 
 **注意**：此功能不支持压缩图像和 Bayer 图像。
 
-### 1.85 `get_regression`
+### `get_regression`
 
 ```python
 image.get_regression(thresholds[, invert=False[, roi[, x_stride=2[, y_stride=1[, area_threshold=10[, pixels_threshold=10[, robust=False]]]]]]])
@@ -1240,7 +1240,7 @@ image.get_regression(thresholds[, invert=False[, roi[, x_stride=2[, y_stride=1[,
 
 **注意**：此功能不支持压缩图像和 Bayer 图像。
 
-### 1.86 `find_blobs`
+### `find_blobs`
 
 ```python
 image.find_blobs(thresholds[, invert=False[, roi[, x_stride=2[, y_stride=1[, area_threshold=10[, pixels_threshold=10[, merge=False[, margin=0[, threshold_cb=None[, merge_cb=None]]]]]]]]]])
@@ -1273,7 +1273,7 @@ image.find_blobs(thresholds[, invert=False[, roi[, x_stride=2[, y_stride=1[, are
 
 **注意：** 此功能不支持压缩图像和 Bayer 图像。
 
-### 1.87 `find_lines`
+### `find_lines`
 
 ```python
 image.find_lines([roi[, x_stride=2[, y_stride=1[, threshold=1000[, theta_margin=25[, rho_margin=25]]]]]])
@@ -1292,7 +1292,7 @@ image.find_lines([roi[, x_stride=2[, y_stride=1[, threshold=1000[, theta_margin=
 
 **注意：** 此功能不支持压缩图像和 Bayer 图像。
 
-### 1.88 `find_line_segments`
+### `find_line_segments`
 
 ```python
 image.find_line_segments([roi[, merge_distance=0[, max_theta_difference=15]]])
@@ -1308,7 +1308,7 @@ image.find_line_segments([roi[, merge_distance=0[, max_theta_difference=15]]])
 
 **注意：** 此功能不支持压缩图像和 Bayer 图像。
 
-### 1.89 `find_circles`
+### `find_circles`
 
 ```python
 image.find_circles([roi[, x_stride=2[, y_stride=1[, threshold=2000[, x_margin=10[, y_margin=10[, r_margin=10]]]]]]])
@@ -1331,7 +1331,7 @@ image.find_circles([roi[, x_stride=2[, y_stride=1[, threshold=2000[, x_margin=10
 
 **注意：** 此功能不支持压缩图像和 Bayer 图像。
 
-### 1.90 `find_rects`
+### `find_rects`
 
 ```python
 image.find_rects([roi=Auto, threshold=10000])
@@ -1345,7 +1345,7 @@ image.find_rects([roi=Auto, threshold=10000])
 
 **注意：** 不支持压缩图像和 Bayer 图像。
 
-### 1.91 `find_qrcodes`
+### `find_qrcodes`
 
 ```python
 image.find_qrcodes([roi])
@@ -1359,7 +1359,7 @@ image.find_qrcodes([roi])
 
 **注意：** 不支持压缩图像和 Bayer 图像。
 
-### 1.92 `find_apriltags`
+### `find_apriltags`
 
 ```python
 image.find_apriltags([roi[, families=image.TAG36H11[, fx[, fy[, cx[, cy]]]]]])
@@ -1395,7 +1395,7 @@ image.find_apriltags([roi[, families=image.TAG36H11[, fx[, fy[, cx[, cy]]]]]])
 
 **注意：** 不支持压缩图像和 Bayer 图像。
 
-### 1.93 `find_datamatrices`
+### `find_datamatrices`
 
 ```python
 image.find_datamatrices([roi[, effort=200]])
@@ -1411,7 +1411,7 @@ image.find_datamatrices([roi[, effort=200]])
 
 **注意：** 不支持压缩图像和 Bayer 图像。
 
-### 1.94 `find_barcodes`
+### `find_barcodes`
 
 ```python
 image.find_barcodes([roi])
@@ -1444,7 +1444,7 @@ image.find_barcodes([roi])
 
 **注意：** 不支持压缩图像和 Bayer 图像。
 
-### 1.95 `find_displacement`
+### `find_displacement`
 
 ```python
 image.find_displacement(template[, roi[, template_roi[, logpolar=False]]])
@@ -1466,7 +1466,7 @@ image.find_displacement(template[, roi[, template_roi[, logpolar=False]]])
 
 **注解：** 请在长宽一致的图像（例如 `sensor.B64X64`）上使用此方法。
 
-### 1.96 `find_number`
+### `find_number`
 
 ```python
 image.find_number(roi)
@@ -1478,7 +1478,7 @@ image.find_number(roi)
 
 **注意：** 此方法仅支持灰度图像，且为实验性功能。若未来运行基于 Caffe 在 PC 上训练的任何 CNN，该方法可能会被删除。最新版本（3.0.0）固件已移除此函数。
 
-### 1.97 `classify_object`
+### `classify_object`
 
 ```python
 image.classify_object(roi)
@@ -1492,7 +1492,7 @@ image.classify_object(roi)
 
 **注解：** 该方法为实验性功能，未来若实施基于 Caffe 在 PC 上训练的 CNN，可能会移除此方法。
 
-### 1.98 `find_template`
+### `find_template`
 
 ```python
 image.find_template(template, threshold[, roi[, step=2[, search=image.SEARCH_EX]]])
@@ -1512,7 +1512,7 @@ image.find_template(template, threshold[, roi[, step=2[, search=image.SEARCH_EX]
 
 **注意：** 此方法仅支持灰度图像。
 
-### 1.99 `find_features`
+### `find_features`
 
 ```python
 image.find_features(cascade[, threshold=0.5[, scale=1.5[, roi]]])
@@ -1530,7 +1530,7 @@ image.find_features(cascade[, threshold=0.5[, scale=1.5[, roi]]])
 
 **注意：** 此方法仅支持灰度图像。
 
-### 1.100 `find_eye`
+### `find_eye`
 
 ```python
 image.find_eye(roi)
@@ -1544,7 +1544,7 @@ image.find_eye(roi)
 
 **注意：** 此方法仅支持灰度图像。
 
-### 1.101 `find_lbp`
+### `find_lbp`
 
 ```python
 image.find_lbp(roi)
@@ -1556,7 +1556,7 @@ image.find_lbp(roi)
 
 **注意：** 此方法仅支持灰度图像。
 
-### 1.102 `find_keypoints`
+### `find_keypoints`
 
 ```python
 image.find_keypoints([roi[, threshold=20[, normalized=False[, scale_factor=1.5[, max_keypoints=100[, corner_detector=image.CORNER_AGAST]]]]]])
@@ -1578,7 +1578,7 @@ image.find_keypoints([roi[, threshold=20[, normalized=False[, scale_factor=1.5[,
 
 **注意：** 此方法仅支持灰度图像。
 
-### 1.103 `find_edges`
+### `find_edges`
 
 ```python
 image.find_edges(edge_type[, threshold])
@@ -1594,7 +1594,7 @@ image.find_edges(edge_type[, threshold])
 
 **注意：** 此方法仅支持灰度图像。
 
-### 1.104 `find_hog`
+### `find_hog`
 
 ```python
 image.find_hog([roi[, size=8]])
@@ -1606,7 +1606,7 @@ image.find_hog([roi[, size=8]])
 
 **注意：** 此方法仅支持灰度图像。
 
-### 1.105 `draw_ellipse`
+### `draw_ellipse-2`
 
 ```python
 image.draw_ellipse(cx, cy, rx, ry, color, thickness=1)
@@ -1628,9 +1628,9 @@ image.draw_ellipse(cx, cy, rx, ry, color, thickness=1)
 
 **OpenMV 原生 API** 移植自 `openmv`，功能保持一致。用户可以参考原生文档获取更多 API 细节。
 
-## 2. image 模块函数
+## image 模块函数
 
-### 2.1 `rgb_to_lab`
+### `rgb_to_lab`
 
 将 RGB888 转换为 LAB 颜色空间。
 
@@ -1638,7 +1638,7 @@ image.draw_ellipse(cx, cy, rx, ry, color, thickness=1)
 image.rgb_to_lab(rgb_tuple)
 ```
 
-### 2.2 `lab_to_rgb`
+### `lab_to_rgb`
 
 将 LAB 颜色空间转换为 RGB888。
 
@@ -1646,7 +1646,7 @@ image.rgb_to_lab(rgb_tuple)
 image.lab_to_rgb(lab_tuple)
 ```
 
-### 2.3 `rgb_to_grayscale`
+### `rgb_to_grayscale`
 
 将 RGB888 转换为灰度值。
 
@@ -1654,7 +1654,7 @@ image.lab_to_rgb(lab_tuple)
 image.rgb_to_grayscale(rgb_tuple)
 ```
 
-### 2.4 `grayscale_to_rgb`
+### `grayscale_to_rgb`
 
 将灰度值转换为 RGB888。
 
@@ -1662,7 +1662,7 @@ image.rgb_to_grayscale(rgb_tuple)
 image.grayscale_to_rgb(g_value)
 ```
 
-### 2.5 `load_descriptor`
+### `load_descriptor`
 
 从文件加载描述符对象。
 
@@ -1670,7 +1670,7 @@ image.grayscale_to_rgb(g_value)
 image.load_descriptor(path)
 ```
 
-### 2.6 `save_descriptor`
+### `save_descriptor`
 
 保存描述符对象到文件。
 
@@ -1678,7 +1678,7 @@ image.load_descriptor(path)
 image.save_descriptor(path, descriptor)
 ```
 
-### 2.7 `match_descriptor`
+### `match_descriptor`
 
 比较两个描述符对象，返回匹配结果。
 
@@ -1686,11 +1686,11 @@ image.save_descriptor(path, descriptor)
 image.match_descriptor(descriptor0, descriptor1, threshold=70, filter_outliers=False)
 ```
 
-## 5 类 `HaarCascade`
+## 类 `HaarCascade`
 
 `HaarCascade` 特征描述符用于 `image.find_features()` 方法，不提供直接调用的方法。
 
-### 5.1 构造函数
+### 构造函数
 
 ```python
 class image.HaarCascade(path[, stages=Auto])
@@ -1710,11 +1710,11 @@ class image.HaarCascade(path[, stages=Auto])
 
 **答：** Haar Cascades 是通过带有正负标记的图像对生成算法进行训练而成。例如，使用数百张包含猫（标记为正例）的图像和数百张不含猫（标记为负例）的图像来训练该算法。最终生成的模型便是用于检测猫的 Haar Cascade。
 
-## 6 类 `Similarity`
+## 类 `Similarity`
 
 相似度对象由 `image.get_similarity` 函数返回。
 
-### 6.1 构造函数
+### 构造函数
 
 ```python
 class image.similarity
@@ -1722,7 +1722,7 @@ class image.similarity
 
 请通过调用 `image.get_similarity()` 函数来创建此对象。
 
-### 6.2 `mean`
+### `mean`
 
 ```python
 similarity.mean()
@@ -1730,7 +1730,7 @@ similarity.mean()
 
 此函数返回 8x8 像素块结构相似性差异的均值，范围为 [-1, +1]，其中 -1 表示完全不同，+1 表示完全相同。您也可以通过索引 [0] 直接获取该值。
 
-### 6.3 `stdev`
+### `stdev`
 
 ```python
 similarity.stdev()
@@ -1738,7 +1738,7 @@ similarity.stdev()
 
 此函数返回 8x8 像素块结构相似性差异的标准偏差。您也可以通过索引 [1] 获取该值。
 
-### 6.4 `min`
+### `min`
 
 ```python
 similarity.min()
@@ -1748,7 +1748,7 @@ similarity.min()
 
 > 通过查看此值，您可以快速判断两个图像之间的任何 8x8 像素块是否存在显著差异，即值远低于 +1。
 
-### 6.5 `max`
+### `max`
 
 ```python
 similarity.max()
@@ -1758,11 +1758,11 @@ similarity.max()
 
 > 通过查看此值，您可以快速判断两个图像之间的任何 8x8 像素块是否完全相同，即值远大于 -1。
 
-## 7 类 `Histogram`
+## 类 `Histogram`
 
 直方图对象由 `image.get_histogram` 方法返回。灰度直方图包含多个标准化的二进制通道，其总和为1。RGB565格式的直方图则有三个二进制通道，同样经过标准化处理，确保其总和为1。
 
-### 7.1 构造函数
+### 构造函数
 
 ```python
 class image.histogram
@@ -1770,7 +1770,7 @@ class image.histogram
 
 请通过调用 `image.get_histogram()` 函数来创建该对象。
 
-### 7.2 `bins`
+### `bins`
 
 ```python
 histogram.bins()
@@ -1778,7 +1778,7 @@ histogram.bins()
 
 返回灰度直方图的浮点数列表。您也可以通过索引 [0] 访问该值。
 
-### 7.3 `l_bins`
+### `l_bins`
 
 ```python
 histogram.l_bins()
@@ -1786,7 +1786,7 @@ histogram.l_bins()
 
 返回RGB565格式直方图中LAB的L通道的浮点数列表。您可以通过索引 [0] 获取该值。
 
-### 7.4 `a_bins`
+### `a_bins`
 
 ```python
 histogram.a_bins()
@@ -1794,7 +1794,7 @@ histogram.a_bins()
 
 返回RGB565格式直方图中LAB的A通道的浮点数列表。您可以通过索引 [1] 获取该值。
 
-### 7.5 `b_bins`
+### `b_bins`
 
 ```python
 histogram.b_bins()
@@ -1802,7 +1802,7 @@ histogram.b_bins()
 
 返回RGB565格式直方图中LAB的B通道的浮点数列表。您可以通过索引 [2] 获取该值。
 
-### 7.6 `get_percentile`
+### `get_percentile`
 
 ```python
 histogram.get_percentile(percentile)
@@ -1812,7 +1812,7 @@ histogram.get_percentile(percentile)
 
 例如，如果传入0.1，该方法将指示在累加过程中，哪个二进制值使累加器超过0.1。在未出现异常效用干扰自适应色跟踪结果的情况下，此方法对确定颜色分布的最小值（0.1）和最大值（0.9）尤为有效。
 
-### 7.7 `get_threshold`
+### `get_threshold`
 
 ```python
 histogram.get_threshold()
@@ -1820,7 +1820,7 @@ histogram.get_threshold()
 
 采用Otsu方法计算最佳阈值，将直方图的每个通道一分为二。该方法返回一个 `image.threshold` 对象，特别适用于确定最佳的 `image.binary()` 阈值。
 
-### 7.8 `get_statistics`
+### `get_statistics`
 
 ```python
 histogram.get_statistics()
@@ -1828,11 +1828,11 @@ histogram.get_statistics()
 
 计算直方图中每个颜色通道的平均值、中位数、众数、标准差、最小值、最大值、下四分位数和上四分位数，并返回一个 `statistics` 对象。您也可以使用 `histogram.statistics()` 和 `histogram.get_stats()` 作为该方法的别名。
 
-## 8 类 `Percentile`
+## 类 `Percentile`
 
 百分位值对象由 `histogram.get_percentile` 方法返回。灰度百分位值包含一个通道，不使用 `l_*`、`a_*` 或 `b_*` 方法。RGB565格式的百分位值包含三个通道，需使用 `l_*`、`a_*` 和 `b_*` 方法。
 
-### 8.1 构造函数
+### 构造函数
 
 ```python
 class image.percentile
@@ -1840,7 +1840,7 @@ class image.percentile
 
 请通过调用 `histogram.get_percentile()` 函数来创建该对象。
 
-### 8.2 `value`
+### `value`
 
 ```python
 percentile.value()
@@ -1850,7 +1850,7 @@ percentile.value()
 
 您也可以通过索引 [0] 访问该值。
 
-### 8.3 `l_value`
+### `l_value`
 
 ```python
 percentile.l_value()
@@ -1860,7 +1860,7 @@ percentile.l_value()
 
 您也可以通过索引 [0] 获取该值。
 
-### 8.4 `a_value`
+### `a_value`
 
 ```python
 percentile.a_value()
@@ -1870,7 +1870,7 @@ percentile.a_value()
 
 您也可以通过索引 [1] 获取该值。
 
-### 8.5 `b_value`
+### `b_value`
 
 ```python
 percentile.b_value()
@@ -1880,7 +1880,7 @@ percentile.b_value()
 
 您也可以通过索引 [2] 获取该值。
 
-## 9 类 `Threshold`
+## 类 `Threshold`
 
 阈值对象由 `histogram.get_threshold` 方法返回。
 
@@ -1888,7 +1888,7 @@ percentile.b_value()
 
 RGB565格式的阈值包含三个通道，需使用 `l_*`、`a_*` 和 `b_*` 方法。
 
-### 9.1 构造函数
+### 构造函数
 
 ```python
 class image.threshold
@@ -1896,7 +1896,7 @@ class image.threshold
 
 请通过调用 `histogram.get_threshold()` 函数来创建该对象。
 
-### 9.2 `value`
+### `value`
 
 ```python
 threshold.value()
@@ -1906,7 +1906,7 @@ threshold.value()
 
 您也可以通过索引 [0] 获取该值。
 
-### 9.3 `l_value`
+### `l_value`
 
 ```python
 threshold.l_value()
@@ -1916,7 +1916,7 @@ threshold.l_value()
 
 您也可以通过索引 [0] 获取该值。
 
-### 9.4 `a_value`
+### `a_value`
 
 ```python
 threshold.a_value()
@@ -1926,7 +1926,7 @@ threshold.a_value()
 
 您也可以通过索引 [1] 获取该值。
 
-### 9.5 `b_value`
+### `b_value`
 
 ```python
 threshold.b_value()
@@ -1936,7 +1936,7 @@ threshold.b_value()
 
 您也可以通过索引 [2] 获取该值。
 
-## 10 类 `Statistics`
+## 类 `Statistics`
 
 统计数据对象由 `histogram.get_statistics` 或 `image.get_statistics` 方法返回。
 
@@ -1944,7 +1944,7 @@ threshold.b_value()
 
 RGB565格式的统计数据包含三个通道，需使用 `l_*`、`a_*` 和 `b_*` 方法。
 
-### 10.1 构造函数
+### 构造函数
 
 ```python
 class image.statistics
@@ -1952,7 +1952,7 @@ class image.statistics
 
 请通过调用 `histogram.get_statistics()` 或 `image.get_statistics()` 函数来创建该对象。
 
-#### 10.2 `mean`
+#### `mean`
 
 ```python
 statistics.mean()
@@ -1962,7 +1962,7 @@ statistics.mean()
 
 您也可以通过索引 [0] 获取该值。
 
-### 10.3 `median`
+### `median`
 
 ```python
 statistics.median()
@@ -1972,7 +1972,7 @@ statistics.median()
 
 您也可以通过索引 [1] 获取该值。
 
-### 10.4 `mode`
+### `mode`
 
 ```python
 statistics.mode()
@@ -1982,7 +1982,7 @@ statistics.mode()
 
 您也可以通过索引 [2] 获取该值。
 
-### 10.5 `stdev`
+### `stdev`
 
 ```python
 statistics.stdev()
@@ -1992,7 +1992,7 @@ statistics.stdev()
 
 您也可以通过索引 [3] 获取该值。
 
-### 10.6 `min`
+### `min`
 
 ```python
 statistics.min()
@@ -2002,7 +2002,7 @@ statistics.min()
 
 您也可以通过索引 [4] 获取该值。
 
-### 10.7 `max`
+### `max`
 
 ```python
 statistics.max()
@@ -2012,7 +2012,7 @@ statistics.max()
 
 您也可以通过索引 [5] 获取该值。
 
-### 10.8 `lq`
+### `lq`
 
 ```python
 statistics.lq()
@@ -2022,7 +2022,7 @@ statistics.lq()
 
 您也可以通过索引 [6] 获取该值。
 
-### 10.9 `uq`
+### `uq`
 
 ```python
 statistics.uq()
@@ -2032,7 +2032,7 @@ statistics.uq()
 
 您也可以通过索引 [7] 获取该值。
 
-### 10.10 `l_mean`
+### `l_mean`
 
 ```python
 statistics.l_mean()
@@ -2042,7 +2042,7 @@ statistics.l_mean()
 
 您也可以通过索引 [0] 获取该值。
 
-### 10.11 `l_median`
+### `l_median`
 
 ```python
 statistics.l_median()
@@ -2052,7 +2052,7 @@ statistics.l_median()
 
 您也可以通过索引 [1] 获取该值。
 
-### 10.12 `l_mode`
+### `l_mode`
 
 ```python
 statistics.l_mode()
@@ -2062,7 +2062,7 @@ statistics.l_mode()
 
 您也可以通过索引 [2] 获取该值。
 
-### 10.13 `l_stdev`
+### `l_stdev`
 
 ```python
 statistics.l_stdev()
@@ -2074,7 +2074,7 @@ statistics.l_stdev()
 
 您也可以通过索引 [3] 获取该值。
 
-### 10.14 `l_min`
+### `l_min`
 
 ```python
 statistics.l_min()
@@ -2084,7 +2084,7 @@ statistics.l_min()
 
 您也可以通过索引 [4] 获取该值。
 
-### 10.15 `l_max`
+### `l_max`
 
 ```python
 statistics.l_max()
@@ -2094,7 +2094,7 @@ statistics.l_max()
 
 您也可以通过索引 [5] 获取该值。
 
-### 10.16 `l_lq`
+### `l_lq`
 
 ```python
 statistics.l_lq()
@@ -2102,7 +2102,7 @@ statistics.l_lq()
 
 返回RGB565格式中LAB的L通道下四分位数，取值范围为0至255（类型为int）。您也可以通过索引 [6] 获取该值。
 
-### 10.17 `l_uq`
+### `l_uq`
 
 ```python
 statistics.l_uq()
@@ -2110,7 +2110,7 @@ statistics.l_uq()
 
 返回RGB565格式中LAB的L通道上四分位数，取值范围为0至255（类型为int）。您也可以通过索引 [7] 获取该值。
 
-### 10.18 `a_mean`
+### `a_mean`
 
 ```python
 statistics.a_mean()
@@ -2118,7 +2118,7 @@ statistics.a_mean()
 
 返回RGB565格式中LAB的A通道均值，取值范围为0至255（类型为int）。您也可以通过索引 [8] 获取该值。
 
-### 10.19 `a_median`
+### `a_median`
 
 ```python
 statistics.a_median()
@@ -2126,7 +2126,7 @@ statistics.a_median()
 
 返回RGB565格式中LAB的A通道中位数，取值范围为0至255（类型为int）。您也可以通过索引 [9] 获取该值。
 
-### 10.20 `a_mode`
+### `a_mode`
 
 ```python
 statistics.a_mode()
@@ -2134,7 +2134,7 @@ statistics.a_mode()
 
 返回RGB565格式中LAB的A通道众数，取值范围为0至255（类型为int）。您也可以通过索引 [10] 获取该值。
 
-### 10.21 `a_stdev`
+### `a_stdev`
 
 ```python
 statistics.a_stdev()
@@ -2142,7 +2142,7 @@ statistics.a_stdev()
 
 返回RGB565格式中LAB的A通道标准偏差，取值范围为0至255（类型为int）。您也可以通过索引 [11] 获取该值。
 
-### 10.22 `a_min`
+### `a_min`
 
 ```python
 statistics.a_min()
@@ -2150,7 +2150,7 @@ statistics.a_min()
 
 返回RGB565格式中LAB的A通道最小值，取值范围为0至255（类型为int）。您也可以通过索引 [12] 获取该值。
 
-### 10.23 `a_max`
+### `a_max`
 
 ```python
 statistics.a_max()
@@ -2158,7 +2158,7 @@ statistics.a_max()
 
 返回RGB565格式中LAB的A通道最大值，取值范围为0至255（类型为int）。您也可以通过索引 [13] 获取该值。
 
-### 10.24 `a_lq`
+### `a_lq`
 
 ```python
 statistics.a_lq()
@@ -2166,7 +2166,7 @@ statistics.a_lq()
 
 返回RGB565格式中LAB的A通道下四分位数，取值范围为0至255（类型为int）。您也可以通过索引 [14] 获取该值。
 
-### 10.25 `a_uq`
+### `a_uq`
 
 ```python
 statistics.a_uq()
@@ -2174,7 +2174,7 @@ statistics.a_uq()
 
 返回RGB565格式中LAB的A通道上四分位数，取值范围为0至255（类型为int）。您也可以通过索引 [15] 获取该值。
 
-### 10.26 `b_mean`
+### `b_mean`
 
 ```python
 statistics.b_mean()
@@ -2182,7 +2182,7 @@ statistics.b_mean()
 
 返回RGB565格式中LAB的B通道均值，取值范围为0至255（类型为int）。您也可以通过索引 [16] 获取该值。
 
-### 10.27 `b_median`
+### `b_median`
 
 ```python
 statistics.b_median()
@@ -2190,7 +2190,7 @@ statistics.b_median()
 
 返回RGB565格式中LAB的B通道中位数，取值范围为0至255（类型为int）。您也可以通过索引 [17] 获取该值。
 
-### 10.28 `b_mode`
+### `b_mode`
 
 ```python
 statistics.b_mode()
@@ -2198,7 +2198,7 @@ statistics.b_mode()
 
 返回RGB565格式中LAB的B通道众数，取值范围为0至255（类型为int）。您也可以通过索引 [18] 获取该值。
 
-### 10.29 `b_stdev`
+### `b_stdev`
 
 ```python
 statistics.b_stdev()
@@ -2206,7 +2206,7 @@ statistics.b_stdev()
 
 返回RGB565格式中LAB的B通道标准偏差，取值范围为0至255（类型为int）。您也可以通过索引 [19] 获取该值。
 
-### 10.30 `b_min`
+### `b_min`
 
 ```python
 statistics.b_min()
@@ -2214,7 +2214,7 @@ statistics.b_min()
 
 返回RGB565格式中LAB的B通道最小值，取值范围为0至255（类型为int）。您也可以通过索引 [20] 获取该值。
 
-### 10.31 `b_max`
+### `b_max`
 
 ```python
 statistics.b_max()
@@ -2222,7 +2222,7 @@ statistics.b_max()
 
 返回RGB565格式中LAB的B通道最大值，取值范围为0至255（类型为int）。您也可以通过索引 [21] 获取该值。
 
-### 10.32 `b_lq`
+### `b_lq`
 
 ```python
 statistics.b_lq()
@@ -2230,7 +2230,7 @@ statistics.b_lq()
 
 返回RGB565格式中LAB的B通道下四分位数，取值范围为0至255（类型为int）。您也可以通过索引 [22] 获取该值。
 
-### 10.33 `b_uq`
+### `b_uq`
 
 ```python
 statistics.b_uq()
@@ -2238,11 +2238,11 @@ statistics.b_uq()
 
 返回RGB565格式中LAB的B通道上四分位数，取值范围为0至255（类型为int）。您也可以通过索引 [23] 获取该值。
 
-## 11 类 `Blob`
+## 类 `Blob`
 
 色块对象由 `image.find_blobs` 方法返回。
 
-### 11.1 构造函数
+### 构造函数
 
 ```python
 class image.blob
@@ -2250,7 +2250,7 @@ class image.blob
 
 请通过调用 `image.find_blobs()` 函数以创建该对象。
 
-### 11.2 `rect`
+### `rect`
 
 ```python
 blob.rect()
@@ -2258,7 +2258,7 @@ blob.rect()
 
 返回一个矩形元组 (x, y, w, h)，用于色块边界框的图像绘制等其他图像处理方法，例如 `image.draw_rectangle`。
 
-### 11.3 `x`
+### `x`
 
 ```python
 blob.x()
@@ -2266,7 +2266,7 @@ blob.x()
 
 返回色块边界框的 x 坐标（类型为 int）。您也可以通过索引 [0] 获取该值。
 
-### 11.4 `y`
+### `y`
 
 ```python
 blob.y()
@@ -2274,7 +2274,7 @@ blob.y()
 
 返回色块边界框的 y 坐标（类型为 int）。您也可以通过索引 [1] 获取该值。
 
-### 11.5 `w`
+### `w`
 
 ```python
 blob.w()
@@ -2282,7 +2282,7 @@ blob.w()
 
 返回色块边界框的宽度（类型为 int）。您也可以通过索引 [2] 获取该值。
 
-### 11.6 `h`
+### `h`
 
 ```python
 blob.h()
@@ -2290,7 +2290,7 @@ blob.h()
 
 返回色块边界框的高度（类型为 int）。您也可以通过索引 [3] 获取该值。
 
-### 11.6 `pixels`
+### `pixels`
 
 ```python
 blob.pixels()
@@ -2298,7 +2298,7 @@ blob.pixels()
 
 返回属于该色块的像素数量（类型为 int）。您也可以通过索引 [4] 获取该值。
 
-### 11.7 `cx`
+### `cx`
 
 ```python
 blob.cx()
@@ -2306,7 +2306,7 @@ blob.cx()
 
 返回色块中心的 x 坐标（类型为 int）。您也可以通过索引 [5] 获取该值。
 
-### 11.8 `cy`
+### `cy`
 
 ```python
 blob.cy()
@@ -2314,7 +2314,7 @@ blob.cy()
 
 返回色块中心的 y 坐标（类型为 int）。您也可以通过索引 [6] 获取该值。
 
-### 11.9 `rotation`
+### `rotation`
 
 ```python
 blob.rotation()
@@ -2322,7 +2322,7 @@ blob.rotation()
 
 返回色块的旋转角度（单位：弧度）。对于类似铅笔或钢笔的色块，该值在0至180之间。如果色块是圆形的，则该值无效；如果色块具有完全的不对称性，则旋转角度范围为0至360度。您也可以通过索引 [7] 获取该值。
 
-### 11.10 `code`
+### `code`
 
 ```python
 blob.code()
@@ -2330,7 +2330,7 @@ blob.code()
 
 返回一个16位的二进制数，其中每个颜色阈值对应一位，表示该色块的属性。例如，如果通过 `image.find_blobs` 查找三个颜色阈值，则该色块可以设置为第0/1/2位。注意：除非在调用 `image.find_blobs` 时设置 `merge=True`，否则每个色块只能设置一位。因此，不同颜色阈值的多个色块可以合并在一起。您也可以利用该方法结合多个阈值实现颜色代码的跟踪。您也可以通过索引 [8] 获取该值。
 
-### 11.11 `count`
+### `count`
 
 ```python
 blob.count()
@@ -2338,7 +2338,7 @@ blob.count()
 
 返回合并为该色块的多个色块的数量。只有在调用 `image.find_blobs` 时设置 `merge=True`，此数字才会大于1。您也可以通过索引 [9] 获取该值。
 
-### 11.12 `area`
+### `area`
 
 ```python
 blob.area()
@@ -2346,7 +2346,7 @@ blob.area()
 
 返回色块周围边框的面积（计算方式为 w * h）。
 
-### 11.13 `density`
+### `density`
 
 ```python
 blob.density()
@@ -2354,11 +2354,11 @@ blob.density()
 
 返回色块的密度比，表示在色块边界框区域内的像素点数量。一般而言，较低的密度比表明该对象的锁定效果不佳。
 
-## 12 类 `Line`
+## 类 `Line`
 
 直线对象由 `image.find_lines`、`image.find_line_segments` 或 `image.get_regression` 方法返回。
 
-### 12.1 构造函数
+### 构造函数
 
 ```python
 class image.line
@@ -2366,7 +2366,7 @@ class image.line
 
 请通过调用 `image.find_lines()`、`image.find_line_segments()` 或 `image.get_regression()` 函数以创建该对象。
 
-### 12.2 `line`
+### `line`
 
 ```python
 line.line()
@@ -2374,7 +2374,7 @@ line.line()
 
 返回一个直线元组 (x1, y1, x2, y2)，用于图像绘制等其他图像处理方法，例如 `image.draw_line`。
 
-### 12.3 `x1`
+### `x1`
 
 ```python
 line.x1()
@@ -2382,7 +2382,7 @@ line.x1()
 
 返回直线的第一个顶点 (p1) 的 x 坐标分量。您也可以通过索引 [0] 获取该值。
 
-### 12.4 `y1`
+### `y1`
 
 ```python
 line.y1()
@@ -2390,7 +2390,7 @@ line.y1()
 
 返回直线的第一个顶点 (p1) 的 y 坐标分量。您也可以通过索引 [1] 获取该值。
 
-### 12.5 `x2`
+### `x2`
 
 ```python
 line.x2()
@@ -2398,7 +2398,7 @@ line.x2()
 
 返回直线的第二个顶点 (p2) 的 x 坐标分量。您也可以通过索引 [2] 获取该值。
 
-### 12.6 `y2`
+### `y2`
 
 ```python
 line.y2()
@@ -2406,7 +2406,7 @@ line.y2()
 
 返回直线的第二个顶点 (p2) 的 y 坐标分量。您也可以通过索引 [3] 获取该值。
 
-### 12.7 `length`
+### `length`
 
 ```python
 line.length()
@@ -2414,7 +2414,7 @@ line.length()
 
 返回直线的长度，计算方式为 \(\sqrt{((x2-x1)^2) + ((y2-y1)^2)}\)。您也可以通过索引 [4] 获取该值。
 
-### 12.8 `magnitude`
+### `magnitude`
 
 ```python
 line.magnitude()
@@ -2422,7 +2422,7 @@ line.magnitude()
 
 返回霍夫变换后直线的长度。您也可以通过索引 [5] 获取该值。
 
-### 12.9 `theta`
+### `theta`
 
 ```python
 line.theta()
@@ -2430,7 +2430,7 @@ line.theta()
 
 返回霍夫变换后直线的角度（范围：0-179度）。您也可以通过索引 [7] 获取该值。
 
-### 12.10 `rho`
+### `rho`
 
 ```python
 line.rho()
@@ -2438,11 +2438,11 @@ line.rho()
 
 返回霍夫变换后直线的ρ值。您也可以通过索引 [8] 获取该值。
 
-## 13 类 `Circle`
+## 类 `Circle`
 
 圆形对象由 `image.find_circles` 方法返回。
 
-### 13.1 构造函数
+### 构造函数
 
 ```python
 class image.circle
@@ -2450,7 +2450,7 @@ class image.circle
 
 请通过调用 `image.find_circles()` 函数以创建该对象。
 
-### 13.2 `x`
+### `x`
 
 ```python
 circle.x()
@@ -2458,7 +2458,7 @@ circle.x()
 
 返回圆心的 x 坐标。您也可以通过索引 [0] 获取该值。
 
-### 13.3 `y`
+### `y`
 
 ```python
 circle.y()
@@ -2466,7 +2466,7 @@ circle.y()
 
 返回圆心的 y 坐标。您也可以通过索引 [1] 获取该值。
 
-### 13.4 `r`
+### `r`
 
 ```python
 circle.r()
@@ -2474,7 +2474,7 @@ circle.r()
 
 返回圆的半径。您也可以通过索引 [2] 获取该值。
 
-### 13.5 `magnitude`
+### `magnitude`
 
 ```python
 circle.magnitude()
@@ -2482,11 +2482,11 @@ circle.magnitude()
 
 返回圆的大小。您也可以通过索引 [3] 获取该值。
 
-## 14 类 `Rect`
+## 类 `Rect`
 
 矩形对象由 `image.find_rects` 函数返回。
 
-### 14.1 构造函数
+### 构造函数
 
 ```python
 class image.rect
@@ -2494,7 +2494,7 @@ class image.rect
 
 请使用 `image.find_rects()` 函数创建此对象。
 
-### 14.2 `corners`
+### `corners`
 
 ```python
 rect.corners()
@@ -2502,7 +2502,7 @@ rect.corners()
 
 该方法返回一个包含矩形对象四个角的元组列表，每个元组格式为 (x, y)。四个角的顺序通常为从左上角开始，按顺时针方向排列。
 
-### 14.3 `rect`
+### `rect`
 
 ```python
 rect.rect()
@@ -2510,7 +2510,7 @@ rect.rect()
 
 该方法返回一个矩形元组 (x, y, w, h)，可用于其他图像处理方法，如 `image.draw_rectangle` 中的边界框。
 
-### 14.4 `x`
+### `x`
 
 ```python
 rect.x()
@@ -2518,7 +2518,7 @@ rect.x()
 
 该方法返回矩形左上角的 x 坐标。您也可以通过索引 [0] 获取该值。
 
-### 14.5 `y`
+### `y`
 
 ```python
 rect.y()
@@ -2526,7 +2526,7 @@ rect.y()
 
 该方法返回矩形左上角的 y 坐标。您也可以通过索引 [1] 获取该值。
 
-### 14.6 `w`
+### `w`
 
 ```python
 rect.w()
@@ -2534,7 +2534,7 @@ rect.w()
 
 该方法返回矩形的宽度。您也可以通过索引 [2] 获取该值。
 
-### 14.7 `h`
+### `h`
 
 ```python
 rect.h()
@@ -2542,7 +2542,7 @@ rect.h()
 
 该方法返回矩形的高度。您也可以通过索引 [3] 获取该值。
 
-### 14.8 `magnitude`
+### `magnitude`
 
 ```python
 rect.magnitude()
@@ -2550,11 +2550,11 @@ rect.magnitude()
 
 该方法返回矩形的大小。您也可以通过索引 [4] 获取该值。
 
-## 15 类 `QRCode`
+## 类 `QRCode`
 
 二维码对象由 `image.find_qrcodes` 函数返回。
 
-### 15.1 构造函数
+### 构造函数
 
 ```python
 class image.qrcode
@@ -2562,7 +2562,7 @@ class image.qrcode
 
 请使用 `image.find_qrcodes()` 函数创建此对象。
 
-### 15.2 `corners`
+### `corners`
 
 ```python
 qrcode.corners()
@@ -2570,7 +2570,7 @@ qrcode.corners()
 
 该方法返回一个包含二维码四个角的元组列表，每个元组格式为 (x, y)。四个角的顺序通常为从左上角开始，按顺时针方向排列。
 
-### 15.3 `rect`
+### `rect`
 
 ```python
 qrcode.rect()
@@ -2578,7 +2578,7 @@ qrcode.rect()
 
 该方法返回一个矩形元组 (x, y, w, h)，可用于其他图像处理方法，如 `image.draw_rectangle` 中的二维码边界框。
 
-### 15.4 `x`
+### `x`
 
 ```python
 qrcode.x()
@@ -2586,7 +2586,7 @@ qrcode.x()
 
 该方法返回二维码边界框的 x 坐标 (int)。您也可以通过索引 [0] 获取该值。
 
-### 15.5 `y`
+### `y`
 
 ```python
 qrcode.y()
@@ -2594,7 +2594,7 @@ qrcode.y()
 
 该方法返回二维码边界框的 y 坐标 (int)。您也可以通过索引 [1] 获取该值。
 
-### 15.6 `w`
+### `w`
 
 ```python
 qrcode.w()
@@ -2602,7 +2602,7 @@ qrcode.w()
 
 该方法返回二维码边界框的宽度 (int)。您也可以通过索引 [2] 获取该值。
 
-### 15.7 `h`
+### `h`
 
 ```python
 qrcode.h()
@@ -2610,7 +2610,7 @@ qrcode.h()
 
 该方法返回二维码边界框的高度 (int)。您也可以通过索引 [3] 获取该值。
 
-### 15.8 `payload`
+### `payload`
 
 ```python
 qrcode.payload()
@@ -2618,7 +2618,7 @@ qrcode.payload()
 
 该方法返回二维码的有效载荷字符串，例如 URL。您也可以通过索引 [4] 获取该值。
 
-### 15.9 `version`
+### `version`
 
 ```python
 qrcode.version()
@@ -2626,7 +2626,7 @@ qrcode.version()
 
 该方法返回二维码的版本号 (int)。您也可以通过索引 [5] 获取该值。
 
-### 15.10 `ecc_level`
+### `ecc_level`
 
 ```python
 qrcode.ecc_level()
@@ -2634,7 +2634,7 @@ qrcode.ecc_level()
 
 该方法返回二维码的错误纠正水平 (int)。您也可以通过索引 [6] 获取该值。
 
-### 15.11 `mask`
+### `mask`
 
 ```python
 qrcode.mask()
@@ -2642,7 +2642,7 @@ qrcode.mask()
 
 该方法返回二维码的掩码 (int)。您也可以通过索引 [7] 获取该值。
 
-### 15.12 `data_type`
+### `data_type`
 
 ```python
 qrcode.data_type()
@@ -2650,7 +2650,7 @@ qrcode.data_type()
 
 该方法返回二维码的数据类型。您也可以通过索引 [8] 获取该值。
 
-### 15.13 `eci`
+### `eci`
 
 ```python
 qrcode.eci()
@@ -2658,7 +2658,7 @@ qrcode.eci()
 
 该方法返回二维码的 ECI（编码指示），用于存储 QR 码中数据字节的编码。处理包含非标准 ASCII 文本的二维码时，需查看此值。您也可以通过索引 [9] 获取该值。
 
-### 15.14 `is_numeric`
+### `is_numeric`
 
 ```python
 qrcode.is_numeric()
@@ -2666,7 +2666,7 @@ qrcode.is_numeric()
 
 若二维码的数据类型为数字格式，则返回 True。
 
-### 15.15`is_alphanumeric`
+### `is_alphanumeric`
 
 ```python
 qrcode.is_alphanumeric()
@@ -2674,7 +2674,7 @@ qrcode.is_alphanumeric()
 
 若二维码的数据类型为字母数字格式，则返回 True。
 
-### 15.16 `is_binary`
+### `is_binary`
 
 ```python
 qrcode.is_binary()
@@ -2682,7 +2682,7 @@ qrcode.is_binary()
 
 若二维码的数据类型为二进制格式，则返回 True。若需准确处理所有类型的文本，请检查 `eci` 是否为 True，以确定数据的文本编码。通常为标准 ASCII，但可能是包含两个字节字符的 UTF-8。
 
-### 15.17 `is_kanji`
+### `is_kanji`
 
 ```python
 qrcode.is_kanji()
@@ -2690,11 +2690,11 @@ qrcode.is_kanji()
 
 若二维码的数据类型为日文汉字格式，则返回 True。若返回值为 True，需自行解码字符串，因为日文汉字每个字符为 10 位，而 MicroPython 不支持解析此类文本。
 
-## 16 类 `AprilTag`
+## 类 `AprilTag`
 
 AprilTag 对象由 `image.find_apriltags` 函数返回。
 
-### 16.1 构造函数
+### 构造函数
 
 ```python
 class image.apriltag
@@ -2702,7 +2702,7 @@ class image.apriltag
 
 请使用 `image.find_apriltags()` 函数创建此对象。
 
-### 16.2 `corners`
+### `corners`
 
 ```python
 apriltag.corners()
@@ -2710,7 +2710,7 @@ apriltag.corners()
 
 该方法返回一个包含 AprilTag 四个角的元组列表，每个元组格式为 (x, y)。四个角的顺序通常为从左上角开始，按顺时针方向排列。
 
-### 16.3 `rect`
+### `rect`
 
 ```python
 apriltag.rect()
@@ -2718,7 +2718,7 @@ apriltag.rect()
 
 该方法返回一个矩形元组 (x, y, w, h)，可用于其他图像处理方法，如 `image.draw_rectangle` 中的 AprilTag 边界框。
 
-### 16.4 `x`
+### `x`
 
 ```python
 apriltag.x()
@@ -2726,7 +2726,7 @@ apriltag.x()
 
 该方法返回 AprilTag 边界框的 x 坐标 (int)。您也可以通过索引 [0] 获取该值。
 
-### 16.5 `y`
+### `y`
 
 ```python
 apriltag.y()
@@ -2734,7 +2734,7 @@ apriltag.y()
 
 该方法返回 AprilTag 边界框的 y 坐标 (int)。您也可以通过索引 [1] 获取该值。
 
-### 16.6 `w`
+### `w`
 
 ```python
 apriltag.w()
@@ -2742,7 +2742,7 @@ apriltag.w()
 
 该方法返回 AprilTag 边界框的宽度 (int)。您也可以通过索引 [2] 获取该值。
 
-### 16.7 `h`
+### `h`
 
 ```python
 apriltag.h()
@@ -2750,7 +2750,7 @@ apriltag.h()
 
 该方法返回 AprilTag 边界框的高度 (int)。您也可以通过索引 [3] 获取该值。
 
-### 16.8 `id`
+### `id`
 
 ```python
 apriltag.id()
@@ -2767,7 +2767,7 @@ apriltag.id()
 
 您也可以通过索引 [4] 获取该值。
 
-### 16.9 `family`
+### `family`
 
 ```python
 apriltag.family()
@@ -2784,7 +2784,7 @@ apriltag.family()
 
 您也可以通过索引 [5] 获取该值。
 
-### 16.10 `cx`
+### `cx`
 
 ```python
 apriltag.cx()
@@ -2792,7 +2792,7 @@ apriltag.cx()
 
 该方法返回 AprilTag 的中心 x 坐标 (int)。您也可以通过索引 [6] 获取该值。
 
-### 16.11 `cy`
+### `cy`
 
 ```python
 apriltag.cy()
@@ -2800,7 +2800,7 @@ apriltag.cy()
 
 该方法返回 AprilTag 的中心 y 坐标 (int)。您也可以通过索引 [7] 获取该值。
 
-### 16.12 `rotation`
+### `rotation`
 
 ```python
 apriltag.rotation()
@@ -2808,7 +2808,7 @@ apriltag.rotation()
 
 该方法返回 AprilTag 的旋转角度，以弧度计量 (int)。您也可以通过索引 [8] 获取该值。
 
-### 16.13 `decision_margin`
+### `decision_margin`
 
 ```python
 aprilt
@@ -2818,7 +2818,7 @@ ag.decision_margin()
 
 该方法返回 AprilTag 的决策边际，反映了对检测的置信度 (float)。您也可以通过索引 [9] 获取该值。
 
-### 16.14 `hamming`
+### `hamming`
 
 ```python
 apriltag.hamming()
@@ -2835,7 +2835,7 @@ apriltag.hamming()
 
 您可以通过索引 [10] 获取该值。
 
-### 16.15 `goodness`
+### `goodness`
 
 ```python
 apriltag.goodness()
@@ -2847,7 +2847,7 @@ apriltag.goodness()
 
 您可以通过索引 [11] 获取该值。
 
-### 16.16 `x_translation`
+### `x_translation`
 
 ```python
 apriltag.x_translation()
@@ -2861,7 +2861,7 @@ apriltag.x_translation()
 
 您可以通过索引 [12] 获取该值。
 
-### 16.17 `y_translation`
+### `y_translation`
 
 ```python
 apriltag.y_translation()
@@ -2875,7 +2875,7 @@ apriltag.y_translation()
 
 您可以通过索引 [13] 获取该值。
 
-### 16.18 `z_translation`
+### `z_translation`
 
 ```python
 apriltag.z_translation()
@@ -2889,7 +2889,7 @@ apriltag.z_translation()
 
 您可以通过索引 [14] 获取该值。
 
-### 16.19 `x_rotation`
+### `x_rotation`
 
 ```python
 apriltag.x_rotation()
@@ -2899,7 +2899,7 @@ apriltag.x_rotation()
 
 您可以通过索引 [15] 获取该值。
 
-### 16.20 `y_rotation`
+### `y_rotation`
 
 ```python
 apriltag.y_rotation()
@@ -2909,7 +2909,7 @@ apriltag.y_rotation()
 
 您可以通过索引 [16] 获取该值。
 
-### 16.21 `z_rotation`
+### `z_rotation`
 
 ```python
 apriltag.z_rotation()
@@ -2921,11 +2921,11 @@ apriltag.z_rotation()
 
 您可以通过索引 [17] 获取该值。
 
-## 17 类 `DataMatrix`
+## 类 `DataMatrix`
 
 数据矩阵对象由 `image.find_datamatrices` 函数返回。
 
-### 17.1 构造函数
+### 构造函数
 
 ```python
 class image.datamatrix
@@ -2933,7 +2933,7 @@ class image.datamatrix
 
 请调用 `image.find_datamatrices()` 函数来创建此对象。
 
-### 17.2 `corners`
+### `corners`
 
 ```python
 datamatrix.corners()
@@ -2941,7 +2941,7 @@ datamatrix.corners()
 
 该方法返回一个包含数据矩阵四个角的元组列表，每个元组格式为 (x, y)。四个角通常按从左上角开始，沿顺时针方向排列。
 
-### 17.3 `rect`
+### `rect`
 
 ```python
 datamatrix.rect()
@@ -2949,7 +2949,7 @@ datamatrix.rect()
 
 该方法返回一个矩形元组 (x, y, w, h)，可用于其他图像处理方法，如 `image.draw_rectangle` 中的数据矩阵边界框。
 
-### 17.4 `x`
+### `x`
 
 ```python
 datamatrix.x()
@@ -2957,7 +2957,7 @@ datamatrix.x()
 
 该方法返回数据矩阵边界框的 x 坐标（整数）。您也可以通过索引 [0] 获取该值。
 
-### 17.5 `y`
+### `y`
 
 ```python
 datamatrix.y()
@@ -2965,7 +2965,7 @@ datamatrix.y()
 
 该方法返回数据矩阵边界框的 y 坐标（整数）。您也可以通过索引 [1] 获取该值。
 
-### 17.6 `w`
+### `w`
 
 ```python
 datamatrix.w()
@@ -2973,7 +2973,7 @@ datamatrix.w()
 
 该方法返回数据矩阵边界框的宽度（整数）。您也可以通过索引 [2] 获取该值。
 
-### 17.7 `h`
+### `h`
 
 ```python
 datamatrix.h()
@@ -2981,7 +2981,7 @@ datamatrix.h()
 
 该方法返回数据矩阵边界框的高度（整数）。您也可以通过索引 [3] 获取该值。
 
-### 17.8 `payload`
+### `payload`
 
 ```python
 datamatrix.payload()
@@ -2991,7 +2991,7 @@ datamatrix.payload()
 
 您也可以通过索引 [4] 获取该值。
 
-### 17.9 `rotation`
+### `rotation`
 
 ```python
 datamatrix.rotation()
@@ -3001,7 +3001,7 @@ datamatrix.rotation()
 
 您也可以通过索引 [5] 获取该值。
 
-### 17.10 `rows`
+### `rows`
 
 ```python
 datamatrix.rows()
@@ -3011,7 +3011,7 @@ datamatrix.rows()
 
 您也可以通过索引 [6] 获取该值。
 
-### 17.11 `columns`
+### `columns`
 
 ```python
 datamatrix.columns()
@@ -3021,7 +3021,7 @@ datamatrix.columns()
 
 您也可以通过索引 [7] 获取该值。
 
-### 17.12 `capacity`
+### `capacity`
 
 ```python
 datamatrix.capacity()
@@ -3031,7 +3031,7 @@ datamatrix.capacity()
 
 您也可以通过索引 [8] 获取该值。
 
-### 17.13 `padding`
+### `padding`
 
 ```python
 datamatrix.padding()
@@ -3041,11 +3041,11 @@ datamatrix.padding()
 
 您也可以通过索引 [9] 获取该值。
 
-## 18 类 `BarCode`
+## 类 `BarCode`
 
 条形码对象由 `image.find_barcodes` 函数返回。
 
-### 18.1 构造函数
+### 构造函数
 
 ```python
 class image.barcode
@@ -3053,7 +3053,7 @@ class image.barcode
 
 请调用 `image.find_barcodes()` 函数来创建此对象。
 
-### 18.2 `corners`
+### `corners`
 
 ```python
 barcode.corners()
@@ -3061,7 +3061,7 @@ barcode.corners()
 
 该方法返回一个包含条形码四个角的元组列表，每个元组格式为 (x, y)。四个角通常按从左上角开始，沿顺时针方向排列。
 
-### 18.3 `rect`
+### `rect`
 
 ```python
 barcode.rect()
@@ -3069,7 +3069,7 @@ barcode.rect()
 
 该方法返回一个矩形元组 (x, y, w, h)，可用于其他图像处理方法，如 `image.draw_rectangle` 中的条形码边界框。
 
-### 18.4 `x`
+### `x`
 
 ```python
 barcode.x()
@@ -3077,7 +3077,7 @@ barcode.x()
 
 该方法返回条形码边界框的 x 坐标（整数）。您也可以通过索引 [0] 获取该值。
 
-### 18.5 `y`
+### `y`
 
 ```python
 barcode.y()
@@ -3085,7 +3085,7 @@ barcode.y()
 
 该方法返回条形码边界框的 y 坐标（整数）。您也可以通过索引 [1] 获取该值。
 
-### 18.6 `w`
+### `w`
 
 ```python
 barcode.w()
@@ -3093,7 +3093,7 @@ barcode.w()
 
 该方法返回条形码边界框的宽度（整数）。您也可以通过索引 [2] 获取该值。
 
-### 18.7 `h`
+### `h`
 
 ```python
 barcode.h()
@@ -3101,7 +3101,7 @@ barcode.h()
 
 该方法返回条形码边界框的高度（整数）。您也可以通过索引 [3] 获取该值。
 
-### 18.8 `payload`
+### `payload`
 
 ```python
 barcode.payload()
@@ -3111,7 +3111,7 @@ barcode.payload()
 
 您也可以通过索引 [4] 获取该值。
 
-### 18.9 `type`
+### `type`
 
 ```python
 barcode.type()
@@ -3141,7 +3141,7 @@ barcode.type()
 
 您也可以通过索引 [5] 获取该值。
 
-### 18.10 `rotation`
+### `rotation`
 
 ```python
 barcode.rotation()
@@ -3151,7 +3151,7 @@ barcode.rotation()
 
 您也可以通过索引 [6] 获取该值。
 
-### 18.11 `quality`
+### `quality`
 
 ```python
 barcode.quality()
@@ -3163,11 +3163,11 @@ barcode.quality()
 
 您也可以通过索引 [7] 获取该值。
 
-## 19 类 `Displacement`
+## 类 `Displacement`
 
 位移对象由 `image.find_displacement` 函数返回。
 
-### 19.1 构造函数
+### 构造函数
 
 ```python
 class image.displacement
@@ -3175,7 +3175,7 @@ class image.displacement
 
 请通过调用 `image.find_displacement()` 函数来创建此对象。
 
-### 19.2 `x_translation`
+### `x_translation`
 
 ```python
 displacement.x_translation()
@@ -3185,7 +3185,7 @@ displacement.x_translation()
 
 您也可以通过索引 [0] 获取该值。
 
-### 19.3 `y_translation`
+### `y_translation`
 
 ```python
 displacement.y_translation()
@@ -3195,7 +3195,7 @@ displacement.y_translation()
 
 您也可以通过索引 [1] 获取该值。
 
-### 19.4 `rotation`
+### `rotation`
 
 ```python
 displacement.rotation()
@@ -3205,7 +3205,7 @@ displacement.rotation()
 
 您也可以通过索引 [2] 获取该值。
 
-### 19.5 `scale`
+### `scale`
 
 ```python
 displacement.scale()
@@ -3215,7 +3215,7 @@ displacement.scale()
 
 您也可以通过索引 [3] 获取该值。
 
-### 19.6 `response`
+### `response`
 
 ```python
 displacement.response()
@@ -3225,11 +3225,11 @@ displacement.response()
 
 您也可以通过索引 [4] 获取该值。
 
-## 20 类 `Kptmatch`
+## 类 `Kptmatch`
 
 特征点对象由 `image.match_descriptor` 函数返回。
 
-### 20.1 构造函数
+### 构造函数
 
 ```python
 class image.kptmatch
@@ -3237,7 +3237,7 @@ class image.kptmatch
 
 请通过调用 `image.match_descriptor()` 函数来创建此对象。
 
-### 20.2 `rect`
+### `rect`
 
 ```python
 kptmatch.rect()
@@ -3245,7 +3245,7 @@ kptmatch.rect()
 
 该方法返回一个矩形元组 (x, y, w, h)，可用于绘制特征点边界框的其他图像处理方法，如 `image.draw_rectangle`。
 
-### 20.3 `cx`
+### `cx`
 
 ```python
 kptmatch.cx()
@@ -3255,7 +3255,7 @@ kptmatch.cx()
 
 您也可以通过索引 [0] 获取该值。
 
-### 20.4 `cy`
+### `cy`
 
 ```python
 kptmatch.cy()
@@ -3265,7 +3265,7 @@ kptmatch.cy()
 
 您也可以通过索引 [1] 获取该值。
 
-### 20.5 `x`
+### `x`
 
 ```python
 kptmatch.x()
@@ -3275,7 +3275,7 @@ kptmatch.x()
 
 您也可以通过索引 [2] 获取该值。
 
-### 20.6 `y`
+### `y`
 
 ```python
 kptmatch.y()
@@ -3285,7 +3285,7 @@ kptmatch.y()
 
 您也可以通过索引 [3] 获取该值。
 
-### 20.7 `w`
+### `w`
 
 ```python
 kptmatch.w()
@@ -3295,7 +3295,7 @@ kptmatch.w()
 
 您也可以通过索引 [4] 获取该值。
 
-### 20.8 `h`
+### `h`
 
 ```python
 kptmatch.h()
@@ -3305,7 +3305,7 @@ kptmatch.h()
 
 您也可以通过索引 [5] 获取该值。
 
-### 20.9 `count`
+### `count`
 
 ```python
 kptmatch.count()
@@ -3315,7 +3315,7 @@ kptmatch.count()
 
 您也可以通过索引 [6] 获取该值。
 
-### 20.10 `theta`
+### `theta`
 
 ```python
 kptmatch.theta()
@@ -3325,7 +3325,7 @@ kptmatch.theta()
 
 您也可以通过索引 [7] 获取该值。
 
-### 20.11 `match`
+### `match`
 
 ```python
 kptmatch.match()
@@ -3335,116 +3335,116 @@ kptmatch.match()
 
 您也可以通过索引 [8] 获取该值。
 
-## 21 常量
+## 常量
 
-### 21.1 `image.SEARCH_EX`
+### `image.SEARCH_EX`
 
 用于执行详尽的模板匹配搜索。
 
-### 21.2 `image.SEARCH_DS`
+### `image.SEARCH_DS`
 
 用于执行更快的模板匹配搜索。
 
-### 21.3 `image.EDGE_CANNY`
+### `image.EDGE_CANNY`
 
 应用 Canny 边缘检测算法对图像进行边缘检测。
 
-### 21.4 `image.EDGE_SIMPLE`
+### `image.EDGE_SIMPLE`
 
 使用阈值高通滤波算法对图像进行边缘检测。
 
-### 21.5 `image.CORNER_FAST`
+### `image.CORNER_FAST`
 
 用于 ORB 特征点的高速低准确率角点检测算法。
 
-### 21.6 `image.CORNER_AGAST`
+### `image.CORNER_AGAST`
 
 用于 ORB 特征点的低速高准确率角点检测算法。
 
-### 21.7 `image.TAG16H5`
+### `image.TAG16H5`
 
 用于 AprilTags 的 TAG16H5 标签组位掩码枚举。
 
-### 21.8 `image.TAG25H7`
+### `image.TAG25H7`
 
 用于 AprilTags 的 TAG25H7 标签组位掩码枚举。
 
-### 21.9 `image.TAG25H9`
+### `image.TAG25H9`
 
 用于 AprilTags 的 TAG25H9 标签组位掩码枚举。
 
-### 21.10 `image.TAG36H10`
+### `image.TAG36H10`
 
 用于 AprilTags 的 TAG36H10 标签组位掩码枚举。
 
-### 21.11 `image.TAG36H11`
+### `image.TAG36H11`
 
 用于 AprilTags 的 TAG36H11 标签组位掩码枚举。
 
-### 21.12 `image.ARTOOLKIT`
+### `image.ARTOOLKIT`
 
 用于 AprilTags 的 ARTOLKIT 标签组位掩码枚举。
 
-### 21.13 `image.EAN2`
+### `image.EAN2`
 
 EAN2 条形码类型的枚举。
 
-### 21.14 `image.EAN5`
+### `image.EAN5`
 
 EAN5 条形码类型的枚举。
 
-### 21.15 `image.EAN8`
+### `image.EAN8`
 
 EAN8 条形码类型的枚举。
 
-### 21.16 `image.UPCE`
+### `image.UPCE`
 
 UPCE 条形码类型的枚举。
 
-### 21.17 `image.ISBN10`
+### `image.ISBN10`
 
 ISBN10 条形码类型的枚举。
 
-### 21.18 `image.UPCA`
+### `image.UPCA`
 
 UPCA 条形码类型的枚举。
 
-### 21.19 `image.EAN13`
+### `image.EAN13`
 
 EAN13 条形码类型的枚举。
 
-### 21.20 `image.ISBN13`
+### `image.ISBN13`
 
 ISBN13 条形码类型的枚举。
 
-### 21.21 `image.I25`
+### `image.I25`
 
 I25 条形码类型的枚举。
 
-### 21.22 `image.DATABAR`
+### `image.DATABAR`
 
 DATABAR 条形码类型的枚举。
 
-### 21.23 `image.DATABAR_EXP`
+### `image.DATABAR_EXP`
 
 DATABAR_EXP 条形码类型的枚举。
 
-### 21.24 `image.CODABAR`
+### `image.CODABAR`
 
 CODABAR 条形码类型的枚举。
 
-### 21.25 `image.CODE39`
+### `image.CODE39`
 
 CODE39 条形码类型的枚举。
 
-### 21.26 `image.PDF417`
+### `image.PDF417`
 
 PDF417 条形码类型的枚举（目前尚未实现）。
 
-### 21.27 `image.CODE93`
+### `image.CODE93`
 
 CODE93 条形码类型的枚举。
 
-### 21.28 `image.CODE128`
+### `image.CODE128`
 
 CODE128 条形码类型的枚举。

@@ -1,12 +1,12 @@
-# 3.13 `NONAI2D CSC` 模块 API 手册
+# `NONAI2D CSC` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 K230芯片内置24个硬件色彩空间转换(CSC)通道，能够高效地进行图像色彩空间转换处理。该模块支持多种图像格式转换，包括RGB/YUV等常见格式，适用于视频处理、图像显示等场景。
 
-## 2. API 参考
+## API 参考
 
-### 2.1 构造函数
+### 构造函数
 
 **功能**  
 初始化CSC转换通道
@@ -37,7 +37,7 @@ csc = CSC(chn, fmt, max_width=1920, max_height=1080, buf_num=2)
 > 1. 通道号0-23不可重复使用  
 > 1. 建议根据实际图像尺寸设置max_width/max_height以节省内存
 
-### 2.2 convert方法
+### convert方法
 
 **功能**  
 执行图像色彩空间转换
@@ -59,7 +59,7 @@ result = csc.convert(frame, timeout_ms=1000, cvt=True)
 **返回值**  
 根据cvt参数返回转换后的Image对象或py_video_frame_info
 
-### 2.3 destroy方法
+### destroy方法
 
 **功能**  
 释放CSC通道资源
@@ -73,7 +73,7 @@ csc.destroy()
 **说明**  
 调用后将释放该CSC通道占用的所有资源，不可再使用该对象
 
-## 3. 常量定义
+## 常量定义
 
 ### 图像格式常量
 
@@ -90,7 +90,7 @@ csc.destroy()
 | PIXEL_FORMAT_YVU_PLANAR_420  | YVU420平面格式               | 视频解码输出             |
 | PIXEL_FORMAT_YUV_SEMIPLANAR_420 | YUV420半平面格式            | 视频编码输入             |
 
-## 4. 最佳实践
+## 最佳实践
 
 ```python
 import time, os, urandom, sys

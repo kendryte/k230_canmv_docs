@@ -1,14 +1,14 @@
-# 2.13 `WDT` 模块 API 手册
+# `WDT` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 K230 内部集成了两个 WDT（看门狗定时器）硬件模块，旨在确保系统在应用程序崩溃并进入不可恢复状态时能够重启。WDT 在启动后，如果硬件运行期间未定期进行“喂狗”操作，将会在超时后自动复位系统。
 
-## 2. API 介绍
+## API 介绍
 
 WDT 类位于 `machine` 模块中。
 
-### 2.1 示例代码
+### 示例代码
 
 ```python
 from machine import WDT
@@ -20,7 +20,7 @@ wdt1 = WDT(1, 3)
 wdt1.feed()
 ```
 
-### 2.2 构造函数
+### 构造函数
 
 ```python
 wdt = WDT(id=1, timeout=5, auto_close = True)
@@ -34,7 +34,7 @@ wdt = WDT(id=1, timeout=5, auto_close = True)
 
 **注意：** WDT0 暂不可用。
 
-### 2.3 `feed` 方法
+### `feed` 方法
 
 ```python
 WDT.feed()

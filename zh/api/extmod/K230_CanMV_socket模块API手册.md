@@ -1,10 +1,10 @@
-# 2.3 `socket` 模块 API 手册
+# `socket` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 该模块封装了 `socket` 库，用户可以通过调用 `socket` 库进行网络应用程序开发。
 
-## 2. 示例
+## 示例
 
 ```python
 # 配置 tcp/udp socket 调试工具
@@ -42,11 +42,11 @@ def client():
 client()
 ```
 
-## 3. API 定义
+## API 定义
 
 详见 [Micropython socket module](https://docs.micropython.org/en/latest/library/socket.html)
 
-### 3.1 构造函数
+### 构造函数
 
 - **class** socket.socket(*af=AF_INET*, *type=SOCK_STREAM*, *proto=IPPROTO_TCP*)  
 
@@ -54,7 +54,7 @@ client()
   - 创建一个 TCP 流套接字：`socket(AF_INET, SOCK_STREAM)`
   - 创建一个 UDP 数据报套接字：`socket(AF_INET, SOCK_DGRAM)`
 
-### 3.2 方法
+### 方法
 
 - **socket.close()**
 

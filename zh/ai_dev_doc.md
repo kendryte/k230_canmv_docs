@@ -1,6 +1,6 @@
 # AI开发文档
 
-## 1. KPU硬件基本原理介绍
+## KPU硬件基本原理介绍
 
 在边缘计算场景中（如物联网设备、智能摄像头、工业检测终端、可穿戴设备等），设备通常部署在远离云端数据中心的现场，面临着**实时性要求高、网络带宽受限、数据隐私敏感以及功耗约束严格**的挑战。在这些场景下运行复杂的AI模型（如图像识别、目标检测、语音唤醒），如果仅依赖传统的通用CPU进行计算，往往会遇到**计算量过大、处理速度慢、功耗过高**的问题，难以满足实时响应和能效比的要求。
 
@@ -27,7 +27,7 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 
 ![kpu_in_system](https://www.kendryte.com/api/post/attachment?id=610)
 
-## 2. K230 AI 应用示例展示
+## K230 AI 应用示例展示
 
 为了帮助开发者快速上手并直观体验 K230 强大的边缘 AI 能力，CanMV K230 镜像内置了丰富多样的 AI 示例程序 (AI Demo)。
 
@@ -86,7 +86,7 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 | yolo11n_obb             | yolo11n旋转目标检测| 单模型任务 | ✅ |✅ |
 | yolov8n_obb             | yolov8n旋转目标检测| 单模型任务 | ✅ |✅ |
 
-## 3. AI模型推理的基本流程
+## AI模型推理的基本流程
 
 把训练的AI模型部署在K230上的基本流程见下面的流程图：
 
@@ -156,7 +156,7 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 
 以上六个步骤构成了在 K230 芯片 上完成 AI 模型部署与推理的完整流程。每一步均需精心设计与执行，以确保最终应用具备良好的性能、稳定性与用户体验。
 
-## 4. 训练模型
+## 训练模型
 
 ```{note}
 🤖 **【场景定义】**：在 K230 开发板上实现“打印数字的识别与定位”。
@@ -179,7 +179,7 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 ![4_number_det](https://www.kendryte.com/api/post/attachment?id=635)
 ```
 
-### 4.1 数据采集
+### 数据采集
 
 ```{note}
 👉 采集训练数据其实很简单！你只需要先把 MicroPython 固件烧进开发板，然后找到那个脚本——/sdcard/examples/16-AI-Cube/DataCollectionCamera.py，把它改名为 main.py，放到 /sdcard 目录下。接着重新上电（也就是重启一下板子），运行起来后，按下板子上的key按键就可以开始采集啦！每按一下就拍一张照片，图像会自动保存到 /sdcard/examples/data/ 文件夹里，完全不用你管，超省心！
@@ -215,7 +215,7 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 - **同步标注信息**：在采集过程中尽量同步记录标签信息，便于后期标注。
 - **初步质量检查**：剔除模糊、曝光过度、遮挡严重等无效样本。
   
-### 4.2 数据标注
+### 数据标注
 
 ```{note}
 👉 拿到采集好的图片之后，就可以开始给它们打标签啦！根据这个任务的要求，你可以用一些常见的标注工具，比如 LabelImg、Labelme 或 X-AnyLabeling，给图片里的数字加上对应的类别、画出目标框。你可以亲自采集图像、自己动手标注，整个过程也挺有趣的。当然啦，如果你不想从头做，我们也贴心准备了一份现成的“0/1/2/3四类打印数字识别”数据集，直接点这里就能下载：[0/1/2/3四类打印数字识别数据集](https://kendryte-download.canaan-creative.com/developer/k230/yolo_dataset/number_det.zip)。省时又省力，直接上手训练也没问题！
@@ -230,10 +230,10 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 
 关于常见的视觉任务，这里推荐使用X-AnyLabeling进行标注。下载链接: [X-AnyLabeling-release](https://github.com/CVHub520/X-AnyLabeling/releases)。
   
-### 4.3 模型训练
+### 模型训练
 
 ```{note}
-👉 模型训练的方法有很多，其中 YOLO 系列是现在特别常用的选择，比如 YOLOv5、YOLOv8 或 YOLO11。我们推荐你用 YOLO 来进行训练，因为它效果好、速度快、社区也很活跃。更棒的是，我们提供的数据集已经整理好了，可以直接用来训练 YOLO 模型！你只需要跳转到这个示例：[YOLO检测示例](#72-yolov8跌倒检测)，按照里面的流程来做，把示例中的数据集部分换成我们准备的“0/1/2/3 四类打印数字识别数据集”就行啦。本节的目标是先把模型训练好，并导出为 ONNX 格式，后面还有更多有趣的内容等着你继续解锁！
+👉 模型训练的方法有很多，其中 YOLO 系列是现在特别常用的选择，比如 YOLOv5、YOLOv8 或 YOLO11。我们推荐你用 YOLO 来进行训练，因为它效果好、速度快、社区也很活跃。更棒的是，我们提供的数据集已经整理好了，可以直接用来训练 YOLO 模型！你只需要跳转到这个示例：[YOLO检测示例](#yolov8跌倒检测)，按照里面的流程来做，把示例中的数据集部分换成我们准备的“0/1/2/3 四类打印数字识别数据集”就行啦。本节的目标是先把模型训练好，并导出为 ONNX 格式，后面还有更多有趣的内容等着你继续解锁！
 ```
 
 模型训练是整个AI流程中最重要的一步，它涉及到模型的构建、训练和优化。在进行模型训练时，需要考虑以下几个方面：
@@ -246,7 +246,7 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 
 训练好的模型需要转换成onnx模型或者tflite模型，准备后续使用nncase进行模型转换，得到可以在K230上推理的kmodel。
 
-## 5. 模型转换
+## 模型转换
 
 当我们训练结束后，会得到一个 ONNX 模型文件。但这个模型还不能直接在 K230 上用 KPU 来跑，因为 KPU 只支持 Kmodel 格式。
 
@@ -254,9 +254,9 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 
 下面我们就来简单认识一下这个关键工具 —— nncase！
 
-### 5.1 什么是 nncase
+### 什么是 nncase
 
-#### 5.1.1 nncase 简介
+#### nncase 简介
 
 `nncase` 是一款专为 AI 加速器设计的**神经网络编译器**，目前已支持的后端（target）包括：**CPU、K210、K510、K230** 等平台。
 
@@ -303,7 +303,7 @@ nncase 的软件栈主要包括以下两大组成部分：
 
 模型转换章节主要介绍nncase compiler和simulator的使用方法。
 
-#### 5.1.2 安装 nncase 环境
+#### 安装 nncase 环境
 
 - **Linux 环境搭建 nncase**
 
@@ -354,7 +354,7 @@ docker run -it --rm -v `pwd`:/mnt -w /mnt ghcr.io/kendryte/k230_sdk /bin/bash
 
 > 示例输出为 `2.9.0`，请以实际安装版本为准。
 
-### 5.2 使用 nncase 编译器转换kmodel
+### 使用 nncase 编译器转换kmodel
 
 ![compile_kmodel](https://www.kendryte.com/api/post/attachment?id=636)
 
@@ -366,11 +366,11 @@ docker run -it --rm -v `pwd`:/mnt -w /mnt ghcr.io/kendryte/k230_sdk /bin/bash
 
 **导入原始模型**：当前主流训练框架（如TensorFlow/PyTorch）生成的ONNX/TFLite模型包含通用运算符，但KPU作为专用加速器需要特定算子格式。此步骤通过模型解析和算子转换，将原始模型转化为编译器可优化的中间表示，为后续硬件相关优化奠定基础。
 
-**量化处理**：这是提升边缘侧推理性能的关键环节。我们训练得到的FP32模型虽精度高但存在计算延迟大、内存占用高等问题。通过量化到INT8/INT16：显著减少模型体积，提升计算速度（利用硬件定点加速指令），降低功耗（减少内存带宽需求）。需注意的是，量化会引入精度损失，因此需要通过校准数据集帮助模型确定在量化过程中每一层权重和激活值应该被映射到的范围，以便保留更多的信息，减少量化误差。量化过程需要配置量化参数和校准数据，量化参数见[编译参数说明](#522-编译参数说明)。
+**量化处理**：这是提升边缘侧推理性能的关键环节。我们训练得到的FP32模型虽精度高但存在计算延迟大、内存占用高等问题。通过量化到INT8/INT16：显著减少模型体积，提升计算速度（利用硬件定点加速指令），降低功耗（减少内存带宽需求）。需注意的是，量化会引入精度损失，因此需要通过校准数据集帮助模型确定在量化过程中每一层权重和激活值应该被映射到的范围，以便保留更多的信息，减少量化误差。量化过程需要配置量化参数和校准数据，量化参数见[编译参数说明](#编译参数说明)。
 
 **编译生成kmodel**：在前述优化基础上，最终生成的kmodel是经过深度优化的可直接部署到K230设备执行高效推理。
 
-#### 5.2.1 转换示例
+#### 转换示例
 
 我们就以**四类打印数字识别**场景为例，将上面得到的ONNX模型转换成Kmodel。这里给出编译示例脚本：
 
@@ -569,7 +569,7 @@ python to_kmodel.py --target k230 --model best.onnx --dataset_path test --input_
 
 通过上面的代码，我们已经成功拿到了用于识别四类数字的 Kmodel 模型。那么你可能会好奇：在把模型转换成 Kmodel 的过程中，里面用到的那些参数到底是啥意思？如果以后我想换个模型来转，是不是也要改参数呢？别着急，接下来的章节我们就会带你搞懂这些转换参数的具体含义，还会教你在转换其他模型时该怎么正确配置，一步步带你上手，不迷路！
 
-#### 5.2.2 编译参数说明
+#### 编译参数说明
 
 使用 `nncase compiler` 将 `tflite/onnx` 模型转换成 `kmodel` ，模型转换代码的关键在于根据自身需求进行选项配置，主要是 `CompileOptions` 、 `PTQTensorOptions` 和 `ImportOptions`。
 
@@ -645,7 +645,7 @@ compiler.import_onnx(model_content, import_options)
 
 量化过程中使用的校正数据通过 `set_tensor_data` 方法进行设置，接口参数类型为 `List[List[np.ndarray]]`，比如：模型有一个输入，校正数据量设置为10，传入的校正数据维度为 `[10,1,3,320,320]`；如果模型有两个输入，校正数据量设置为10，传入的校正数据维度为 `[[10,1,3,224,224],[10,1,3,320,320]]`。
 
-### 5.3 使用 nncase 模拟器验证转换效果
+### 使用 nncase 模拟器验证转换效果
 
 前面我们说了怎么把模型转换成 Kmodel，现在我们要来“体检”一下这个模型，看它转得好不好！
 
@@ -804,7 +804,7 @@ output 0 cosine similarity : 0.9995334148406982
 
 一般我们认为当相似度大于0.99时，表示该模型转换成功，在实际部署场景下是可用的。
 
-#### 5.3.1 生成输入数据
+#### 生成输入数据
 
 ⚠️ **注意**：在使用 ONNX 模型和 KModel 进行推理时，**必须谨慎处理输入数据的预处理步骤**。若 KModel 中已封装了特定的预处理操作，则在推理前无需对其输入数据手动执行这些预处理；但在使用 ONNX 模型推理时，则需显式地在模型外部完成所有必要的预处理流程。
 
@@ -875,7 +875,7 @@ def get_kmodel_input(img_path,mean,std,model_input_size):
 ONNX 模型外部预处理 = KModel 外部预处理 + KModel 内部预处理
 ```
 
-#### 5.3.2 加载onnx模型并推理
+#### 加载onnx模型并推理
 
 首先需要使用onnx模型完成推理，获取onnx模型的推理结果。示例代码如下：
 
@@ -903,7 +903,7 @@ def onnx_inference(onnx_path,onnx_input_data):
     return onnx_results
 ```
 
-#### 5.3.3 加载kmodel模型并推理
+#### 加载kmodel模型并推理
 
 然后使用转换成功的kmodel进行推理，获得kmodel的推理结果。示例代码如下：
 
@@ -933,7 +933,7 @@ def kmodel_inference(kmodel_path,kmodel_input_data,model_input_size):
     return kmodel_results
 ```
 
-#### 5.3.4 计算输出的余弦相似度
+#### 计算输出的余弦相似度
 
 得到onnx模型和kmodel模型的推理结果后，逐个计算每个输出的余弦相似度。一般相似度在0.99以上可以认为该模型转换成功，可部署使用。示例代码如下：
 
@@ -949,7 +949,7 @@ def cosine_similarity(onnx_results,kmodel_results):
     return
 ```
 
-## 6. 模型部署
+## 模型部署
 
 ```{note}
 👉 前面我们把kmodel模型转好了、也验证过了，接下来当然就是———**上板子跑起来啦！** 这一章我们就来聊聊怎么在 K230 的 MicroPython 环境下，用提供的 nncase runtime API 把模型加载进来并实现推理。
@@ -989,7 +989,7 @@ KPU 输出的是一堆数字，我们得把这些“干货”解析出来。比�
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
 
-### 6.1 获取输入并创建tensor
+### 获取输入并创建tensor
 
 前面我们说了，模型跑起来之后，需要输入数据才能开始推理对吧？那这些图像数据从哪儿来呢？这节我们就来聊聊——**图像是怎么来的，又是怎么一步步变成模型能“吃”的格式的！**
 
@@ -1011,7 +1011,7 @@ KPU 输出的是一堆数字，我们得把这些“干货”解析出来。比�
 
 本节就这三种输入数据来源进行详细介绍。
   
-#### 6.1.1 图片文件输入
+#### 图片文件输入
 
 从开发板读入一张图片数据，创建`Image`实例，并将`Image`实例转换为`nncase_runtime tensor`类型。示例代码如下：
 
@@ -1055,7 +1055,7 @@ print(type(input_tensor))
 <class 'runtime_tensor'>
 ```
   
-#### 6.1.2 MIPI视频流输入
+#### MIPI视频流输入
 
 k230 Sensor模块负责图像采集和数据处理，支持MIPI接口摄像头。MIPI摄像头可以通过Sensor模块采集图像数据，Sensor模块支持多通道采图，可以将采集到的图像数据转换为`nncase_runtime runtime_tensor`类型，供kmodel模型推理使用。Sensor模块的配置和使用请参考 [Sensor API文档](./api/mpp/K230_CanMV_Sensor模块API手册.md)。
 
@@ -1248,7 +1248,7 @@ CanMV IDE的串口输出为：
 ---------------------------------
 ```
   
-#### 6.1.3 UVC视频流输入
+#### UVC视频流输入
 
 k230 MicroPython在1.3版本之后支持USB摄像头。UVC模块提供了摄像头检测、配置和图像采集功能，支持单摄像头操作。获取的视频流图像也可以作为kmodel模型的输入实现推理。UVC推理流程如下图所示：
 
@@ -1353,7 +1353,7 @@ CanMV IDE的串口输出为：
 -------------------------------------------
 ```
   
-### 6.2 图像tensor预处理
+### 图像tensor预处理
 
 我们之前已经成功把图像数据变成了一个 tensor，但问题来了——这个 tensor 可能跟模型“胃口不合”。比如大小不对、颜色通道不对。这时候，就需要我们出马，把 tensor 加工一下，让它变成模型可以接受的格式。这整个处理过程就叫“预处理”，而完成这个工作的，就是我们今天的主角 —— ai2d 模块！
 
@@ -1367,7 +1367,7 @@ ai2d 是 K230 平台上专门用于图像tensor预处理的模块，运行在硬
 
 ![preprocess](https://www.kendryte.com/api/post/attachment?id=628)
 
-#### 6.2.1 预处理过程介绍
+#### 预处理过程介绍
 
 在部署模型时，输入图像的 `runtime_tensor` 并不一定符合模型的输入规格。例如，摄像头采集的图像尺寸可能为 `1280×720`，而模型的输入要求是 `320×320`，此时就需要对图像进行**预处理**。
 
@@ -1388,7 +1388,7 @@ ai2d 是 K230 平台上专门用于图像tensor预处理的模块，运行在硬
 >
 > 不同填充方式会影响模型推理输出坐标的复原逻辑，因此在后处理阶段需要**匹配相应的坐标变换规则**，确保结果正确映射回原始图像。
 
-#### 6.2.2 ai2d模块介绍
+#### ai2d模块介绍
 
 在 MicroPython 方案中，常见的图像预处理操作通常通过 `nncase_runtime.ai2d` 模块由硬件加速实现。该模块支持五种主要的预处理方法，包括：
 
@@ -1478,7 +1478,7 @@ nn.shrink_memory_pool()
 ai2d output shape: (1, 3, 320, 320)
 ```
 
-#### 6.2.3 AIDemo中的Ai2d模块
+#### AIDemo中的Ai2d模块
 
 基于 `nncase_runtime` 模块提供的接口，应用层对 `nncase_runtime.ai2d` 进行了**二次封装**，其底层实现和使用`nncase_runtime.ai2d`是一样的。
 
@@ -1486,7 +1486,7 @@ ai2d output shape: (1, 3, 320, 320)
 
 为了帮助用户更好的实现预处理过程，Ai2d文档提供了针对五种预处理方法的示例，并将处理结果实现可视化，示例文档见链接：[Ai2d示例文档](https://www.kendryte.com/k230_canmv/zh/main/zh/example/ai/Ai2d_Examples.html)。
   
-### 6.3 KPU推理
+### KPU推理
 
 前面我们已经把图像预处理好了，输入 tensor 也准备就绪——现在终于轮到**主角登场**啦，那就是我们的“神经网络加速单元”——**KPU**！
 
@@ -1547,7 +1547,7 @@ nn.shrink_memory_pool()
 
 ![output_shape](https://www.kendryte.com/api/post/attachment?id=634)
 
-### 6.4 后处理
+### 后处理
 
 模型推理已经跑完啦，KPU 给了我们一大串“数字数组”当作结果，但别高兴太早——这些数字乍一看根本不知道是什么意思。所以，接下来的工作，就是要把这些数据**翻译成人类能看懂的内容**，比如：画面里出现了哪个数字？在什么位置？这个识别结果靠不靠谱？
 
@@ -1658,7 +1658,7 @@ if len(boxes)!=0:
 
 针对这一特点，我们使用C++对YOLO相关的后处理做了封装。YOLO相关的模型可以使用该方法，参考：[YOLO大作战](https://www.kendryte.com/k230_canmv/zh/main/zh/example/ai/YOLO%E5%A4%A7%E4%BD%9C%E6%88%98.html)。
   
-### 6.5 结果绘制
+### 结果绘制
 
 现在我们已经得到了识别结果啦！每个数字的“身份”和“位置”我们都知道了，接下来就是让这些结果**变得“看得见”**——也就是在图像上画出检测框、标上数字，告诉大家：“看！这里有个 1！”、“那边是个 3！”
 
@@ -1720,7 +1720,7 @@ Display.show_image(osd_img)
 
 通过上述步骤，我们基本上就完成了使用MicroPython的开发一个应用的完整步骤。用户从转模型开始，需要对模型推理的整个过程有比较好的了解。
   
-### 6.6 显示设备介绍
+### 显示设备介绍
 
 对于显示输出，k230提供了三种显示设备，你可以选择使用`HDMI/LCD屏幕/IDE`三种方式中的一种。对应模块的API文档见链接：[Display模块API文档](https://www.kendryte.com/k230_canmv/zh/main/zh/api/mpp/K230_CanMV_Display%E6%A8%A1%E5%9D%97API%E6%89%8B%E5%86%8C.html)。下面分别介绍这三种方式：
 
@@ -1802,7 +1802,7 @@ img_rgb888=img_data.to_rgb888()
 img_rgb888.compress_for_ide()
 ```
 
-### 6.7 4类打印数字识别部署代码
+### 类打印数字识别部署代码
 
 我们已经为你准备好了完整的“0”、“1”、“2”、“3”四类打印数字识别的示例代码，**不仅支持单张图片的推理**，还支持**实时视频流的连续识别**！无论你是想在静态图片上测试模型效果，还是在接入摄像头后实时检测，都可以快速上手。你只需要用前面步骤中导出的 `kmodel` 模型，配合我们提供的示例脚本，就可以轻松在 K230 开发板上部署运行啦！
 
@@ -1810,7 +1810,7 @@ img_rgb888.compress_for_ide()
 
 接下来你就可以大胆动手试试部署流程，感受 K230 端侧 AI 的运行效果，AI 就能读懂你拍下的数字世界！
 
-#### 6.7.1 图片识别代码
+#### 图片识别代码
 
 这里给出完整的**4类打印数字识别**图片推理代码，您可以使用上面步骤得到的kmodel进行测试：
 
@@ -2008,7 +2008,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-#### 6.7.2 双通道视频识别代码
+#### 双通道视频识别代码
 
 这里给出完整的**4类打印数字识别**视频推理代码，您可以使用上面步骤得到的kmodel进行测试：
 
@@ -2246,15 +2246,15 @@ MediaManager.deinit()
 nn.shrink_memory_pool()
 ```
 
-## 7.  YOLO部署库
+## YOLO部署库
 
 YOLO 是视觉任务中常用的模型，支持分类、检测、分割、旋转目标检测等任务。我们选择YOLO系列模型中经典的YOLOv5、YOLOv8和YOLO11为基础，封装了YOLOv5、YOLOv8和YOLO11的MicroPython部署库，方便用户快速部署YOLO模型。具体内容见链接：[YOLO大作战](https://www.kendryte.com/k230_canmv/zh/main/zh/example/ai/YOLO%E5%A4%A7%E4%BD%9C%E6%88%98.html)。
 
-### 7.1 YOLOv5猫狗分类
+### YOLOv5猫狗分类
 
 基于YOLOv5模型实现猫狗分类模型在K230上的部署。
 
-#### 7.1.1 YOLOv5源码及训练环境搭建
+#### YOLOv5源码及训练环境搭建
 
 `YOLOv5` 训练环境搭建请参考[ultralytics/yolov5: YOLOv5 🚀 in PyTorch > ONNX > CoreML > TFLite (github.com)](https://github.com/ultralytics/yolov5)
 
@@ -2266,7 +2266,7 @@ pip install -r requirements.txt
 
 如果您已搭建好环境，请忽略此步骤。
 
-#### 7.1.2 训练数据准备
+#### 训练数据准备
 
 请下载提供的示例数据集，示例数据集以猫狗分类为场景，使用YOLOv5完成训练。
 
@@ -2280,7 +2280,7 @@ unzip cat_dog.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-#### 7.1.3 使用YOLOv5训练猫狗分类模型
+#### 使用YOLOv5训练猫狗分类模型
 
 在 `yolov5` 目录下执行命令，使用 `yolov5` 训练猫狗分类模型：
 
@@ -2288,7 +2288,7 @@ unzip cat_dog.zip
 python classify/train.py --model yolov5n-cls.pt --data cat_dog --epochs 100 --batch-size 8 --imgsz 224 --device '0'
 ```
 
-#### 7.1.4 转换猫狗分类kmodel
+#### 转换猫狗分类kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -2338,19 +2338,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-#### 7.1.5 在k230上使用MicroPython部署模型
+#### 在k230上使用MicroPython部署模型
 
-##### 7.1.5.1 烧录镜像并安装CanMV IDE
+##### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-##### 7.1.5.2 模型文件拷贝
+##### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-##### 7.1.5.3 YOLOv5 模块
+##### YOLOv5 模块
 
 `YOLOv5` 类集成了 `YOLOv5` 的三种任务，包括分类(classify)、检测(detect)、分割(segment)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLOv5` 的 kmodel 推理流程。
 
@@ -2377,7 +2377,7 @@ from libs.YOLO import YOLOv5
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-##### 7.1.5.4 部署模型实现图片推理
+##### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -2407,7 +2407,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-##### 7.1.5.5 部署模型实现视频推理
+##### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -2446,17 +2446,17 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-##### 7.1.5.6 部署效果
+##### 部署效果
 
 选择两张猫狗图片使用kmodel进行分类。效果如下图：
 
 ![cat_dog_cls_res](https://www.kendryte.com/api/post/attachment?id=624)
 
-### 7.2 YOLOv8跌倒检测
+### YOLOv8跌倒检测
 
 基于YOLOv8模型实现跌倒检测模型在K230上的部署。
 
-#### 7.2.1 YOLOv8源码及训练环境搭建
+#### YOLOv8源码及训练环境搭建
 
 `YOLOv8` 训练环境搭建请参考[ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics)
 
@@ -2467,7 +2467,7 @@ pip install ultralytics
 
 如果您已搭建好环境，请忽略此步骤。
 
-#### 7.2.2 训练数据准备
+#### 训练数据准备
 
 下载提供的跌倒检测数据集，并解压。
 
@@ -2481,7 +2481,7 @@ unzip fall_det.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-#### 7.2.3 使用YOLOv8训练跌倒检测模型
+#### 使用YOLOv8训练跌倒检测模型
 
 在 `yolov8` 目录下执行命令，使用 `yolov8` 训练跌倒检测模型：
 
@@ -2489,7 +2489,7 @@ unzip fall_det.zip
 yolo detect train data=fall_det.yaml model=yolov8n.pt epochs=300 imgsz=320
 ```
 
-#### 7.2.4 转换跌倒检测kmodel
+#### 转换跌倒检测kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -2539,19 +2539,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-#### 7.2.5 在k230上使用MicroPython部署模型
+#### 在k230上使用MicroPython部署模型
 
-##### 7.2.5.1 烧录镜像并安装CanMV IDE
+##### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-##### 7.2.5.2 模型文件拷贝
+##### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-##### 7.2.5.3 YOLOv8 模块
+##### YOLOv8 模块
 
 `YOLOv8` 类集成了 `YOLOv8` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLOv8` 的 kmodel 推理流程。
 
@@ -2578,7 +2578,7 @@ from libs.YOLO import YOLOv8
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-##### 7.2.5.4 部署模型实现图片推理
+##### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -2609,7 +2609,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-##### 7.2.5.5 部署模型实现视频推理
+##### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -2651,15 +2651,15 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-##### 7.2.5.6 部署效果
+##### 部署效果
 
 选择一张跌倒图片使用kmodel进行跌倒检测。原图和推理结果的对比如下图：
 
 ![fall_det_res](https://www.kendryte.com/api/post/attachment?id=625)
 
-### 7.3 YOLO11水果分割
+### YOLO11水果分割
 
-#### 7.3.1 YOLO11源码及训练环境搭建
+#### YOLO11源码及训练环境搭建
 
 `YOLO11` 训练环境搭建请参考[ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics)
 
@@ -2670,7 +2670,7 @@ pip install ultralytics
 
 如果您已搭建好环境，请忽略此步骤。
 
-#### 7.3.2 训练数据准备
+#### 训练数据准备
 
 下载提供的水果分割数据集，并解压。
 
@@ -2684,7 +2684,7 @@ unzip fruit_seg.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-#### 7.3.3 使用YOLO11训练水果分割模型
+#### 使用YOLO11训练水果分割模型
 
 在 `yolo11` 目录下执行命令，使用 `yolo11` 训练三类水果分割模型：
 
@@ -2692,7 +2692,7 @@ unzip fruit_seg.zip
 yolo segment train data=fruits_seg.yaml model=yolo11n-seg.pt epochs=100 imgsz=320
 ```
 
-#### 7.3.4 转换水果分割kmodel
+#### 转换水果分割kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -2742,19 +2742,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-#### 7.3.5 在k230上使用MicroPython部署模型
+#### 在k230上使用MicroPython部署模型
 
-##### 7.3.5.1 烧录镜像并安装CanMV IDE
+##### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-##### 7.3.5.2 模型文件拷贝
+##### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-##### 7.3.5.3 YOLO11 模块
+##### YOLO11 模块
 
 `YOLO11` 类集成了 `YOLO11` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLO11` 的 kmodel 推理流程。
 
@@ -2781,7 +2781,7 @@ from libs.YOLO import YOLO11
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-##### 7.3.5.4 部署模型实现图片推理
+##### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -2813,7 +2813,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-##### 7.3.5.5 部署模型实现视频推理
+##### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -2856,15 +2856,15 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-##### 7.3.5.6 部署效果
+##### 部署效果
 
 选择一张水果图片使用kmodel进行水果分割。原图和推理结果的对比如下图：
 
 ![fruit_seg_res](https://www.kendryte.com/api/post/attachment?id=626)
 
-### 7.4 YOLO11旋转目标检测
+### YOLO11旋转目标检测
 
-#### 7.4.1 YOLO11源码及训练环境搭建
+#### YOLO11源码及训练环境搭建
 
 `YOLO11` 训练环境搭建请参考[ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics)
 
@@ -2875,7 +2875,7 @@ pip install ultralytics
 
 如果您已搭建好环境，请忽略此步骤。
 
-#### 7.4.2 训练数据准备
+#### 训练数据准备
 
 下载桌面签字笔旋转目标检测数据集，并解压。
 
@@ -2889,7 +2889,7 @@ unzip pen_obb.zip
 
 如果您已下载好数据，请忽略此步骤。
 
-#### 7.4.3 使用YOLO11旋转目标检测模型
+#### 使用YOLO11旋转目标检测模型
 
 在 `yolo11` 目录下执行命令，使用 `yolo11` 训练单类旋转目标检测模型：
 
@@ -2897,7 +2897,7 @@ unzip pen_obb.zip
 yolo obb train data=pen_obb.yaml model=yolo11n-obb.pt epochs=100 imgsz=320
 ```
 
-#### 7.4.4 转换旋转目标检测kmodel
+#### 转换旋转目标检测kmodel
 
 模型转换需要在训练环境安装如下库：
 
@@ -2947,19 +2947,19 @@ cd ../../
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
 | ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
 
-#### 7.4.5 在k230上使用MicroPython部署模型
+#### 在k230上使用MicroPython部署模型
 
-##### 7.4.5.1 烧录镜像并安装CanMV IDE
+##### 烧录镜像并安装CanMV IDE
 
 💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
 
 下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
 
-##### 7.4.5.2 模型文件拷贝
+##### 模型文件拷贝
 
 连接IDE，将转换好的模型和测试图片拷贝到路径 `CanMV/data` 目录下。该路径可以自定义，只需要在编写代码时修改对应路径即可。
 
-##### 7.4.5.3 YOLO11 模块
+##### YOLO11 模块
 
 `YOLO11` 类集成了 `YOLO11` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLO11` 的 kmodel 推理流程。
 
@@ -2986,7 +2986,7 @@ from libs.YOLO import YOLO11
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
-##### 7.4.5.4 部署模型实现图片推理
+##### 部署模型实现图片推理
 
 图片推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义参数变量**；
 
@@ -3017,7 +3017,7 @@ if __name__=="__main__":
     gc.collect()
 ```
 
-##### 7.4.5.5 部署模型实现视频推理
+##### 部署模型实现视频推理
 
 视频推理，请参考下述代码，**根据实际情况修改 `__main__` 中的定义变量**；
 
@@ -3059,17 +3059,17 @@ if __name__=="__main__":
     pl.destroy()
 ```
 
-##### 7.4.5.6 部署效果
+##### 部署效果
 
 选择一张桌面签字笔图片使用kmodel进行旋转目标检测。原图和推理结果的对比如下图：
 
 ![pen_obb_res](https://www.kendryte.com/api/post/attachment?id=627)
 
-## 8. 辅助工具
+## 辅助工具
 
-### 8.1 在线训练平台
+### 在线训练平台
 
-#### 8.1.1 云训练平台简介
+#### 云训练平台简介
 
 Canaan开发者社区模型训练功能是为简化开发流程，提高开发效率开放的训练平台。该平台使用户关注视觉场景的落地实现，更加快捷的完成从数据标注到获得部署包中的KModel模型的过程，并在搭载嘉楠科技Kendryte®系列AIoT芯片中K230、K230D芯片开发板上进行部署。用户仅需上传数据集，简单的配置参数就可以开始训练了。
 
@@ -3079,7 +3079,7 @@ Canaan开发者社区模型训练功能是为简化开发流程，提高开发�
 
 📌平台使用文档参考：**[嘉楠云训练平台文档教程](https://www.kendryte.com/web/CloudPlatDoc.html)**，请注意数据集的格式！
 
-#### 8.1.2 支持任务介绍
+#### 支持任务介绍
 
 云训练平台中对于K230系列芯片支持的视觉任务有7种，任务介绍如下表：
 
@@ -3095,9 +3095,9 @@ Canaan开发者社区模型训练功能是为简化开发流程，提高开发�
 | 度量学习  | 训练可以将图片特征化的模型，使用该模型创建特征库，通过特征对比，在不重新训练模型的前提下对新的类别进行分类，也可称为自学习。   |
 | 多标签分类 | 对图片进行多类别分类，一些图片可能不只是属于某个单一的类别，天空和大海可以同时存在，得到图片的多标签分类结果。               |
 
-#### 8.1.3 部署步骤
+#### 部署步骤
 
-##### 8.1.3.1 部署包说明
+##### 部署包说明
 
 训练结束后可以下载对应训练任务的部署包，下载的部署zip包解压后，目录如下：
 
@@ -3118,7 +3118,7 @@ Canaan开发者社区模型训练功能是为简化开发流程，提高开发�
 
 其中`mp_deployment_source.zip`即是在K230 MicroPython 镜像上部署的代码包，内部包含部署的配置文件和部署的KModel模型。
 
-##### 8.1.3.2 文件拷贝
+##### 文件拷贝
 
 ✅ **固件选择**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
 
@@ -3126,7 +3126,7 @@ Canaan开发者社区模型训练功能是为简化开发流程，提高开发�
 
 ✅ **部署脚本**：固件烧录成功后，上电开机，您可以在文件系统根目录下发现`CanMV/sdcard`目录，将`mp_deployment_source.zip`解压后拷贝到`CanMV/sdcard`目录下。
 
-##### 8.1.3.3 脚本运行
+##### 脚本运行
 
 打开CanMV IDE K230，选择左上角`文件(F)`->`打开文件`->`选择CanMV/sdcard/examples/19-CloudPlatScripts`中的不同任务的脚本运行。
 
@@ -3150,7 +3150,7 @@ Canaan开发者社区模型训练功能是为简化开发流程，提高开发�
 |deploy_multl_image.py|多标签分类单图推理脚本，您需要在自行增加测试图片，并脚本修改读入图片的路径。|
 |deploy_multl_video.py|多标签分类视频流推理脚本，脚本详情见脚本内注释。|
 
-##### 8.1.3.4 部署说明
+##### 部署说明
 
 - 📢 在部署模型时如果效果不理想，首先调整对应任务的阈值和推理图像的分辨率，测试结果是否可以有好转！
 
@@ -3158,13 +3158,13 @@ Canaan开发者社区模型训练功能是为简化开发流程，提高开发�
 
 - 📢 调整模型训练的参数，比如`epoch`、`learning_rate`等，防止出现训练不充分的情况！
 
-### 8.2 AICube
+### AICube
 
-#### 8.2.1 AICube简介
+#### AICube简介
 
 AICube是嘉楠为开发者提供的离线训练工具，该平台保证了数据安全性，实现可视化的本地训练。该平台支持图像分类、目标检测、语义分割、OCR检测、OCR识别、度量学习、多标签分类、异常检测共8个任务。其相对于在线训练平台，可以保证用户使用本地的GPU实现模型训练，并将模型转换成kmodel部署在K230上。
 
-#### 8.2.2 环境准备和软件安装
+#### 环境准备和软件安装
 
 在安装AICube前，请关注一下前提条件是否具备：
 
@@ -3180,7 +3180,7 @@ AICube是嘉楠为开发者提供的离线训练工具，该平台保证了数�
 
 📢 **下载时请选择最新版本下载**。
 
-#### 8.2.3 支持任务介绍
+#### 支持任务介绍
 
 AICube中对于K230系列芯片支持的视觉任务有8种，任务介绍如下表：
 
@@ -3197,9 +3197,9 @@ AICube中对于K230系列芯片支持的视觉任务有8种，任务介绍如下
 | 多标签分类 | 对图片进行多类别分类，一些图片可能不只是属于某个单一的类别，天空和大海可以同时存在，得到图片的多标签分类结果。               |
 |异常检测| 用于检测某类产品中的异常类别，常用于工业质检等领域。|
 
-#### 8.2.4 使用说明
+#### 使用说明
 
-##### 8.2.4.1 功能页介绍
+##### 功能页介绍
 
 AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，展示当前项目和最近项目；“图像”页面展示当前项目的数据集信息，便于用户查看数据集的图片；“拆分”页面展示拆分信息，统计拆分类别和不同拆分集的图片；“训练”页面实现训练参数配置，训练信息和训练曲线的显示；“评估”页面实现模型评估和评估信息的展示，并且可以配置部署必要参数生成部署包。
 
@@ -3223,7 +3223,7 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 ![评估页面](https://www.kendryte.com/api/post/attachment?id=620)
 
-##### 8.2.4.2 创建数据集
+##### 创建数据集
 
 按照不同任务的数据集格式组织数据集。对应数据集格式在`项目页面`点击新建项目查看，同时我们提供了不同任务的示例数据集，在`example_dataset`目录下；并使用这些示例数据集创建了示例项目，位于`example_projects`目录下。
 
@@ -3242,7 +3242,7 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 您可以使用我们提供的示例数据集，也可以自己按照`新建项目界面`对应任务格式组织您的数据集。AICube遇到的大多数问题都是数据的问题，我们只对数据集的目录结构实现了检查，并没有对数据内部的标注信息做检查，请谨慎的处理数据。
 
-##### 8.2.4.3 创建项目
+##### 创建项目
 
 进入`项目页面`--->点击`新建项目`按钮--->选择任务类型--->导入数据集--->选择项目的存储路径--->添加项目的名称--->创建项目。
 
@@ -3252,7 +3252,7 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 项目新建完成后，会自动跳转到`图像页面`，您可以查看您的数据集详情。进入`拆分页面`，您可以按照自定义比例对数据集进行拆分，并查看拆分集的统计信息。
 
-##### 8.2.4.4 启动训练
+##### 启动训练
 
 进入`训练页面`，在左侧配置**模型、数据增强和训练参数**。
 
@@ -3293,7 +3293,7 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 ![训练过程](https://www.kendryte.com/api/post/attachment?id=619)
 
-##### 8.2.4.5 模型测试
+##### 模型测试
 
 进入`评估页面`，选择训练好的模型，然后选择测试方式。测试方式如下：
 
@@ -3305,7 +3305,7 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 点击“开始测试”按钮，进行测试，测试结束后，根据评估指标查看您的模型性能；双击测试数据列表的条目可以查看推理结果大图。
 
-##### 8.2.4.6 模型部署
+##### 模型部署
 
 如果模型的性能符合您的需求，您可以在芯片适配面板配置部署参数，主要是模型的输入分辨率和一些基础参数，点击`部署按钮`生成部署包。
 
@@ -3324,13 +3324,13 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 其中`mp_deployment_source`目录是在K230 MicroPython方案上部署的资源，包含Kmodel文件和部署配置文件！
 
-#### 8.2.5 部署步骤
+#### 部署步骤
 
-##### 8.2.5.1 部署包说明
+##### 部署包说明
 
 训练结束后可以得到对应训练任务的部署产物。
 
-##### 8.2.5.2 文件拷贝
+##### 文件拷贝
 
 ✅ **固件选择**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
 
@@ -3338,7 +3338,7 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 ✅ **部署脚本**：固件烧录成功后，上电开机，您可以在文件系统根目录下发现`CanMV/sdcard`目录，将`mp_deployment_source`拷贝到`CanMV/sdcard`目录下。
 
-##### 8.2.5.3 脚本运行
+##### 脚本运行
 
 打开CanMV IDE K230，选择左上角`文件(F)`->`打开文件`->`选择CanMV/sdcard/examples/19-CloudPlatScripts`中的不同任务的脚本运行。或者选择部署资源目录中的部署脚本运行。
 
@@ -3362,7 +3362,7 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 |deploy_multl_image.py|多标签分类单图推理脚本，您需要在自行增加测试图片，并脚本修改读入图片的路径。|
 |deploy_multl_video.py|多标签分类视频流推理脚本，脚本详情见脚本内注释。|
 
-##### 8.2.5.4 部署说明
+##### 部署说明
 
 - 📢 在部署模型时如果效果不理想，首先调整对应任务的阈值和推理图像的分辨率，测试结果是否可以有好转！
 
@@ -3370,11 +3370,11 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 - 📢 AICube存在大量的训练参数，对深度学习了解的用户可以根据可能的优化方向调整训练参数，调整模型训练的参数实现重新训练转换！
 
-## 9. 进阶开发
+## 进阶开发
 
 这里针对不同的场景给出一些复杂示例，以AI+其他模块为基础，实现进阶开发。
 
-### 9.1 AI多线程推理
+### AI多线程推理
 
 使用多线程实现多个AI模型同时推理，注意KPU互斥占用。这里以YOLOv8检测和人脸检测为例，给出如何使用多线程实现同时推理。示例代码如下：
 
@@ -3588,7 +3588,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-### 9.2 AI+UART通信
+### AI+UART通信
 
 AI推理结束后，如何将识别到的内容通过串口发送到上位机，这里以YOLOv8检测作为AI部分为例，给出如何使用UART通信实现AI+UART通信。示例代码如下：
 
@@ -3770,7 +3770,7 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-### 9.3 AI多摄推理
+### AI多摄推理
 
 多摄像头AI推理是指同时使用多个摄像头进行AI推理，这里以使用两个摄像头进行YOLOv8检测和人脸检测为例，给出如何使用双摄多线程实现AI推理。示例代码如下：
 
@@ -4052,7 +4052,7 @@ if __name__=="__main__":
 
 ```
 
-### 9.4 AI+UVC硬解码推理
+### AI+UVC硬解码推理
 
 使用UVC摄像头获取图像，并使用硬件CSC将图像转换成RGB888格式，创建tensor，将tensor输入到AI模型中，获取AI模型的输出结果，最后将输出结果绘制到屏幕上。这里AI推理场景为YOLOv8检测。示例代码如下：
 
@@ -4256,7 +4256,7 @@ if __name__ == "__main__":
     MediaManager.deinit()
 ```
 
-### 9.5 AI+UVC软解码推理
+### AI+UVC软解码推理
 
 使用UVC摄像头获取图像，并使用软件解码将图像转换成RGB888格式，创建tensor，将tensor输入到AI模型中，获取AI模型的输出结果，最后将输出结果绘制到屏幕上。这里AI推理场景为YOLOv8检测。示例代码如下：
 
@@ -4456,9 +4456,9 @@ if __name__ == "__main__":
 
 ```
 
-## 10. FAQ
+## FAQ
   
-### 10.1 开发过程中如何查找问题所在？
+### 开发过程中如何查找问题所在？
 
 📝 首先根据不同的阶段和错误采取不同的方法：
 
@@ -4467,15 +4467,15 @@ if __name__ == "__main__":
 - 如果模型转换成功，但是帧率较低，可以考虑更换更轻量的模型或者降低模型输入分辨率；
 - 如果部署报错，请查看部署代码报错行数，根据API文档查找报错原因，调整代码；
 
-### 10.2 nncase支持哪些算子？
+### nncase支持哪些算子？
 
 📝 nncase支持的onnx算子和tflite算子见链接：[onnx算子支持](https://github.com/kendryte/nncase/blob/master/docs/onnx_ops.md) 和 [tflite算子支持](https://github.com/kendryte/nncase/blob/master/docs/tflite_ops.md)
 
-### 10.3 在转换模型时报错“ImportError: DLL load failed while importing _nncase”
+### 在转换模型时报错“ImportError: DLL load failed while importing _nncase”
 
 📝 请参考如下链接的解决方法：[ImportError: DLL load failed while importing _nncase](https://github.com/kendryte/nncase/issues/451)
 
-### 10.4 转换模型时报错“RuntimeError: Failed to initialize hostfxr”
+### 转换模型时报错“RuntimeError: Failed to initialize hostfxr”
 
 📝 请安装dotnet-sdk-7.0， 请不要再Anaconda虚拟环境中安装dotnet-sdk。
 
@@ -4490,32 +4490,32 @@ export DOTNET_ROOT=/usr/share/dotnet
 
 Windows: 请参考微软官方网站。
 
-### 10.5 在线训练平台和AICube的区别？
+### 在线训练平台和AICube的区别？
 
 📝 在线训练平台的使用云端算力，资源紧张时需要排队，同时参数配置比较简单，一键训练，灵活性较低；AICube使用本地私人算力，环境和参数配置比较复杂，灵活性高。他们的目的都是获得kmodel和配置文件，使用固件中的`CanMV/sdcard/examples/19-CloudPlatScripts`的脚本即可实现部署。
 
-### 10.6 如何将调试好的脚本设置为自启动？
+### 如何将调试好的脚本设置为自启动？
 
 📝 将脚本保存在`/sdcard`目录下以`main.py`命名。或者使用CanMV IDE的`工具(T)`->`Save open script to CanMV board (as main.py)`保存后，重新上电启动。
 
-### 10.7 YOLO库中支持哪些任务？
+### YOLO库中支持哪些任务？
 
 📝 YOLOv5支持分类、检测、分割三类任务，YOLOv8和YOLO11支持分类、检测、分割和旋转目标检测四类任务。
 
-### 10.8 UVC的软硬件解码有什么区别？
+### UVC的软硬件解码有什么区别？
 
 📝 硬件解码使用CSC实现格式转换，将UVC图像数据转换成RGB888的Image实例；软件解码使用Image实例的`to_rgb888`接口将图像数据转换成RGB888格式的Image实例。硬件解码比软件解码更快，帧率更高。
 
-### 10.9 如何获取支持？
+### 如何获取支持？
 
 📝 在开发过程中遇到问题，您可以前往嘉楠开发者社区问答论坛发帖提问。论坛地址：[Canaan问答论坛](https://www.kendryte.com/answer/)。
 
-## 11. 附录
+## 附录
 
-### 11.1 API
+### API
 
 K230 MicroPython API文档见链接：[API文档](./api/index.md)
 
-### 11.2 KTS
+### KTS
 
 `K230_training_scripts（KTS）`是实现的端到端的训练处理过程，但是该项目的代码是基于双系统C++开发的，您可以使用该工具获取kmodel，但该工具中不包含MicroPython部署代码，您需要自行编写。项目地址：[K230_training_scripts](https://github.com/kendryte/K230_training_scripts)。

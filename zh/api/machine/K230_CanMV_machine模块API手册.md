@@ -1,12 +1,12 @@
-# 2.15 `machine` 模块 API 手册
+# `machine` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 `machine` 模块包含与特定硬件板相关的功能。该模块中的大多数功能允许对系统上的硬件组件进行直接且不受限制的访问和控制。若不当使用，可能会导致主板故障、死机或崩溃，甚至在极端情况下造成硬件损坏。
 
-## 2. API 介绍
+## API 介绍
 
-### 2.1 `reset` 方法
+### `reset` 方法
 
 ```python
 machine.reset()
@@ -22,7 +22,7 @@ machine.reset()
 
 无
 
-### 2.2 `mem_copy` 方法
+### `mem_copy` 方法
 
 ```python
 machine.mem_copy(dst, src, size)
@@ -40,7 +40,7 @@ machine.mem_copy(dst, src, size)
 
 无
 
-### 2.3 `temperature` 方法
+### `temperature` 方法
 
 ```python
 temp = machine.temperature()
@@ -56,7 +56,7 @@ temp = machine.temperature()
 
 温度值，浮点数
 
-### 2.4 `chipid` 方法
+### `chipid` 方法
 
 ```python
 chipid = machine.chipid()

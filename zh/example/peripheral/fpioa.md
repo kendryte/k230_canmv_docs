@@ -1,6 +1,6 @@
-# 1. FPIOA 使用教程
+# FPIOA 使用教程
 
-## 1. 概述
+## 概述
 
 在嵌入式系统中，SoC（System on Chip）通常集成了多种外设模块，如 UART、SPI、I2C、PWM 和 GPIO 等。然而，由于物理引脚数量有限，这些模块往往需要**共享引脚**。为了解决这一冲突，就需要使用 **IOMUX（引脚复用）机制**。在 K230 芯片中，这一机制被称为 **FPIOA（Field Programmable IO Array）**。
 
@@ -11,7 +11,7 @@ FPIOA 允许我们为任意引脚分配所需的功能。例如，你可以将�
 > * **提升灵活性**：开发者可根据实际应用需求自由分配引脚功能。
 > * **减少限制**：一套硬件可适配多种引脚配置，便于模块化设计。
 
-## 2. FPIOA 使用示例
+## FPIOA 使用示例
 
 K230 芯片内置多个外设资源，包括 5 路 UART、5 路 I2C、6 路 PWM 及最多 64 个 GPIO 输出等。这些外设通过 FPIOA 实现引脚复用，因此不同厂家的 K230 开发板可能存在不同的引脚分配方案。这些厂家一般都会提供相应的开发板接口资料，供软件开发时参考使用。
 
@@ -102,7 +102,7 @@ fpioa.get_pin_num(FPIOA.UART0_TXD)  # → 38
 fpioa.get_pin_func(0)  # → 0
 ```
 
-## 3. 常见问题 FAQ
+## 常见问题 FAQ
 
 ### Q1：我不知道某个功能可以映射到哪些引脚，怎么办？
 
@@ -130,7 +130,7 @@ current set PIN49 as IIC0_SDA
 * 是否正确设置输入/输出使能（`ie`/`oe`）
 * 是否需要启用上拉/下拉电阻（特别是 I2C）
 
-## 4. 延伸阅读
+## 延伸阅读
 
 * [FPIOA 模块完整 API 手册](../../api/machine/K230_CanMV_FPIOA模块API手册.md)
 * [K230 芯片引脚定义列表（Excel）](https://kendryte-download.canaan-creative.com/developer/k230/HDK/K230%E7%A1%AC%E4%BB%B6%E6%96%87%E6%A1%A3/K230_PINOUT_V1.2_20240822.xlsx)

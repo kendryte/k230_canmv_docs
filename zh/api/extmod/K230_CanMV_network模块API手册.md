@@ -1,10 +1,10 @@
-# 2.2 `network` 模块 API 手册
+# `network` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 本模块主要用于配置和查看网络参数，配置完成后，方可使用 `socket` 模块进行网络通信。
 
-## 2. `LAN` 类
+## `LAN` 类
 
 参考文档: [Micropython LAN](https://docs.micropython.org/en/latest/library/network.LAN.html)
 
@@ -19,13 +19,13 @@ print(nic.ifconfig())
 ...
 ```
 
-### 2.1 构造函数
+### 构造函数
 
 - **class** `network.LAN()` [¶](https://docs.micropython.org/en/latest/library/network.LAN.html#network.LAN)
 
   创建一个有线以太网对象。
 
-### 2.2 方法
+### 方法
 
 - **LAN.active([state])** [¶](https://docs.micropython.org/en/latest/library/network.LAN.html#network.LAN.active)
 
@@ -56,7 +56,7 @@ print(nic.ifconfig())
   print(lan.config("mac"))
   ```
 
-## 3. `WLAN` 类
+## `WLAN` 类
 
 参考文档: [Micropython WLAN](https://docs.micropython.org/en/latest/library/network.WLAN.html)
 
@@ -91,13 +91,13 @@ def sta_test():
 sta_test()
 ```
 
-### 3.1 构造函数
+### 构造函数
 
 - **class** `network.WLAN(*interface_id*)`
 
   创建 WLAN 网络接口对象。支持的接口类型包括 `network.STA_IF`（即站模式，连接到上游 WiFi 接入点）和 `network.AP_IF`（即接入点模式，允许其他设备连接）。不同接口类型的方法有所不同，例如，只有 STA 模式支持通过 [`WLAN.connect()`](https://docs.micropython.org/en/latest/library/network.WLAN.html#network.WLAN.connect) 连接到接入点。
 
-### 3.2 方法
+### 方法
 
 - **WLAN.active()**
 

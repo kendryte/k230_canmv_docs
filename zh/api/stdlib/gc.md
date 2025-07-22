@@ -1,4 +1,4 @@
-# 1.4 `gc` – 内存管理 API 手册
+# `gc` – 内存管理 API 手册
 
 该模块实现了部分 CPython 内存管理模块的功能子集。有关详细信息，请参阅 CPython 原始文档：[gc](https://docs.python.org/3.5/library/gc.html#module-gc)。
 
@@ -9,9 +9,9 @@
 - `sys_page`: 用于用户应用的内存管理。
 - `sys_mmz`: 用于多媒体驱动内存管理，适用于 `Sensor`、`Display` 等模块。
 
-## 1. 函数
+## 函数
 
-### 1.1 `enable`
+### `enable`
 
 ```python
 gc.enable()
@@ -19,7 +19,7 @@ gc.enable()
 
 启用自动垃圾回收机制。
 
-### 1.2 `disable`
+### `disable`
 
 ```python
 gc.disable()
@@ -27,7 +27,7 @@ gc.disable()
 
 禁用自动垃圾回收机制。在禁用状态下，仍可进行堆内存的分配，并且可以通过手动调用 `gc.collect()` 来执行垃圾回收。
 
-### 1.3 `collect`
+### `collect`
 
 ```python
 gc.collect()
@@ -35,7 +35,7 @@ gc.collect()
 
 手动运行垃圾回收过程，回收不再使用的内存。
 
-### 1.4 `mem_alloc`
+### `mem_alloc`
 
 ```python
 gc.mem_alloc()
@@ -47,7 +47,7 @@ gc.mem_alloc()
 此功能为 MicroPython 的扩展功能，CPython 并不包含此方法。
 ```
 
-### 1.5 `mem_free`
+### `mem_free`
 
 ```python
 gc.mem_free()
@@ -59,7 +59,7 @@ gc.mem_free()
 此功能为 MicroPython 的扩展功能，CPython 并不包含此方法。
 ```
 
-### 1.6 `threshold`
+### `threshold`
 
 ```python
 gc.threshold([amount])
@@ -73,7 +73,7 @@ gc.threshold([amount])
 此函数为 MicroPython 的扩展。CPython 中有类似的 `set_threshold()` 函数，但由于垃圾回收机制的不同，其签名和语义有所差异。
 ```
 
-### 1.7 `sys_total`
+### `sys_total`
 
 ```python
 gc.sys_total()
@@ -81,7 +81,7 @@ gc.sys_total()
 
 查询系统内存大小，单位为字节（Bytes）
 
-### 1.8 `sys_heap`
+### `sys_heap`
 
 ```python
 gc.sys_heap()
@@ -89,7 +89,7 @@ gc.sys_heap()
 
 查询系统 `heap` 内存的使用情况，返回一个包含 3 个元素的元组，分别表示 `total`（总内存）、`free`（可用内存）和 `used`（已用内存），单位为字节（Byte）。
 
-### 1.9 `sys_page`
+### `sys_page`
 
 ```python
 gc.sys_page()
@@ -97,7 +97,7 @@ gc.sys_page()
 
 查询系统 `page` 内存的使用情况，返回一个包含 3 个元素的元组，分别表示 `total`（总内存）、`free`（可用内存）和 `used`（已用内存），单位为字节（Byte）。
 
-### 1.10 `sys_mmz`
+### `sys_mmz`
 
 ```python
 gc.sys_mmz()

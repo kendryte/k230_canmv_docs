@@ -1,6 +1,6 @@
-# 2.1 `uctypes` 模块 API 手册
+# `uctypes` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 该模块提供一种以结构化方式访问二进制数据的方法。它是 MicroPython 中的“外部数据接口”模块，概念上类似于 CPython 的 `ctypes` 模块，但 API 经过简化和优化，适合嵌入式系统的需求。通过定义与 C 语言类似的数据结构布局，用户可以使用点语法来访问其中的子字段。
 
@@ -12,9 +12,9 @@
 >
 > `ustruct` 模块是 Python 中处理二进制数据的标准方式，适合处理简单的数据结构，但不适用于复杂、嵌套的结构。
 
-## 2. 结构说明
+## 结构说明
 
-### 2.1 示例
+### 示例
 
 ```python
 import uctypes
@@ -69,7 +69,7 @@ WWDG.WWDG_CR.WDGA = 1
 print(" 当前计数器 :", WWDG.WWDG_CR.T)
 ```
 
-### 2.2 结构布局定义
+### 结构布局定义
 
 `uctypes` 使用 Python 字典来定义结构布局。字典中的键为字段名称，值为字段属性（例如偏移量、数据类型等）。字段的偏移量从结构的起始位置按字节计算。
 
@@ -112,9 +112,9 @@ print(" 当前计数器 :", WWDG.WWDG_CR.T)
 
 在位域定义中，`lsbit` 为最右位的位置，`bitsize` 为位域长度。
 
-## 3. API 介绍
+## API 介绍
 
-### 3.1 `struct` 类
+### `struct` 类
 
 ```python
 class uctypes.struct(addr, descriptor, layout_type=NATIVE)
@@ -130,7 +130,7 @@ class uctypes.struct(addr, descriptor, layout_type=NATIVE)
 
 **返回值**：返回结构对象
 
-### 3.2 `sizeof`
+### `sizeof`
 
 ```python
 uctypes.sizeof(struct, layout_type=NATIVE)
@@ -145,7 +145,7 @@ uctypes.sizeof(struct, layout_type=NATIVE)
 
 **返回值**：结构的大小
 
-### 3.3 `addressof`
+### `addressof`
 
 ```python
 uctypes.addressof(obj)
@@ -159,7 +159,7 @@ uctypes.addressof(obj)
 
 **返回值**：对象的内存地址
 
-### 3.4 `bytes_at`
+### `bytes_at`
 
 ```python
 uctypes.bytes_at(addr, size)
@@ -167,7 +167,7 @@ uctypes.bytes_at(addr, size)
 
 捕获给定地址和大小的内存，返回不可变的 `bytes` 对象。
 
-### 3.5 `bytearray_at`
+### `bytearray_at`
 
 ```python
 uctypes.bytearray_at(addr, size)
@@ -175,7 +175,7 @@ uctypes.bytearray_at(addr, size)
 
 捕获给定地址和大小的内存，返回可变的 `bytearray` 对象。
 
-### 3.6 `string_at`
+### `string_at`
 
 ```python
 uctypes.string_at(addr, size=1048576)
@@ -183,21 +183,21 @@ uctypes.string_at(addr, size=1048576)
 
 从给定地址获取字符串，最大长度为指定的 `size`。
 
-## 4. 常量定义
+## 常量定义
 
-### 4.1 `uctypes.LITTLE_ENDIAN`
+### `uctypes.LITTLE_ENDIAN`
 
 表示小端字节序布局类型。
 
-### 4.2 `uctypes.BIG_ENDIAN`
+### `uctypes.BIG_ENDIAN`
 
 表示大端字节序布局类型。
 
-### 4.3 `uctypes.NATIVE`
+### `uctypes.NATIVE`
 
 表示本机字节序和对齐方式的布局类型。
 
-### 4.4 整数类型
+### 整数类型
 
 定义各种位数的整数类型，包括：
 
@@ -206,14 +206,14 @@ uctypes.string_at(addr, size=1048576)
 - `uctypes.UINT32`, `uctypes.INT32`
 - `uctypes.UINT64`, `uctypes.INT64`
 
-### 4.5 浮点数类型
+### 浮点数类型
 
 - `uctypes.FLOAT32`, `uctypes.FLOAT64`
 
-### 4.6 `uctypes.VOID`
+### `uctypes.VOID`
 
 用于表示空类型，常用于指针。
 
-## 5. 结构描述符和结构对象实例化
+## 结构描述符和结构对象实例化
 
 可以通过结构描述符字典和布局类型，使用 `uctypes.struct()` 在指定内存地址上实例化结构对象。

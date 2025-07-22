@@ -1,16 +1,16 @@
-# 2.8 `I2C_Slave` 模块 API 手册
+# `I2C_Slave` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 K230 I2C 控制器默认工作在主机模式，但也能通过定制固件，切换为从机模式。要想开启从模式，请在编译固件时使用 `make rtsmart-menuconfig` 配置打开 `Enable I2Cx SLAVE mode` 选项（路径：Drivers Configuration > InterDriver > Enable I2C > Enable I2Cx SLAVE mode），然后重新编译固件。
 
 ![menuconfig](https://www.kendryte.com/api/post/attachment?id=639)
 
-## 2. 从设备 API 介绍
+## 从设备 API 介绍
 
 `I2C_Slave` 类位于 `machine` 模块中。
 
-### 2.1 示例代码
+### 示例代码
 
 以下示例应用中，我们将一个 K230 作为主设备，使用另一个 K230 作为从设备，演示主机和从机通过 I2C 总线进行通信。其中从机 IO14 用于在数据发生变化时通知主设备读取数据。
 
@@ -83,7 +83,7 @@ buf = i2c.readfrom_mem(0x10, 0, 20)
 print(buf.hex())
 ```
 
-### 2.2 `list` 方法
+### `list` 方法
 
 获取当前系统中所有可用的 I2C 从机设备 ID 列表。该列表在初始化 `I2C_Slave` 对象时指定正确的设备 ID 至关重要。
 
@@ -100,7 +100,7 @@ print(buf.hex())
 - ID 值及其所代表的设备取决于硬件平台和系统配置。
 - 在没有可用从机设备的情况下，返回的列表可能为空。
 
-### 2.3 构造函数
+### 构造函数
 
 ```python
 i2c = I2C_Slave(id, addr=0x01, mem_size=10)
@@ -118,7 +118,7 @@ i2c = I2C_Slave(id, addr=0x01, mem_size=10)
 
 返回创建的 I2C 从设备对象。
 
-### 2.4 `readfrom_mem` 方法
+### `readfrom_mem` 方法
 
 ```python
 i2c.readfrom_mem(addr, n)
@@ -135,7 +135,7 @@ i2c.readfrom_mem(addr, n)
 
 返回一个字节数组（`bytearray`），包含从指定地址读取的 n 个字节的数据。
 
-### 2.5 `writeto_mem` 方法
+### `writeto_mem` 方法
 
 ```python
 i2c.writeto_mem(addr, data)

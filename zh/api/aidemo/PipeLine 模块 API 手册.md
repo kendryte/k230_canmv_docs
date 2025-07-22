@@ -1,12 +1,12 @@
-# 5.1 PipeLine 模块 API 手册
+# PipeLine 模块 API 手册
 
-## 1. 概述
+## 概述
 
 本手册旨在指导开发人员使用 MicroPython 开发 AI Demo 时，构建完整的 Media 流程，实现从 Camera 获取图像和显示 AI 推理结果的功能。该模块封装了单摄双通道默认配置，一路将 Camera 的图像直接送给 Display 模块显示；另一路使用 `get_frame` 接口获取一帧图像供 AI 程序使用。
 
-## 2. API 介绍
+## API 介绍
 
-### 2.1 init
+### init
 
 **描述**
 
@@ -36,7 +36,7 @@ pl=PipeLine(rgb888p_size=[1920,1080],display_mode='hdmi',display_size=None,osd_l
 |--------|---------------------------------|
 | PipeLine | PipeLine实例                  |
 
-### 2.2 create
+### create
 
 **描述**
 
@@ -68,7 +68,7 @@ pl.create(sensor=sensor)
 |--------|---------------------------------|
 | 无     |                                 |
 
-### 2.3 get_frame
+### get_frame
 
 **描述**
 
@@ -86,7 +86,7 @@ img=pl.get_frame()
 |--------|---------------------------------|
 | img     | 格式为ulab.numpy.ndarray，分辨率为rgb888p_size的图像数据 |
 
-### 2.4 show_image
+### show_image
 
 **描述**
 
@@ -104,7 +104,7 @@ pl.show_image()
 |--------|---------------------------------|
 | 无     |                                 |
 
-### 2.5 get_display_size
+### get_display_size
 
 **描述**
 
@@ -122,7 +122,7 @@ display_size=pl.get_display_size()
 |--------|---------------------------------|
 | list    | 返回屏幕配置的显示宽高[display_width,display_height] |
 
-### 2.6 destroy
+### destroy
 
 **描述**
 
@@ -140,7 +140,7 @@ img=pl.destroy()
 |--------|---------------------------------|
 | 无    |                                  |
 
-## 3. 示例程序
+## 示例程序
 
 以下为示例程序：
 

@@ -1,4 +1,4 @@
-# 2.20 `USB Serial` 模块 API 手册
+# `USB Serial` 模块 API 手册
 
 ## 概述
 

@@ -1,21 +1,21 @@
-# 2.7 `I2C` 模块 API 手册
+# `I2C` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 K230 芯片内部配备 5 个 I2C 硬件模块，支持标准 100 kb/s、快速 400 kb/s 以及高速 3.4 Mb/s 的通信模式。
 另外 K230 也实现了 5 个软件 I2C 供用户选择使用。
 
-## 2. 主设备 API 介绍
+## 主设备 API 介绍
 
 `I2C` 类位于 `machine` 模块中。
 
-### 2.1 示例代码
+### 示例代码
 
 ```python
 import time
 from machine import I2C
 
-# 24C32参数
+# C32参数
 EEPROM_ADDR = 0x50  # 24C32的I2C地址
 PAGE_SIZE = 32      # 24C32的页大小(字节)
 MEM_SIZE = 4096     # 24C32总容量(4KB)
@@ -72,7 +72,7 @@ test_24c32()
 
 ```
 
-### 2.2 构造函数
+### 构造函数
 
 ```python
 i2c = I2C(id, scl , sda, freq=400000, timeout = 50000)
@@ -86,7 +86,7 @@ i2c = I2C(id, scl , sda, freq=400000, timeout = 50000)
 - `freq`: I2C 时钟频率，软件 I2C 可能无法设置出所有的频率，请以实际的为准
 - `timeout`: I2C 通信超时时间
 
-### 2.3 `scan` 方法
+### `scan` 方法
 
 ```python
 i2c.scan()
@@ -102,7 +102,7 @@ i2c.scan()
 
 返回一个列表，包含所有扫描到的从机地址。
 
-### 2.4 `readfrom` 方法
+### `readfrom` 方法
 
 ```python
 i2c.readfrom(addr, len, True)
@@ -120,7 +120,7 @@ i2c.readfrom(addr, len, True)
 
 返回读取到的数据，类型为 `bytes`。
 
-### 2.5 `readfrom_into` 方法
+### `readfrom_into` 方法
 
 ```python
 i2c.readfrom_into(addr, buf, True)
@@ -138,7 +138,7 @@ i2c.readfrom_into(addr, buf, True)
 
 无
 
-### 2.6 `writeto` 方法
+### `writeto` 方法
 
 ```python
 i2c.writeto(addr, buf, True)
@@ -156,7 +156,7 @@ i2c.writeto(addr, buf, True)
 
 成功发送的字节数。
 
-### 2.7 `readfrom_mem` 方法
+### `readfrom_mem` 方法
 
 ```python
 i2c.readfrom_mem(addr, memaddr, nbytes, addrsize=8)
@@ -175,7 +175,7 @@ i2c.readfrom_mem(addr, memaddr, nbytes, addrsize=8)
 
 返回读取到的数据，类型为 `bytes`。
 
-### 2.8 `readfrom_mem_into` 方法
+### `readfrom_mem_into` 方法
 
 ```python
 i2c.readfrom_mem_into(addr, memaddr, buf, addrsize=8)
@@ -194,7 +194,7 @@ i2c.readfrom_mem_into(addr, memaddr, buf, addrsize=8)
 
 无
 
-### 2.9 `writeto_mem` 方法
+### `writeto_mem` 方法
 
 ```python
 i2c.writeto_mem(addr, memaddr, buf, mem_size=8)

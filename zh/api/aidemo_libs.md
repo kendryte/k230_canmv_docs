@@ -1,4 +1,4 @@
-# 5. AI Demo
+# AI Demo
 
 ```{toctree}
 :maxdepth: 1

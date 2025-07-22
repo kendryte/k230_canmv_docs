@@ -1,4 +1,4 @@
-# 4. nncase
+# nncase
 
 ```{toctree}
 :maxdepth: 1

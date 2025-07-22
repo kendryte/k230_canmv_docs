@@ -1,12 +1,12 @@
-# 3. 识别 AprilTags 例程讲解
+# 识别 AprilTags 例程讲解
 
-## 1. 概述
+## 概述
 
 AprilTags 是一种视觉标记系统，广泛应用于计算机视觉领域，用于定位、识别和跟踪。由 April Robotics 开发，AprilTags 是一种高效的二进制识别标签系统，特别适合机器人技术和增强现实等应用。
 
 CanMV 支持 OpenMV 算法，可以识别 AprilTags，相关接口为 `find_apriltags`。
 
-## 2. 示例
+## 示例
 
 本示例设置摄像头输出为 320x240 的灰度图像，并使用 `image.find_apriltags` 来识别 AprilTags。
 

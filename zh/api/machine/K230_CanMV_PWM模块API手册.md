@@ -1,14 +1,14 @@
-# 2.10 `PWM` 模块 API 手册
+# `PWM` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 K230 内部包含两个 PWM 硬件模块，每个模块具有三个输出通道。每个模块的输出频率可调，但三个通道共享同一时钟，而占空比则可独立调整。因此，通道 0、1 和 2 输出频率相同，通道 3、4 和 5 输出频率也相同。通道输出的 I/O 配置请参考 IOMUX 模块。
 
-## 2. API 介绍
+## API 介绍
 
 PWM 类位于 `machine` 模块中。
 
-### 2.1 示例代码
+### 示例代码
 
 ```python
 import time
@@ -46,7 +46,7 @@ time.sleep(1)
 pwm0.deinit()
 ```
 
-### 2.2 构造函数
+### 构造函数
 
 ```python
 pwm = PWM(channel, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
@@ -62,7 +62,7 @@ pwm = PWM(channel, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
 
 > `duty` 和 `duty_ns` 以及 `duty_u16` 只能设置其中的一个。
 
-### 2.3 `init` 方法
+### `init` 方法
 
 ```python
 PWM.init(freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
@@ -70,9 +70,9 @@ PWM.init(freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
 
 **参数**
 
-参考 [构造函数](#22-构造函数)
+参考 [构造函数](#构造函数)
 
-### 2.4 `deinit` 方法
+### `deinit` 方法
 
 ```python
 PWM.deinit()
@@ -88,7 +88,7 @@ PWM.deinit()
 
 无
 
-### 2.5 `freq` 方法
+### `freq` 方法
 
 ```python
 PWM.freq([freq])
@@ -104,7 +104,7 @@ PWM.freq([freq])
 
 返回当前 PWM 通道的输出频率或空。
 
-### 2.6 `duty` 方法
+### `duty` 方法
 
 ```python
 PWM.duty([duty])
@@ -124,7 +124,7 @@ PWM.duty([duty])
 
 无
 
-### 2.7 `duty_u16` 方法
+### `duty_u16` 方法
 
 ```python
 PWM.duty_u16([duty_u16])
@@ -144,7 +144,7 @@ PWM.duty_u16([duty_u16])
 
 无
 
-### 2.8 `duty_ns` 方法
+### `duty_ns` 方法
 
 ```python
 PWM.duty_ns([duty_ns])
