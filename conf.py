@@ -65,10 +65,10 @@ def setup(app):
     # 获取当前构建版本（分支/标签）
     current_version = getattr(app.config, "smv_current_version", "main")  # 默认main分支
     # 打印当前版本
+    print(f"当前构建版本: {current_version}")
     if current_version == "main":
-        print("当前构建版本: main")
         html_css_files.append('auto-nums.css')
-        
+
 html_theme_options = {
     'collapse_navigation': True,
     "repository_url": "https://github.com/kendryte/k230_canmv_docs",
