@@ -1,15 +1,15 @@
-# 4. TCP Server Example Explanation
+# TCP Server Example Explanation
 
-## 1. Environment Preparation
+## Environment Preparation
 
 To ensure a smooth demonstration of TCP communication, we need to confirm that the following environment is correctly configured:
 
-### 1.1 Hardware Connection
+### Hardware Connection
 
 - Ensure that your CanMV development board and computer are connected to the same router or switch via Ethernet cable, forming a local area network (LAN).
 - Ensure that the router or switch is functioning properly to guarantee network connection stability.
 
-### 1.2 Disable Firewall
+### Disable Firewall
 
 - To avoid the firewall blocking TCP communication, it is recommended to temporarily disable the firewall on your computer.
 
@@ -17,11 +17,11 @@ To ensure a smooth demonstration of TCP communication, we need to confirm that t
 :scale: 50%
 ```
 
-### 1.3 Tool Preparation
+### Tool Preparation
 
 - Download and install [NetAssist Network Debugging Assistant](https://www.bing.com/search?q=netassist+cmsoft) as a network communication testing tool to help achieve network data transmission and reception.
 
-### 1.4 Obtain IP Address
+### Obtain IP Address
 
 - Open the Command Prompt (CMD), enter `ipconfig`, and query and record the IP address of the computer's network card for subsequent configuration and testing.
 
@@ -29,9 +29,9 @@ To ensure a smooth demonstration of TCP communication, we need to confirm that t
 :scale: 50%
 ```
 
-## 2. Server Example Analysis
+## Server Example Analysis
 
-### 2.1 Import Necessary Libraries
+### Import Necessary Libraries
 
 ```python
 import socket  
@@ -43,7 +43,7 @@ import time
 - **network**: Used to configure network interfaces (such as LAN and WLAN).
 - **time**: Can be used for handling delay operations or network timeout control.
 
-### 2.2 Define Service Content
+### Define Service Content
 
 ```python
 CONTENT = b"""  
@@ -53,7 +53,7 @@ Hello #%d from k230 canmv MicroPython!
 
 - Defines the content that the server will send to the client. `%d` is used to insert the current connection count.
 
-### 2.3 Create and Configure the Server
+### Create and Configure the Server
 
 ```python
 def server():  
@@ -72,7 +72,7 @@ def server():
 
 - This part of the code creates a TCP server and binds it to the development board's IP address and port 8080. `listen(5)` indicates that up to 5 clients are allowed to wait for connection.
 
-### 2.4 Handle Client Connections
+### Handle Client Connections
 
 ```python
 counter = 1  
@@ -111,7 +111,7 @@ while True:
 - This code segment handles each client connection and loops to listen for data while communicating with the client. When the "end" character is received, the server closes the connection with that client.
 - To handle exceptions in non-blocking mode, `try-except` is used to manage potential errors during data reading.
 
-### 2.5 Complete Code
+### Complete Code
 
 ```python
 import socket
@@ -181,7 +181,7 @@ def server():
 server()
 ```
 
-## 3. Operation Phenomenon and Instructions
+## Operation Phenomenon and Instructions
 
 1. Run the above server code and observe that the serial terminal will print the server's IP address and port number.
 

@@ -1,14 +1,14 @@
-# 2.13 `UART` Module API Manual
+# `UART` Module API Manual
 
-## 1. Overview
+## Overview
 
 The K230 integrates five UART (Universal Asynchronous Receiver/Transmitter) hardware modules internally. Among them, UART0 is occupied by the small core SH, UART3 is occupied by the large core SH, and the remaining UART1, UART2, and UART4 are available for user use. The I/O configuration of the UART can be referenced from the IOMUX module.
 
-## 2. API Introduction
+## API Introduction
 
 The UART class is located in the `machine` module.
 
-### 2.1 Example Code
+### Example Code
 
 ```python
 from machine import UART
@@ -33,7 +33,7 @@ r = u1.readinto(b)
 u1.deinit()
 ```
 
-### 2.2 Constructor
+### Constructor
 
 ```python
 uart = UART(id, baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, stop=UART.STOPBITS_ONE, timeout = 0)
@@ -48,7 +48,7 @@ uart = UART(id, baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, s
 - `stop`: Number of stop bits, valid values are `STOPBITS_ONE`, `STOPBITS_TWO`, optional, default value is `STOPBITS_ONE`.
 - `timeout`: Read data timeout time in ms.
 
-### 2.3 `init` Method
+### `init` Method
 
 ```python
 UART.init(baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, stop=UART.STOPBITS_ONE)
@@ -64,7 +64,7 @@ Refer to the constructor.
 
 None
 
-### 2.4 `read` Method
+### `read` Method
 
 ```python
 UART.read([nbytes])
@@ -80,7 +80,7 @@ Read characters. If `nbytes` is specified, read up to that number of bytes; othe
 
 Returns a byte object containing the read bytes.
 
-### 2.5 `readline` Method
+### `readline` Method
 
 ```python
 UART.readline()
@@ -96,7 +96,7 @@ None
 
 Returns a byte object containing the read bytes.
 
-### 2.6 `readinto` Method
+### `readinto` Method
 
 ```python
 UART.readinto(buf[, nbytes])
@@ -113,7 +113,7 @@ Read bytes into `buf`. If `nbytes` is specified, read up to that number of bytes
 
 Returns the number of bytes read and stored in `buf`.
 
-### 2.7 `write` Method
+### `write` Method
 
 ```python
 UART.write(buf)
@@ -129,7 +129,7 @@ Write a byte buffer to the UART.
 
 Returns the number of bytes written.
 
-### 2.8 `deinit` Method
+### `deinit` Method
 
 ```python
 UART.deinit()

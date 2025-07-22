@@ -1,10 +1,10 @@
-# 2.16 `TOUCH` Module API Manual
+# `TOUCH` Module API Manual
 
-## 1. Overview
+## Overview
 
 The touch module is based on RTT's touch framework and supports single-point and multi-point capacitive touch screens as well as resistive touch screens.
 
-## 2. API Introduction
+## API Introduction
 
 The TOUCH class is located under the `machine` module.
 
@@ -37,8 +37,8 @@ touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1, range_x = -1, range_
 **Parameters**
 
 - `index`: TOUCH device number. When `0`, it indicates the use of the system's built-in touch. When `1`, it indicates the use of the CanMV-specific touch driver.
-- `type`: The touch driver type, refer to [Touch Types](#43-touch-device-type) for specific definitions.
-- `rotate`: The rotation of the panel output coordinates relative to the screen coordinates, range [0-3]. Refer to [Coordinate Rotation](#42-coordinate-rotation) for specific definitions.
+- `type`: The touch driver type, refer to [Touch Types](#touch-device-type) for specific definitions.
+- `rotate`: The rotation of the panel output coordinates relative to the screen coordinates, range [0-3]. Refer to [Coordinate Rotation](#coordinate-rotation) for specific definitions.
 - `range_x`: Valid when `index=1`. The maximum width of the touch output coordinates.
 - `range_y`: Valid when `index=1`. The maximum height of the touch output coordinates.
 - `i2c`: Valid when `index=1`. The I2C bus object used for touch.
@@ -78,34 +78,34 @@ None
 
 None
 
-## 3. TOUCH_INFO Class
+## TOUCH_INFO Class
 
 The TOUCH_INFO class is used to store information about touch points, which users can access through related read-only properties.
 
-- `event`: Event code, see [Touch Events](#41-touch-events) for details.
+- `event`: Event code, see [Touch Events](#touch-events) for details.
 - `track_id`: Touch point ID, used for multi-point touch.
 - `width`: Touch point width.
 - `x`: x-coordinate of the touch point.
 - `y`: y-coordinate of the touch point.
 - `timestamp`: Touch point timestamp.
 
-## 4. Constants
+## Constants
 
-### 4.1 Touch Events
+### Touch Events
 
 - `EVENT_NONE`: No event.
 - `EVENT_UP`: Touch released after pressing.
 - `EVENT_DOWN`: Touch started when pressed.
 - `EVENT_MOVE`: Touch moved after pressing.
 
-### 4.2 Coordinate Rotation
+### Coordinate Rotation
 
 - `ROTATE_0`: No rotation.
 - `ROTATE_90`: Rotate coordinates 90 degrees.
 - `ROTATE_180`: Rotate coordinates 180 degrees.
 - `ROTATE_270`: Rotate coordinates 270 degrees.
 
-### 4.3 Touch device Type
+### Touch device Type
 
 - `TYPE_CST328`: `CanMV` Drive Touch
 - `TYPE_CST226SE`: `CanMV` Drive Touch

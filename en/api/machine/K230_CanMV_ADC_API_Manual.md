@@ -1,14 +1,14 @@
-# 2.4 `ADC` Module API Manual
+# `ADC` Module API Manual
 
-## 1. Overview
+## Overview
 
 The K230 processor integrates an internal ADC (Analog-to-Digital Converter) hardware module, providing 6 independent channels. The module has a sampling resolution of 12 bits, meaning the output range is 0-4095, with a sampling rate of 1 MHz.
 
-## 2. API Introduction
+## API Introduction
 
 The ADC class belongs to the `machine` module.
 
-### 2.1 Example
+### Example
 
 ```python
 from machine import ADC
@@ -23,7 +23,7 @@ print(adc.read_u16())
 print(adc.read_uv(), "uV")
 ```
 
-### 2.2 Constructor
+### Constructor
 
 ```python
 adc = ADC(channel)
@@ -33,7 +33,7 @@ adc = ADC(channel)
 
 - `channel`: Indicates the ADC channel number to use, ranging from [0, 5].
 
-### 2.3 `read_u16`
+### `read_u16`
 
 ```python
 ADC.read_u16()
@@ -51,7 +51,7 @@ None
 
 Returns the sampling value of the ADC channel, ranging from [0, 4095].
 
-### 2.4 `read_uv`
+### `read_uv`
 
 ```python
 ADC.read_uv()

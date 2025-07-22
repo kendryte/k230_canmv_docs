@@ -1,14 +1,14 @@
-# 8. Explanation of Image Processing Routines
+# Explanation of Image Processing Routines
 
-## 1. Overview
+## Overview
 
 In OpenMV, there are many image processing functions for different image operations and feature processing. These functions can help you achieve various vision tasks such as image enhancement, noise reduction, binarization, edge detection, etc.
 
 CanMV supports OpenMV algorithms, and these functions can also be used.
 
-## 2. Image Processing Functions Description
+## Image Processing Functions Description
 
-### 2.1 Image Enhancement and Correction
+### Image Enhancement and Correction
 
 - **`histeq`**: Histogram Equalization
   - Used to enhance the contrast of the image, making the histogram distribution more uniform.
@@ -42,7 +42,7 @@ CanMV supports OpenMV algorithms, and these functions can also be used.
   img.lens_corr(1.0)  # Corrects distortion, correction coefficient is 1.0
   ```
 
-### 2.2 Filtering and Noise Reduction
+### Filtering and Noise Reduction
 
 - **`gaussian`**: Gaussian Filtering
   - Used to smooth the image and reduce noise. Gaussian filtering performs weighted averaging through mean filtering.
@@ -76,7 +76,7 @@ CanMV supports OpenMV algorithms, and these functions can also be used.
   img.mean(3)  # Mean filtering, window size is 3x3
   ```
 
-### 2.3 Binarization and Morphological Operations
+### Binarization and Morphological Operations
 
 - **`binary`**: Binarization
   - Converts the image to a binary image, dividing pixels into black and white based on a threshold.
@@ -110,7 +110,7 @@ CanMV supports OpenMV algorithms, and these functions can also be used.
   img.morph(2, morph.MORPH_CLOSE)  # Morphological operation, closing operation
   ```
 
-### 2.4 Edge Detection
+### Edge Detection
 
 - **`laplacian`**: Laplacian Edge Detection
   - Used for detecting edges in the image.
@@ -128,7 +128,7 @@ CanMV supports OpenMV algorithms, and these functions can also be used.
   img.sobel(3)  # Sobel edge detection, window size is 3
   ```
 
-### 2.5 Polar Coordinate Transformation
+### Polar Coordinate Transformation
 
 - **`linpolar`**: Linear Polar Transformation
   - Converts the image from Cartesian coordinates to polar coordinates.
@@ -146,7 +146,7 @@ CanMV supports OpenMV algorithms, and these functions can also be used.
   img.logpolar(10)  # Logarithmic polar transformation, radius step is 10
   ```
 
-### 2.6 Image Inversion and Modes
+### Image Inversion and Modes
 
 - **`negate`**: Invert Image
   - Inverts all pixel values in the image.
@@ -172,7 +172,7 @@ CanMV supports OpenMV algorithms, and these functions can also be used.
   img.mode()
   ```
 
-### 2.7 Summary
+### Summary
 
 These functions can be used to perform various image processing tasks:
 
@@ -185,7 +185,7 @@ These functions can be used to perform various image processing tasks:
 
 You can choose the appropriate image processing functions to process and analyze images based on your actual needs.
 
-## 3. Example
+## Example
 
 Here is a demo of image binarization. For more demos, please refer to the examples included in the firmware's virtual U-disk.
 

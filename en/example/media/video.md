@@ -1,12 +1,12 @@
-# 4. Video Examples Explanation
+# Video Examples Explanation
 
-## 1. Overview
+## Overview
 
 The K230 supports H264 or H265 encoding for video streams. The CanMV provides APIs that allow users to record and play MP4 files, as well as support RTSP streaming.
 
-## 2. Examples
+## Examples
 
-### 2.1 MP4 Recording
+### MP4 Recording
 
 This example demonstrates how to record MP4 files on the CanMV development board.
 You can use the `Mp4Container` class to record audio and video data from the camera. The `mp4_muxer_test` function provides a simple implementation for quick start.
@@ -255,7 +255,7 @@ if __name__ == "__main__":
 For detailed interface definitions, please refer to [mp4muxer](../../api/mpp/K230_CanMV_MP4模块API手册.md)
 ```
 
-### 2.2 MP4 Demuxing
+### MP4 Demuxing
 
 This example demonstrates how to use the MP4 demuxer on the CanMV development board to parse MP4 files and extract video and audio streams.
 
@@ -367,7 +367,7 @@ if __name__ == "__main__":
 For detailed interface definitions, please refer to [mp4demuxer](../../api/mpp/K230_CanMV_MP4解复用器模块API手册.md)
 ```
 
-### 2.5 H264/H265 Decoding
+### H264/H265 Decoding
 
 This example demonstrates how to perform video decoding on the CanMV development board.
 
@@ -462,7 +462,7 @@ if __name__ == "__main__":
 For detailed interface definitions, please refer to [VDEC](../../api/mpp/K230_CanMV_VDEC_Module_API_Manual.md)
 ```
 
-### 2.6 RTSP Streaming
+### RTSP Streaming
 
 This example demonstrates how to stream video and audio to the network using the RTSP server.
 

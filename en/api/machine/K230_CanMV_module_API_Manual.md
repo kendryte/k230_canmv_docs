@@ -1,14 +1,14 @@
-# 2.12 WDT Module API Manual
+# WDT Module API Manual
 
-## 1. Overview
+## Overview
 
 The K230 integrates two WDT (Watchdog Timer) hardware modules internally, designed to ensure the system can reboot when the application crashes and enters an unrecoverable state. Once the WDT is started, if the hardware is not periodically "fed" during operation, it will automatically reset the system after a timeout.
 
-## 2. API Introduction
+## API Introduction
 
 The WDT class is located in the `machine` module.
 
-### 2.1 Example Code
+### Example Code
 
 ```python
 from machine import WDT
@@ -20,7 +20,7 @@ wdt1 = WDT(1, 3)
 wdt1.feed()
 ```
 
-### 2.2 Constructor
+### Constructor
 
 ```python
 wdt = WDT(id=1, timeout=5)
@@ -33,7 +33,7 @@ wdt = WDT(id=1, timeout=5)
 
 **Note:** WDT0 is currently unavailable.
 
-### 2.3 `feed` Method
+### `feed` Method
 
 ```python
 WDT.feed()

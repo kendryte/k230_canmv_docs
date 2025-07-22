@@ -1,12 +1,12 @@
-# 5.2 Ai2d Module API Manual
+# Ai2d Module API Manual
 
-## 1. Overview
+## Overview
 
 This manual aims to guide developers in using MicroPython to develop AI Demos, construct preprocessing workflows, and implement functions to configure and execute preprocessing on input images using `nncase_runtime.ai2d`. The module encapsulates the preprocessing methods supported by `ai2d` and provides methods to construct and run the preprocessing process.
 
-## 2. API Introduction
+## API Introduction
 
-### 2.1 init
+### init
 
 **Description**
 
@@ -32,7 +32,7 @@ my_ai2d = Ai2d(debug_mode=0)
 |--------------|------------------------------------|
 | Ai2d         | Ai2d instance                      |
 
-### 2.2 set_ai2d_dtype
+### set_ai2d_dtype
 
 **Description**
 
@@ -63,7 +63,7 @@ my_ai2d.set_ai2d_dtype(nn.ai2d_format.RGB_packed, nn.ai2d_format.NCHW_FMT, np.ui
 |--------------|------------------------------------|
 | None         |                                    |
 
-### 2.3 crop
+### crop
 
 **Description**
 
@@ -90,7 +90,7 @@ my_ai2d.crop(0, 0, 200, 300)
 |--------------|------------------------------------|
 | None         |                                    |
 
-### 2.4 shift
+### shift
 
 **Description**
 
@@ -114,7 +114,7 @@ my_ai2d.shift(shift_val=2)
 |--------------|------------------------------------|
 | None         |                                    |
 
-### 2.5 pad
+### pad
 
 **Description**
 
@@ -140,7 +140,7 @@ my_ai2d.pad(paddings=[0, 0, 0, 0, 5, 5, 15, 15], pad_mode=0, pad_val=[114, 114, 
 |--------------|------------------------------------|
 | None         |                                    |
 
-### 2.6 resize
+### resize
 
 **Description**
 
@@ -165,7 +165,7 @@ my_ai2d.resize(interp_method=nn.interp_method.tf_bilinear, interp_mode=nn.interp
 |--------------|------------------------------------|
 | None         |                                    |
 
-### 2.7 affine
+### affine
 
 **Description**
 
@@ -195,7 +195,7 @@ my_ai2d.affine(interp_method=nn.interp_method.cv2_bilinear, cord_round=0, bound_
 |--------------|------------------------------------|
 | None         |                                    |
 
-### 2.8 build
+### build
 
 **Description**
 
@@ -222,7 +222,7 @@ my_ai2d.build([1, 3, 512, 512], [1, 3, 640, 640])
 |--------------|------------------------------------|
 | None         |                                    |
 
-### 2.9 run
+### run
 
 **Description**
 
@@ -246,9 +246,9 @@ ai2d_output_tensor = my_ai2d.run(img)
 |--------------|------------------------------------|
 | ai2d_output_tensor | Data after ai2d preprocessing |
 
-## 3. Data Structure Description
+## Data Structure Description
 
-### 3.1 type
+### type
 
 | Input Format      | Output Format            | Note                |
 |-------------------|--------------------------|---------------------|
@@ -260,7 +260,7 @@ ai2d_output_tensor = my_ai2d.run(img)
 | RGB_packed        | RGB_planar/RGB_packed    |                     |
 | RAW16             | RAW16/8                  | Depth map, perform shift operation |
 
-### 3.2 interp_method
+### interp_method
 
 Interpolation methods in the resize preprocessing method. Listed as follows:
 
@@ -271,7 +271,7 @@ Interpolation methods in the resize preprocessing method. Listed as follows:
 | nn.interp_method.cv2_nearest     | cv2's nearest neighbor interpolation  |               |
 | nn.interp_method.cv2_bilinear    | cv2's bilinear interpolation          |               |
 
-### 3.3 interp_mode
+### interp_mode
 
 | Mode                              | Description               | Note |
 |-----------------------------------|---------------------------|------|
@@ -279,7 +279,7 @@ Interpolation methods in the resize preprocessing method. Listed as follows:
 | nn.interp_mode.align_corner       | Corner forced alignment   |      |
 | nn.interp_mode.half_pixel         | Center alignment          |      |
 
-## 4. Example Program
+## Example Program
 
 ```{attention}
 (1) Affine and Resize functions are mutually exclusive and cannot be enabled simultaneously;  

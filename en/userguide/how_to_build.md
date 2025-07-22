@@ -1,6 +1,6 @@
-# 5. Advanced - Custom Firmware
+# Advanced - Custom Firmware
 
-## 1. Overview
+## Overview
 
 ```{note}
 This chapter introduces how to develop on the K230 CanMV. If you have no custom requirements, you can skip this chapter.
@@ -8,7 +8,7 @@ This chapter introduces how to develop on the K230 CanMV. If you have no custom 
 
 The K230 CanMV is developed based on the K230 SDK and runs applications using Micropython and OpenMV. Users can flexibly develop by invoking hardware resources through the Python language.
 
-## 2. Setting Up the Development Environment
+## Setting Up the Development Environment
 
 | Host Environment           | Description                                |
 | -------------------------- | ------------------------------------------ |
@@ -16,7 +16,7 @@ The K230 CanMV is developed based on the K230 SDK and runs applications using Mi
 
 Currently, K230 CanMV has only been verified to compile in a Linux environment. Other Linux versions have not been tested, so compatibility with other systems cannot be guaranteed.
 
-### 2.1 Local Build Environment
+### Local Build Environment
 
 - Update APT sources (optional)
 
@@ -64,9 +64,9 @@ echo 'export PATH="${HOME}/.bin:${PATH}"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-## 3. Compilation Process
+## Compilation Process
 
-### 3.1 Source Code Download
+### Source Code Download
 
 The source code of CanMV-K230 is hosted on Github. Users can download the source code using the repo tool.
 
@@ -84,7 +84,7 @@ repo init -u https://github.com/canmv-k230/manifest -b master -m rtsmart.xml --r
 repo sync
 ```
 
-### 3.2 Code Preparation
+### Code Preparation
 
 When compiling for the first time, you need to download the toolchain. The following command only needs to be executed once.
 
@@ -93,7 +93,7 @@ When compiling for the first time, you need to download the toolchain. The follo
 make dl_toolchain
 ```
 
-### 3.3 Compilation
+### Compilation
 
 Select the corresponding board configuration file according to actual needs, and then start compiling.
 
@@ -118,7 +118,7 @@ make menuconfig
 
 ![disable canmv](https://www.kendryte.com/api/post/attachment?id=440)
 
-## 4. Code Directory Description
+## Code Directory Description
 
 ```sh
 canmv_k230

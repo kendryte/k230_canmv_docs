@@ -1,14 +1,14 @@
-# 3. Audio Routine Explanation
+# Audio Routine Explanation
 
-## 1. Overview
+## Overview
 
 This routine demonstrates how to use the built-in codec link to implement I2S audio capture and playback functions. Users can capture sound through the onboard microphone and output the sound through the headphone jack.
 
 The CanMV K230 development board is equipped with an analog microphone and a headphone output interface, making it convenient for users to test recording and audio playback.
 
-## 2. Examples
+## Examples
 
-### 2.1 audio - Audio Capture and Playback Routine
+### audio - Audio Capture and Playback Routine
 
 This example program demonstrates the audio capture and output functions of the CanMV development board.
 
@@ -255,7 +255,7 @@ if __name__ == "__main__":
 For detailed interfaces of the audio module, please refer to the [API documentation](../../api/mpp/K230_CanMV_Audio_Module_API_Manual.md).
 ```
 
-### 2.2 acodec - G711 Encoding and Decoding Routine
+### acodec - G711 Encoding and Decoding Routine
 
 This example program demonstrates the G711 encoding and decoding functions of the CanMV development board.
 

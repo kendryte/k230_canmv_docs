@@ -1,8 +1,8 @@
-# 6. Cloud training platform model deployment
+# Cloud training platform model deployment
 
 > Warning: This page is translated by MACHINE, which may lead to POOR QUALITY or INCORRECT INFORMATION, please read with CAUTION!
 
-## 1. Introduction to the cloud training platform
+## Introduction to the cloud training platform
 
 The Canaan developer community model training function is an open training platform to simplify the development process and improve development efficiency. The platform allows users to pay attention to the implementation of visual scenes, and complete the process from data annotation to obtaining the KModel model in the deployment package more quickly, and deploy it on the K230 and K230D chip development boards equipped with Canaan Technology Kendryte® series AIoT chips. Users only need to upload the data set and simply configure the parameters to start training.
 
@@ -12,7 +12,7 @@ The Canaan developer community model training function is an open training platf
 
 📌Platform usage documentation reference:**[Canaan Cloud Training Platform Document Tutorial](https://www.kendryte.com/web/CloudPlatDoc.html)**, please pay attention to the format of the dataset!
 
-## 2. Support task introduction
+## Support task introduction
 
 There are 7 visual tasks supported by the K230 series chips in the cloud training platform, and the task introduction is as follows:
 
@@ -28,9 +28,9 @@ There are 7 visual tasks supported by the K230 series chips in the cloud trainin
 | Metric learning            | Training a model that characterizes the image, uses the model to create a feature library, and classifies new categories without retraining the model through feature comparison, which can also be called self-learning. |
 | Multi-label classification | Classify pictures in multiple categories. Some pictures may not just belong to a single category. The sky and the sea can exist at the same time to obtain the multi-label classification results of the pictures.        |
 
-## 3. Deployment steps
+## Deployment steps
 
-## 3.1 Deployment Package Description
+## Deployment Package Description
 
 After training, you can download the deployment package corresponding to the training task. After the downloaded deployment zip package is decompressed, the directory is as follows:
 
@@ -51,7 +51,7 @@ The content is shown in the picture:
 
 in `mp_deployment_source.zip` that is, the code package deployed on the K230 MicroPython image, which internally contains the deployed configuration files and the deployed KModel model.
 
-## 3.2 File copy
+## File copy
 
 ✅ **Firmware selection**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
@@ -59,7 +59,7 @@ in `mp_deployment_source.zip` that is, the code package deployed on the K230 Mic
 
 ✅ **Deploy the script**: After the firmware is successfully burned, power on and power on. You can find it in the root directory of the file system `CanMV/sdcard` directory,`mp_deployment_source.zip` copy to decompress `CanMV/sdcard` in the directory.
 
-## 3.3 Script running
+## Script running
 
 Open CanMV IDE K230 and select the upper left corner `File (F)`->`Open the file`->`Select CanMV/sdcard/examples/19-CloudPlatScripts` scripts in different tasks run.
 
@@ -83,7 +83,7 @@ Open CanMV IDE K230 and select the upper left corner `File (F)`->`Open the file`
 | deploy_multl_image.py  | For multi-label classification single-picture inference script, you need to add test images yourself and modify the path to read them into the image.                                                                                                                                                                    |
 | deploy_multl_video.py  | Multi-label classified video stream inference scripts, please refer to the comments in the script for details.                                                                                                                                                                                                           |
 
-## 3.4 Deployment Instructions
+## Deployment Instructions
 
 - 📢 If the effect is not ideal when deploying the model, first adjust the threshold of the corresponding task and the resolution of the inference image to see if the test results can improve!
 

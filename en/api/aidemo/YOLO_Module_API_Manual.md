@@ -1,14 +1,14 @@
-# 5.4 YOLO Module API Manual
+# YOLO Module API Manual
 
-## 1. Overview
+## Overview
 
 This manual aims to guide developers in deploying and using models trained and converted with YOLOv5, YOLOv8, and YOLO11 through the YOLO module. The models support three types of tasks: classification, detection, and segmentation. It helps users quickly integrate with the YOLO source code and deploy the trained models on the K230. For YOLO usage examples, refer to the documentation: [YOLO Battle](../../example/ai/YOLO_Battle.md).
 
-## 2. API Introduction
+## API Introduction
 
-### 2.1 YOLOv5 Class
+### YOLOv5 Class
 
-#### 2.1.1 Constructor
+#### Constructor
 
 **Description**
 This is the constructor of the encapsulated `YOLOv5` module, which initializes a `YOLOv5` type to obtain a `YOLOv5` instance.
@@ -44,7 +44,7 @@ yolo=YOLOv5(task_type="classify",mode="image",kmodel_path="yolov5_det.kmodel",la
 | --- | --- |
 | YOLOv5 | YOLOv5 instance |
 
-#### 2.1.2 config_preprocess
+#### config_preprocess
 
 **Description**
 This is the YOLOv5 pre - processing configuration function.
@@ -67,7 +67,7 @@ yolo.config_preprocess()
 | --- | --- |
 | None |  |
 
-#### 2.1.3 run
+#### run
 
 **Description**
 Infer one frame of image and return the inference result for use in the `draw_result` method. For classification tasks, it returns the class index and score. For detection tasks, it returns a list of detection box positions, scores, and class indices. For segmentation tasks, it returns the mask result and a list of detection box positions, scores, and class indices.
@@ -90,7 +90,7 @@ res=yolo.run(img)
 | --- | --- |
 | res | The post - processing result of the model. The return values vary for different tasks. For classification tasks, it returns the class index and score. For detection tasks, it returns a list of detection box positions, scores, and class indices. For segmentation tasks, it returns the mask result and a list of detection box positions, scores, and class indices. |
 
-#### 2.1.4 draw_result
+#### draw_result
 
 **Description**
 Draw the `YOLOv5` inference result on the screen or image.
@@ -114,7 +114,7 @@ yolo.draw_result(res,img_ori)
 | --- | --- |
 | None |  |
 
-#### 2.1.5 Example Programs
+#### Example Programs
 
 The following is an example program for the `YOLOv5` detection task:
 
@@ -186,9 +186,9 @@ if __name__ == "__main__":
 
 The above code shows how to use `YOLOv5` for video inference.
 
-### 2.2 YOLOv8 Class
+### YOLOv8 Class
 
-#### 2.2.1 Constructor
+#### Constructor
 
 **Description**
 This is the constructor of the encapsulated `YOLOv8` module, which initializes a `YOLOv8` type to obtain a `YOLOv8` instance.
@@ -224,7 +224,7 @@ yolo=YOLOv8(task_type="classify",mode="image",kmodel_path="yolov8_det.kmodel",la
 | --- | --- |
 | YOLOv8 | YOLOv8 instance |
 
-#### 2.2.2 config_preprocess
+#### config_preprocess
 
 **Description**
 This is the YOLOv8 pre - processing configuration function.
@@ -247,7 +247,7 @@ yolo.config_preprocess()
 | --- | --- |
 | None |  |
 
-#### 2.2.3 run
+#### run
 
 **Description**
 Infer one frame of image and return the inference result for use in the `draw_result` method. For classification tasks, it returns the class index and score. For detection tasks, it returns a list of detection box positions, scores, and class indices. For segmentation tasks, it returns the mask result and a list of detection box positions, scores, and class indices.
@@ -270,7 +270,7 @@ res=yolo.run(img)
 | --- | --- |
 | res | The post - processing result of the model. The return values vary for different tasks. For classification tasks, it returns the class index and score. For detection tasks, it returns a list of detection box positions, scores, and class indices. For segmentation tasks, it returns the mask result and a list of detection box positions, scores, and class indices. |
 
-#### 2.2.4 draw_result
+#### draw_result
 
 **Description**
 Draw the `YOLOv8` inference result on the screen or image.
@@ -294,7 +294,7 @@ yolo.draw_result(res,img_ori)
 | --- | --- |
 | None |  |
 
-#### 2.2.5 Example Programs
+#### Example Programs
 
 The following is an example program for the `YOLOv8` classification task:
 
@@ -368,9 +368,9 @@ if __name__ == "__main__":
 
 The above code shows how to use `YOLOv8` for video inference.
 
-### 2.3 YOLO11 Class
+### YOLO11 Class
 
-#### 2.3.1 Constructor
+#### Constructor
 
 **Description**
 This is the constructor of the encapsulated YOLO11 module, which initializes the YOLO11 type to obtain a YOLO11 instance.
@@ -406,7 +406,7 @@ yolo=YOLO11(task_type="segment",mode="image",kmodel_path="yolo11_det.kmodel",lab
 | --- | --- |
 | YOLO11 | YOLO11 instance |
 
-#### 2.3.2 config_preprocess
+#### config_preprocess
 
 **Description**
 This is the YOLO11 pre - processing configuration function.
@@ -429,7 +429,7 @@ yolo.config_preprocess()
 | --- | --- |
 | None |  |
 
-#### 2.3.3 run
+#### run
 
 **Description**
 Infer one frame of an image and return the inference result for use in the `draw_result` method. For classification tasks, it returns the class index and score. For detection tasks, it returns a list of detection box positions, scores, and class indices. For segmentation tasks, it returns the mask result and a list of detection box positions, scores, and class indices.
@@ -452,7 +452,7 @@ res=yolo.run(img)
 | --- | --- |
 | res | The post - processing result of the model. The return values vary for different tasks. For classification tasks, it returns the class index and score. For detection tasks, it returns a list of detection box positions, scores, and class indices. For segmentation tasks, it returns the mask result and a list of detection box positions, scores, and class indices. |
 
-#### 2.3.4 draw_result
+#### draw_result
 
 **Description**
 Draw the `YOLO11` inference result on the screen or an image.
@@ -476,7 +476,7 @@ yolo.draw_result(res,img_ori)
 | --- | --- |
 | None |  |
 
-#### 2.3.5 Example Programs
+#### Example Programs
 
 The following is an example program for the `YOLO11` segmentation task:
 

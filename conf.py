@@ -5,7 +5,6 @@
 
 import sys, os
 import datetime
-
 sys.path.append(os.path.abspath('exts'))
 
 # -- Project information -----------------------------------------------------
@@ -60,10 +59,16 @@ html_static_path = ['_static']
 
 # if want to add top nav for canann, enable this.
 html_css_files = ['topbar.css', 'custom-theme.css']
-
-
 locale_dirs = ['locale']
 
+def setup(app):
+    # 获取当前构建版本（分支/标签）
+    current_version = getattr(app.config, "smv_current_version", "main")  # 默认main分支
+    # 打印当前版本
+    if current_version == "main":
+        print("当前构建版本: main")
+        html_css_files.append('auto-nums.css')
+        
 html_theme_options = {
     'collapse_navigation': True,
     "repository_url": "https://github.com/kendryte/k230_canmv_docs",

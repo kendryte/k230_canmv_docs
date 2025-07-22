@@ -1,14 +1,14 @@
-# 1.5 `uos` – Basic Operating System Services
+# `uos` – Basic Operating System Services
 
 This module provides a subset of the functionality of CPython's operating system modules. For more details, please refer to the original CPython documentation: [os](https://docs.python.org/3.5/library/os.html#module-os).
 
 The `uos` module includes functions for file system access and mounting, terminal redirection and duplication, as well as system information and random number generation functions such as `uname` and `urandom`.
 
-## 1. Functions
+## Functions
 
 ### Basic Functions
 
-#### 1.1 `uname`
+#### `uname`
 
 ```python
 uos.uname()
@@ -22,7 +22,7 @@ Returns a tuple containing information about the underlying machine and its oper
 - `version` – MicroPython version and build date.
 - `machine` – Hardware identifier (e.g., board model, CPU type, etc.).
 
-#### 1.2 `urandom`
+#### `urandom`
 
 ```python
 uos.urandom(n)
@@ -30,7 +30,7 @@ uos.urandom(n)
 
 Generates and returns a byte object containing `n` random bytes. The random bytes are provided by the hardware random number generator if available.
 
-#### 1.3 `cpu_usage`
+#### `cpu_usage`
 
 ```python
 uos.cpu_usage()
@@ -40,7 +40,7 @@ Returns the current CPU usage of the system, ranging from `0` to `100`.
 
 ### File System Operations
 
-#### 1.4 `chdir`
+#### `chdir`
 
 ```python
 uos.chdir(path)
@@ -48,7 +48,7 @@ uos.chdir(path)
 
 Changes the current working directory.
 
-#### 1.5 `getcwd`
+#### `getcwd`
 
 ```python
 uos.getcwd()
@@ -56,7 +56,7 @@ uos.getcwd()
 
 Gets the path of the current working directory.
 
-#### 1.6 `ilistdir`
+#### `ilistdir`
 
 ```python
 uos.ilistdir([dir])
@@ -69,7 +69,7 @@ Returns information about the entries in the specified directory (or the current
 - `inode`: Inode value in the file system, `0` for file systems that do not support inodes.
 - `size` (optional): File size, `-1` if it cannot be obtained.
 
-#### 1.7 `listdir`
+#### `listdir`
 
 ```python
 uos.listdir([dir])
@@ -77,7 +77,7 @@ uos.listdir([dir])
 
 Lists all entries in the specified directory. If no directory is specified, lists the entries in the current directory.
 
-#### 1.8 `mkdir`
+#### `mkdir`
 
 ```python
 uos.mkdir(path)
@@ -85,7 +85,7 @@ uos.mkdir(path)
 
 Creates a new directory at the specified path.
 
-#### 1.9 `remove`
+#### `remove`
 
 ```python
 uos.remove(path)
@@ -93,7 +93,7 @@ uos.remove(path)
 
 Deletes the file at the specified path.
 
-#### 1.10 `rmdir`
+#### `rmdir`
 
 ```python
 uos.rmdir(path)
@@ -101,7 +101,7 @@ uos.rmdir(path)
 
 Deletes the directory at the specified path.
 
-#### 1.11 `rename`
+#### `rename`
 
 ```python
 uos.rename(old_path, new_path)
@@ -109,7 +109,7 @@ uos.rename(old_path, new_path)
 
 Renames the file or directory at the specified path.
 
-#### 1.12 `stat`
+#### `stat`
 
 ```python
 uos.stat(path)
@@ -117,7 +117,7 @@ uos.stat(path)
 
 Returns the status information of the file or directory at the specified path.
 
-#### 1.13 `statvfs`
+#### `statvfs`
 
 ```python
 uos.statvfs(path)
@@ -138,7 +138,7 @@ Gets the status of the file system at the specified path, returning a tuple with
 
 > only `f_bsize`, `f_blocks` and `f_bfree` valid.
 
-#### 1.14 `sync`
+#### `sync`
 
 ```python
 uos.sync()
@@ -146,7 +146,7 @@ uos.sync()
 
 Synchronizes all file systems, writing any pending write operations to the storage device.
 
-#### 1.15 `dupterm`
+#### `dupterm`
 
 ```python
 uos.dupterm(stream_object, index=0)

@@ -1,16 +1,16 @@
-# 1.1 `Ucryptolib` Module API Manual
+# `Ucryptolib` Module API Manual
 
-## 1. Overview
+## Overview
 
 The `Ucryptolib` library provides the following encryption and decryption functionalities: AES-ECB, AES-CBC, AES-CTR, AES-GCM, and SM4. Among these, AES-ECB, AES-CBC, and AES-CTR modes are natively implemented by MicroPython's software library, while AES-GCM and SM4 are accelerated through underlying hardware accelerators.
 
 ***Note: This document does not detail the encryption and decryption steps for AES-ECB, AES-CBC, and AES-CTR modes. For related information, please refer to MicroPython's [official cryptolib documentation](https://docs.micropython.org/en/latest/library/cryptolib.html).***
 
-## 2. API Introduction
+## API Introduction
 
 The `Ucryptolib` library provides two main classes: `aes` and `sm4`, which implement encryption (`encrypt`) and decryption (`decrypt`) operations respectively.
 
-### 2.1 Class `aes`
+### Class `aes`
 
 **Description**
 
@@ -48,7 +48,7 @@ ciphertext = cipher.encrypt(plaintext)
 decrypted_text = cipher.decrypt(ciphertext)
 ```
 
-### 2.2 Class `sm4`
+### Class `sm4`
 
 **Description**
 

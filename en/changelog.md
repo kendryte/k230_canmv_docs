@@ -1,6 +1,6 @@
 # Version Description
 
-## 1. Version Information
+## Version Information
 
 | Product       | Version | Release Date |
 |---------------|---------|--------------|
@@ -13,15 +13,15 @@
 | K230 CanMV    | V1.0.0  | 2024-08-02   |
 | K230 CanMV    | V1.1.0  | 2024-09-14   |
 
-## 2. Supported Hardware
+## Supported Hardware
 
 The K230 platform supports CanMV-K230 and other mainboards.
 
-## 3. Version Usage Restrictions
+## Version Usage Restrictions
 
 None
 
-## 4. Relationship Between CanMV, SDK, and nncase Versions
+## Relationship Between CanMV, SDK, and nncase Versions
 
 When developing AI, the corresponding versions of k230_sdk and nncase are as follows. Please pay attention to the version correspondence when compiling images and using nncase to convert kmodels.
 
@@ -36,9 +36,9 @@ When developing AI, the corresponding versions of k230_sdk and nncase are as fol
 | 1.0.0                       | 1.6.0            | 2.8.3          | -     |
 | 1.1.0                       | -                | 2.9.0          | -     |
 
-## 5. Version Functionality Statistics
+## Version Functionality Statistics
 
-### 5.1 Basic Functions
+### Basic Functions
 
 | ID  | Supported Version | Function Summary | Function Description                | Notes |
 |-----|-------------------|------------------|-------------------------------------|-------|
@@ -73,7 +73,7 @@ When developing AI, the corresponding versions of k230_sdk and nncase are as fol
 | 28  | V1.0.0            | Function Optimization | Optimizes Chinese font rendering, IDE preview image quality, supports GC2093 | |
 | 29  | V1.1.0            | **Major Version Change** | No longer depends on specific SDK version, removes Linux code dependency, large-scale code refactoring | |
 
-### 5.2 AI Demos
+### AI Demos
 
 | ID  | Supported Version | Function Summary | Function Description                 | Notes |
 |-----|-------------------|------------------|--------------------------------------|-------|
@@ -106,11 +106,11 @@ When developing AI, the corresponding versions of k230_sdk and nncase are as fol
 | 27  | V0.4.0            | Self-learning    | Determines category based on image features | |
 | 28  | V0.5.0            | TTS Chinese      | Converts Chinese text to speech       |       |
 
-## 6. Known Issues and Limitations
+## Known Issues and Limitations
 
 | ID  | Functional Module | Issue/Limitations Description | Notes |
 |-----|-------------------|-------------------------------|-------|
 
-## 7. Detailed Change Log
+## Detailed Change Log
 
 For versions after `V1.1.0`, please refer to the [CHANGELOG](https://github.com/kendryte/canmv_k230/blob/main/CHANGELOG.md) in the code.

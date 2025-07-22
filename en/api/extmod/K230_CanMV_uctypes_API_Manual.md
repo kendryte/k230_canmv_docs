@@ -1,6 +1,6 @@
-# 2.1 `Uctypes` Module API Documentation
+# `Uctypes` Module API Documentation
 
-## 1. Overview
+## Overview
 
 This module provides a way to access binary data in a structured manner. It is the "external data interface" module in MicroPython, conceptually similar to CPython's `ctypes` module, but with a simplified and optimized API tailored for embedded systems. By defining data structures with layouts similar to those in C, users can access subfields using dot notation.
 
@@ -12,9 +12,9 @@ This module provides a way to access binary data in a structured manner. It is t
 >
 > The `ustruct` module is the standard way to handle binary data in Python. It is suitable for handling simple data structures but not for complex, nested structures.
 
-## 2. Structure Description
+## Structure Description
 
-### 2.1 Examples
+### Examples
 
 ```python
 import uctypes
@@ -69,7 +69,7 @@ WWDG.WWDG_CR.WDGA = 1
 print("Current counter:", WWDG.WWDG_CR.T)
 ```
 
-### 2.2 Structure Layout Definition
+### Structure Layout Definition
 
 `uctypes` uses Python dictionaries to define structure layouts. The keys in the dictionary are field names, and the values are field attributes (such as offset, data type, etc.). The offset of a field is calculated in bytes from the start of the structure.
 
@@ -112,9 +112,9 @@ That is, the field value is the result of the bitwise OR operation between the o
 
 In bitfield definitions, `lsbit` is the position of the least significant bit, and `bitsize` is the length of the bitfield.
 
-## 3. API Introduction
+## API Introduction
 
-### 3.1 `struct` Class
+### `struct` Class
 
 ```python
 class uctypes.struct(addr, descriptor, layout_type=NATIVE)
@@ -130,7 +130,7 @@ Instantiates a structure object based on memory address, descriptor, and layout 
 
 **Returns**: Returns a structure object
 
-### 3.2 `sizeof`
+### `sizeof`
 
 ```python
 uctypes.sizeof(struct, layout_type=NATIVE)
@@ -145,7 +145,7 @@ Returns the size of the data structure (in bytes).
 
 **Returns**: Size of the structure
 
-### 3.3 `addressof`
+### `addressof`
 
 ```python
 uctypes.addressof(obj)
@@ -159,7 +159,7 @@ Returns the memory address of an object.
 
 **Returns**: Memory address of the object
 
-### 3.4 `bytes_at`
+### `bytes_at`
 
 ```python
 uctypes.bytes_at(addr, size)
@@ -167,7 +167,7 @@ uctypes.bytes_at(addr, size)
 
 Captures memory at the given address and size, returning an immutable `bytes` object.
 
-### 3.5 `bytearray_at`
+### `bytearray_at`
 
 ```python
 uctypes.bytearray_at(addr, size)
@@ -175,7 +175,7 @@ uctypes.bytearray_at(addr, size)
 
 Captures memory at the given address and size, returning a mutable `bytearray` object.
 
-### 3.6 `string_at`
+### `string_at`
 
 ```python
 uctypes.string_at(addr, size=1048576)
@@ -183,21 +183,21 @@ uctypes.string_at(addr, size=1048576)
 
 Gets a string from the given address, with a maximum length specified by `size`.
 
-## 4. Constant Definitions
+## Constant Definitions
 
-### 4.1 `uctypes.LITTLE_ENDIAN`
+### `uctypes.LITTLE_ENDIAN`
 
 Represents little-endian byte order layout type.
 
-### 4.2 `uctypes.BIG_ENDIAN`
+### `uctypes.BIG_ENDIAN`
 
 Represents big-endian byte order layout type.
 
-### 4.3 `uctypes.NATIVE`
+### `uctypes.NATIVE`
 
 Represents native byte order and alignment layout type.
 
-### 4.4 Integer Types
+### Integer Types
 
 Defines various bit-width integer types, including:
 
@@ -206,14 +206,14 @@ Defines various bit-width integer types, including:
 - `uctypes.UINT32`, `uctypes.INT32`
 - `uctypes.UINT64`, `uctypes.INT64`
 
-### 4.5 Floating Point Types
+### Floating Point Types
 
 - `uctypes.FLOAT32`, `uctypes.FLOAT64`
 
-### 4.6 `uctypes.VOID`
+### `uctypes.VOID`
 
 Used to represent a void type, commonly used for pointers.
 
-## 5. Structure Descriptor and Structure Object Instantiation
+## Structure Descriptor and Structure Object Instantiation
 
 You can instantiate structure objects at specified memory addresses using the structure descriptor dictionary and layout type with `uctypes.struct()`.

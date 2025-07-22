@@ -1,10 +1,10 @@
-# 2.2 `Network` Module API Manual
+# `Network` Module API Manual
 
-## 1. Overview
+## Overview
 
 This module is primarily used to configure and view network parameters. Once configured, the `socket` module can be used for network communication.
 
-## 2. `LAN` Class
+## `LAN` Class
 
 Reference documentation: [Micropython LAN](https://docs.micropython.org/en/latest/library/network.LAN.html)
 
@@ -19,13 +19,13 @@ print(nic.ifconfig())
 ...
 ```
 
-### 2.1 Constructor
+### Constructor
 
 - **class** `network.LAN()` [¶](https://docs.micropython.org/en/latest/library/network.LAN.html#network.LAN)
 
   Creates a wired Ethernet object.
 
-### 2.2 Methods
+### Methods
 
 - **LAN.active([state])** [¶](https://docs.micropython.org/en/latest/library/network.LAN.html#network.LAN.active)
 
@@ -56,7 +56,7 @@ print(nic.ifconfig())
   print(lan.config("mac"))
   ```
 
-## 3. `WLAN` Class
+## `WLAN` Class
 
 Reference documentation: [Micropython WLAN](https://docs.micropython.org/en/latest/library/network.WLAN.html)
 
@@ -71,13 +71,13 @@ nic.connect('your-ssid', 'your-password')
 # Once configured, sockets can be used as usual
 ```
 
-### 3.1 Constructor
+### Constructor
 
 - **class** `network.WLAN(*interface_id*)`
 
   Creates a WLAN network interface object. Supported interface types include `network.STA_IF` (station mode, connecting to an upstream WiFi access point) and `network.AP_IF` (access point mode, allowing other devices to connect). Methods differ based on the interface type; for example, only STA mode supports connecting to an access point using [`WLAN.connect()`](https://docs.micropython.org/en/latest/library/network.WLAN.html#network.WLAN.connect).
 
-### 3.2 Methods
+### Methods
 
 - **WLAN.active()**
 

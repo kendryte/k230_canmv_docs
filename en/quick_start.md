@@ -1,6 +1,6 @@
 # CanMV-K230 Quick Start Guide
 
-## 1. Introduction to CanMV-K230
+## Introduction to CanMV-K230
 
 The CanMV-K230 development board is based on the latest generation AIoT SoC K230 series chip from Canaan Technology's Kendryte® series AIoT chips. This chip adopts a new multi-heterogeneous unit accelerated computing architecture, integrates 2 RISC-V high-efficiency computing cores, and features a new generation KPU (Knowledge Process Unit) intelligent computing unit. It has multi-precision AI computing power, widely supports general AI computing frameworks, and achieves over 70% utilization in some typical networks.
 
@@ -8,30 +8,30 @@ The chip also supports a rich array of peripheral interfaces and integrates mult
 
 ![K230_block_diagram](../zh/images/K230_block_diagram.png)
 
-## 2. Getting Started
+## Getting Started
 
-### 2.1 Acquiring the Development Board
+### Acquiring the Development Board
 
 | Development Board          | Photo                                                   | Description                                   |
 |-----------------|--------------------------------------------------------|----------------------------------------|
 | [CanMV-K230](./userguide/boards/canmv_k230.md)   | ![CanMV-K230](../zh/images/CanMV-K230_front.png) | Based on K230, with external 512MB LPDDR for larger memory   |
 | [BPI-K230D-ZERO](./userguide/boards/canmv_k230d.md) | ![Bpi-K230D-Zero](../zh/images/BPI_K230D_Zero.png)| Based on K230D, with built-in 128MB LPDDR4, compact size |
 
-### 2.2 Flashing the Firmware
+### Flashing the Firmware
 
 Users can download the firmware from [Github](https://github.com/kendryte/canmv_k230/releases) or the [Canaan Developer Community](https://www.kendryte.com/resource). After downloading the firmware for the corresponding development board, refer to the [Firmware Download Guide](./userguide/how_to_burn_firmware.md#2-烧录固件) to flash the firmware onto the development board.
 
-### 2.3 Downloading the IDE
+### Downloading the IDE
 
 CanMV-K230 supports development using CanMV-IDE, allowing users to run code, view results, and preview images. For detailed usage, refer to the [IDE Download Guide](./userguide/how_to_use_ide.md#1-概述).
 
-### 2.4 Running Demos
+### Running Demos
 
 The CanMV-K230 firmware comes preloaded with numerous demo programs, allowing users to experience them without downloading from the internet. Use the IDE to open examples from the virtual U disk to quickly run them.
 
 Refer to [How to Run Demo Programs](./userguide/how_to_run_examples.md#2-运行示例程序).
 
-## 3. Camera Image Preview
+## Camera Image Preview
 
 Capture images using the camera and display them via HDMI:
 
@@ -89,7 +89,7 @@ finally:
     MediaManager.deinit()
 ```
 
-## 4. AI Demo
+## AI Demo
 
 This is a face detection demo:
 

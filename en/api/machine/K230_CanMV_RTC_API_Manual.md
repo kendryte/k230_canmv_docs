@@ -1,14 +1,14 @@
-# 2.15 `RTC` Module API Manual
+# `RTC` Module API Manual
 
-## 1. Overview
+## Overview
 
 The current CanMV K230 provides a class RTC (Real-Time Clock) module, which allows users to set and get the current system time.
 
-## 2. API Introduction
+## API Introduction
 
 The RTC class is located under the `machine` module.
 
-### 2.1 Example
+### Example
 
 ```python
 from machine import RTC
@@ -21,7 +21,7 @@ print(rtc.datetime())
 rtc.init((2024, 2, 28, 23, 59, 0, 0))
 ```
 
-### 2.2 Constructor
+### Constructor
 
 ```python
 rtc = RTC()
@@ -31,7 +31,7 @@ rtc = RTC()
 
 None
 
-### 2.3 `init` Method
+### `init` Method
 
 ```python
 rtc.init(year, month, day, hour, minute, second, microsecond, tzinfo)
@@ -52,7 +52,7 @@ rtc.init(year, month, day, hour, minute, second, microsecond, tzinfo)
 
 None
 
-### 2.4 `datetime` Method
+### `datetime` Method
 
 ```python
 print(rtc.datetime())

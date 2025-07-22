@@ -1,12 +1,12 @@
-# 3.13 `NONAI2D CSC` API Manual
+# `NONAI2D CSC` API Manual
 
-## 1. Overview
+## Overview
 
 The K230 chip has 24 built-in hardware Color Space Conversion (CSC) channels, which can efficiently perform image color space conversions. This module supports various image format conversions including common formats such as RGB/YUV, making it suitable for video processing, image display, and similar applications.
 
-## 2. API Reference
+## API Reference
 
-### 2.1 Constructor
+### Constructor
 
 **Function**  
 Initialize a CSC conversion channel
@@ -37,7 +37,7 @@ Returns a CSC object on success, raises an exception on failure.
 > 1. Channel numbers 0–23 must not be reused  
 > 1. It’s recommended to set `max_width`/`max_height` according to actual image size to save memory
 
-### 2.2 `convert` Method
+### `convert` Method
 
 **Function**  
 Perform image color space conversion
@@ -59,7 +59,7 @@ result = csc.convert(frame, timeout_ms=1000, cvt=True)
 **Return Value**  
 Returns a converted `Image` object or `py_video_frame_info`, depending on the `cvt` parameter.
 
-### 2.3 `destroy` Method
+### `destroy` Method
 
 **Function**  
 Release CSC channel resources
@@ -73,7 +73,7 @@ csc.destroy()
 **Description**  
 After calling this method, all resources used by the CSC channel will be released, and the object can no longer be used.
 
-## 3. Constant Definitions
+## Constant Definitions
 
 ### Image Format Constants
 
@@ -90,7 +90,7 @@ After calling this method, all resources used by the CSC channel will be release
 | PIXEL_FORMAT_YVU_PLANAR_420      | YVU420 planar format                 | Video decoding output    |
 | PIXEL_FORMAT_YUV_SEMIPLANAR_420  | YUV420 semi-planar format            | Video encoding input     |
 
-## 4. Best Practice Example
+## Best Practice Example
 
 ```python
 import time, os, urandom, sys

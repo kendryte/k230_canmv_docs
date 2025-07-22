@@ -1,10 +1,10 @@
-# 2.8 `FPIOA` Module API Manual
+# `FPIOA` Module API Manual
 
-## 1. Overview
+## Overview
 
 The FPIOA (Pin Multiplexer) module is primarily responsible for configuring the functions of physical pins (PAD). In an SoC, although multiple functions are available, due to the limited number of pins, multiple functions may share the same I/O pin. At this point, each pin can only activate one function at a time, so it is necessary to use IOMUX (i.e., FPIOA) to select the appropriate function.
 
-## 2. API Introduction
+## API Introduction
 
 The FPIOA class is located in the `machine` module.
 
@@ -67,7 +67,7 @@ Set the function of a pin.
 - `st`: St enable, optional parameter
 - `ds`: Drive strength, optional parameter
 
-More detail,  See [IO configuration instructions](#31-io-configuration-instructions)
+More detail,  See [IO configuration instructions](#io-configuration-instructions)
 
 **Return Value**
 
@@ -126,8 +126,8 @@ May be one of the following three:
 1. Detailed configuration information of the specified pin (if `number` is set, `func` is not set or set to `False`)
 1. All configurable pin numbers for the specified function (if `number` is set and `func` is set to `True`)
 
-## 3. Appendix
+## Appendix
 
-### 3.1 IO configuration instructions
+### IO configuration instructions
 
 ![io-ds](https://www.kendryte.com/api/post/attachment?id=436)

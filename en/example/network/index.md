@@ -1,4 +1,4 @@
-# 5. Network Examples Explanation
+# Network Examples Explanation
 
 ```{warning}
 The K230D currently does not support network functionality, so certain examples that rely on the network, such as RTSP streaming, will not be available.

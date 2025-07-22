@@ -1,12 +1,12 @@
-# 4. Running Example Programs
+# Running Example Programs
 
-## 1. Overview
+## Overview
 
 Starting from version `V0.5` of K230 CanMV, the virtual USB drive feature is supported. The virtual USB drive comes preloaded with example scripts, allowing users to use them directly without downloading from the internet.
 
 Once the firmware is correctly flashed and successfully started, users can see the virtual USB drive `CanMV` on their computers. Upon opening the virtual USB drive, navigate to the `tests` or `examples` directory (folder names may vary across versions) to find various example programs. Users can select the corresponding script in the IDE, click run, and experience the respective example program.
 
-## 2. Running Example Programs
+## Running Example Programs
 
 ```{note}
 If the IDE is not yet installed, please refer to the [IDE User Guide](./how_to_use_ide.md) for installation instructions.

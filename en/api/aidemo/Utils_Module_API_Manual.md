@@ -1,12 +1,12 @@
-# 5.5 Utils Module API Manual
+# Utils Module API Manual
 
-## 1. Overview
+## Overview
 
 This manual is intended to provide developers with some common processing methods for developing AI demos using MicroPython.
 
-## 2. API Introduction
+## API Introduction
 
-### 2.1 Timing Module ScopedTiming
+### Timing Module ScopedTiming
 
 **Description**
 
@@ -35,7 +35,7 @@ def test_time():
 |--------|---------------------------------|
 | - | No return value |
 
-### 2.2 read_json
+### read_json
 
 **Description**
 
@@ -62,7 +62,7 @@ json_data=read_json(json_path)
 |--------------|-----------------------------------------|
 | dict         | Content of JSON fields                  |
 
-### 2.3 read_image
+### read_image
 
 **Description**
 
@@ -90,7 +90,7 @@ img_chw,img_rgb888=read_image(img_path)
 | img_chw      | Image data in CHW arrangement in ulab.numpy.ndarray format, which can be used to create an nncase_runtime.tensor for AI model inference |
 | img_rgb888   | Image instance in rgb888 format, which can be used for drawing results |
 
-### 2.4 get_colors
+### get_colors
 
 **Description**
 
@@ -117,7 +117,7 @@ colors = get_colors(classes_num)
 |--------|---------------------------------|
 | list[list]  | ARGB color array |
 
-### 2.5 center_crop_param
+### center_crop_param
 
 **Description**
 
@@ -146,7 +146,7 @@ top, left, m = center_crop_param(input_size)
 | top     | Distance from the top-left corner of the cropping area to the top border |
 | m       | Side length of the cropping area |
 
-### 2.6 letterbox_pad_param
+### letterbox_pad_param
 
 **Description**
 
@@ -179,7 +179,7 @@ left, right, top, bottom, scale = letterbox_pad_param(input_size, output_size)
 | bottom  | Bottom padding value |
 | scale   | Scaling ratio |
 
-### 2.7 center_pad_param
+### center_pad_param
 
 **Description**
 
@@ -212,7 +212,7 @@ left, right, top, bottom, scale = center_pad_param(input_size, output_size)
 | bottom  | Bottom padding value |
 | scale   | Scaling ratio |
 
-### 2.8 softmax
+### softmax
 
 **Description**
 
@@ -239,7 +239,7 @@ output_data = softmax(input_data)
 |--------|---------------------------------|
 | softmax_res    | Probability distribution of classes |
 
-### 2.9 sigmoid
+### sigmoid
 
 **Description**
 
@@ -266,7 +266,7 @@ output_data = sigmoid(input_data)
 |--------------|-----------------------------------------|
 | sigmoid_res  | Value or array mapped to the interval (0, 1) |
 
-### 2.10 chw2hwc
+### chw2hwc
 
 **Description**
 
@@ -293,7 +293,7 @@ hwc_np = chw2hwc(chw_np)
 |--------------|-----------------------------------------|
 | hwc_np       | 3D ulab.numpy.ndarray data arranged in HWC format |
 
-### 2.11 hwc2chw
+### hwc2chw
 
 **Description**
 

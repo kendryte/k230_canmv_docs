@@ -1,10 +1,10 @@
-# 4. I2C Example
+# I2C Example
 
-## 1. Overview
+## Overview
 
 The K230 chip integrates 5 I2C hardware modules, supporting standard mode (100 kb/s), fast mode (400 kb/s), and high-speed mode (3.4 Mb/s). These modules are ideal for I2C communication on development boards, such as connecting peripherals (like sensors or displays). The output IO of the I2C channels can be configured through the IOMUX module.
 
-## 2. Example
+## Example
 
 The following example demonstrates how to use the I2C 4 module to read the ID of an HDMI device.
 

@@ -1,12 +1,12 @@
-# 3.13 `UVC` API Manual
+# `UVC` API Manual
 
-## 1. Overview  
+## Overview  
 
 The UVC module provides USB camera detection, configuration, and image capture functionality, supporting single-camera operation.
 
-## 2. API Reference  
+## API Reference  
 
-### 2.1 UVC.probe - Detect Camera  
+### UVC.probe - Detect Camera  
 
 **Function**  
 Checks whether a USB camera is connected to the system (currently supports single-camera detection only).  
@@ -32,7 +32,7 @@ plugin, devinfo = UVC.probe()
 print(f"Camera detection: {'Connected' if plugin else 'Not connected'}, Device info: {devinfo}")  
 ```  
 
-### 2.2 UVC.video_mode - Video Mode Operations  
+### UVC.video_mode - Video Mode Operations  
 
 **Function**  
 Constructs or retrieves the current video mode configuration.  
@@ -59,7 +59,7 @@ mode = UVC.video_mode(width, height, format, fps)
 **Return Value**  
 Returns a `uvc_video_mode` object.  
 
-### 2.3 UVC.list_video_mode - List Supported Modes  
+### UVC.list_video_mode - List Supported Modes  
 
 **Function**  
 Retrieves all video modes supported by the camera.  
@@ -80,7 +80,7 @@ for i, mode in enumerate(UVC.list_video_mode()):
     print(f"Mode {i}: {mode.width}x{mode.height} {mode.format}@{mode.fps}fps")  
 ```  
 
-### 2.4 UVC.select_video_mode - Select Video Mode  
+### UVC.select_video_mode - Select Video Mode  
 
 **Function**  
 Sets the camera output mode.  
@@ -104,7 +104,7 @@ succ, actual_mode = UVC.select_video_mode(mode)
 | succ      | bool | True if setting was successful |  
 | actual_mode | uvc_video_mode | The actual mode that was applied |  
 
-### 2.5 UVC.start - Start Video Stream  
+### UVC.start - Start Video Stream  
 
 **Function**  
 Starts the camera video stream output.  
@@ -125,7 +125,7 @@ success = UVC.start(delay_ms=0, cvt=True)
 **Return Value**  
 Returns True if the stream started successfully.  
 
-### 2.6 UVC.stop - Stop Video Stream  
+### UVC.stop - Stop Video Stream  
 
 **Function**  
 Stops the video stream and releases resources.  
@@ -136,7 +136,7 @@ Stops the video stream and releases resources.
 UVC.stop()  
 ```  
 
-### 2.7 UVC.snapshot - Capture Frame  
+### UVC.snapshot - Capture Frame  
 
 **Function**  
 Captures a single frame from the video stream.  
@@ -156,7 +156,7 @@ frame = UVC.snapshot(timeout_ms=1000)
 **Return Value**  
 Returns image data in NV12 Frame format (if hardware decoding enabled) or JPEG/YUV422 format.  
 
-## 3. Data Structures  
+## Data Structures  
 
 ### uvc_video_mode Structure  
 
@@ -168,14 +168,14 @@ class uvc_video_mode:
     fps: int      # Frame rate in fps  
 ```  
 
-## 4. Constant Definitions  
+## Constant Definitions  
 
 | Constant | Value | Description |  
 |----------|-------|-------------|  
 | UVC.FORMAT_MJPEG | 1 | MJPG compressed format (recommended for low bandwidth) |  
 | UVC.FORMAT_UNCOMPRESS | 2 | YUV422 uncompressed format (requires higher bandwidth) |  
 
-## 5. Recommended Workflow  
+## Recommended Workflow  
 
 1. Detect camera (`probe()`)  
 1. List supported modes (`list_video_mode()`)  
@@ -184,9 +184,9 @@ class uvc_video_mode:
 1. Capture images (`snapshot()`)  
 1. Stop video stream (`stop()`)  
 
-## 6. Best Practices  
+## Best Practices  
 
-### 6.1 Software Decoding Example  
+### Software Decoding Example  
 
 ```python  
 import time  
@@ -231,7 +231,7 @@ finally:
     MediaManager.deinit()  
 ```  
 
-### 6.2 Hardware Decoding Example  
+### Hardware Decoding Example  
 
 ```python  
 import time  

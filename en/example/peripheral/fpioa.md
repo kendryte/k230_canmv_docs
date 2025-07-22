@@ -1,10 +1,10 @@
-# 1. FPIOA Example
+# FPIOA Example
 
-## 1. Overview
+## Overview
 
 IOMUX is mainly used to configure the functions of physical pins (PAD). In a SoC, due to the large number of functions and limited number of pins, multiple functions may share the same I/O pin. However, at any given time, a pin can only carry one function, so it is necessary to select the function through IOMUX (also known as FPIOA, Pin multiplexing, pin function selection, etc.).
 
-## 2. Example
+## Example
 
 The following code demonstrates how to use the FPIOA module to set and query the functions of pins:
 

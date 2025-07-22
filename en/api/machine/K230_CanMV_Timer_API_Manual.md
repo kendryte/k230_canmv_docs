@@ -1,14 +1,14 @@
-# 2.11 `Timer` Module API Manual
+# `Timer` Module API Manual
 
-## 1. Overview
+## Overview
 
 The K230 integrates 6 Timer hardware modules internally, with a minimum timing period of 1 millisecond (ms).
 
-## 2. API Introduction
+## API Introduction
 
 The Timer class is located in the `machine` module.
 
-### 2.1 Example Code
+### Example Code
 
 ```python
 from machine import Timer
@@ -26,7 +26,7 @@ tim.init(period=1000, mode=Timer.PERIODIC, callback=lambda t: print(2))
 tim.deinit()
 ```
 
-### 2.2 Constructor
+### Constructor
 
 ```python
 timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)
@@ -40,7 +40,7 @@ timer = Timer(index, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)
 - `period`: Timer operating period, unit is milliseconds (ms) (optional parameter).
 - `callback`: Timeout callback function, must be set and should have one parameter.
 
-### 2.3 `init` Method
+### `init` Method
 
 ```python
 Timer.init(mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)
@@ -60,7 +60,7 @@ Initialize timer parameters.
 
 None
 
-### 2.4 `deinit` Method
+### `deinit` Method
 
 ```python
 Timer.deinit()

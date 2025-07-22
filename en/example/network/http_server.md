@@ -1,14 +1,14 @@
-# 8. HTTP Server Example Explanation
+# HTTP Server Example Explanation
 
-## 1. Environment Preparation
+## Environment Preparation
 
 First, ensure that your CanMV development board is connected to a router or switch via an Ethernet port, and that the router is functioning properly and has internet access. This setup is a prerequisite for making HTTP requests.
 
-## 2. Server Example Detailed Explanation
+## Server Example Detailed Explanation
 
 Below is a simple HTTP server Python example based on the CanMV development board. This server listens on port 8081 and can respond to HTTP requests from clients.
 
-### 2.1 Import Necessary Modules
+### Import Necessary Modules
 
 ```python
 import socket  
@@ -18,7 +18,7 @@ import time
 
 By importing the `socket`, `network`, and `time` modules, the `socket` module is used for network communication, `network` manages network interfaces (such as LAN), and `time` provides time-related functionalities.
 
-### 2.2 Define Response Content
+### Define Response Content
 
 ```python
 CONTENT = b"""\  
@@ -29,7 +29,7 @@ Hello #%d from k230 canmv MicroPython!
 
 Defines a byte string `CONTENT` as the HTTP response body. `%d` is a placeholder for a counter, indicating the sequence number of each request.
 
-### 2.3 Define Main Function
+### Define Main Function
 
 ```python
 def main(micropython_optimize=True):  
@@ -38,7 +38,7 @@ def main(micropython_optimize=True):
 
 Defines the `main` function, with the parameter `micropython_optimize` controlling whether to enable specific MicroPython optimizations.
 
-### 2.4 Configure Network Interface
+### Configure Network Interface
 
 ```python
 def network_use_wlan(is_wlan=True):
@@ -63,7 +63,7 @@ def network_use_wlan(is_wlan=True):
 
 This code selects between WLAN or LAN interface based on the `is_wlan` parameter. In WLAN mode, it connects to a specified Wi-Fi network, while in LAN mode, it obtains an IP address via DHCP. After obtaining and printing the network configuration, it returns the IP address.
 
-### 2.5 Create and Configure Socket
+### Create and Configure Socket
 
 ```python
 # Create socket object  
@@ -81,7 +81,7 @@ print("Listening, connect your browser to http://%s:8081/" % (network.LAN().ifco
 
 This code creates a socket and enables the `SO_REUSEADDR` option to allow port reuse. It binds the address and starts listening on port 8081, supporting up to 5 connection requests.
 
-### 2.6 Handle Client Requests
+### Handle Client Requests
 
 ```python
 counter = 0  
@@ -118,7 +118,7 @@ while True:
 
 The server main loop accepts client connections, selects different reading methods to handle requests, sends a response with a counter, and closes the connection. After closing the connection, it waits for 2 seconds before entering the next loop.
 
-### 2.7 Complete Example
+### Complete Example
 
 ```python
 import socket
@@ -192,7 +192,7 @@ main()
 
 For specific interface definitions, please refer to [socket](../../api/extmod/K230_CanMV_socket_API_Manual.md) and [network](../../api/extmod/K230_CanMV_network_API_Manual.md).
 
-## 3. Example Phenomenon and Operation Instructions
+## Example Phenomenon and Operation Instructions
 
 After running this example in the CanMV IDE K230, the IDE serial terminal will display the following information:
 

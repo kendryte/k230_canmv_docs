@@ -1,14 +1,14 @@
-# 3.5 `VDEC` Module API Manual
+# `VDEC` Module API Manual
 
-## 1. Overview
+## Overview
 
 This document provides a detailed introduction to the K230_CanMV VDEC module's API. This module supports H.264 and H.265 decoding and can be bound to the VO module to output decoded data to VO display devices.
 
-## 2. API Introduction
+## API Introduction
 
 This module provides the `Decoder` class, which includes the following methods:
 
-### 2.1 Decoder.\_\_init\_\_
+### Decoder.\_\_init\_\_
 
 **Description**
 
@@ -37,7 +37,7 @@ decoder = Decoder(K_PT_H264)
 
 The VDEC module supports up to four concurrent decodings.
 
-### 2.2 Decoder.Create
+### Decoder.Create
 
 **Description**
 
@@ -61,7 +61,7 @@ None
 | 0            | Success     |
 | Non-0        | Failure     |
 
-### 2.3 Decoder.destroy
+### Decoder.destroy
 
 **Description**
 
@@ -85,7 +85,7 @@ None
 | 0            | Success     |
 | Non-0        | Failure     |
 
-### 2.4 Decoder.Start
+### Decoder.Start
 
 **Description**
 
@@ -109,7 +109,7 @@ None
 | 0            | Success     |
 | Non-0        | Failure     |
 
-### 2.5 Decoder.decode
+### Decoder.decode
 
 **Description**
 
@@ -135,7 +135,7 @@ decoder.decode(stream_data)
 | 0            | Success     |
 | Non-0        | Failure     |
 
-### 2.6 Decoder.stop
+### Decoder.stop
 
 **Description**
 
@@ -159,7 +159,7 @@ None
 | 0            | Success     |
 | Non-0        | Failure     |
 
-### 2.7 Decoder.bind_info
+### Decoder.bind_info
 
 **Description**
 
@@ -185,9 +185,9 @@ vdec.bind_info(width=vdec_width, height=vdec_height, chn=0)
 |--------------|-------------|
 | None         |             |
 
-## 3. Data Structure Description
+## Data Structure Description
 
-### 3.1 StreamData
+### StreamData
 
 **Description**
 
@@ -209,9 +209,9 @@ class StreamData:
 | data        | Stream data    |
 | pts         | Timestamp info |
 
-## 4. Example Program
+## Example Program
 
-### 4.1 Example 1
+### Example 1
 
 ```python
 from media.media import *

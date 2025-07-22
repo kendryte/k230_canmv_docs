@@ -1,10 +1,10 @@
-# 6. PWM Example
+# PWM Example
 
-## 1. Overview
+## Overview
 
 The K230 integrates two PWM hardware modules, each providing 3 output channels. These channels share a clock, but the duty cycle can be adjusted independently. Therefore, channels 0, 1, and 2 share one clock, while channels 3, 4, and 5 share another clock. The configuration of the output IO can be set through the IOMUX module.
 
-## 2. Example
+## Example
 
 The following example demonstrates how to use the PWM interface for output control.
 
@@ -32,7 +32,7 @@ pwm0.enable(True)
 pwm0.deinit()
 ```
 
-## 3. Code Explanation
+## Code Explanation
 
 1. **Initialize PWM Channel**:
    - Create a `PWM` object, specify the channel number (0 in this example), set the initial frequency to 1 kHz, the duty cycle to 50%, and immediately enable the output.

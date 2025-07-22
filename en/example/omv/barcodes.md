@@ -1,12 +1,12 @@
-# 2. Explanation of Barcode Recognition Routine
+# Explanation of Barcode Recognition Routine
 
-## 1. Overview
+## Overview
 
 A barcode is a visual pattern used to represent data by encoding information through stripes or patterns of varying widths and spaces. Barcodes are widely used across various industries for automatic identification, storage, and data management.
 
 CanMV supports the OpenMV algorithm and can recognize barcodes. The relevant interface is `find_barcodes`, which supports multiple barcode formats.
 
-## 2. Example
+## Example
 
 This example sets the camera output to a 640x480 grayscale image and uses `image.find_barcodes` to recognize barcodes.
 

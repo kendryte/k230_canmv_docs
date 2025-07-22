@@ -1,10 +1,10 @@
-# 2.3 `Socket` Module API Manual
+# `Socket` Module API Manual
 
-## 1. Overview
+## Overview
 
 This module encapsulates the `socket` library, allowing users to develop network applications by calling the `socket` library.
 
-## 2. Example
+## Example
 
 ```python
 # Configure TCP/UDP socket debugging tool
@@ -42,11 +42,11 @@ def client():
 client()
 ```
 
-## 3. API Definition
+## API Definition
 
 For more details, see [Micropython socket module](https://docs.micropython.org/en/latest/library/socket.html).
 
-### 3.1 Constructor
+### Constructor
 
 - **class** socket.socket(*af=AF_INET*, *type=SOCK_STREAM*, *proto=IPPROTO_TCP*)  
 
@@ -54,7 +54,7 @@ For more details, see [Micropython socket module](https://docs.micropython.org/e
   - Create a TCP stream socket: `socket(AF_INET, SOCK_STREAM)`
   - Create a UDP datagram socket: `socket(AF_INET, SOCK_DGRAM)`
 
-### 3.2 Methods
+### Methods
 
 - **socket.close()**
 

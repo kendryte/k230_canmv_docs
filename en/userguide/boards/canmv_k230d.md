@@ -1,12 +1,12 @@
 # CanMV-K230D Development Board
 
-## 1. Overview
+## Overview
 
 The CanMV-K230D Zero development board is a collaborative design by Canaan Technology and the Banana Pi open-source hardware community. It features with the Kendryte K230D chip, equipped with a dual-core XuanTie C908 RISC-V CPU and an independently developed third-generation KPU (Neural Network Processing Unit). The board includes 128MB of LPDDR4 memory, providing robust support for high-performance local AI inference computing. With its comprehensive development resources and compact design, the CanMV-K230D Zero is well-suited for a wide range of DIY projects, AIoT (Artificial Intelligence of Things) devices, and embedded system applications. It is an ideal choice for programming education, AI-based audio and video innovation, and system performance evaluation, empowering users to embark on a journey of technological exploration.
 
 ![Board Interface](../../../zh/images/bpi-canmv-k230d-zero_interface.jpg)
 
-## 2. Technical Specifications
+## Technical Specifications
 
 | Parameter            | Description                                                           |
 |----------------------|-----------------------------------------------------------------------|
@@ -26,7 +26,7 @@ The CanMV-K230D Zero development board is a collaborative design by Canaan Techn
 | **Power Supply**     | USB Type-C, 5V/2A input                                                     |
 | **Dimensions**       | 65mm (Length) × 30mm (Width) × 7mm (Height)                                   |
 
-## 3. Connection Diagram
+## Connection Diagram
 
 When using the BPI-CanMV-K230D Zero development board, connect two USB cables: one for power supply and the other for serial communication.
 

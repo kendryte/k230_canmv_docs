@@ -1,16 +1,16 @@
-# 1.2 `Hashlib` Module API Documentation
+# `Hashlib` Module API Documentation
 
-## 1. Overview
+## Overview
 
 The `uhashlib` library provides binary data hashing functionality based on MD5, SHA1, and SHA2 algorithms.
 
-## 2. API Introduction
+## API Introduction
 
 The `uhashlib` library provides three classes: `md5`, `sha1`, and `sha256`. These classes each implement two functions: the data update function `update()` and the message digest function `digest()`. Among them, `md5` and `sha1` are software implementations in MicroPython; `sha256` is accelerated by the underlying hardware accelerator.
 
 ***Note: This document does not detail the usage steps for `md5` and `sha1`. For specifics, please refer to the MicroPython [hash official documentation](https://docs.micropython.org/en/latest/library/hashlib.html)***
 
-### 2.1 Class `sha256`
+### Class `sha256`
 
 **Description**
 
@@ -45,7 +45,7 @@ dgst = hash_obj.digest()
 print(dgst)
 ```
 
-#### 2.1.1 Data Update Function `update()`
+#### Data Update Function `update()`
 
 **Description**
 
@@ -70,7 +70,7 @@ obj.update(data)
 | 0            | Success     |
 | Non-0        | Failure     |
 
-#### 2.1.2 Message Digest Function `digest()`
+#### Message Digest Function `digest()`
 
 **Description**
 Returns the hash value of all input data.
@@ -99,11 +99,11 @@ None
 | 0            | Success     |
 | Non-0        | Failure     |
 
-#### 2.1.3 Hexadecimal Message Digest Function `hexdigest()`
+#### Hexadecimal Message Digest Function `hexdigest()`
 
 This method is not implemented. You can use `binascii.hexlify(hash.digest())` to achieve a similar effect.
 
-## 3. Example Program
+## Example Program
 
 ### Calculate Hash Value
 

@@ -1,10 +1,10 @@
-# 3.1 `Sensor` Module API Manual
+# `Sensor` Module API Manual
 
 ```{attention}
 This module has undergone significant changes since firmware version V0.7. If you are using firmware prior to V0.7, please refer to the old version of the documentation.
 ```
 
-## 1. Overview
+## Overview
 
 The `sensor` module on the CanMV K230 platform is responsible for image acquisition and data processing. This module provides a set of advanced APIs, allowing developers to easily obtain images in different formats and sizes without needing to understand the specifics of the underlying hardware implementation. The architecture is shown in the diagram below:
 
@@ -14,7 +14,7 @@ In the diagram, sensor 0, sensor 1, and sensor 2 represent three image input sen
 
 The `sensor` module of the CanMV K230 supports simultaneous access of up to three image sensors, each of which can independently complete image data acquisition, capture, and processing. Additionally, each video channel can output three image data streams in parallel for further processing by backend modules. In practical applications, the number of supported sensors, input resolution, and the number of output channels are limited by the hardware configuration and memory size of the development board, so a comprehensive evaluation based on project requirements is necessary.
 
-## 2. API Introduction
+## API Introduction
 
 ### Constructor
 
@@ -22,7 +22,7 @@ The `sensor` module of the CanMV K230 supports simultaneous access of up to thre
 
 Construct a `Sensor` object using `csi id` and image sensor type.
 
-In image processing applications, users typically need to first create a `Sensor` object. The CanMV K230 software can automatically detect built-in image sensors without users needing to specify the exact model; they only need to set the sensor's maximum output resolution and frame rate. For information on supported image sensors, please refer to the [Image Sensor Support List](#4-image-sensor-support-list). If the set resolution or frame rate does not match the current sensor's default configuration, the system will automatically adjust to the optimal configuration, and the final configuration can be viewed in the log, e.g., `use sensor 23, output 640x480@90`.
+In image processing applications, users typically need to first create a `Sensor` object. The CanMV K230 software can automatically detect built-in image sensors without users needing to specify the exact model; they only need to set the sensor's maximum output resolution and frame rate. For information on supported image sensors, please refer to the [Image Sensor Support List](#image-sensor-support-list). If the set resolution or frame rate does not match the current sensor's default configuration, the system will automatically adjust to the optimal configuration, and the final configuration can be viewed in the log, e.g., `use sensor 23, output 640x480@90`.
 
 **Syntax**
 
@@ -53,7 +53,7 @@ sensor = Sensor(id=0, width=1280, height=720, fps=60)
 sensor = Sensor(id=0, width=640, height=480)
 ```
 
-### 2.1 sensor.reset
+### sensor.reset
 
 **Description**
 
@@ -84,7 +84,7 @@ sensor.reset()
 sensor.reset()
 ```
 
-### 2.2 sensor.set_framesize
+### sensor.set_framesize
 
 **Description**
 
@@ -126,7 +126,7 @@ sensor.set_framesize(chn=CAM_CHN_ID_0, width=640, height=480)
 sensor.set_framesize(chn=CAM_CHN_ID_1, width=320, height=240)
 ```
 
-### 2.3 sensor.set_pixformat
+### sensor.set_pixformat
 
 **Description**
 
@@ -161,7 +161,7 @@ sensor.set_pixformat(sensor.YUV420SP, chn=CAM_CHN_ID_0)
 sensor.set_pixformat(sensor.RGB888, chn=CAM_CHN_ID_1)
 ```
 
-### 2.4 sensor.set_hmirror
+### sensor.set_hmirror
 
 **Description**
 
@@ -191,7 +191,7 @@ sensor.set_hmirror(enable)
 sensor.set_hmirror(True)
 ```
 
-### 2.5 sensor.set_vflip
+### sensor.set_vflip
 
 **Description**
 
@@ -221,7 +221,7 @@ sensor.set_vflip(enable)
 sensor.set_vflip(True)
 ```
 
-### 2.6 sensor.run
+### sensor.run
 
 **Description**
 
@@ -250,7 +250,7 @@ sensor.run()
 sensor.run()
 ```
 
-### 2.7 sensor.stop
+### sensor.stop
 
 **Description**
 
@@ -279,7 +279,7 @@ sensor.stop()
 sensor.stop()
 ```
 
-### 2.8 sensor.snapshot
+### sensor.snapshot
 
 **Description**
 
@@ -313,7 +313,7 @@ sensor.snapshot(chn=CAM_CHN_ID_0, timeout = 1000, dump_frame = False)
 sensor.snapshot()
 ```
 
-### 2.9 sensor.bind_info
+### sensor.bind_info
 
 **Description**
 
@@ -347,7 +347,7 @@ info = sensor.bind_info(chn=CAM_CHN_ID_0)
 print(info)  # Output: {'src': (0, 0, 0), 'rect': (0, 0, 640, 480), 'pix_format': 2}
 ```
 
-### 2.10 sensor.get_hmirror
+### sensor.get_hmirror
 
 **Description**
 
@@ -372,7 +372,7 @@ hmirror_enabled = sensor.get_hmirror()
 print("Horizontal mirror enabled:", hmirror_enabled)
 ```
 
-### 2.11 sensor.get_vflip
+### sensor.get_vflip
 
 **Description**
 
@@ -397,7 +397,7 @@ vflip_enabled = sensor.get_vflip()
 print("Vertical flip enabled:", vflip_enabled)
 ```
 
-### 2.12 sensor.width
+### sensor.width
 
 **Description**
 
@@ -428,7 +428,7 @@ current_width = sensor.width(chn=CAM_CHN_ID_0)
 print("Current width:", current_width)
 ```
 
-### 2.13 sensor.height
+### sensor.height
 
 **Description**
 
@@ -459,7 +459,7 @@ current_height = sensor.height(chn=CAM_CHN_ID_0)
 print("Current height:", current_height)
 ```
 
-### 2.14 sensor.get_pixformat
+### sensor.get_pixformat
 
 **Description**
 
@@ -490,7 +490,7 @@ current_format = sensor.get_pixformat(chn=CAM_CHN_ID_0)
 print("Current pixel format:", current_format)
 ```
 
-### 2.15 sensor.get_type
+### sensor.get_type
 
 **Description**
 
@@ -515,7 +515,7 @@ sensor_type = sensor.get_type()
 print("Sensor type:", sensor_type)
 ```
 
-### 2.16 sensor.again
+### sensor.again
 
 **Description**
 
@@ -562,9 +562,9 @@ if result == 0:
     print("Gain set successfully")
 ```
 
-## 3. Data Structure Description
+## Data Structure Description
 
-### 3.1 frame_size
+### frame_size
 
 | Image Frame Size | Resolution    |
 |------------------|---------------|
@@ -600,7 +600,7 @@ if result == 0:
 | WQXGA            | 2560x1600     |
 | WQXGA2           | 2592x1944     |
 
-### 3.2 pixel_format
+### pixel_format
 
 | Pixel Format | Description       |
 |--------------|-------------------|
@@ -610,7 +610,7 @@ if result == 0:
 | YUV420SP     | Semi-planar YUV   |
 | GRAYSCALE    | Grayscale image   |
 
-### 3.3 channel
+### channel
 
 | Channel Number | Description |
 |----------------|-------------|
@@ -619,7 +619,7 @@ if result == 0:
 | CAM_CHN_ID_2   | Channel 2   |
 | CAM_CHN_ID_MAX | Invalid channel |
 
-## 4. Image Sensor Support List
+## Image Sensor Support List
 
 | Image Sensor Model | Resolution<br>Width x Height | Frame Rate |
 |--------------------|------------------------------|------------|

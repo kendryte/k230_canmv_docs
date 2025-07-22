@@ -1,12 +1,12 @@
-# 1. Sensor Example Explanation
+# Sensor Example Explanation
 
-## 1. Overview
+## Overview
 
 The K230 has three MIPI-CSI inputs (3x2 lane/1x4+1x2 lane) and can connect up to three cameras. Each camera supports outputting three channels, providing different resolutions and image formats.
 
-## 2. Examples
+## Examples
 
-### 2.1 Capture and Display Images from Three Channels of a Single Camera on an HDMI Monitor
+### Capture and Display Images from Three Channels of a Single Camera on an HDMI Monitor
 
 This example opens a camera, captures images from three channels, and displays them on an HDMI monitor. Channel 0 captures a 1080P image, while channels 1 and 2 capture VGA resolution images and overlay them on the image from channel 0.
 
@@ -78,7 +78,7 @@ finally:
     MediaManager.deinit()
 ```
 
-### 2.2 Capture and Display Images from Two Cameras on an HDMI Monitor
+### Capture and Display Images from Two Cameras on an HDMI Monitor
 
 This example configures two cameras to output 960x540 images and displays them side by side on an HDMI monitor.
 

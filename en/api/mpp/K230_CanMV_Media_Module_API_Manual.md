@@ -1,21 +1,21 @@
-# 3.4 `Media` Module API Manual
+# `Media` Module API Manual
 
 ```{attention}
 This module has undergone significant changes since firmware version V0.7. If you are using firmware before V0.7, please refer to the old version documentation.
 ```
 
-## 1. Overview
+## Overview
 
 The media module of the CanMV K230 platform is a software abstraction layer mainly used to encapsulate the media data link and media buffer operations of the CanMV K230 platform.
 
-## 2. API Introduction
+## API Introduction
 
 The media module of the CanMV K230 platform provides a static class MediaManager, which contains the methods described in the following sections.
 
-### 2.1 init
+### init
 
 **Description**
-After the user completes the [configuration](#23-_config) of the `buffer`, call the `init` method to initialize. This method must be executed last.
+After the user completes the [configuration](#_config) of the `buffer`, call the `init` method to initialize. This method must be executed last.
 
 **Syntax**
 
@@ -35,7 +35,7 @@ MediaManager.init()
 |--------------|-------------|
 | None         |             |
 
-### 2.2 deinit
+### deinit
 
 **Description**
 This method is used to destroy all requested `buffers`.
@@ -58,7 +58,7 @@ MediaManager.deinit()
 |--------------|-------------|
 | None         |             |
 
-### 2.3 _config
+### _config
 
 **Description**
 Used to configure the media buffer.
@@ -86,7 +86,7 @@ MediaManager._config(config)
 
 This method is only for internal use when encapsulating this module interface by various media submodules (e.g., camera, video encoding, etc.) of the CanMV K230 platform. Upper-layer application developers do not need to pay attention to it.
 
-### 2.4 link
+### link
 
 **Description**
 This method is used to establish connections between channels of different modules to achieve automatic data flow, without manual operation by the user. The `Display` module can automatically create a `link` through `bind_layer`.
@@ -113,12 +113,12 @@ MediaManager.link(src=(mod,dev,chn), dst=(mod,dev,chn))
 
 This method is only for internal use when encapsulating this module interface by various media submodules (e.g., camera, video encoding, etc.) of the CanMV K230 platform. Upper-layer application developers do not need to pay attention to it.
 
-### 2.5 Buffer Management
+### Buffer Management
 
-#### 2.5.1 get
+#### get
 
 **Description**
-After [_config](#23-_config) is completed, the user can obtain the `buffer` through the `MediaManager.Buffer.get` method. This method must be called after [init](#21-init) is executed.
+After [_config](#_config) is completed, the user can obtain the `buffer` through the `MediaManager.Buffer.get` method. This method must be called after [init](#init) is executed.
 
 **Syntax**
 
@@ -138,7 +138,7 @@ MediaManager.Buffer.get(size)
 |---------------------------|-------------|
 | `MediaManager.Buffer` class | Success     |
 
-#### 2.5.2 Release Memory
+#### Release Memory
 
 **Description**
 
@@ -162,11 +162,11 @@ buffer.__del__()
 |--------------|-------------|
 | None         |             |
 
-## 3. Data Structure Description
+## Data Structure Description
 
 The media module of the CanMV K230 platform includes the following data definitions.
 
-### 3.1 Media Module ID
+### Media Module ID
 
 **Description**
 
@@ -190,7 +190,7 @@ VIDEO_DECODE_MOD_ID = K_ID_VDEC    # Video decoding device module
 
 #### Related Data Types and Interfaces
 
-### 3.2 Media Device ID
+### Media Device ID
 
 **Description**
 
@@ -224,7 +224,7 @@ DISPLAY_DEV_ID = K_VO_DISPLAY_DEV_ID
 # TODO
 ```
 
-### 3.3 Media Device Channel ID
+### Media Device Channel ID
 
 **Description**
 
@@ -268,7 +268,7 @@ DISPLAY_CHN_ID_6 = K_VO_DISPLAY_CHN_ID6
 
 None
 
-## 4. Example Program
+## Example Program
 
 **Example**
 

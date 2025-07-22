@@ -1,15 +1,15 @@
-# 3. TCP-Client Example Explanation
+# TCP-Client Example Explanation
 
-## 1. Environment Preparation
+## Environment Preparation
 
 To ensure a smooth demonstration of TCP communication, we need to confirm that the following environment is correctly configured:
 
-### 1.1 Hardware Connection
+### Hardware Connection
 
 - Ensure that your CanMV development board and computer are connected to the same router or switch via an Ethernet cable to form a local area network.
 - Ensure the router or switch is working properly to guarantee network connection stability.
 
-### 1.2 Disable Firewall
+### Disable Firewall
 
 - To avoid the firewall blocking TCP communication, it is recommended to temporarily disable the computer's firewall.
 
@@ -17,11 +17,11 @@ To ensure a smooth demonstration of TCP communication, we need to confirm that t
 :scale: 50 %
 ```
 
-### 1.3 Tool Preparation
+### Tool Preparation
 
 - Download and install [NetAssist Network Debugging Assistant](https://www.bing.com/search?q=netassist+cmsoft) as a network communication testing tool to help send and receive network data.
 
-### 1.4 Obtain IP Address
+### Obtain IP Address
 
 - Open the Command Prompt (CMD), enter `ipconfig`, and query and record the IP address of the computer's network card for subsequent configuration and testing.
 
@@ -29,9 +29,9 @@ To ensure a smooth demonstration of TCP communication, we need to confirm that t
 :scale: 50 %
 ```
 
-## 2. Client Code Analysis
+## Client Code Analysis
 
-### 2.1 Import Necessary Libraries
+### Import Necessary Libraries
 
 ```python
 import network  
@@ -43,7 +43,7 @@ import time
 - **socket**: Provides the Socket interface for network communication.
 - **time**: Provides functions related to time, such as delay (`sleep`).
 
-### 2.2 Define Client Function
+### Define Client Function
 
 ```python
 def client():  
@@ -52,7 +52,7 @@ def client():
 
 - The `client` function contains the main logic of the TCP client.
 
-### 2.3 Configure Network Interface
+### Configure Network Interface
 
 ```python
 def network_use_wlan(is_wlan=True):
@@ -84,7 +84,7 @@ Configure the network interface based on the parameters, as follows:
 1. **LAN Mode**:
    - If `is_wlan=False`, configure the wired network interface (LAN), enable DHCP to automatically obtain an IP address, and return the IP.
 
-### 2.4 Create Socket
+### Create Socket
 
 ```python
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -92,7 +92,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 - Create a Socket object using IPv4 (`AF_INET`) and TCP (`SOCK_STREAM`) protocol.
 
-### 2.5 Obtain Server Address and Port
+### Obtain Server Address and Port
 
 ```python
 ai = socket.getaddrinfo("172.16.1.174", 8080)  
@@ -101,7 +101,7 @@ addr = ai[0][-1]  # Extract address and port
 
 - Use `getaddrinfo` to obtain the server's IP address and port number, and extract the address information.
 
-### 2.6 Connect to Server
+### Connect to Server
 
 ```python
 try:  
@@ -115,7 +115,7 @@ except Exception as e:
 
 - Try to connect to the server. If the connection fails, print the error message and close the connection.
 
-### 2.7 Send Data
+### Send Data
 
 ```python
 for i in range(10):  
@@ -127,7 +127,7 @@ for i in range(10):
 
 - Send 10 test messages in a loop, using the `sendall` method to ensure each message is completely sent.
 
-### 2.8 Close Socket
+### Close Socket
 
 ```python
 s.close()  
@@ -136,7 +136,7 @@ print("Client ends connection.")
 
 - Close the Socket to release resources, indicating the client has ended the connection.
 
-### 2.9 Complete Code Example
+### Complete Code Example
 
 ```python
 import network
@@ -189,7 +189,7 @@ def client():
 client()
 ```
 
-## 3. Running Results and Operation Instructions
+## Running Results and Operation Instructions
 
 1. Open the NetAssist Network Debugging Assistant, configure it as a TCP server, and wait for the connection:
 

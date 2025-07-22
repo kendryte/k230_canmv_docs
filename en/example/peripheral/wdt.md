@@ -1,10 +1,10 @@
-# 9. WDT Routines
+# WDT Routines
 
-## 1. Overview
+## Overview
 
 The K230 contains two WDT (Watchdog Timer) hardware modules, primarily used to restart the system when the application crashes or enters an unrecoverable state. Once the WDT is activated, if no "feed dog" operation is performed within the set timeout period, the system will automatically reset.
 
-## 2. Example
+## Example
 
 The following example demonstrates how to use the WDT interface for a simple watchdog functionality test.
 
@@ -25,7 +25,7 @@ wdt1.feed()
 time.sleep(2)
 ```
 
-## 3. Code Explanation
+## Code Explanation
 
 1. **Instantiate WDT**:
    - Create a `WDT` object with parameters for the WDT number and timeout period (in seconds). In this example, the timeout is set to 3 seconds.

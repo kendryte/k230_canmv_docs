@@ -1,14 +1,14 @@
-# 3.6 `VENC` Module API Manual
+# `VENC` Module API Manual
 
-## 1. Overview
+## Overview
 
 This manual provides a detailed introduction to the API of the K230_CanMV VENC module. Developers can use these APIs to perform video encoding, generating streams of different resolutions and encoding formats. The VENC module needs to be used in conjunction with the camera module to achieve encoding functionality.
 
-## 2. API Introduction
+## API Introduction
 
 The VENC module provides the `Encoder` class, which includes the following methods:
 
-### 2.1 `Encoder.SetOutBufs`
+### `Encoder.SetOutBufs`
 
 **Description**
 
@@ -40,7 +40,7 @@ Encoder.SetOutBufs(chn, buf_num, width, height)
 
 **`Must be called before MediaManager.init()`**
 
-### 2.2 `Encoder.Create`
+### `Encoder.Create`
 
 **Description**
 
@@ -70,7 +70,7 @@ Encoder.Create(chn, chnAttr)
 
 VENC supports up to 4 encoding channels, with channel numbers ranging from [0, 3]. The 4th channel is fixed for IDE image transmission. Unless calling `compress_for_ide`, it is recommended to use only [0, 2].
 
-### 2.3 `Encoder.Start`
+### `Encoder.Start`
 
 **Description**
 
@@ -95,7 +95,7 @@ Encoder.Start(chn)
 | 0            | Success     |
 | Non-zero     | Failure     |
 
-### 2.4 `Encoder.SendFrame`
+### `Encoder.SendFrame`
 
 **Description**
 
@@ -125,7 +125,7 @@ Encoder.SendFrame(venc_chn, frame_info)
 
 Can encode a full frame of data or a variable-length data stream.
 
-### 2.5 `Encoder.GetStream`
+### `Encoder.GetStream`
 
 **Description**
 
@@ -151,7 +151,7 @@ Encoder.GetStream(chn, streamData)
 | 0            | Success     |
 | Non-zero     | Failure     |
 
-### 2.6 `Encoder.ReleaseStream`
+### `Encoder.ReleaseStream`
 
 **Description**
 
@@ -177,7 +177,7 @@ Encoder.ReleaseStream(chn, streamData)
 | 0            | Success     |
 | Non-zero     | Failure     |
 
-### 2.7 `Encoder.Stop`
+### `Encoder.Stop`
 
 **Description**
 
@@ -195,7 +195,7 @@ Encoder.Stop(chn)
 |----------------|-----------------------|--------------|
 | chn            | Encoding channel number | Input       |
 
-### 2.8 `Encoder.Destroy`
+### `Encoder.Destroy`
 
 **Description**
 
@@ -213,9 +213,9 @@ Encoder.Destroy(chn)
 |----------------|-----------------------|--------------|
 | chn            | Encoding channel number | Input       |
 
-## 3. Data Structure Description
+## Data Structure Description
 
-### 3.1 `ChnAttrStr`
+### `ChnAttrStr`
 
 **Description**
 
@@ -243,7 +243,7 @@ class ChnAttrStr:
 | pic_height     | Image height           |
 | gop_len        | Encoding GOP length    |
 
-### 3.2 `StreamData`
+### `StreamData`
 
 **Description**
 
@@ -273,7 +273,7 @@ class StreamData:
 
 `VENC_PACK_CNT_MAX` indicates the maximum number of packs in the stream structure, currently set to 12.
 
-### 3.3 `payload_type`
+### `payload_type`
 
 **Description**
 
@@ -286,7 +286,7 @@ Encoding format type.
 | PAYLOAD_TYPE_H264     | H.264 encoding format |
 | PAYLOAD_TYPE_H265     | H.265 encoding format |
 
-### 3.4 `profile`
+### `profile`
 
 **Description**
 
@@ -301,7 +301,7 @@ Encoding Profile.
 | H264_PROFILE_HIGH     | H.264 High Profile     |
 | H265_PROFILE_MAIN     | H.265 Main Profile     |
 
-### 3.5 `stream_type`
+### `stream_type`
 
 **Description**
 
@@ -315,9 +315,9 @@ Stream frame type.
 | STREAM_TYPE_I        | I Frame           |
 | STREAM_TYPE_P        | P Frame           |
 
-## 4. Example Programs
+## Example Programs
 
-### 4.1 Example 1
+### Example 1
 
 Bind VENC to VICAP and save the obtained encoded data to a file.
 
@@ -416,7 +416,7 @@ if __name__ == "__main__":
     vi_bind_venc_test("/sdcard/examples/test.264", 800, 480)  # Example of binding vi to venc
 ```
 
-### 4.2 Example 2
+### Example 2
 
 Encode VENC data stream and save it as a file.
 Here's the translated text to English:

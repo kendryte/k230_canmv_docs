@@ -1,4 +1,4 @@
-# 1. Python Standard Library and Micropython Standard Micro Library
+# Python Standard Library and Micropython Standard Micro Library
 
 ```{toctree}
 :maxdepth: 1

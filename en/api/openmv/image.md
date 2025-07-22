@@ -1,8 +1,8 @@
-# 3.11 `Image` Processing API Manual
+# `Image` Processing API Manual
 
 This module is ported from `openmv` with similar functionalities. For more details, please refer to the [official documentation](https://docs.openmv.io/library/omv.image.html). This document lists the differences from the official API and the newly added APIs, and includes references to some native APIs.
 
-## 1. Class `Image`
+## Class `Image`
 
 The `Image` class is the fundamental object for machine vision processing. This class supports creating image objects from memory regions such as Micropython GC, MMZ, system heap, and VB area. Additionally, images can be created directly by referencing external memory (ALLOC_REF). Unused image objects are automatically released during garbage collection, but memory can also be manually released.
 
@@ -28,7 +28,7 @@ Supported memory allocation regions:
 - **ALLOC_VB**: Video buffer
 - **ALLOC_REF**: Memory using reference objects, no new memory allocation
 
-### 1.1 Constructor
+### Constructor
 
 ```python
 image.Image(path, alloc=ALLOC_MMZ, cache=True, phyaddr=0, virtaddr=0, poolid=0, data=None)
@@ -72,7 +72,7 @@ del img
 gc.collect()
 ```
 
-### 1.2 `phyaddr`
+### `phyaddr`
 
 Get the physical memory address of the image data.
 
@@ -80,7 +80,7 @@ Get the physical memory address of the image data.
 image.phyaddr()
 ```
 
-### 1.3 `virtaddr`
+### `virtaddr`
 
 Get the virtual memory address of the image data.
 
@@ -88,7 +88,7 @@ Get the virtual memory address of the image data.
 image.virtaddr()
 ```
 
-### 1.4 `poolid`
+### `poolid`
 
 Get the VB pool ID of the image.
 
@@ -96,7 +96,7 @@ Get the VB pool ID of the image.
 image.poolid()
 ```
 
-### 1.5 `to_rgb888`
+### `to_rgb888`
 
 Convert the image to RGB888 format and return a new image object.
 
@@ -104,7 +104,7 @@ Convert the image to RGB888 format and return a new image object.
 image.to_rgb888(x_scale=1.0, y_scale=1.0, roi=None, rgb_channel=-1, alpha=256, color_palette=None, alpha_palette=None, hint=0, alloc=ALLOC_MMZ, cache=True, phyaddr=0, virtaddr=0, poolid=0)
 ```
 
-### 1.6 `copy_from`
+### `copy_from`
 
 Copy the content of `src_img` to the current image object.
 
@@ -112,7 +112,7 @@ Copy the content of `src_img` to the current image object.
 image.copy_from(src_img)
 ```
 
-### 1.7 `copy_to`
+### `copy_to`
 
 Copy the content of the current image object to `dst_img`.
 
@@ -120,7 +120,7 @@ Copy the content of the current image object to `dst_img`.
 image.copy_to(dst_img)
 ```
 
-### 1.8 `to_numpy_ref`
+### `to_numpy_ref`
 
 Convert the image object to a NumPy array, with the returned NumPy array sharing memory with the original image object.
 
@@ -130,7 +130,7 @@ image.to_numpy_ref()
 
 Supported formats: GRAYSCALE, RGB565, ARGB8888, RGB888, RGBP888.
 
-### 1.9 `draw_string_advanced`
+### `draw_string_advanced`
 
 Enhanced `draw_string`, supporting Chinese display and allowing custom fonts via the `font` parameter.
 
@@ -138,9 +138,9 @@ Enhanced `draw_string`, supporting Chinese display and allowing custom fonts via
 image.draw_string_advanced(x, y, char_size, str, [color, font])
 ```
 
-### 1.10 Methods with Differences
+### Methods with Differences
 
-#### 1.10.1 Removed `crop` Parameter
+#### Removed `crop` Parameter
 
 The following APIs have the `crop` parameter removed, added memory allocation method parameter, and always return a new image object.
 
@@ -155,23 +155,23 @@ The following APIs have the `crop` parameter removed, added memory allocation me
 - `crop` method
 - `scale` method
 
-#### 1.10.2 Drawing APIs
+#### Drawing APIs
 
 Added support for `ARGB8888` and `RGB888` formats, other formats are not supported.
 
-#### 1.10.3 BINARY API
+#### BINARY API
 
 The `binary` method added a memory allocation method parameter, effective only when `copy=True`.
 
-#### 1.10.4 POOL API
+#### POOL API
 
 The `mean_pooled` and `midpoint_pooled` methods added a memory allocation method parameter.
 
-#### 1.10.5 Other Image Algorithms
+#### Other Image Algorithms
 
 These algorithms only support native image formats, `RGB888` format needs to be converted before use.
 
-### 1.11 `width`
+### `width`
 
 ```python
 image.width()
@@ -179,7 +179,7 @@ image.width()
 
 Returns the width of the image in pixels.
 
-### 1.12 `height`
+### `height`
 
 ```python
 image.height()
@@ -187,7 +187,7 @@ image.height()
 
 Returns the height of the image in pixels.
 
-### 1.13 `format`
+### `format`
 
 ```python
 image.format()
@@ -199,7 +199,7 @@ Returns the format of the image, possible values include:
 - `sensor.RGB565`: RGB image
 - `sensor.JPEG`: JPEG compressed image
 
-### 1.14 `size`
+### `size`
 
 ```python
 image.size()
@@ -207,7 +207,7 @@ image.size()
 
 Returns the size of the image in bytes.
 
-### 1.15 `get_pixel`
+### `get_pixel`
 
 ```python
 image.get_pixel(x, y[, rgbtuple])
@@ -223,7 +223,7 @@ Compressed images are not supported.
 
 > `get_pixel()` and `set_pixel()` are the only methods to operate on Bayer mode images. Bayer mode images are a special format where even rows contain `R/G/R/G/...` and odd rows contain `G/B/G/B/...` pixels, with each pixel occupying 8 bits.
 
-### 1.16 `set_pixel`
+### `set_pixel`
 
 ```python
 image.set_pixel(x, y, pixel)
@@ -238,7 +238,7 @@ Compressed images are not supported.
 
 > `get_pixel()` and `set_pixel()` are the only methods to operate on Bayer mode images.
 
-### 1.17 `mean_pool`
+### `mean_pool`
 
 ```python
 image.mean_pool(x_div, y_div)
@@ -250,7 +250,7 @@ This method can be used to quickly downscale an image.
 
 Compressed images and Bayer images are not supported.
 
-### 1.18 `mean_pooled`
+### `mean_pooled`
 
 ```python
 image.mean_pooled(x_div, y_div)
@@ -258,7 +258,7 @@ image.mean_pooled(x_div, y_div)
 
 Similar to `mean_pool()`, but returns a new image copy.
 
-### 1.19 `midpoint_pool`
+### `midpoint_pool`
 
 ```python
 image.midpoint_pool(x_div, y_div[, bias=0.5])
@@ -268,7 +268,7 @@ Divide the image into `x_div * y_div` regions and compute the midpoint value for
 
 - When `bias=0.0`, returns the minimum value of the region, and when `bias=1.0`, returns the maximum value.
 
-### 1.20 `midpoint_pooled`
+### `midpoint_pooled`
 
 ```python
 image.midpoint_pooled(x_div, y_div[, bias=0.5])
@@ -276,7 +276,7 @@ image.midpoint_pooled(x_div, y_div[, bias=0.5])
 
 Similar to `midpoint_pool()`, but returns a new image copy.
 
-### 1.21 `to_grayscale`
+### `to_grayscale`
 
 ```python
 image.to_grayscale([copy=False])
@@ -284,7 +284,7 @@ image.to_grayscale([copy=False])
 
 Convert the image to grayscale. If `copy=True`, a new image copy is created on the heap. Returns the image object.
 
-### 1.22 `to_rgb565`
+### `to_rgb565`
 
 ```python
 image.to_rgb565([copy=False])
@@ -292,7 +292,7 @@ image.to_rgb565([copy=False])
 
 Convert the image to RGB565 format. If `copy=True`, a new image copy is created on the heap. Returns the image object.
 
-### 1.23 `to_rainbow`
+### `to_rainbow`
 
 ```python
 image.to_rainbow([copy=False])
@@ -300,7 +300,7 @@ image.to_rainbow([copy=False])
 
 Convert the image to rainbow color. Returns the image object.
 
-### 1.24 `compress`
+### `compress`
 
 ```python
 image.compress([quality=50])
@@ -308,7 +308,7 @@ image.compress([quality=50])
 
 JPEG compress the image with the specified quality `quality` (0-100).
 
-### 1.25 `compress_for_ide`
+### `compress_for_ide`
 
 ```python
 image.compress_for_ide([quality=50])
@@ -316,7 +316,7 @@ image.compress_for_ide([quality=50])
 
 Compress the image and format it for display in OpenMV IDE.
 
-### 1.26 `compressed`
+### `compressed`
 
 ```python
 image.compressed([quality=50])
@@ -324,7 +324,7 @@ image.compressed([quality=50])
 
 Return the JPEG compressed image.
 
-### 1.27 `compressed_for_ide`
+### `compressed_for_ide`
 
 ```python
 image.compressed_for_ide([quality=50])
@@ -332,7 +332,7 @@ image.compressed_for_ide([quality=50])
 
 Return the JPEG compressed image, formatted for display in OpenMV IDE.
 
-### 1.28 `copy`
+### `copy`
 
 ```python
 image.copy([roi[, copy_to_fb=False]])
@@ -340,7 +340,7 @@ image.copy([roi[, copy_to_fb=False]])
 
 Create a copy of the image object, supporting a region of interest `roi`.
 
-### 1.29 `save`
+### `save`
 
 ```python
 image.save(path[, roi[, quality=50]])
@@ -348,7 +348,7 @@ image.save(path[, roi[, quality=50]])
 
 Save the image to the specified path `path`, supporting a region of interest `roi` and JPEG compression quality `quality`.
 
-### 1.30 `clear`
+### `clear`
 
 ```python
 image.clear()
@@ -356,7 +356,7 @@ image.clear()
 
 Quickly set all pixels in the image to zero. Returns the image object.
 
-### 1.31 `draw_line`
+### `draw_line`
 
 ```python
 image.draw_line(x0, y0, x1, y1[, color[, thickness=1]])
@@ -371,7 +371,7 @@ This method returns the image object, allowing chaining other methods.
 
 Compressed images and Bayer format images are not supported.
 
-### 1.32 `draw_rectangle`
+### `draw_rectangle`
 
 ```python
 image.draw_rectangle(x, y, w, h[, color[, thickness=1[, fill=False]]])
@@ -387,7 +387,7 @@ This method returns the image object, allowing chaining other methods.
 
 Compressed images and Bayer format images are not supported.
 
-### 1.33 `draw_ellipse`
+### `draw_ellipse-1`
 
 ```python
 image.draw_ellipse(cx, cy, rx, ry, rotation[, color[, thickness=1[, fill=False]]])
@@ -403,7 +403,7 @@ This method returns the image object, allowing chaining other methods.
 
 Compressed images and Bayer format images are not supported.
 
-### 1.34 `draw_circle`
+### `draw_circle`
 
 ```python
 image.draw_circle(x, y, radius[, color[, thickness=1[, fill=False]]])
@@ -421,7 +421,7 @@ Compressed images and Bayer format images are not supported.
 
 Draw text of size 8x10 starting from position `(x, y)` on the image.
 
-### 1.35 `draw_string`
+### `draw_string`
 
 ```python
 image.draw_string(x, y, text[, color[, scale=1[, x_spacing=0[, y_spacing=0[, mono_space=True]]]]])
@@ -440,7 +440,7 @@ This method returns the image object, allowing chaining other methods.
 
 Compressed images and Bayer format images are not supported.
 
-### 1.36 `draw_cross`
+### `draw_cross`
 
 ```python
 image.draw_cross(x, y[, color[, size=5[, thickness=1]]])
@@ -456,7 +456,7 @@ This method returns the image object, allowing chaining other methods.
 
 Compressed images and Bayer format images are not supported.
 
-### 1.37 `draw_arrow`
+### `draw_arrow`
 
 ```python
 image.draw_arrow(x0, y0, x1, y1[, color[, thickness=1]])
@@ -471,7 +471,7 @@ This method returns the image object, allowing chaining other methods.
 
 Compressed images and Bayer format images are not supported.
 
-### 1.38 `draw_image`
+### `draw_image`
 
 ```python
 image.draw_image(image, x, y[, x_scale=1.0[, y_scale=1.0[, mask=None[, alpha=256]]]])
@@ -486,7 +486,7 @@ This function is used to draw an image at the specified position `(x, y)`, align
 
 This method does not support compressed images and Bayer format images.
 
-### 1.39 `draw_keypoints`
+### `draw_keypoints`
 
 ```python
 image.draw_keypoints(keypoints[, color[, size=10[, thickness=1[, fill=False]]]])
@@ -503,7 +503,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.40 `flood_fill`
+### `flood_fill`
 
 ```python
 image.flood_fill(x, y[, seed_threshold=0.05[, floating_threshold=0.05[, color[, invert=False[, clear_background=False[, mask=None]]]]]])
@@ -522,7 +522,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.41 `binary`
+### `binary`
 
 ```python
 image.binary(thresholds[, invert=False[, zero=False[, mask=None]]])
@@ -539,7 +539,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.42 `invert`
+### `invert`
 
 ```python
 image.invert()
@@ -551,7 +551,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.43 `b_and`
+### `b_and`
 
 ```python
 image.b_and(image[, mask=None])
@@ -566,7 +566,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.44 `b_nand`
+### `b_nand`
 
 ```python
 image.b_nand(image[, mask=None])
@@ -580,7 +580,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.45 `b_or`
+### `b_or`
 
 ```python
 image.b_or(image[, mask=None])
@@ -594,7 +594,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.46 `b_nor`
+### `b_nor`
 
 ```python
 image.b_nor(image[, mask=None])
@@ -608,7 +608,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.47 `b_xor`
+### `b_xor`
 
 ```python
 image.b_xor(image[, mask=None])
@@ -622,7 +622,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.48 `b_xnor`
+### `b_xnor`
 
 ```python
 image.b_xnor(image[, mask=None])
@@ -636,7 +636,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.49 `erode`
+### `erode`
 
 ```python
 image.erode(size[, threshold[, mask=None]])
@@ -649,7 +649,7 @@ Perform an erosion operation by removing pixels along the edges of regions.
 
 Returns the image object, allowing chaining other methods.
 
-### 1.50 `dilate`
+### `dilate`
 
 ```python
 image.dilate(size[, threshold[, mask=None]])
@@ -661,7 +661,7 @@ Other parameters are the same as `erode`.
 
 Returns the image object, allowing chaining other methods.
 
-### 1.51 `open`
+### `open`
 
 ```python
 image.open(size[, threshold[, mask=None]])
@@ -671,7 +671,7 @@ Perform an erosion followed by a dilation operation on the image. For details, r
 
 Returns the image object, allowing chaining other methods.
 
-### 1.52 `close`
+### `close`
 
 ```python
 image.close(size[, threshold[, mask=None]])
@@ -681,7 +681,7 @@ Perform a dilation followed by an erosion operation on the image. For details, r
 
 Returns the image object, allowing chaining other methods.
 
-### 1.53 `top_hat`
+### `top_hat`
 
 ```python
 image.top_hat(size[, threshold[, mask=None]])
@@ -695,7 +695,7 @@ This function returns the difference between the original image and the image af
 
 This method does not support compressed images and Bayer format images.
 
-### 1.54 `black_hat`
+### `black_hat`
 
 ```python
 image.black_hat(size[, threshold[, mask=None]])
@@ -709,7 +709,7 @@ This function returns the difference between the original image and the image af
 
 This method does not support compressed images and Bayer format images.
 
-### 1.55 `negate`
+### `negate`
 
 ```python
 image.negate()
@@ -721,7 +721,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.56 `replace`
+### `replace`
 
 ```python
 image.replace(image[, hmirror=False[, vflip=False[, mask=None]]])
@@ -738,7 +738,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.57 `add`
+### `add`
 
 ```python
 image.add(image[, mask=None])
@@ -754,7 +754,7 @@ Returns the image object, allowing chaining other methods.
 This method does not support compressed images and Bayer format images.
 This method does not support compressed images and Bayer format images.
 
-### 1.58 `sub`
+### `sub`
 
 ```python
 image.sub(image[, reverse=False[, mask=None]])
@@ -770,7 +770,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.59 `mul`
+### `mul`
 
 ```python
 image.mul(image[, invert=False[, mask=None]])
@@ -786,7 +786,7 @@ Returns the image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.60 `div`
+### `div`
 
 ```python
 image.div(image[, invert=False[, mask=None]])
@@ -804,7 +804,7 @@ Returns the modified image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.61 `min`
+### `min`
 
 ```python
 image.min(image[, mask=None])
@@ -822,7 +822,7 @@ This method does not support compressed images and Bayer format images.
 
 This method is not available on OpenMV4.
 
-### 1.62 `max`
+### `max`
 
 ```python
 image.max(image[, mask=None])
@@ -838,7 +838,7 @@ Returns the new image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.63 `difference`
+### `difference`
 
 ```python
 image.difference(image[, mask=None]])
@@ -854,7 +854,7 @@ Returns the modified image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.64 `blend`
+### `blend`
 
 ```python
 image.blend(image[, alpha=128[, mask=None]])
@@ -872,7 +872,7 @@ Returns the blended image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.65 `histeq`
+### `histeq`
 
 ```python
 image.histeq([adaptive=False[, clip_limit=-1[, mask=None]]])
@@ -890,7 +890,7 @@ Returns the processed image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.66 `mean`
+### `mean`
 
 ```python
 image.mean(size[, threshold=False[, offset=0[, invert=False[, mask=None]]]])
@@ -908,7 +908,7 @@ Returns the blurred image object, allowing chaining other methods.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.67 `median`
+### `median`
 
 ```python
 image.median(size, percentile=0.5[, threshold=False[, offset=0[, invert=False[, mask=None]]]])
@@ -928,7 +928,7 @@ Returns the filtered image object.
 
 This method does not support compressed images and Bayer format images.
 
-### 1.68 `mode`
+### `mode`
 
 ```python
 image.mode(size[, threshold=False, offset=0, invert=False, mask])
@@ -948,7 +948,7 @@ Apply a mode filter to the image, replacing each pixel with the mode of neighbor
 
 **Note**: This method does not support compressed images and Bayer format images.
 
-### 1.69 `midpoint`
+### `midpoint`
 
 ```python
 image.midpoint(size[, bias=0.5, threshold=False, offset=0, invert=False, mask])
@@ -969,7 +969,7 @@ Apply a midpoint filter to the image, computing the midpoint value ((max-min)/2)
 
 **Note**: This method does not support compressed images and Bayer format images.
 
-### 1.70 `morph`
+### `morph`
 
 ```python
 image.morph(size, kernel, mul=Auto, add=0)
@@ -990,7 +990,7 @@ Perform convolution on the image using a specified convolution kernel for genera
 
 **Note**: This method does not support compressed images and Bayer format images.
 
-### 1.71 `gaussian`
+### `gaussian`
 
 ```python
 image.gaussian(size[, unsharp=False[, mul[, add=0[, threshold=False[, offset=0[, invert=False[, mask=None]]]]]]])
@@ -1011,7 +1011,7 @@ Smooth the image using a Gaussian kernel for convolution.
 
 **Note**: This method does not support compressed images and Bayer format images.
 
-### 1.72 `laplacian`
+### `laplacian`
 
 ```python
 image.laplacian(size[, sharpen=False[, mul[, add=0[, threshold=False[, offset=0[, invert=False[, mask=None]]]]]]])
@@ -1031,7 +1031,7 @@ Perform edge detection on the image using a Laplacian kernel for convolution.
 
 **Note**: This method does not support compressed images and Bayer format images.
 
-### 1.73 `bilateral`
+### `bilateral`
 
 ```python
 image.bilateral(size[, color_sigma=0.1[, space_sigma=1[, threshold=False[, offset=0[, invert=False[, mask=None]]]]]])
@@ -1049,7 +1049,7 @@ Perform convolution on the image using a bilateral filter, which smooths the ima
 
 **Note**: This method does not support compressed images and Bayer format images.
 
-### 1.74 `cartoon`
+### `cartoon`
 
 ```python
 image.cartoon(size[, seed_threshold=0.05[, floating_threshold=0.05[, mask=None]]])
@@ -1067,7 +1067,7 @@ Process the image using a Flood-Fill algorithm to fill all pixel regions, effect
 
 **Note**: This method does not support compressed images and Bayer format images.
 
-### 1.75 `remove_shadows`
+### `remove_shadows`
 
 ```python
 image.remove_shadows([image])
@@ -1084,7 +1084,7 @@ Remove shadows from the current image.
 
 **Note**: This function only supports RGB565 images.
 
-### 1.76 `chrominvar`
+### `chrominvar`
 
 ```python
 image.chrominvar()
@@ -1096,7 +1096,7 @@ Remove lighting effects from the image, retaining only color gradients. This met
 
 **Note**: This function only supports RGB565 images.
 
-### 1.77 `illuminvar`
+### `illuminvar`
 
 ```python
 image.illuminvar()
@@ -1108,7 +1108,7 @@ Remove lighting effects from the image, retaining only color gradients. This met
 
 **Note**: This function only supports RGB565 images.
 
-### 1.78 `linpolar`
+### `linpolar`
 
 ```python
 image.linpolar([reverse=False])
@@ -1124,7 +1124,7 @@ Linear polar reprojection converts image rotation to translation in the x direct
 
 **Note**: This function does not support compressed images.
 
-### 1.79 `logpolar`
+### `logpolar`
 
 ```python
 image.logpolar([reverse=False])
@@ -1140,7 +1140,7 @@ Logarithmic polar reprojection converts image rotation to translation in the x d
 
 **Note**: This function does not support compressed images.
 
-### 1.80 `lens_corr`
+### `lens_corr`
 
 ```python
 image.lens_corr([strength=1.8[, zoom=1.0]])
@@ -1157,7 +1157,7 @@ This method returns the image object, allowing users to continue calling other m
 
 **Note**: This function does not support compressed images and Bayer format images.
 
-### 1.81 `rotation_corr`
+### `rotation_corr`
 
 ```python
 img.rotation_corr([x_rotation=0.0[, y_rotation=0.0[, z_rotation=0.0[, x_translation=0.0[, y_translation=0.0[, zoom=1.0[, fov=60.0[, corners]]]]]]]])
@@ -1180,7 +1180,7 @@ This method returns the image object, allowing users to continue calling other m
 
 **Note**: This function does not support compressed images and Bayer format images.
 
-### 1.82 `get_similarity`
+### `get_similarity`
 
 ```python
 image.get_similarity(image)
@@ -1194,7 +1194,7 @@ This method returns a "similarity" object that describes the similarity between 
 
 **Note**: This function does not support compressed images and Bayer format images.
 
-### 1.83 `get_histogram`
+### `get_histogram`
 
 ```python
 image.get_histogram([thresholds[, invert=False[, roi[, bins[, l_bins[, a_bins[, b_bins]]]]]]])
@@ -1211,7 +1211,7 @@ This method performs a normalized histogram operation on all color channels in t
 
 **Note**: This function does not support compressed images and Bayer format images.
 
-### 1.84 `get_statistics`
+### `get_statistics`
 
 ```python
 image.get_statistics([thresholds[, invert=False[, roi[, bins[, l_bins[, a_bins[, b_bins]]]]]]])
@@ -1228,7 +1228,7 @@ This method calculates the mean, median, mode, standard deviation, minimum value
 
 **Note**: This function does not support compressed images and Bayer format images.
 
-### 1.85 `get_regression`
+### `get_regression`
 
 ```python
 image.get_regression(thresholds[, invert=False[, roi[, x_stride=2[, y_stride=1[, area_threshold=10[, pixels_threshold=10[, robust=False]]]]]]])
@@ -1250,7 +1250,7 @@ This method returns an `image.line` object. For detailed usage, refer to the fol
 
 **Note**: This function does not support compressed images and Bayer format images.
 
-### 1.86 `find_blobs`
+### `find_blobs`
 
 ```python
 image.find_blobs(thresholds[, invert=False[, roi[, x_stride=2[, y_stride=1[, area_threshold=10[, pixels_threshold=10[, merge=False[, margin=0[, threshold_cb=None[, merge_cb=None]]]]]]]]]])
@@ -1284,7 +1284,7 @@ When using strict color ranges, it may not be possible to track all pixels of th
 
 **Note:** This function does not support compressed images and Bayer format images.
 
-### 1.87 `find_lines`
+### `find_lines`
 
 ```python
 image.find_lines([roi[, x_stride=2[, y_stride=1[, threshold=1000[, theta_margin=25[, rho_margin=25]]]]]])
@@ -1303,7 +1303,7 @@ This method applies a Sobel filter to the image and performs the Hough Transform
 
 **Note:** This function does not support compressed images and Bayer format images.
 
-### 1.88 `find_line_segments`
+### `find_line_segments`
 
 ```python
 image.find_line_segments([roi[, merge_distance=0[, max_theta_difference=15]]])
@@ -1319,7 +1319,7 @@ This method uses the LSD library (also adopted by OpenCV) to find line segments 
 
 **Note:** This function does not support compressed images and Bayer format images.
 
-### 1.89 `find_circles`
+### `find_circles`
 
 ```python
 image.find_circles([roi[, x_stride=2[, y_stride=1[, threshold=2000[, x_margin=10[, y_margin=10[, r_margin=10]]]]]]])
@@ -1339,7 +1339,7 @@ This method applies a Sobel filter to the image and performs the Hough Transform
 
 **Note:** This function does not support compressed images and Bayer format images.
 
-### 1.90 `find_rects`
+### `find_rects`
 
 ```python
 image.find_rects([roi=Auto, threshold=10000])
@@ -1353,7 +1353,7 @@ In the returned list of rectangles, those with a boundary size (calculated by sl
 
 **Note:** This function does not support compressed images and Bayer format images.
 
-### 1.91 `find_qrcodes`
+### `find_qrcodes`
 
 ```python
 image.find_qrcodes([roi])
@@ -1367,7 +1367,7 @@ To ensure the method runs successfully, the QR code on the image should be as fl
 
 **Note:** This function does not support compressed images and Bayer format images.
 
-### 1.92 `find_apriltags`
+### `find_apriltags`
 
 ```python
 image.find_apriltags([roi[, families=image.TAG36H11[, fx[, fy[, cx[, cy]]]]]])
@@ -1403,7 +1403,7 @@ The default setting is the most commonly used `image.TAG36H11` tag family. Note 
 
 **Note:** This function does not support compressed images and Bayer format images.
 
-### 1.93 `find_datamatrices`
+### `find_datamatrices`
 
 ```python
 image.find_datamatrices([roi[, effort=200]])
@@ -1419,7 +1419,7 @@ To ensure the method runs successfully, the Data Matrix on the image should be a
 
 **Note:** This function does not support compressed images and Bayer format images.
 
-### 1.94 `find_barcodes`
+### `find_barcodes`
 
 ```python
 image.find_barcodes([roi])
@@ -1451,7 +1451,7 @@ This function supports the following one-dimensional barcodes:
 - `roi` is a rectangular tuple `(x, y, w, h)` representing the region of interest. If not specified, the ROI defaults to the entire image rectangle. Operations are limited to pixels within this region.
 **Note:** Not supported for compressed images and Bayer images.
 
-### 1.95 `find_displacement`
+### `find_displacement`
 
 ```python
 image.find_displacement(template[, roi[, template_roi[, logpolar=False]]])
@@ -1471,7 +1471,7 @@ This function finds the transformation offset of the image based on a template. 
 
 **Annotation:** Please use this method on images with consistent width and height (e.g., `sensor.B64X64`).
 
-### 1.96 `find_number`
+### `find_number`
 
 ```python
 image.find_number(roi)
@@ -1483,7 +1483,7 @@ This function uses the LENET-6 convolutional neural network (CNN) trained on the
 
 **Note:** This method only supports grayscale images and is experimental. It may be removed in future versions if running any CNNs trained on Caffe on PC. The latest firmware version (3.0.0) has removed this function.
 
-### 1.97 `classify_object`
+### `classify_object`
 
 ```python
 image.classify_object(roi)
@@ -1497,7 +1497,7 @@ This function uses the CIFAR-10 convolutional neural network (CNN) to classify o
 
 **Annotation:** This method is experimental and may be removed in the future if running CNNs trained on Caffe on PC.
 
-### 1.98 `find_template`
+### `find_template`
 
 ```python
 image.find_template(template, threshold[, roi[, step=2[, search=image.SEARCH_EX]]])
@@ -1517,7 +1517,7 @@ This function finds the first match of the template in the image using the Norma
 
 **Note:** This method only supports grayscale images.
 
-### 1.99 `find_features`
+### `find_features`
 
 ```python
 image.find_features(cascade[, threshold=0.5[, scale=1.5[, roi]]])
@@ -1535,7 +1535,7 @@ This method searches the image for all regions matching the Haar Cascade model a
 
 **Note:** This method only supports grayscale images.
 
-### 1.100 `find_eye`
+### `find_eye`
 
 ```python
 image.find_eye(roi)
@@ -1549,7 +1549,7 @@ Before using this function, first search for a face using `image.find_features()
 
 **Note:** This method only supports grayscale images.
 
-### 1.101 `find_lbp`
+### `find_lbp`
 
 ```python
 image.find_lbp(roi)
@@ -1561,7 +1561,7 @@ This function extracts Local Binary Pattern (LBP) keypoints from the specified R
 
 **Note:** This method only supports grayscale images.
 
-### 1.102 `find_keypoints`
+### `find_keypoints`
 
 ```python
 image.find_keypoints([roi[, threshold=20[, normalized=False[, scale_factor=1.5[, max_keypoints=100[, corner_detector=image.CORNER_AGAST]]]]]])
@@ -1583,7 +1583,7 @@ This function extracts ORB keypoints from the specified ROI tuple `(x, y, w, h)`
 
 **Note:** This method only supports grayscale images.
 
-### 1.103 `find_edges`
+### `find_edges`
 
 ```python
 image.find_edges(edge_type[, threshold])
@@ -1599,7 +1599,7 @@ This function converts the image to a black-and-white image, retaining only the 
 
 **Note:** This method only supports grayscale images.
 
-### 1.104 `find_hog`
+### `find_hog`
 
 ```python
 image.find_hog([roi[, size=8]])
@@ -1611,7 +1611,7 @@ This function replaces the pixels in the ROI with the Histogram of Oriented Grad
 
 **Note:** This method only supports grayscale images.
 
-### 1.105 `draw_ellipse`
+### `draw_ellipse-2`
 
 ```python
 image.draw_ellipse(cx, cy, rx, ry, color, thickness=1)
@@ -1631,9 +1631,9 @@ This function returns the image object so you can call other methods using the `
 
 **OpenMV Native API** is ported from `openmv`, maintaining consistent functionality. Users can refer to the native documentation for more API details.
 
-## 2. image Module Functions
+## image Module Functions
 
-### 2.1 `rgb_to_lab`
+### `rgb_to_lab`
 
 Convert RGB888 to LAB color space.
 
@@ -1641,7 +1641,7 @@ Convert RGB888 to LAB color space.
 image.rgb_to_lab(rgb_tuple)
 ```
 
-### 2.2 `lab_to_rgb`
+### `lab_to_rgb`
 
 Convert LAB color space to RGB888.
 
@@ -1649,7 +1649,7 @@ Convert LAB color space to RGB888.
 image.lab_to_rgb(lab_tuple)
 ```
 
-### 2.3 `rgb_to_grayscale`
+### `rgb_to_grayscale`
 
 Convert RGB888 to grayscale.
 
@@ -1657,7 +1657,7 @@ Convert RGB888 to grayscale.
 image.rgb_to_grayscale(rgb_tuple)
 ```
 
-### 2.4 `grayscale_to_rgb`
+### `grayscale_to_rgb`
 
 Convert grayscale to RGB888.
 
@@ -1665,7 +1665,7 @@ Convert grayscale to RGB888.
 image.grayscale_to_rgb(g_value)
 ```
 
-### 2.5 `load_descriptor`
+### `load_descriptor`
 
 Load a descriptor object from a file.
 
@@ -1673,7 +1673,7 @@ Load a descriptor object from a file.
 image.load_descriptor(path)
 ```
 
-### 2.6 `save_descriptor`
+### `save_descriptor`
 
 Save a descriptor object to a file.
 
@@ -1681,7 +1681,7 @@ Save a descriptor object to a file.
 image.save_descriptor(path, descriptor)
 ```
 
-### 2.7 `match_descriptor`
+### `match_descriptor`
 
 Compare two descriptor objects and return the matching result.
 
@@ -1689,11 +1689,11 @@ Compare two descriptor objects and return the matching result.
 image.match_descriptor(descriptor0, descriptor1, threshold=70, filter_outliers=False)
 ```
 
-## 5 Class `HaarCascade`
+## Class `HaarCascade`
 
 The `HaarCascade` feature descriptor is used for the `image.find_features()` method and does not provide methods for direct invocation.
 
-### 5.1 Constructor
+### Constructor
 
 ```python
 class image.HaarCascade(path[, stages=Auto])
@@ -1713,11 +1713,11 @@ The default value for `stages` is the number of stages in the Haar Cascade, but 
 
 **A:** Haar Cascades are trained using images marked with positive and negative labels. For example, hundreds of images containing cats (marked as positive) and hundreds of images without cats (marked as negative) are used to train the algorithm. The final model generated is the Haar Cascade used to detect cats.
 
-## 6 Class `Similarity`
+## Class `Similarity`
 
 The similarity object is returned by the `image.get_similarity` function.
 
-### 6.1 Constructor
+### Constructor
 
 ```python
 class image.similarity
@@ -1725,7 +1725,7 @@ class image.similarity
 
 Create this object by calling the `image.get_similarity()` function.
 
-### 6.2 `mean`
+### `mean`
 
 ```python
 similarity.mean()
@@ -1733,7 +1733,7 @@ similarity.mean()
 
 This function returns the mean of the structural similarity differences in 8x8 pixel blocks, ranging from [-1, +1], where -1 indicates completely different and +1 indicates completely identical. You can also access this value using index [0].
 
-### 6.3 `stdev`
+### `stdev`
 
 ```python
 similarity.stdev()
@@ -1741,7 +1741,7 @@ similarity.stdev()
 
 This function returns the standard deviation of the structural similarity differences in 8x8 pixel blocks. You can also access this value using index [1].
 
-### 6.4 `min`
+### `min`
 
 ```python
 similarity.min()
@@ -1751,7 +1751,7 @@ This function returns the minimum value of the structural similarity differences
 
 > By looking at this value, you can quickly determine if any 8x8 pixel block between two images has a significant difference, i.e., a value much lower than +1.
 
-### 6.5 `max`
+### `max`
 
 ```python
 similarity.max()
@@ -1761,11 +1761,11 @@ This function returns the maximum value of the structural similarity differences
 
 > By looking at this value, you can quickly determine if any 8x8 pixel block between two images is completely identical, i.e., a value much higher than -1.
 
-## 7 Class `Histogram`
+## Class `Histogram`
 
 The histogram object is returned by the `image.get_histogram` method. A grayscale histogram contains multiple normalized binary channels, totaling 1. An RGB565 format histogram has three binary channels, also normalized to ensure their sum is 1.
 
-### 7.1 Constructor
+### Constructor
 
 ```python
 class image.histogram
@@ -1773,7 +1773,7 @@ class image.histogram
 
 Create this object by calling the `image.get_histogram()` function.
 
-### 7.2 `bins`
+### `bins`
 
 ```python
 histogram.bins()
@@ -1781,7 +1781,7 @@ histogram.bins()
 
 Returns a list of floating-point numbers for the grayscale histogram. You can also access this value using index [0].
 
-### 7.3 `l_bins`
+### `l_bins`
 
 ```python
 histogram.l_bins()
@@ -1789,7 +1789,7 @@ histogram.l_bins()
 
 Returns a list of floating-point numbers for the L channel of the LAB histogram in RGB565 format. You can access this value using index [0].
 
-### 7.4 `a_bins`
+### `a_bins`
 
 ```python
 histogram.a_bins()
@@ -1797,7 +1797,7 @@ histogram.a_bins()
 
 Returns a list of floating-point numbers for the A channel of the LAB histogram in RGB565 format. You can access this value using index [1].
 
-### 7.5 `b_bins`
+### `b_bins`
 
 ```python
 histogram.b_bins()
@@ -1805,7 +1805,7 @@ histogram.b_bins()
 
 Returns a list of floating-point numbers for the B channel of the LAB histogram in RGB565 format. You can access this value using index [2].
 
-### 7.6 `get_percentile`
+### `get_percentile`
 
 ```python
 histogram.get_percentile(percentile)
@@ -1815,7 +1815,7 @@ Calculates the cumulative distribution function (CDF) of the histogram channel a
 
 For example, if you pass in 0.1, this method will indicate which binary value causes the accumulator to exceed 0.1 during accumulation. This method is particularly effective for determining the minimum (0.1) and maximum (0.9) values of color distribution, assuming no abnormal utility interferes with adaptive color tracking results.
 
-### 7.7 `get_threshold`
+### `get_threshold`
 
 ```python
 histogram.get_threshold()
@@ -1823,7 +1823,7 @@ histogram.get_threshold()
 
 Calculates the optimal threshold using the Otsu method, splitting each channel of the histogram into two. This method returns an `image.threshold` object, especially useful for determining the best threshold for `image.binary()`.
 
-### 7.8 `get_statistics`
+### `get_statistics`
 
 ```python
 histogram.get_statistics()
@@ -1831,11 +1831,11 @@ histogram.get_statistics()
 
 Calculates the mean, median, mode, standard deviation, minimum value, maximum value, lower quartile, and upper quartile for each color channel in the histogram and returns a `statistics` object. You can also use `histogram.statistics()` and `histogram.get_stats()` as aliases for this method.
 
-## 8 Class `Percentile`
+## Class `Percentile`
 
 The percentile object is returned by the `histogram.get_percentile` method. A grayscale percentile contains one channel and does not use the `l_*`, `a_*`, or `b_*` methods. An RGB565 format percentile contains three channels and requires the use of `l_*`, `a_*`, and `b_*` methods.
 
-### 8.1 Constructor
+### Constructor
 
 ```python
 class image.percentile
@@ -1843,7 +1843,7 @@ class image.percentile
 
 Create this object by calling the `histogram.get_percentile()` function.
 
-### 8.2 `value`
+### `value`
 
 ```python
 percentile.value()
@@ -1853,7 +1853,7 @@ Returns the grayscale percentile value (range 0-255).
 
 You can also access this value using index [0].
 
-### 8.3 `l_value`
+### `l_value`
 
 ```python
 percentile.l_value()
@@ -1863,7 +1863,7 @@ Returns the percentile value for the L channel of the LAB histogram in RGB565 fo
 
 You can also access this value using index [0].
 
-### 8.4 `a_value`
+### `a_value`
 
 ```python
 percentile.a_value()
@@ -1873,7 +1873,7 @@ Returns the percentile value for the A channel of the LAB histogram in RGB565 fo
 
 You can also access this value using index [1].
 
-### 8.5 `b_value`
+### `b_value`
 
 ```python
 percentile.b_value()
@@ -1883,7 +1883,7 @@ Returns the percentile value for the B channel of the LAB histogram in RGB565 fo
 
 You can also access this value using index [2].
 
-## 9 Class `Threshold`
+## Class `Threshold`
 
 The threshold object is returned by the `histogram.get_threshold` method.
 
@@ -1891,7 +1891,7 @@ A grayscale image contains one channel and does not include the `l_*`, `a_*`, an
 
 An RGB565 format threshold contains three channels and requires the use of `l_*`, `a_*`, and `b_*` methods.
 
-### 9.1 Constructor
+### Constructor
 
 ```python
 class image.threshold
@@ -1899,7 +1899,7 @@ class image.threshold
 
 Create this object by calling the `histogram.get_threshold()` function.
 
-### 9.2 `value`
+### `value`
 
 ```python
 threshold.value()
@@ -1909,7 +1909,7 @@ Returns the threshold value for the grayscale image (range 0-255).
 
 You can also access this value using index [0].
 
-### 9.3 `l_value`
+### `l_value`
 
 ```python
 threshold.l_value()
@@ -1919,7 +1919,7 @@ Returns the threshold value for the L channel of the LAB histogram in RGB565 for
 
 You can also access this value using index [0].
 
-### 9.4 `a_value`
+### `a_value`
 
 ```python
 threshold.a_value()
@@ -1929,7 +1929,7 @@ Returns the threshold value for the A channel of the LAB histogram in RGB565 for
 
 You can also access this value using index [1].
 
-### 9.5 `b_value`
+### `b_value`
 
 ```python
 threshold.b_value()
@@ -1939,7 +1939,7 @@ Returns the threshold value for the B channel of the LAB histogram in RGB565 for
 
 You can also access this value using index [2].
 
-## 10 Class `Statistics`
+## Class `Statistics`
 
 The statistics object is returned by the `histogram.get_statistics` or `image.get_statistics` methods.
 
@@ -1947,7 +1947,7 @@ Grayscale statistics contain one channel and do not use the `l_*`, `a_*`, or `b_
 
 RGB565 format statistics contain three channels and require the use of `l_*`, `a_*`, and `b_*` methods.
 
-### 10.1 Constructor
+### Constructor
 
 ```python
 class image.statistics
@@ -1955,7 +1955,7 @@ class image.statistics
 
 Create this object by calling the `histogram.get_statistics()` or `image.get_statistics()` functions.
 
-#### 10.2 `mean`
+#### `mean`
 
 ```python
 statistics.mean()
@@ -1965,7 +1965,7 @@ Returns the mean value for the grayscale image (range 0-255, type int).
 
 You can also access this value using index [0].
 
-### 10.3 `median`
+### `median`
 
 ```python
 statistics.median()
@@ -1975,7 +1975,7 @@ Returns the median value for the grayscale image (range 0-255, type int).
 
 You can also access this value using index [1].
 
-### 10.4 `mode`
+### `mode`
 
 ```python
 statistics.mode()
@@ -1985,7 +1985,7 @@ Returns the mode value for the grayscale image (range 0-255, type int).
 
 You can also access this value using index [2].
 
-### 10.5 `stdev`
+### `stdev`
 
 ```python
 statistics.stdev()
@@ -1995,7 +1995,7 @@ Returns the standard deviation for the grayscale image (range 0-255, type int).
 
 You can also access this value using index [3].
 
-### 10.6 `min`
+### `min`
 
 ```python
 statistics.min()
@@ -2005,7 +2005,7 @@ Returns the minimum value for the grayscale image (range 0-255, type int).
 
 You can also access this value using index [4].
 
-### 10.7 `max`
+### `max`
 
 ```python
 statistics.max()
@@ -2015,7 +2015,7 @@ Returns the maximum value for the grayscale image (range 0-255, type int).
 
 You can also access this value using index [5].
 
-### 10.8 `lq`
+### `lq`
 
 ```python
 statistics.lq()
@@ -2025,7 +2025,7 @@ Returns the lower quartile for the grayscale image (range 0-255, type int).
 
 You can also access this value using index [6].
 
-### 10.9 `uq`
+### `uq`
 
 ```python
 statistics.uq()
@@ -2035,7 +2035,7 @@ Returns the upper quartile for the grayscale image (range 0-255, type int).
 
 You can also access this value using index [7].
 
-### 10.10 `l_mean`
+### `l_mean`
 
 ```python
 statistics.l_mean()
@@ -2045,7 +2045,7 @@ Returns the mean value for the L channel of the LAB histogram in RGB565 format (
 
 You can also access this value using index [0].
 
-### 10.11 `l_median`
+### `l_median`
 
 ```python
 statistics.l_median()
@@ -2055,7 +2055,7 @@ Returns the median value for the L channel of the LAB histogram in RGB565 format
 
 You can also access this value using index [1].
 
-### 10.12 `l_mode`
+### `l_mode`
 
 ```python
 statistics.l_mode()
@@ -2065,7 +2065,7 @@ Returns the mode value for the L channel of the LAB histogram in RGB565 format (
 
 You can also access this value using index [2].
 
-### 10.13 `l_stdev`
+### `l_stdev`
 
 ```python
 statistics.l_stdev()
@@ -2075,7 +2075,7 @@ Returns the standard deviation for the L channel of the LAB histogram in RGB565 
 
 You can also access this value using index [3].
 
-### 10.14 `l_min`
+### `l_min`
 
 ```python
 statistics.l_min()
@@ -2085,7 +2085,7 @@ Returns the minimum value for the L channel of the LAB histogram in RGB565 forma
 
 You can also access this value using index [4].
 
-### 10.15 `l_max`
+### `l_max`
 
 ```python
 statistics.l_max()
@@ -2095,7 +2095,7 @@ Returns the maximum value for the L channel of the LAB histogram in RGB565 forma
 
 You can also access this value using index [5].
 
-### 10.16 `l_lq`
+### `l_lq`
 
 ```python
 statistics.l_lq()
@@ -2103,7 +2103,7 @@ statistics.l_lq()
 
 Returns the lower quartile for the L channel of the LAB histogram in RGB565 format (range 0-255, type int). You can also access this value using index [6].
 
-### 10.17 `l_uq`
+### `l_uq`
 
 ```python
 statistics.l_uq()
@@ -2111,7 +2111,7 @@ statistics.l_uq()
 
 Returns the upper quartile for the L channel of the LAB histogram in RGB565 format (range 0-255, type int). You can also access this value using index [7].
 
-### 10.18 `a_mean`
+### `a_mean`
 
 ```python
 statistics.a_mean()
@@ -2119,7 +2119,7 @@ statistics.a_mean()
 
 Returns the mean value for the A channel of the LAB histogram in RGB565 format (range 0-255, type int). You can also access this value using index [8].
 
-### 10.19 `a_median`
+### `a_median`
 
 ```python
 statistics.a_median()
@@ -2127,7 +2127,7 @@ statistics.a_median()
 
 Returns the median value for the A channel of the LAB histogram in RGB565 format (range 0-255, type int). You can also access this value using index [9].
 
-### 10.20 `a_mode`
+### `a_mode`
 
 ```python
 statistics.a_mode()
@@ -2135,7 +2135,7 @@ statistics.a_mode()
 
 Returns the mode value for the A channel of the LAB histogram in RGB565 format (range 0-255, type int). You can also access this value using index [10].
 
-### 10.21 `a_stdev`
+### `a_stdev`
 
 ```python
 statistics.a_stdev()
@@ -2144,7 +2144,7 @@ statistics.a_stdev()
 Returns the standard deviation for the A channel of the LAB histogram in RGB565 format (range 0-255, type int).
 You can also access this value using index [11].
 
-### 10.22 `a_min`
+### `a_min`
 
 ```python
 statistics.a_min()
@@ -2152,7 +2152,7 @@ statistics.a_min()
 
 Returns the minimum value for the A channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [12].
 
-### 10.23 `a_max`
+### `a_max`
 
 ```python
 statistics.a_max()
@@ -2160,7 +2160,7 @@ statistics.a_max()
 
 Returns the maximum value for the A channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [13].
 
-### 10.24 `a_lq`
+### `a_lq`
 
 ```python
 statistics.a_lq()
@@ -2168,7 +2168,7 @@ statistics.a_lq()
 
 Returns the lower quartile for the A channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [14].
 
-### 10.25 `a_uq`
+### `a_uq`
 
 ```python
 statistics.a_uq()
@@ -2176,7 +2176,7 @@ statistics.a_uq()
 
 Returns the upper quartile for the A channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [15].
 
-### 10.26 `b_mean`
+### `b_mean`
 
 ```python
 statistics.b_mean()
@@ -2184,7 +2184,7 @@ statistics.b_mean()
 
 Returns the mean value for the B channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [16].
 
-### 10.27 `b_median`
+### `b_median`
 
 ```python
 statistics.b_median()
@@ -2192,7 +2192,7 @@ statistics.b_median()
 
 Returns the median value for the B channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [17].
 
-### 10.28 `b_mode`
+### `b_mode`
 
 ```python
 statistics.b_mode()
@@ -2200,7 +2200,7 @@ statistics.b_mode()
 
 Returns the mode value for the B channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [18].
 
-### 10.29 `b_stdev`
+### `b_stdev`
 
 ```python
 statistics.b_stdev()
@@ -2208,7 +2208,7 @@ statistics.b_stdev()
 
 Returns the standard deviation for the B channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [19].
 
-### 10.30 `b_min`
+### `b_min`
 
 ```python
 statistics.b_min()
@@ -2216,7 +2216,7 @@ statistics.b_min()
 
 Returns the minimum value for the B channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [20].
 
-### 10.31 `b_max`
+### `b_max`
 
 ```python
 statistics.b_max()
@@ -2224,7 +2224,7 @@ statistics.b_max()
 
 Returns the maximum value for the B channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [21].
 
-### 10.32 `b_lq`
+### `b_lq`
 
 ```python
 statistics.b_lq()
@@ -2232,7 +2232,7 @@ statistics.b_lq()
 
 Returns the lower quartile for the B channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [22].
 
-### 10.33 `b_uq`
+### `b_uq`
 
 ```python
 statistics.b_uq()
@@ -2240,11 +2240,11 @@ statistics.b_uq()
 
 Returns the upper quartile for the B channel of the LAB histogram in RGB565 format, ranging from 0 to 255 (type int). You can also access this value using index [23].
 
-## 11 Class `Blob`
+## Class `Blob`
 
 The blob object is returned by the `image.find_blobs` method.
 
-### 11.1 Constructor
+### Constructor
 
 ```python
 class image.blob
@@ -2252,7 +2252,7 @@ class image.blob
 
 Create this object by calling the `image.find_blobs()` function.
 
-### 11.2 `rect`
+### `rect`
 
 ```python
 blob.rect()
@@ -2260,7 +2260,7 @@ blob.rect()
 
 Returns a rectangle tuple (x, y, w, h) for the blob's bounding box, useful for drawing on the image and other image processing methods like `image.draw_rectangle`.
 
-### 11.3 `x`
+### `x`
 
 ```python
 blob.x()
@@ -2268,7 +2268,7 @@ blob.x()
 
 Returns the x-coordinate of the blob's bounding box (type int). You can also access this value using index [0].
 
-### 11.4 `y`
+### `y`
 
 ```python
 blob.y()
@@ -2276,7 +2276,7 @@ blob.y()
 
 Returns the y-coordinate of the blob's bounding box (type int). You can also access this value using index [1].
 
-### 11.5 `w`
+### `w`
 
 ```python
 blob.w()
@@ -2284,7 +2284,7 @@ blob.w()
 
 Returns the width of the blob's bounding box (type int). You can also access this value using index [2].
 
-### 11.6 `h`
+### `h`
 
 ```python
 blob.h()
@@ -2292,7 +2292,7 @@ blob.h()
 
 Returns the height of the blob's bounding box (type int). You can also access this value using index [3].
 
-### 11.6 `pixels`
+### `pixels`
 
 ```python
 blob.pixels()
@@ -2300,7 +2300,7 @@ blob.pixels()
 
 Returns the number of pixels in the blob (type int). You can also access this value using index [4].
 
-### 11.7 `cx`
+### `cx`
 
 ```python
 blob.cx()
@@ -2308,7 +2308,7 @@ blob.cx()
 
 Returns the x-coordinate of the blob's center (type int). You can also access this value using index [5].
 
-### 11.8 `cy`
+### `cy`
 
 ```python
 blob.cy()
@@ -2316,7 +2316,7 @@ blob.cy()
 
 Returns the y-coordinate of the blob's center (type int). You can also access this value using index [6].
 
-### 11.9 `rotation`
+### `rotation`
 
 ```python
 blob.rotation()
@@ -2324,7 +2324,7 @@ blob.rotation()
 
 Returns the rotation angle of the blob in radians. For pencil-like blobs, this value ranges from 0 to 180. If the blob is circular, this value is invalid; for completely asymmetric blobs, the rotation angle ranges from 0 to 360 degrees. You can also access this value using index [7].
 
-### 11.10 `code`
+### `code`
 
 ```python
 blob.code()
@@ -2332,7 +2332,7 @@ blob.code()
 
 Returns a 16-bit binary number where each bit corresponds to a color threshold, indicating the properties of the blob. For example, if you search for three color thresholds using `image.find_blobs`, the blob can be set to the 0/1/2 bit. Note: Unless `merge=True` is set when calling `image.find_blobs`, each blob can only set one bit. Therefore, multiple blobs with different color thresholds can be merged. You can also use this method to track color codes by combining multiple thresholds. You can also access this value using index [8].
 
-### 11.11 `count`
+### `count`
 
 ```python
 blob.count()
@@ -2340,7 +2340,7 @@ blob.count()
 
 Returns the number of blobs merged into this blob. This number will be greater than 1 only if `merge=True` is set when calling `image.find_blobs`. You can also access this value using index [9].
 
-### 11.12 `area`
+### `area`
 
 ```python
 blob.area()
@@ -2348,7 +2348,7 @@ blob.area()
 
 Returns the area of the bounding box around the blob (calculated as w * h).
 
-### 11.13 `density`
+### `density`
 
 ```python
 blob.density()
@@ -2356,11 +2356,11 @@ blob.density()
 
 Returns the density ratio of the blob, representing the number of pixels within the blob's bounding box. Generally, a lower density ratio indicates poor object locking.
 
-## 12 Class `Line`
+## Class `Line`
 
 The line object is returned by the `image.find_lines`, `image.find_line_segments`, or `image.get_regression` methods.
 
-### 12.1 Constructor
+### Constructor
 
 ```python
 class image.line
@@ -2368,7 +2368,7 @@ class image.line
 
 Create this object by calling the `image.find_lines()`, `image.find_line_segments()`, or `image.get_regression()` functions.
 
-### 12.2 `line`
+### `line`
 
 ```python
 line.line()
@@ -2376,7 +2376,7 @@ line.line()
 
 Returns a line tuple (x1, y1, x2, y2) for drawing on the image and other image processing methods like `image.draw_line`.
 
-### 12.3 `x1`
+### `x1`
 
 ```python
 line.x1()
@@ -2384,7 +2384,7 @@ line.x1()
 
 Returns the x-coordinate of the first vertex (p1) of the line. You can also access this value using index [0].
 
-### 12.4 `y1`
+### `y1`
 
 ```python
 line.y1()
@@ -2392,7 +2392,7 @@ line.y1()
 
 Returns the y-coordinate of the first vertex (p1) of the line. You can also access this value using index [1].
 
-### 12.5 `x2`
+### `x2`
 
 ```python
 line.x2()
@@ -2400,7 +2400,7 @@ line.x2()
 
 Returns the x-coordinate of the second vertex (p2) of the line. You can also access this value using index [2].
 
-### 12.6 `y2`
+### `y2`
 
 ```python
 line.y2()
@@ -2408,7 +2408,7 @@ line.y2()
 
 Returns the y-coordinate of the second vertex (p2) of the line. You can also access this value using index [3].
 
-### 12.7 `length`
+### `length`
 
 ```python
 line.length()
@@ -2416,7 +2416,7 @@ line.length()
 
 Returns the length of the line, calculated as \(\sqrt{((x2-x1)^2) + ((y2-y1)^2)}\). You can also access this value using index [4].
 
-### 12.8 `magnitude`
+### `magnitude`
 
 ```python
 line.magnitude()
@@ -2424,7 +2424,7 @@ line.magnitude()
 
 Returns the length of the line after the Hough transform. You can also access this value using index [5].
 
-### 12.9 `theta`
+### `theta`
 
 ```python
 line.theta()
@@ -2432,7 +2432,7 @@ line.theta()
 
 Returns the angle of the line after the Hough transform (range: 0-179 degrees). You can also access this value using index [7].
 
-### 12.10 `rho`
+### `rho`
 
 ```python
 line.rho()
@@ -2440,11 +2440,11 @@ line.rho()
 
 Returns the rho value of the line after the Hough transform. You can also access this value using index [8].
 
-## 13 Class `Circle`
+## Class `Circle`
 
 The circle object is returned by the `image.find_circles` method.
 
-### 13.1 Constructor
+### Constructor
 
 ```python
 class image.circle
@@ -2452,7 +2452,7 @@ class image.circle
 
 Create this object by calling the `image.find_circles()` function.
 
-### 13.2 `x`
+### `x`
 
 ```python
 circle.x()
@@ -2460,7 +2460,7 @@ circle.x()
 
 Returns the x-coordinate of the circle's center. You can also access this value using index [0].
 
-### 13.3 `y`
+### `y`
 
 ```python
 circle.y()
@@ -2468,7 +2468,7 @@ circle.y()
 
 Returns the y-coordinate of the circle's center. You can also access this value using index [1].
 
-### 13.4 `r`
+### `r`
 
 ```python
 circle.r()
@@ -2476,7 +2476,7 @@ circle.r()
 
 Returns the radius of the circle. You can also access this value using index [2].
 
-### 13.5 `magnitude`
+### `magnitude`
 
 ```python
 circle.magnitude()
@@ -2484,11 +2484,11 @@ circle.magnitude()
 
 Returns the magnitude of the circle. You can also access this value using index [3].
 
-## 14 Class `Rect`
+## Class `Rect`
 
 The rectangle object is returned by the `image.find_rects` function.
 
-### 14.1 Constructor
+### Constructor
 
 ```python
 class image.rect
@@ -2496,7 +2496,7 @@ class image.rect
 
 Create this object by using the `image.find_rects()` function.
 
-### 14.2 `corners`
+### `corners`
 
 ```python
 rect.corners()
@@ -2504,7 +2504,7 @@ rect.corners()
 
 Returns a list of tuples containing the four corners of the rectangle object, each tuple in the format (x, y). The four corners are usually ordered clockwise starting from the top-left corner.
 
-### 14.3 `rect`
+### `rect`
 
 ```python
 rect.rect()
@@ -2512,7 +2512,7 @@ rect.rect()
 
 Returns a rectangle tuple (x, y, w, h) for other image processing methods like the bounding box in `image.draw_rectangle`.
 
-### 14.4 `x`
+### `x`
 
 ```python
 rect.x()
@@ -2520,7 +2520,7 @@ rect.x()
 
 Returns the x-coordinate of the top-left corner of the rectangle. You can also access this value using index [0].
 
-### 14.5 `y`
+### `y`
 
 ```python
 rect.y()
@@ -2528,7 +2528,7 @@ rect.y()
 
 Returns the y-coordinate of the top-left corner of the rectangle. You can also access this value using index [1].
 
-### 14.6 `w`
+### `w`
 
 ```python
 rect.w()
@@ -2536,7 +2536,7 @@ rect.w()
 
 Returns the width of the rectangle. You can also access this value using index [2].
 
-### 14.7 `h`
+### `h`
 
 ```python
 rect.h()
@@ -2544,7 +2544,7 @@ rect.h()
 
 Returns the height of the rectangle. You can also access this value using index [3].
 
-### 14.8 `magnitude`
+### `magnitude`
 
 ```python
 rect.magnitude()
@@ -2552,11 +2552,11 @@ rect.magnitude()
 
 Returns the magnitude of the rectangle. You can also access this value using index [4].
 
-## 15 Class `QRCode`
+## Class `QRCode`
 
 The QR code object is returned by the `image.find_qrcodes` function.
 
-### 15.1 Constructor
+### Constructor
 
 ```python
 class image.qrcode
@@ -2564,7 +2564,7 @@ class image.qrcode
 
 Create this object by using the `image.find_qrcodes()` function.
 
-### 15.2 `corners`
+### `corners`
 
 ```python
 qrcode.corners()
@@ -2572,7 +2572,7 @@ qrcode.corners()
 
 Returns a list of tuples containing the four corners of the QR code, each tuple in the format (x, y). The four corners are usually ordered clockwise starting from the top-left corner.
 
-### 15.3 `rect`
+### `rect`
 
 ```python
 qrcode.rect()
@@ -2580,7 +2580,7 @@ qrcode.rect()
 
 Returns a rectangle tuple (x, y, w, h) for other image processing methods like the QR code bounding box in `image.draw_rectangle`.
 
-### 15.4 `x`
+### `x`
 
 ```python
 qrcode.x()
@@ -2588,7 +2588,7 @@ qrcode.x()
 
 Returns the x-coordinate of the QR code's bounding box (int). You can also access this value using index [0].
 
-### 15.5 `y`
+### `y`
 
 ```python
 qrcode.y()
@@ -2596,7 +2596,7 @@ qrcode.y()
 
 Returns the y-coordinate of the QR code's bounding box (int). You can also access this value using index [1].
 
-### 15.6 `w`
+### `w`
 
 ```python
 qrcode.w()
@@ -2604,7 +2604,7 @@ qrcode.w()
 
 Returns the width of the QR code's bounding box (int). You can also access this value using index [2].
 
-### 15.7 `h`
+### `h`
 
 ```python
 qrcode.h()
@@ -2612,7 +2612,7 @@ qrcode.h()
 
 Returns the height of the QR code's bounding box (int). You can also access this value using index [3].
 
-### 15.8 `payload`
+### `payload`
 
 ```python
 qrcode.payload()
@@ -2620,7 +2620,7 @@ qrcode.payload()
 
 Returns the payload string of the QR code, such as a URL. You can also access this value using index [4].
 
-### 15.9 `version`
+### `version`
 
 ```python
 qrcode.version()
@@ -2628,7 +2628,7 @@ qrcode.version()
 
 Returns the version number of the QR code (int). You can also access this value using index [5].
 
-### 15.10 `ecc_level`
+### `ecc_level`
 
 ```python
 qrcode.ecc_level()
@@ -2636,7 +2636,7 @@ qrcode.ecc_level()
 
 Returns the error correction level of the QR code (int). You can also access this value using index [6].
 
-### 15.11 `mask`
+### `mask`
 
 ```python
 qrcode.mask()
@@ -2644,7 +2644,7 @@ qrcode.mask()
 
 Returns the mask of the QR code (int). You can also access this value using index [7].
 
-### 15.12 `data_type`
+### `data_type`
 
 ```python
 qrcode.data_type()
@@ -2652,7 +2652,7 @@ qrcode.data_type()
 
 Returns the data type of the QR code. You can also access this value using index [8].
 
-### 15.13 `eci`
+### `eci`
 
 ```python
 qrcode.eci()
@@ -2660,7 +2660,7 @@ qrcode.eci()
 
 Returns the ECI (Extended Channel Interpretation) of the QR code, which is used to store encoding information for data bytes in the QR code. Check this value when dealing with QR codes containing non-standard ASCII text. You can also access this value using index [9].
 
-### 15.14 `is_numeric`
+### `is_numeric`
 
 ```python
 qrcode.is_numeric()
@@ -2668,7 +2668,7 @@ qrcode.is_numeric()
 
 Returns True if the QR code's data type is numeric.
 
-### 15.15 `is_alphanumeric`
+### `is_alphanumeric`
 
 ```python
 qrcode.is_alphanumeric()
@@ -2676,7 +2676,7 @@ qrcode.is_alphanumeric()
 
 Returns True if the QR code's data type is alphanumeric.
 
-### 15.16 `is_binary`
+### `is_binary`
 
 ```python
 qrcode.is_binary()
@@ -2684,7 +2684,7 @@ qrcode.is_binary()
 
 Returns True if the QR code's data type is in binary format. To accurately handle all types of text, check if `eci` is True to determine the text encoding of the data. It is typically standard ASCII but may be UTF-8 containing two-byte characters.
 
-### 15.17 `is_kanji`
+### `is_kanji`
 
 ```python
 qrcode.is_kanji()
@@ -2692,11 +2692,11 @@ qrcode.is_kanji()
 
 Returns True if the QR code's data type is in Kanji format. If the return value is True, you need to decode the string yourself, as each Kanji character is 10 bits, and MicroPython does not support parsing this type of text.
 
-## 16 Class `AprilTag`
+## Class `AprilTag`
 
 The AprilTag object is returned by the `image.find_apriltags` function.
 
-### 16.1 Constructor
+### Constructor
 
 ```python
 class image.apriltag
@@ -2704,7 +2704,7 @@ class image.apriltag
 
 Create this object by calling the `image.find_apriltags()` function.
 
-### 16.2 `corners`
+### `corners`
 
 ```python
 apriltag.corners()
@@ -2712,7 +2712,7 @@ apriltag.corners()
 
 This method returns a list of tuples containing the four corners of the AprilTag, each tuple in the format (x, y). The four corners are usually ordered clockwise starting from the top-left corner.
 
-### 16.3 `rect`
+### `rect`
 
 ```python
 apriltag.rect()
@@ -2720,7 +2720,7 @@ apriltag.rect()
 
 This method returns a rectangle tuple (x, y, w, h) for other image processing methods, such as the AprilTag bounding box in `image.draw_rectangle`.
 
-### 16.4 `x`
+### `x`
 
 ```python
 apriltag.x()
@@ -2728,7 +2728,7 @@ apriltag.x()
 
 This method returns the x-coordinate of the AprilTag's bounding box (int). You can also access this value using index [0].
 
-### 16.5 `y`
+### `y`
 
 ```python
 apriltag.y()
@@ -2736,7 +2736,7 @@ apriltag.y()
 
 This method returns the y-coordinate of the AprilTag's bounding box (int). You can also access this value using index [1].
 
-### 16.6 `w`
+### `w`
 
 ```python
 apriltag.w()
@@ -2744,7 +2744,7 @@ apriltag.w()
 
 This method returns the width of the AprilTag's bounding box (int). You can also access this value using index [2].
 
-### 16.7 `h`
+### `h`
 
 ```python
 apriltag.h()
@@ -2752,7 +2752,7 @@ apriltag.h()
 
 This method returns the height of the AprilTag's bounding box (int). You can also access this value using index [3].
 
-### 16.8 `id`
+### `id`
 
 ```python
 apriltag.id()
@@ -2769,7 +2769,7 @@ This method returns the numeric ID of the AprilTag.
 
 You can also access this value using index [4].
 
-### 16.9 `family`
+### `family`
 
 ```python
 apriltag.family()
@@ -2786,7 +2786,7 @@ This method returns the numeric family of the AprilTag.
 
 You can also access this value using index [5].
 
-### 16.10 `cx`
+### `cx`
 
 ```python
 apriltag.cx()
@@ -2794,7 +2794,7 @@ apriltag.cx()
 
 This method returns the x-coordinate of the AprilTag's center (int). You can also access this value using index [6].
 
-### 16.11 `cy`
+### `cy`
 
 ```python
 apriltag.cy()
@@ -2802,7 +2802,7 @@ apriltag.cy()
 
 This method returns the y-coordinate of the AprilTag's center (int). You can also access this value using index [7].
 
-### 16.12 `rotation`
+### `rotation`
 
 ```python
 apriltag.rotation()
@@ -2810,7 +2810,7 @@ apriltag.rotation()
 
 This method returns the rotation angle of the AprilTag in radians (int). You can also access this value using index [8].
 
-### 16.13 `decision_margin`
+### `decision_margin`
 
 ```python
 apriltag.decision_margin()
@@ -2818,7 +2818,7 @@ apriltag.decision_margin()
 
 This method returns the decision margin of the AprilTag, reflecting the confidence in the detection (float). You can also access this value using index [9].
 
-### 16.14 `hamming`
+### `hamming`
 
 ```python
 apriltag.hamming()
@@ -2835,7 +2835,7 @@ This method returns the maximum acceptable Hamming distance (i.e., the number of
 
 You can also access this value using index [10].
 
-### 16.15 `goodness`
+### `goodness`
 
 ```python
 apriltag.goodness()
@@ -2847,7 +2847,7 @@ This method returns the color saturation of the AprilTag image, ranging from 0.0
 
 You can also access this value using index [11].
 
-### 16.16 `x_translation`
+### `x_translation`
 
 ```python
 apriltag.x_translation()
@@ -2861,7 +2861,7 @@ Note: The direction here is from left to right.
 
 You can also access this value using index [12].
 
-### 16.17 `y_translation`
+### `y_translation`
 
 ```python
 apriltag.y_translation()
@@ -2875,7 +2875,7 @@ Note: The direction here is from top to bottom.
 
 You can also access this value using index [13].
 
-### 16.18 `z_translation`
+### `z_translation`
 
 ```python
 apriltag.z_translation()
@@ -2889,7 +2889,7 @@ Note: The direction here is from front to back.
 
 You can also access this value using index [14].
 
-### 16.19 `x_rotation`
+### `x_rotation`
 
 ```python
 apriltag.x_rotation()
@@ -2899,7 +2899,7 @@ This method returns the rotation angle of the AprilTag in the x plane, measured 
 
 You can also access this value using index [15].
 
-### 16.20 `y_rotation`
+### `y_rotation`
 
 ```python
 apriltag.y_rotation()
@@ -2909,7 +2909,7 @@ This method returns the rotation angle of the AprilTag in the y plane, measured 
 
 You can also access this value using index [16].
 
-### 16.21 `z_rotation`
+### `z_rotation`
 
 ```python
 apriltag.z_rotation()
@@ -2921,11 +2921,11 @@ Note: This method is a renamed version of `apriltag.rotation()`.
 
 You can also access this value using index [17].
 
-## 17 Class `DataMatrix`
+## Class `DataMatrix`
 
 The DataMatrix object is returned by the `image.find_datamatrices` function.
 
-### 17.1 Constructor
+### Constructor
 
 ```python
 class image.datamatrix
@@ -2933,7 +2933,7 @@ class image.datamatrix
 
 Create this object by calling the `image.find_datamatrices()` function.
 
-### 17.2 `corners`
+### `corners`
 
 ```python
 datamatrix.corners()
@@ -2941,7 +2941,7 @@ datamatrix.corners()
 
 This method returns a list of tuples containing the four corners of the DataMatrix, each tuple in the format (x, y). The four corners are usually ordered clockwise starting from the top-left corner.
 
-### 17.3 `rect`
+### `rect`
 
 ```python
 datamatrix.rect()
@@ -2949,7 +2949,7 @@ datamatrix.rect()
 
 This method returns a rectangle tuple (x, y, w, h) for other image processing methods, such as the DataMatrix bounding box in `image.draw_rectangle`.
 
-### 17.4 `x`
+### `x`
 
 ```python
 datamatrix.x()
@@ -2957,7 +2957,7 @@ datamatrix.x()
 
 This method returns the x-coordinate of the DataMatrix's bounding box (int). You can also access this value using index [0].
 
-### 17.5 `y`
+### `y`
 
 ```python
 datamatrix.y()
@@ -2965,7 +2965,7 @@ datamatrix.y()
 
 This method returns the y-coordinate of the DataMatrix's bounding box (int). You can also access this value using index [1].
 
-### 17.6 `w`
+### `w`
 
 ```python
 datamatrix.w()
@@ -2973,7 +2973,7 @@ datamatrix.w()
 
 This method returns the width of the DataMatrix's bounding box (int). You can also access this value using index [2].
 
-### 17.7 `h`
+### `h`
 
 ```python
 datamatrix.h()
@@ -2981,7 +2981,7 @@ datamatrix.h()
 
 This method returns the height of the DataMatrix's bounding box (int). You can also access this value using index [3].
 
-### 17.8 `payload`
+### `payload`
 
 ```python
 datamatrix.payload()
@@ -2991,7 +2991,7 @@ This method returns the payload string of the DataMatrix. For example: "string".
 
 You can also access this value using index [4].
 
-### 17.9 `rotation`
+### `rotation`
 
 ```python
 datamatrix.rotation()
@@ -3001,7 +3001,7 @@ This method returns the rotation angle of the DataMatrix, measured in radians (f
 
 You can also access this value using index [5].
 
-### 17.10 `rows`
+### `rows`
 
 ```python
 datamatrix.rows()
@@ -3011,7 +3011,7 @@ This method returns the number of rows in the DataMatrix (int).
 
 You can also access this value using index [6].
 
-### 17.11 `columns`
+### `columns`
 
 ```python
 datamatrix.columns()
@@ -3021,7 +3021,7 @@ This method returns the number of columns in the DataMatrix (int).
 
 You can also access this value using index [7].
 
-### 17.12 `capacity`
+### `capacity`
 
 ```python
 datamatrix.capacity()
@@ -3031,7 +3031,7 @@ This method returns the number of characters that the DataMatrix can hold.
 
 You can also access this value using index [8].
 
-### 17.13 `padding`
+### `padding`
 
 ```python
 datamatrix.padding()
@@ -3041,11 +3041,11 @@ This method returns the number of unused characters in the DataMatrix.
 
 You can also access this value using index [9].
 
-## 18 Class `BarCode`
+## Class `BarCode`
 
 The BarCode object is returned by the `image.find_barcodes` function.
 
-### 18.1 Constructor
+### Constructor
 
 ```python
 class image.barcode
@@ -3053,7 +3053,7 @@ class image.barcode
 
 Create this object by calling the `image.find_barcodes()` function.
 
-### 18.2 `corners`
+### `corners`
 
 ```python
 barcode.corners()
@@ -3061,7 +3061,7 @@ barcode.corners()
 
 This method returns a list of tuples containing the four corners of the barcode, each tuple in the format (x, y). The four corners are usually ordered clockwise starting from the top-left corner.
 
-### 18.3 `rect`
+### `rect`
 
 ```python
 barcode.rect()
@@ -3069,7 +3069,7 @@ barcode.rect()
 
 This method returns a rectangle tuple (x, y, w, h) for other image processing methods, such as the barcode bounding box in `image.draw_rectangle`.
 
-### 18.4 `x`
+### `x`
 
 ```python
 barcode.x()
@@ -3077,7 +3077,7 @@ barcode.x()
 
 This method returns the x-coordinate of the barcode's bounding box (int). You can also access this value using index [0].
 
-### 18.5 `y`
+### `y`
 
 ```python
 barcode.y()
@@ -3085,7 +3085,7 @@ barcode.y()
 
 This method returns the y-coordinate of the barcode's bounding box (int). You can also access this value using index [1].
 
-### 18.6 `w`
+### `w`
 
 ```python
 barcode.w()
@@ -3093,7 +3093,7 @@ barcode.w()
 
 This method returns the width of the barcode's bounding box (int). You can also access this value using index [2].
 
-### 18.7 `h`
+### `h`
 
 ```python
 barcode.h()
@@ -3101,7 +3101,7 @@ barcode.h()
 
 This method returns the height of the barcode's bounding box (int). You can also access this value using index [3].
 
-### 18.8 `payload`
+### `payload`
 
 ```python
 barcode.payload()
@@ -3111,7 +3111,7 @@ This method returns the payload string of the barcode, for example: "quantity".
 
 You can also access this value using index [4].
 
-### 18.9 `type`
+### `type`
 
 ```python
 barcode.type()
@@ -3138,7 +3138,7 @@ This method returns the type of the barcode (int). Possible types include:
 
 You can also access this value using index [5].
 
-### 18.10 `rotation`
+### `rotation`
 
 ```python
 barcode.rotation()
@@ -3148,7 +3148,7 @@ This method returns the rotation angle of the barcode, measured in radians (floa
 
 You can also access this value using index [6].
 
-### 18.11 `quality`
+### `quality`
 
 ```python
 barcode.quality()
@@ -3160,11 +3160,11 @@ When scanning a barcode, each new scan line can decode the same barcode. Each ti
 
 You can also access this value using index [7].
 
-## 19 Class `Displacement`
+## Class `Displacement`
 
 The Displacement object is returned by the `image.find_displacement` function.
 
-### 19.1 Constructor
+### Constructor
 
 ```python
 class image.displacement
@@ -3172,7 +3172,7 @@ class image.displacement
 
 Create this object by calling the `image.find_displacement()` function.
 
-### 19.2 `x_translation`
+### `x_translation`
 
 ```python
 displacement.x_translation()
@@ -3182,7 +3182,7 @@ This method returns the x-direction translation between two images, measured in 
 
 You can also access this value using index [0].
 
-### 19.3 `y_translation`
+### `y_translation`
 
 ```python
 displacement.y_translation()
@@ -3192,7 +3192,7 @@ This method returns the y-direction translation between two images, measured in 
 
 You can also access this value using index [1].
 
-### 19.4 `rotation`
+### `rotation`
 
 ```python
 displacement.rotation()
@@ -3202,7 +3202,7 @@ This method returns the rotation between two images, measured in radians. The re
 
 You can also access this value using index [2].
 
-### 19.5 `scale`
+### `scale`
 
 ```python
 displacement.scale()
@@ -3212,7 +3212,7 @@ This method returns the scale factor between two images, represented as a float.
 
 You can also access this value using index [3].
 
-### 19.6 `response`
+### `response`
 
 ```python
 displacement.response()
@@ -3222,11 +3222,11 @@ This method returns the quality assessment of the displacement match between two
 
 You can also access this value using index [4].
 
-## 20 Class `Kptmatch`
+## Class `Kptmatch`
 
 The keypoint object is returned by the `image.match_descriptor` function.
 
-### 20.1 Constructor
+### Constructor
 
 ```python
 class image.kptmatch
@@ -3234,7 +3234,7 @@ class image.kptmatch
 
 Create this object by calling the `image.match_descriptor()` function.
 
-### 20.2 `rect`
+### `rect`
 
 ```python
 kptmatch.rect()
@@ -3242,7 +3242,7 @@ kptmatch.rect()
 
 This method returns a rectangle tuple (x, y, w, h) for other image processing methods, such as drawing the keypoint bounding box in `image.draw_rectangle`.
 
-### 20.3 `cx`
+### `cx`
 
 ```python
 kptmatch.cx()
@@ -3252,7 +3252,7 @@ This method returns the x-coordinate of the keypoint's center as an integer.
 
 You can also access this value using index [0].
 
-### 20.4 `cy`
+### `cy`
 
 ```python
 kptmatch.cy()
@@ -3262,7 +3262,7 @@ This method returns the y-coordinate of the keypoint's center as an integer.
 
 You can also access this value using index [1].
 
-### 20.5 `x`
+### `x`
 
 ```python
 kptmatch.x()
@@ -3272,7 +3272,7 @@ This method returns the x-coordinate of the keypoint's bounding box as an intege
 
 You can also access this value using index [2].
 
-### 20.6 `y`
+### `y`
 
 ```python
 kptmatch.y()
@@ -3282,7 +3282,7 @@ This method returns the y-coordinate of the keypoint's bounding box as an intege
 
 You can also access this value using index [3].
 
-### 20.7 `w`
+### `w`
 
 ```python
 kptmatch.w()
@@ -3292,7 +3292,7 @@ This method returns the width of the keypoint's bounding box as an integer.
 
 You can also access this value using index [4].
 
-### 20.8 `h`
+### `h`
 
 ```python
 kptmatch.h()
@@ -3302,7 +3302,7 @@ This method returns the height of the keypoint's bounding box as an integer.
 
 You can also access this value using index [5].
 
-### 20.9 `count`
+### `count`
 
 ```python
 kptmatch.count()
@@ -3312,7 +3312,7 @@ This method returns the number of matched keypoints as an integer.
 
 You can also access this value using index [6].
 
-### 20.10 `theta`
+### `theta`
 
 ```python
 kptmatch.theta()
@@ -3322,7 +3322,7 @@ This method returns the estimated rotation of the keypoints as an integer.
 
 You can also access this value using index [7].
 
-### 20.11 `match`
+### `match`
 
 ```python
 kptmatch.match()
@@ -3332,116 +3332,116 @@ This method returns a list of (x, y) tuples of the matched keypoints.
 
 You can also access this value using index [8].
 
-## 21 Constants
+## Constants
 
-### 21.1 `image.SEARCH_EX`
+### `image.SEARCH_EX`
 
 Used for exhaustive template matching search.
 
-### 21.2 `image.SEARCH_DS`
+### `image.SEARCH_DS`
 
 Used for faster template matching search.
 
-### 21.3 `image.EDGE_CANNY`
+### `image.EDGE_CANNY`
 
 Applies the Canny edge detection algorithm to the image.
 
-### 21.4 `image.EDGE_SIMPLE`
+### `image.EDGE_SIMPLE`
 
 Applies a threshold high-pass filter algorithm for edge detection.
 
-### 21.5 `image.CORNER_FAST`
+### `image.CORNER_FAST`
 
 High-speed, low-accuracy corner detection algorithm for ORB keypoints.
 
-### 21.6 `image.CORNER_AGAST`
+### `image.CORNER_AGAST`
 
 Low-speed, high-accuracy corner detection algorithm for ORB keypoints.
 
-### 21.7 `image.TAG16H5`
+### `image.TAG16H5`
 
 Bitmask enumeration for the TAG16H5 family used in AprilTags.
 
-### 21.8 `image.TAG25H7`
+### `image.TAG25H7`
 
 Bitmask enumeration for the TAG25H7 family used in AprilTags.
 
-### 21.9 `image.TAG25H9`
+### `image.TAG25H9`
 
 Bitmask enumeration for the TAG25H9 family used in AprilTags.
 
-### 21.10 `image.TAG36H10`
+### `image.TAG36H10`
 
 Bitmask enumeration for the TAG36H10 family used in AprilTags.
 
-### 21.11 `image.TAG36H11`
+### `image.TAG36H11`
 
 Bitmask enumeration for the TAG36H11 family used in AprilTags.
 
-### 21.12 `image.ARTOOLKIT`
+### `image.ARTOOLKIT`
 
 Bitmask enumeration for the ARTOOLKIT family used in AprilTags.
 
-### 21.13 `image.EAN2`
+### `image.EAN2`
 
 Enumeration for the EAN2 barcode type.
 
-### 21.14 `image.EAN5`
+### `image.EAN5`
 
 Enumeration for the EAN5 barcode type.
 
-### 21.15 `image.EAN8`
+### `image.EAN8`
 
 Enumeration for the EAN8 barcode type.
 
-### 21.16 `image.UPCE`
+### `image.UPCE`
 
 Enumeration for the UPCE barcode type.
 
-### 21.17 `image.ISBN10`
+### `image.ISBN10`
 
 Enumeration for the ISBN10 barcode type.
 
-### 21.18 `image.UPCA`
+### `image.UPCA`
 
 Enumeration for the UPCA barcode type.
 
-### 21.19 `image.EAN13`
+### `image.EAN13`
 
 Enumeration for the EAN13 barcode type.
 
-### 21.20 `image.ISBN13`
+### `image.ISBN13`
 
 Enumeration for the ISBN13 barcode type.
 
-### 21.21 `image.I25`
+### `image.I25`
 
 Enumeration for the I25 barcode type.
 
-### 21.22 `image.DATABAR`
+### `image.DATABAR`
 
 Enumeration for the DATABAR barcode type.
 
-### 21.23 `image.DATABAR_EXP`
+### `image.DATABAR_EXP`
 
 Enumeration for the DATABAR_EXP barcode type.
 
-### 21.24 `image.CODABAR`
+### `image.CODABAR`
 
 Enumeration for the CODABAR barcode type.
 
-### 21.25 `image.CODE39`
+### `image.CODE39`
 
 Enumeration for the CODE39 barcode type.
 
-### 21.26 `image.PDF417`
+### `image.PDF417`
 
 Enumeration for the PDF417 barcode type (currently unavailable).
 
-### 21.27 `image.CODE93`
+### `image.CODE93`
 
 Enumeration for the CODE93 barcode type.
 
-### 21.28 `image.CODE128`
+### `image.CODE128`
 
 Enumeration for the CODE128 barcode type.

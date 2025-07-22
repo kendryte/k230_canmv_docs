@@ -1,10 +1,10 @@
 # Frequently Asked Questions
 
-## 1. Hardware Issues
+## Hardware Issues
 
-### 1.1 Computer Not Recognizing the Correct USB Device
+### Computer Not Recognizing the Correct USB Device
 
-#### 1.1.1 Displaying `K230 USB Boot Device`
+#### Displaying `K230 USB Boot Device`
 
 When `K230 USB Boot Device` appears, it may be due to the following reasons:
 
@@ -15,39 +15,39 @@ You can force the K230 to enter USB flashing mode by holding down the BOOT butto
 
 When using `K230 USB Boot Device`, you need to install the corresponding driver through [Zadig](https://zadig.akeo.ie/) to use the flashing tool properly.
 
-#### 1.1.2 Displaying Unknown USB Device (Device Descriptor Request Failed)
+#### Displaying Unknown USB Device (Device Descriptor Request Failed)
 
 This situation is usually caused by flashing the wrong firmware, resulting in U-Boot failing to start. Please re-flash the correct firmware and restart the device to resolve this issue.
 
-### 1.2 How to light up the LED light (WS2812) on CanMV-K230 V1.1
+### How to light up the LED light (WS2812) on CanMV-K230 V1.1
 
 The `CanmV-K230-V1.1` development board needs to modify the hardware to light up the onboard `LED` light
 
 ![how-to-fix](https://www.kendryte.com/api/post/attachment?id=435)
 
-## 2. SDK Issues
+## SDK Issues
 
-### 2.1 IDE Cannot Connect to Canmv-K230 Development Board
+### IDE Cannot Connect to Canmv-K230 Development Board
 
 1. Ensure that both USB ports of the development board are correctly connected to the computer.
 1. Confirm that the firmware flashed on the TF card starts with "CanMV-K230_micropython"; other types of firmware will not connect.
 1. Check if "USB Serial Device (COMxx)" is displayed in the computer's Device Manager. If not, try reconnecting the USB cable or using a different USB cable.
 
-### 2.2 Using the Virtual U Disk
+### Using the Virtual U Disk
 
 Starting from version V0.5, CanMV supports the virtual U disk function, and the TF card of the development board will be virtualized as a U disk. After the system starts, you will see a device named "CanMV" in the "This PC" section under Devices and Drives. You can operate the TF card like a regular U disk. It stores sample codes for MicroPython, and it is recommended to use these samples first to ensure compatibility with the current image version.
 
-## 3. nncase Issues
+## nncase Issues
 
 (This section to be supplemented)
 
-## 4. AI Demo Issues
+## AI Demo Issues
 
 (This section to be supplemented)
 
-## 5. IDE Issues
+## IDE Issues
 
-### 5.1 IDE Displays Low Image Frame Rate
+### IDE Displays Low Image Frame Rate
 
 The IDE by default displays 1080P HDMI images transmitted through the VideoOutput module. Due to the limitation of USB transmission speed, the frame rate is only 15-20 FPS.
 
@@ -59,6 +59,6 @@ You can use the `image.compress_for_ide()` function to send specified images. Re
 
 If the image does not meet the above requirements, `compress_for_ide()` will use the CPU for encoding, and the frame rate will decrease.
 
-### 5.2 Methods to Improve Frame Rate
+### Methods to Improve Frame Rate
 
 - Select `Displ.VIRT` as the display output device and set an appropriate resolution and frame rate to achieve a higher frame rate.

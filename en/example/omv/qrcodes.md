@@ -1,10 +1,10 @@
-# 1. QR Code Recognition Routine Explanation
+# QR Code Recognition Routine Explanation
 
-## 1. Overview
+## Overview
 
 CanMV supports OpenMV algorithms and can recognize QR codes. The relevant interface is `find_qrcodes`.
 
-## 2. Example
+## Example
 
 This example sets the camera output to a 640x480 grayscale image and uses `image.find_qrcodes` to recognize QR codes.
 

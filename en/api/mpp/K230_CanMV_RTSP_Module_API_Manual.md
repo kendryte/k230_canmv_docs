@@ -1,10 +1,10 @@
-# 3.9 `RTSP` Module API Manual
+# `RTSP` Module API Manual
 
-## 1. Overview
+## Overview
 
 This document aims to provide a detailed introduction to the usage and functions of the K230_CanMV RTSP module API. The RTSP module is specifically designed for creating and managing RTSP servers, supporting the transmission and reception of video and audio data.
 
-## 2. API Introduction
+## API Introduction
 
 The multimedia module provides the following RTSP interfaces:
 
@@ -22,7 +22,7 @@ The multimedia module provides the following RTSP interfaces:
 
 These interfaces can be used to create and manage RTSP servers, create and destroy RTSP sessions, send video and audio data to the server, and obtain the RTSP URL for streaming.
 
-### 2.1 multimedia.rtspserver_create
+### multimedia.rtspserver_create
 
 **Description**
 Used to create an RTSP server.
@@ -44,7 +44,7 @@ None
 | 0            | Creation successful |
 | Non-0        | Creation failed     |
 
-### 2.2 multimedia.rtspserver_destroy
+### multimedia.rtspserver_destroy
 
 **Description**
 Used to destroy an RTSP server.
@@ -66,7 +66,7 @@ None
 | 0            | Destruction successful |
 | Non-0        | Destruction failed  |
 
-### 2.3 multimedia.rtspserver_init
+### multimedia.rtspserver_init
 
 **Description**
 Initialize an RTSP server.
@@ -92,7 +92,7 @@ None
 rtspserver_init(8554)
 ```
 
-### 2.4 multimedia.rtspserver_deinit
+### multimedia.rtspserver_deinit
 
 **Description**
 Deinitialize an RTSP server.
@@ -116,7 +116,7 @@ None
 rtspserver_deinit()
 ```
 
-### 2.5 multimedia.rtspserver_createsession
+### multimedia.rtspserver_createsession
 
 **Description**
 Create an RTSP session.
@@ -144,7 +144,7 @@ None
 rtspserver_createsession("session1", "h264", True)
 ```
 
-### 2.6 multimedia.rtspserver_destroysession
+### multimedia.rtspserver_destroysession
 
 **Description**
 Destroy an RTSP session.
@@ -168,7 +168,7 @@ None
 rtspserver_destroysession("session1")
 ```
 
-### 2.7 multimedia.rtspserver_getrtspurl
+### multimedia.rtspserver_getrtspurl
 
 **Description**
 Get the RTSP URL.
@@ -196,7 +196,7 @@ url = rtspserver_getrtspurl()
 print(url)
 ```
 
-### 2.8 multimedia.rtspserver_start
+### multimedia.rtspserver_start
 
 **Description**
 Start the RTSP server.
@@ -220,7 +220,7 @@ None
 rtspserver_start()
 ```
 
-### 2.9 multimedia.rtspserver_stop
+### multimedia.rtspserver_stop
 
 **Description**
 Stop the RTSP server.
@@ -244,7 +244,7 @@ None
 rtspserver_stop()
 ```
 
-### 2.10 multimedia.rtspserver_sendvideodata
+### multimedia.rtspserver_sendvideodata
 
 **Description**
 Send video data to the RTSP server.
@@ -273,7 +273,7 @@ None
 rtspserver_sendvideodata("session1", video_data, video_size, video_timestamp)
 ```
 
-### 2.11 multimedia.rtspserver_sendaudiodata
+### multimedia.rtspserver_sendaudiodata
 
 **Description**
 Send audio data to the RTSP server.
@@ -302,7 +302,7 @@ None
 rtspserver_sendaudiodata("session1", audio_data, audio_size, audio_timestamp)
 ```
 
-## 3. Example Program
+## Example Program
 
 ```python
 # Example: Demonstrates how to send video and audio data to network streaming via RTSP server.

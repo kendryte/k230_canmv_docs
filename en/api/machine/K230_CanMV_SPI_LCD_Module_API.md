@@ -1,12 +1,12 @@
-# 2.18 `SPI_LCD` Module API Manual
+# `SPI_LCD` Module API Manual
 
-## 1. Overview
+## Overview
 
 The `SPI_LCD` module provides interfaces to interact with an LCD display through the SPI bus, including screen initialization, drawing, and text display operations.
 
-## 2. API Introduction
+## API Introduction
 
-### 2.1 Constructor
+### Constructor
 
 ```python
 SPI_LCD(spi: SPI, dc: Pin, cs: Pin = None, rst: Pin = None, bl: Pin = None, type: int = SPI_LCD.ST7789)
@@ -27,7 +27,7 @@ Initializes an `SPI_LCD` object, creating a connection with the specified SPI bu
 
 - `SPI_LCD` object.
 
-### 2.2 `configure` Method
+### `configure` Method
 
 ```python
 lcd.configure(width, height, hmirror=False, vflip=False, bgr=False)
@@ -51,7 +51,7 @@ Configures basic parameters for the LCD display.
 The module parameters must be configured before calling `init`.
 ```
 
-### 2.3 `init` Method
+### `init` Method
 
 ```python
 lcd.init(custom_command=False)
@@ -67,7 +67,7 @@ Initializes the LCD screen.
 
 - `img`: `Image` object, which users can use for drawing operations on the buffer.
 
-### 2.4 `command` Method
+### `command` Method
 
 ```python
 lcd.command(cmd, data)
@@ -84,7 +84,7 @@ Sends a command to the LCD.
 
 - No return value.
 
-### 2.5 `deinit` Method
+### `deinit` Method
 
 ```python
 lcd.deinit()
@@ -96,7 +96,7 @@ Shuts down and releases the LCD display.
 
 - No return value.
 
-### 2.6 Display Size Retrieval Methods
+### Display Size Retrieval Methods
 
 ```python
 lcd.width()
@@ -118,7 +118,7 @@ Retrieves the LCD height.
 
 - Height value.
 
-### 2.7 Display Orientation and Properties
+### Display Orientation and Properties
 
 ```python
 lcd.hmirror()
@@ -130,7 +130,7 @@ These methods return whether horizontal mirroring, vertical flipping, and BGR co
 
 Passing `True` or `False` as parameters will set the properties, while not passing parameters will return the current configuration.
 
-#### 2.8 `get_direction` Method
+#### `get_direction` Method
 
 ```python
 lcd.get_direction()
@@ -142,7 +142,7 @@ Retrieves the current configuration of the direction register, usually `0x36`.
 
 - The value of the direction register.
 
-### 2.9 Backlight Control
+### Backlight Control
 
 ```python
 lcd.light(value)
@@ -158,7 +158,7 @@ Sets the LCD backlight brightness.
 
 - No return value.
 
-### 2.10 Pixel Operations
+### Pixel Operations
 
 ```python
 lcd.get(x, y)
@@ -184,7 +184,7 @@ Both `get`, `set`, and `pixel` operate on the `Image` returned by `init`, and yo
 
 - No return value.
 
-### 2.11 Screen Fill
+### Screen Fill
 
 ```python
 lcd.fill(color)
@@ -202,7 +202,7 @@ Fills the entire screen with the specified color.
 
 - No return value.
 
-### 2.12 Image Display
+### Image Display
 
 ```python
 lcd.show(img=None, x=0, y=0)
@@ -222,13 +222,13 @@ If no `img` is provided, it displays the internal image buffer.
 
 - No return value.
 
-## 3. LCD Type
+## LCD Type
 
 `SPI_LCD.ST7789`: `1`, `SPI` 4 Line `ST7789`
 
-## 4. Example Code
+## Example Code
 
-### 4.1 Displaying Text on the Screen
+### Displaying Text on the Screen
 
 ```python
 import time, image

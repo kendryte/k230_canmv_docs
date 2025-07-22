@@ -1,14 +1,14 @@
-# 2.17 `LED` Module API Manual
+# `LED` Module API Manual
 
-## 1. Overview
+## Overview
 
 The development board includes an RGB LED, which users can control the brightness of each color through the API.
 
-## 2. API Introduction
+## API Introduction
 
 The LED class is located under the `machine` module.
 
-### 2.1 Example
+### Example
 
 ```python
 from machine import LED
@@ -35,7 +35,7 @@ while True:
     time.sleep_ms(250)
 ```
 
-### 2.2 Constructor
+### Constructor
 
 ```python
 led = LED(id)
@@ -45,7 +45,7 @@ led = LED(id)
 
 - `id`: Identifier of the LED, 1 or "LED_RED" for the red LED; 2 or "LED_GREEN" for the green LED; 3 or "LED_BLUE" for the blue LED.
 
-### 2.3 `value` Method
+### `value` Method
 
 ```python
 led.value(val)
@@ -61,7 +61,7 @@ Controls the brightness of the LED.
 
 None
 
-### 2.4 `on` Method
+### `on` Method
 
 ```python
 led.on()
@@ -77,7 +77,7 @@ None
 
 None
 
-### 2.5 `off` Method
+### `off` Method
 
 ```python
 led.off()

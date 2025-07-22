@@ -1,12 +1,12 @@
-# 4.1 `nncase_runtime` Module API Manual
+# `nncase_runtime` Module API Manual
 
-## 1. Overview
+## Overview
 
 This manual aims to introduce the nncase_runtime module on the CanMV platform, guiding developers to call the KPU (Neural Network Processing Unit) and AI2D modules in a MicroPython environment to achieve efficient deep learning inference and image processing functions.
 
-## 2. API Introduction
+## API Introduction
 
-### 2.1 from_numpy
+### from_numpy
 
 **Description**
 
@@ -31,7 +31,7 @@ runtime_tensor = nncase_runtime.from_numpy(ulab.numpy)
 | runtime_tensor | Returns the created runtime_tensor object. |
 | Others         | Throws a C++ exception if it fails.     |
 
-### 2.2 to_numpy
+### to_numpy
 
 **Description**
 
@@ -55,11 +55,11 @@ None.
 | ulab.numpy     | Returns the ulab.numpy object converted from runtime_tensor. |
 | Others         | Throws a C++ exception if it fails.               |
 
-### 2.3 nncase_runtime.kpu
+### nncase_runtime.kpu
 
 The kpu module provides basic functions for calling KPU hardware to perform neural network model inference, including loading models, setting input data, executing inference, and obtaining output results.
 
-#### 2.3.1 load_kmodel
+#### load_kmodel
 
 **Description**
 
@@ -86,7 +86,7 @@ load_kmodel(path)
 | None         | Successful load.       |
 | Others       | Throws a C++ exception if it fails. |
 
-#### 2.3.2 set_input_tensor
+#### set_input_tensor
 
 **Description**
 
@@ -112,7 +112,7 @@ set_input_tensor(index, runtime_tensor)
 | None         | Successful setting.    |
 | Others       | Throws a C++ exception if it fails. |
 
-#### 2.3.3 get_input_tensor
+#### get_input_tensor
 
 **Description**
 
@@ -137,7 +137,7 @@ get_input_tensor(index)
 | runtime_tensor | Tensor containing input data.   |
 | Others         | Throws a C++ exception if it fails. |
 
-#### 2.3.4 set_output_tensor
+#### set_output_tensor
 
 **Description**
 
@@ -163,7 +163,7 @@ set_output_tensor(index, runtime_tensor)
 | None         | Successful setting.    |
 | Others       | Throws a C++ exception if it fails. |
 
-#### 2.3.5 get_output_tensor
+#### get_output_tensor
 
 **Description**
 
@@ -188,7 +188,7 @@ get_output_tensor(index)
 | runtime_tensor | Gets the runtime_tensor of the specified output index. |
 | Others         | Throws a C++ exception if it fails.      |
 
-#### 2.3.6 run
+#### run
 
 **Description**
 
@@ -207,7 +207,7 @@ run()
 | None         | Successful inference.  |
 | Others       | Throws a C++ exception if it fails. |
 
-#### 2.3.7 inputs_size
+#### inputs_size
 
 **Description**
 
@@ -226,7 +226,7 @@ inputs_size()
 | size_t       | Number of inputs for the kmodel. |
 | Others       | Throws a C++ exception if it fails. |
 
-#### 2.3.8 outputs_size
+#### outputs_size
 
 **Description**
 
@@ -245,7 +245,7 @@ outputs_size()
 | size_t       | Number of outputs for the kmodel. |
 | Others       | Throws a C++ exception if it fails. |
 
-#### 2.3.9 get_input_desc
+#### get_input_desc
 
 **Description**
 
@@ -269,7 +269,7 @@ get_input_desc(index)
 | ------------- | ----------------------------------------------------- |
 | MemoryRange   | Information of the specified input index, including `dtype`, `start`, `size`. |
 
-#### 2.3.10 get_output_desc
+#### get_output_desc
 
 **Description**
 
@@ -293,9 +293,9 @@ get_output_desc(index)
 | ------------- | ----------------------------------------------------- |
 | MemoryRange   | Information of the specified output index, including `dtype`, `start`, `size`. |
 
-### 2.4 nncase_runtime.ai2d  
+### nncase_runtime.ai2d  
 
-#### 2.4.1 build  
+#### build  
 
 **Description**  
 
@@ -321,7 +321,7 @@ build(input_shape, output_shape)
 | ai2d_builder  | Returns an `ai2d_builder` object for execution. |
 | Others        | If the function fails, a C++ exception will be thrown. |
 
-#### 2.4.2 run  
+#### run  
 
 **Description**  
 
@@ -347,7 +347,7 @@ ai2d_builder.run(input_tensor, output_tensor)
 | None         | Success.                          |
 | Others       | If the function fails, a C++ exception will be thrown. |
 
-#### 2.4.3 set_dtype  
+#### set_dtype  
 
 **Description**  
 
@@ -368,7 +368,7 @@ set_dtype(src_format, dst_format, src_type, dst_type)
 | src_type   | datatype_t  | Input data type    |
 | dst_type   | datatype_t  | Output data type   |
 
-#### 2.4.4 set_crop_param  
+#### set_crop_param  
 
 **Description**  
 
@@ -390,7 +390,7 @@ set_crop_param(crop_flag, start_x, start_y, width, height)
 | width     | int  | Crop width                 |
 | height    | int  | Crop height                |
 
-#### 2.4.5 set_shift_param  
+#### set_shift_param  
 
 **Description**  
 
@@ -409,7 +409,7 @@ set_shift_param(shift_flag, shift_val)
 | shift_flag | bool | Whether to enable shift       |
 | shift_val  | int  | Number of bits to shift right |
 
-#### 2.4.6 set_pad_param  
+#### set_pad_param  
 
 **Description**  
 
@@ -430,7 +430,7 @@ set_pad_param(pad_flag, paddings, pad_mode, pad_val)
 | pad_mode | int   | Supports only `pad constant`, set to `0`.                                                         |
 | pad_val  | list  | Padding values for each channel.                                                                 |
 
-#### 2.4.7 set_resize_param  
+#### set_resize_param  
 
 **Description**  
 
@@ -450,7 +450,7 @@ set_resize_param(resize_flag, interp_method, interp_mode)
 | interp_method | ai2d_interp_method | Resize interpolation method |
 | interp_mode   | ai2d_interp_mode   | Resize mode |
 
-#### 2.4.8 set_affine_param  
+#### set_affine_param  
 
 **Description**  
 
@@ -474,7 +474,7 @@ set_affine_param(affine_flag, interp_method, cord_round, bound_ind, bound_val, b
 | bound_smooth  | uint32_t           | Boundary smoothing (0 or 1)                                                |
 | M             | list               | Affine transformation matrix vector. The transformation is given by:  \[Y = \begin{bmatrix} a_0 & a_1 \\ a_2 & a_3 \end{bmatrix}\cdot X + \begin{bmatrix} b_0 \\ b_1 \end{bmatrix}\] Thus, `M = [a_0, a_1, b_0, a_2, a_3, b_1]`. |
 
-### 2.5 Other Functions of nncase_runtime
+### Other Functions of nncase_runtime
 
 - **Image Processing Functions:**  
   nncase_runtime also provides various image processing functions, including image scaling, rotation, flipping, etc.
@@ -482,9 +482,9 @@ set_affine_param(affine_flag, interp_method, cord_round, bound_ind, bound_val, b
 - **Deep Learning Inference:**  
   This module supports inference of various deep learning models with good compatibility.
 
-## 3. Reference Examples
+## Reference Examples
 
-### 3.1 Inference Using KPU
+### Inference Using KPU
 
 ```python
 import nncase_runtime as runtime
@@ -506,7 +506,7 @@ output_tensor = runtime.get_output_tensor(0)
 result = output_tensor.to_numpy()
 ```
 
-### 3.2 Image Processing Using AI2D
+### Image Processing Using AI2D
 
 ```python
 import nncase_runtime as runtime
@@ -524,6 +524,6 @@ builder.set_crop_param(True, 10, 10, 100, 100)
 builder.run(input_tensor, output_tensor)
 ```
 
-## 4. Conclusion
+## Conclusion
 
 By using the nncase_runtime module, developers can achieve efficient deep learning inference and image processing functions on the CanMV platform. This manual provides detailed descriptions and usage examples of the API, aiming to help developers get started quickly and develop related applications efficiently.

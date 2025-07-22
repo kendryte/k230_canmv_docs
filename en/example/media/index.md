@@ -1,4 +1,4 @@
-# 2. Multimedia Tutorial Explanation
+# Multimedia Tutorial Explanation
 
 ```{toctree}
 :maxdepth: 1

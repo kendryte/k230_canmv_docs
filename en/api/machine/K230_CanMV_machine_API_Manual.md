@@ -1,12 +1,12 @@
-# 2.14 `Machine` Module API Documentation
+# `Machine` Module API Documentation
 
-## 1. Overview
+## Overview
 
 The `machine` module contains functions related to specific hardware boards. Most functions in this module allow direct and unrestricted access to and control of hardware components on the system. Improper use may lead to motherboard malfunction, system crashes, or even hardware damage in extreme cases.
 
-## 2. API Introduction
+## API Introduction
 
-### 2.1 `reset` Method
+### `reset` Method
 
 ```python
 machine.reset()
@@ -22,7 +22,7 @@ None
 
 None
 
-### 2.2 `mem_copy` Method
+### `mem_copy` Method
 
 ```python
 machine.mem_copy(dst, src, size)
@@ -40,7 +40,7 @@ Copies a specified amount of data from the source memory address to the destinat
 
 None
 
-### 2.3 `temperature` Method
+### `temperature` Method
 
 ```python
 temp = machine.temperature()
@@ -56,7 +56,7 @@ None
 
 Temperature.
 
-### 2.4 `chipid` Method
+### `chipid` Method
 
 ```python
 chipid = machine.chipid()
