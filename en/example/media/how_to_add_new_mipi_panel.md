@@ -1,12 +1,12 @@
-# 1. Adding a New MIPI Panel
+# Adding a New MIPI Panel
 
 This document demonstrates how to add a new 368(H) x 552(V) MIPI panel.
 
-## 1.1 Using the Panel Debugging Assistant
+## Using the Panel Debugging Assistant
 
 In the [CanMV-K230](https://github.com/kendryte/canmv_k230) project, a panel debugging assistant has been added to the [mpp](https://github.com/canmv-k230/mpp/) sub-repository. Users can enable this feature and quickly debug panel timing and initialization sequences by modifying the configuration file stored on the SD card, eliminating the need for frequent code modifications and firmware recompilation.
 
-### 1.1.1 Enabling `DSI Debugger`
+### Enabling `DSI Debugger`
 
 In the project root directory, execute `make menuconfig` and enable the option `Enable DSI Debugger`.
 
@@ -14,7 +14,7 @@ In the project root directory, execute `make menuconfig` and enable the option `
 
 After saving the configuration, compile and generate the new firmware, then flash it.
 
-### 1.1.2 Generating `display_debugger_config.txt`
+### Generating `display_debugger_config.txt`
 
 The project includes a template configuration file located at `src/rtsmart/mpp/userapps/src/connector/display_debugger_config.txt`. The parameters in this file are explained as follows:
 
@@ -37,24 +37,24 @@ vfp=140
 # !!! every line length should < 256
 
 # cmd_type:
-# 0x05  Command type: Single byte data (DCS Short Write, no parameters)
-# 0x15  Command type: Two byte data (DCS Short Write, 1 parameter)
-# 0x39  Command type: Multi byte data (DCS Long Write, n parameters n >= 2)
+# x05  Command type: Single byte data (DCS Short Write, no parameters)
+# x15  Command type: Two byte data (DCS Short Write, 1 parameter)
+# x39  Command type: Multi byte data (DCS Long Write, n parameters n >= 2)
 
 # format: cmd_type, delay_ms, cmd_data_length, cmd_data0 ... cmd_dataN
 
 # The initialization sequence format is: cmd_type, delay_ms, cmd_data_length, cmd_data0 ... cmd_dataN
 #
 # Currently, three command types are supported:
-# 0x05: Write one byte, no parameters
-# 0x15: Write two bytes, one parameter
-# 0x39: Write multiple bytes, two or more parameters
+# x05: Write one byte, no parameters
+# x15: Write two bytes, one parameter
+# x39: Write multiple bytes, two or more parameters
 #
 # Example: 0x39,10,3,0xE8,0x00,0x0C
-# 0x39                  Command type: 0x39, meaning we are writing multiple bytes of data
-# 10                    Decimal value, indicating a delay of 10 milliseconds after executing this command before proceeding to the next
-# 3                     Decimal value, indicating that this 0x39 command will write 3 bytes of data
-# 0xE8,0x00,0x0C        The 3 bytes of data, where 0xE8 is the command and 0x00,0x0C are the parameters, meaning this is a command with two parameters
+# x39                  Command type: 0x39, meaning we are writing multiple bytes of data
+# Decimal value, indicating a delay of 10 milliseconds after executing this command before proceeding to the next
+# Decimal value, indicating that this 0x39 command will write 3 bytes of data
+# xE8,0x00,0x0C        The 3 bytes of data, where 0xE8 is the command and 0x00,0x0C are the parameters, meaning this is a command with two parameters
 #
 # Note: 0x39 and 0xE8 are both commands, but they are different. The former is a command type in the MIPI display interface protocol, while the latter is a specific command byte in the panel initialization sequence, typically used to enable or disable certain functions (e.g., display mode, contrast, color configuration, etc.).
 
@@ -165,23 +165,23 @@ vfp=250
 0x15,50,2,0x29,0x00
 ```
 
-### 1.1.3 Placing the Configuration File on the SD Card
+### Placing the Configuration File on the SD Card
 
 After booting, place the configuration file in the root directory of the SD card.
 
 ![SDCard Path](https://www.kendryte.com/api/post/attachment?id=485)
 
-### 1.1.4 Verifying and Adjusting the Configuration
+### Verifying and Adjusting the Configuration
 
-#### 1.1.4.1 Open the `Display` Sample in `CanMV IDE K230`
+#### Open the `Display` Sample in `CanMV IDE K230`
 
 ![Open Display Sample](https://www.kendryte.com/api/post/attachment?id=483)
 
-#### 1.1.4.2 Modify the Sample Code to Use `DSI Debugger`
+#### Modify the Sample Code to Use `DSI Debugger`
 
 ![Mod Sample Code](https://www.kendryte.com/api/post/attachment?id=484)
 
-#### 1.1.4.3 Run the Sample and Check the Results
+#### Run the Sample and Check the Results
 
 ![Check Sample Result](https://www.kendryte.com/api/post/attachment?id=487)
 
@@ -189,11 +189,11 @@ Since the parameters provided in this document are adapted for the corresponding
 
 ![Check Panel Result](https://www.kendryte.com/api/post/attachment?id=499)
 
-## 1.2 Adjusting Configuration File Parameters
+## Adjusting Configuration File Parameters
 
 The parameters in the configuration file on the SD card are divided into two parts: the first part is related to panel timing, and the second part is the initialization sequence provided by the panel manufacturer. Let's take a closer look at the specific meanings of these two parts.
 
-### 1.2.1 Panel Timing
+### Panel Timing
 
 ```shell
 [config]
@@ -222,6 +222,6 @@ We provide a tool to assist in calculating the timing: [K230 MIPI DSI Connector 
 
 ![Calc Timing](https://www.kendryte.com/api/post/attachment?id=489)
 
-### 1.2.2 Initialization Sequence
+### Initialization Sequence
 
 The panel manufacturer provided the following initialization sequence for the panel in this document

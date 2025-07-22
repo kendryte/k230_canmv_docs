@@ -1,10 +1,10 @@
-# 3. UART Example
+# UART Example
 
-## 1. Overview
+## Overview
 
 The K230 chip integrates 5 UART hardware modules. UART0 is occupied by the small core (sh), UART3 is occupied by the large core (sh), and the remaining UART1, UART2, and UART4 are available for user use. Users can configure UART pins through the IOMUX module when using them.
 
-## 2. Example
+## Example
 
 The following code demonstrates the basic operations of serial communication using the UART module:
 

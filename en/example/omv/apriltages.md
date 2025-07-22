@@ -1,12 +1,12 @@
-# 3. Explanation of AprilTags Recognition Routine
+# Explanation of AprilTags Recognition Routine
 
-## 1. Overview
+## Overview
 
 AprilTags is a visual marker system widely used in the field of computer vision for localization, identification, and tracking. Developed by April Robotics, AprilTags is an efficient binary identification tag system, particularly suited for applications such as robotics and augmented reality.
 
 CanMV supports the OpenMV algorithm and can recognize AprilTags through the `find_apriltags` interface.
 
-## 2. Example
+## Example
 
 This example sets the camera output to a 320x240 grayscale image and uses `image.find_apriltags` to recognize AprilTags.
 

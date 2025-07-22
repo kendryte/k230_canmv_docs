@@ -1,12 +1,12 @@
-# 5.3 AIBase Module API Manual
+# AIBase Module API Manual
 
-## 1. Overview
+## Overview
 
 This manual aims to guide developers in using MicroPython to develop AI Demos by constructing a complete AI inference process, which includes loading models, preprocessing, inference, obtaining model outputs, and post-processing. The module encapsulates the inference process of a single model, wrapping preprocessing, inference, and output retrieval operations within the framework, allowing users to focus only on preprocessing configuration and post-processing when developing AI applications.
 
-## 2. API Introduction
+## API Introduction
 
-### 2.1 init
+### init
 
 **Description**
 
@@ -35,7 +35,7 @@ aibase = AIBase(kmodel_path="**.kmodel", model_input_size=[224,224], rgb888p_siz
 |--------------|-------------|------|
 | AIBase       | AIBase instance | This class is generally inherited by subclasses to write AI Demo classes for different scenarios |
 
-### 2.2 get_kmodel_inputs_num
+### get_kmodel_inputs_num
 
 **Description**
 
@@ -53,7 +53,7 @@ aibase.get_kmodel_inputs_num()
 |--------------|-------------|
 | inputs_num   | Number of kmodel inputs |
 
-### 2.3 get_kmodel_outputs_num
+### get_kmodel_outputs_num
 
 **Description**
 
@@ -71,7 +71,7 @@ aibase.get_kmodel_outputs_num()
 |--------------|-------------|
 | outputs_num  | Number of kmodel outputs |
 
-### 2.4 preprocess
+### preprocess
 
 **Description**
 
@@ -95,7 +95,7 @@ aibase.preprocess(input_np)
 |--------------|-------------|
 | input_tensors | List of input tensors obtained after ai2d preprocessing |
 
-### 2.5 inference
+### inference
 
 **Description**
 
@@ -113,7 +113,7 @@ results = aibase.inference()
 |--------------|-------------|
 | results      | List of kmodel inference outputs, each output is in `ulab.numpy.ndarray` format |
 
-### 2.6 postprocess
+### postprocess
 
 **Description**
 
@@ -131,7 +131,7 @@ aibase.postprocess()
 |--------------|-------------|
 | None         |             |
 
-### 2.7 run
+### run
 
 **Description**
 
@@ -155,7 +155,7 @@ aibase.run(input_np)
 |--------------|-------------|
 | None         |             |
 
-### 2.8 deinit
+### deinit
 
 **Description**
 
@@ -173,7 +173,7 @@ aibase.deinit()
 |--------------|-------------|
 | None         |             |
 
-## 3. Example Program
+## Example Program
 
 ```{attention}
 The AIBase class is generally not used alone. It serves as a parent class for AI Demo application development, providing basic interfaces. Subclasses inherit AIBase and rewrite some methods according to task types to develop specific scenarios. During development, the draw_result method must be defined in the subclass to draw results according to the task.
@@ -304,7 +304,7 @@ if __name__ == "__main__":
         pl.destroy()                            # Destroy PipeLine instance
 ```
 
-## 4. Development Tips
+## Development Tips
 
 For common data type conversions in development, here are corresponding examples for reference.
 

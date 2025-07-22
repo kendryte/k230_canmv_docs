@@ -1,10 +1,10 @@
-# 8. RTC Example
+# RTC Example
 
-## 1. Overview
+## Overview
 
 The K230 provides an RTC (Real-Time Clock) module that allows users to set and get the current system time, suitable for applications that require time tracking.
 
-## 2. Example
+## Example
 
 The following example demonstrates how to use the RTC interface to get and set the system time.
 
@@ -21,7 +21,7 @@ print(rtc.datetime())
 rtc.init((2024, 2, 28, 2, 23, 59, 0, 0))
 ```
 
-## 3. Code Explanation
+## Code Explanation
 
 1. **Instantiate RTC**:
    - Create an `RTC` object to access RTC functionalities.

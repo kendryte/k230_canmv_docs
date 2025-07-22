@@ -1,4 +1,4 @@
-# 4. OpenMV Example Tutorials
+# OpenMV Example Tutorials
 
 ```{toctree}
 :maxdepth: 1

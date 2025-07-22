@@ -1,16 +1,16 @@
-# 2. YOLOv8 detection example
+# YOLOv8 detection example
 
-## 1. Overview
+## Overview
 
 K230 CanMV YOLOv8 detection is a simple application developed through MicroPython language, with camera data acquisition and reasoning, and detection of targets and frames. This sample program is applied to multiple hardware modules of the K230 CanMV platform: AI2D, KPU, Sensor, Display, etc. This application mainly explains how to implement AI inference under the multimedia module of K230!
 
 📌 **This example is a detailed implementation of the PipeLine structure in AI Demo, which is a simplified application layer encapsulation based on the code logic of this application. When the PipeLine structure cannot meet user development needs, you can refer to this part of the code to achieve development!**
 
-## 2. Hardware environment
+## Hardware environment
 
 Running this sample program requires the following hardware environment: K230 CanMV development board and supporting Sensor module.
 
-## 3. Sample code
+## Sample code
 
 ```python
 import os,sys
@@ -247,7 +247,7 @@ MediaManager.deinit()
 nn.shrink_memory_pool()
 ```
 
-## 4. Run the sample code
+## Run the sample code
 
 pass `CanMV IDE K230` open the sample program code and click the Run button to start running the YOLOv8 detection sample program. For the use of IDE, please refer to:**[How to use IDE](../../userguide/how_to_use_ide.md)**
 

@@ -1,8 +1,8 @@
-# 5. YOLO Battle
+# YOLO Battle
 
-## 1. YOLOv5 Fruit Classification
+## YOLOv5 Fruit Classification
 
-### 1.1 Building YOLOv5 Source Code and Training Environment
+### Building YOLOv5 Source Code and Training Environment
 
 For building the YOLOv5 training environment, please refer to [ultralytics/yolov5: YOLOv5 🚀 in PyTorch > ONNX > CoreML > TFLite (github.com)](https://github.com/ultralytics/yolov5).
 
@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 If you have already set up the environment, you can skip this step.
 
-### 1.2 Preparing Training Data
+### Preparing Training Data
 
 Please download the provided sample dataset. The sample dataset contains classification, detection and segmentation datasets provided for the scenes using three types of fruits (apple, banana, orange). Unzip the dataset to `yolov5` in the directory, please use `fruits_cls` as a data set for fruit classification tasks. The sample dataset also contains a desktop signature scene dataset for rotation object detection `yolo_pen_obb`, the task is in k230 `YOLOv5` not supported in the module.
 
@@ -28,7 +28,7 @@ unzip datasets.zip
 
 If you have already downloaded the data, you can skip this step.
 
-### 1.3 Training a Fruit Classification Model with YOLOv5
+### Training a Fruit Classification Model with YOLOv5
 
 Execute the command in the `yolov5` directory to train a three - class fruit classification model using `yolov5`:
 
@@ -36,7 +36,7 @@ Execute the command in the `yolov5` directory to train a three - class fruit cla
 python classify/train.py --model yolov5n-cls.pt --data datasets/fruits_cls --epochs 100 --batch-size 8 --imgsz 224 --device '0'
 ```
 
-### 1.4 Converting the Fruit Classification kmodel
+### Converting the Fruit Classification kmodel
 
 For model conversion, the following libraries need to be installed in the training environment:
 
@@ -86,19 +86,19 @@ cd ../../
 | input_height   | Enter height                   | The height of the model input                                                                                   | int   |
 | ptq_option     | Quantitative method            | The quantification method of data and weights is 0 as [uint8,uint8], 1 as [uint8,int16], and 2 as [int16,uint8] | 0/1/2 |
 
-### 1.5 Deploying the Model on K230 Using MicroPython
+### Deploying the Model on K230 Using MicroPython
 
-#### 1.5.1 Burning the Image and Installing CanMV IDE
+#### Burning the Image and Installing CanMV IDE
 
 💡 **Firmware introduction**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
 Download and install CanMV IDE (Download link:[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), write code in the IDE and run it.
 
-#### 1.5.2 Copying Model Files
+#### Copying Model Files
 
 Connect the IDE and copy the converted model and test images to the `CanMV/data` directory. This path can be customized, and you only need to modify the corresponding path when writing the code.
 
-#### 1.5.3 YOLOv5 Module
+#### YOLOv5 Module
 
 The `YOLOv5` class integrates three tasks of `YOLOv5`, including classification, detection, and segmentation; it supports two inference modes, including image and video stream; this class encapsulates the kmodel inference process of `YOLOv5`.
 
@@ -125,7 +125,7 @@ from libs.YOLO import YOLOv5
 | max_boxes_num | Maximum number of detection boxes | The maximum number of detection boxes allowed to be returned in one frame of image; | int |
 | debug_mode | Debug mode | Whether the timing function is effective, optional values are 0/1, 0 means no timing, 1 means timing; | int【0/1】 |
 
-#### 1.5.4 Deploying the Model to Implement Image Inference
+#### Deploying the Model to Implement Image Inference
 
 For image inference, please refer to the following code. **Modify the defined parameter variables in `__main__` according to the actual situation**;
 
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-#### 1.5.5 Deploying the Model to Implement Video Inference
+#### Deploying the Model to Implement Video Inference
 
 For video inference, please refer to the following code. **Modify the defined variables in `__main__` according to the actual situation**;
 
@@ -195,9 +195,9 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-## 2. YOLOv5 Fruit Detection
+## YOLOv5 Fruit Detection
 
-### 2.1 Building YOLOv5 Source Code and Training Environment
+### Building YOLOv5 Source Code and Training Environment
 
 For building the YOLOv5 training environment, please refer to [ultralytics/yolov5: YOLOv5 🚀 in PyTorch > ONNX > CoreML > TFLite (github.com)](https://github.com/ultralytics/yolov5).
 
@@ -209,7 +209,7 @@ pip install -r requirements.txt
 
 If you have already set up the environment, you can skip this step.
 
-### 2.2 Preparing Training Data
+### Preparing Training Data
 
 Please download the provided sample dataset. The sample dataset contains classification, detection and segmentation datasets provided for the scenes using three types of fruits (apple, banana, orange). Unzip the dataset to `yolov5` in the directory, please use `fruits_yolo` as a data set for fruit detection tasks. The sample dataset also contains a desktop signature scene dataset for rotation object detection `yolo_pen_obb`, the task is in k230 `YOLOv5` not supported in the module.
 
@@ -223,7 +223,7 @@ unzip datasets.zip
 
 If you have already downloaded the data, you can skip this step.
 
-### 2.3 Training a Fruit Detection Model with YOLOv5
+### Training a Fruit Detection Model with YOLOv5
 
 Execute the command in the `yolov5` directory to train a three - class fruit detection model using `yolov5`:
 
@@ -231,7 +231,7 @@ Execute the command in the `yolov5` directory to train a three - class fruit det
 python train.py --weight yolov5n.pt --cfg models/yolov5n.yaml --data datasets/fruits_yolo.yaml --epochs 300 --batch-size 8 --imgsz 320 --device '0'
 ```
 
-### 2.4 Converting the Fruit Detection kmodel
+### Converting the Fruit Detection kmodel
 
 For model conversion, the following libraries need to be installed in the training environment:
 
@@ -281,19 +281,19 @@ cd ../../
 | input_height   | Enter height                   | The height of the model input                                                                                   | int   |
 | ptq_option     | Quantitative method            | The quantification method of data and weights is 0 as [uint8,uint8], 1 as [uint8,int16], and 2 as [int16,uint8] | 0/1/2 |
 
-### 2.5 Deploying the Model on K230 Using MicroPython
+### Deploying the Model on K230 Using MicroPython
 
-#### 2.5.1 Burning the Image and Installing CanMV IDE
+#### Burning the Image and Installing CanMV IDE
 
 💡 **Firmware introduction**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
 Download and install CanMV IDE (Download link:[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), write code in the IDE and run it.
 
-#### 2.5.2 Copying Model Files
+#### Copying Model Files
 
 Connect the IDE and copy the converted model and test images to the `CanMV/data` directory. This path can be customized, and you only need to modify the corresponding path when writing the code.
 
-#### 2.5.3 YOLOv5 Module
+#### YOLOv5 Module
 
 The `YOLOv5` class integrates three tasks of `YOLOv5`, including classification, detection, and segmentation; it supports two inference modes, including image and video stream; this class encapsulates the kmodel inference process of `YOLOv5`.
 
@@ -320,7 +320,7 @@ from libs.YOLO import YOLOv5
 | max_boxes_num | Maximum number of detection boxes | The maximum number of detection boxes allowed to be returned in one frame of image; | int |
 | debug_mode | Debug mode | Whether the timing function is effective, optional values are 0/1, 0 means no timing, 1 means timing; | int [0/1] |
 
-#### 2.5.4 Deploying the Model to Implement Image Inference
+#### Deploying the Model to Implement Image Inference
 
 For image inference, please refer to the following code. **Modify the defined parameter variables in `__main__` according to the actual situation**;
 
@@ -351,7 +351,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-#### 2.5.5 Deploying the Model to Implement Video Inference
+#### Deploying the Model to Implement Video Inference
 
 For video inference, please refer to the following code. **Modify the defined variables in `__main__` according to the actual situation**;
 
@@ -392,9 +392,9 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-## 3. YOLOv5 Fruit Segmentation
+## YOLOv5 Fruit Segmentation
 
-### 3.1 Setting up the YOLOv5 Source Code and Training Environment
+### Setting up the YOLOv5 Source Code and Training Environment
 
 For setting up the YOLOv5 training environment, please refer to [ultralytics/yolov5: YOLOv5 🚀 in PyTorch > ONNX > CoreML > TFLite (github.com)](https://github.com/ultralytics/yolov5).
 
@@ -406,7 +406,7 @@ pip install -r requirements.txt
 
 If you have already set up the environment, you can skip this step.
 
-### 3.2 Preparing the Training Data
+### Preparing the Training Data
 
 Please download the provided sample dataset. The sample dataset contains classification, detection and segmentation datasets provided for the scenes using three types of fruits (apple, banana, orange). Unzip the dataset to `yolov5` in the directory, please use `fruits_seg` as a dataset for the fruit segmentation task. The sample dataset also contains a desktop signature scene dataset for rotation object detection `yolo_pen_obb`, the task is in k230 `YOLOv5` not supported in the module.
 
@@ -420,7 +420,7 @@ unzip datasets.zip
 
 If you have already downloaded the data, you can skip this step.
 
-### 3.3 Training a Fruit Segmentation Model with YOLOv5
+### Training a Fruit Segmentation Model with YOLOv5
 
 Execute the command in the `yolov5` directory to train a three - class fruit segmentation model using `yolov5`:
 
@@ -428,7 +428,7 @@ Execute the command in the `yolov5` directory to train a three - class fruit seg
 python segment/train.py --weight yolov5n-seg.pt --cfg models/segment/yolov5n-seg.yaml --data datasets/fruits_seg.yaml --epochs 100 --batch-size 8 --imgsz 320 --device '0'
 ```
 
-### 3.4 Converting the Fruit Segmentation kmodel
+### Converting the Fruit Segmentation kmodel
 
 For model conversion, the following libraries need to be installed in the training environment:
 
@@ -477,19 +477,19 @@ cd ../../
 | input_height   | Enter height                   | The height of the model input                                                                                   | int   |
 | ptq_option     | Quantitative method            | The quantification method of data and weights is 0 as [uint8,uint8], 1 as [uint8,int16], and 2 as [int16,uint8] | 0/1/2 |
 
-### 3.5 Deploying the Model on K230 Using MicroPython
+### Deploying the Model on K230 Using MicroPython
 
-#### 3.5.1 Burning the Image and Installing CanMV IDE
+#### Burning the Image and Installing CanMV IDE
 
 💡 **Firmware introduction**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
 Download and install CanMV IDE (Download link:[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), write code in the IDE and run it.
 
-#### 3.5.2 Copying the Model Files
+#### Copying the Model Files
 
 Connect the IDE and copy the converted model and test images to the `CanMV/data` directory. This path can be customized, and you only need to modify the corresponding path when writing the code.
 
-#### 3.5.3 The YOLOv5 Module
+#### The YOLOv5 Module
 
 The `YOLOv5` class integrates three tasks of `YOLOv5`, including classification (classify), detection (detect), and segmentation (segment); it supports two inference modes, including image (image) and video stream (video); this class encapsulates the kmodel inference process of `YOLOv5`.
 
@@ -516,7 +516,7 @@ from libs.YOLO import YOLOv5
 | max_boxes_num | Maximum number of detection boxes | The maximum number of detection boxes allowed to be returned in one frame of an image; | int |
 | debug_mode | Debug mode | Whether the timing function is effective, with optional values 0/1. 0 means no timing, and 1 means timing; | int [0 - 1] |
 
-#### 3.5.4 Deploying the Model for Image Inference
+#### Deploying the Model for Image Inference
 
 For image inference, please refer to the following code. **Modify the defined parameter variables in `__main__` according to the actual situation**:
 
@@ -548,7 +548,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-#### 3.5.5 Deploying the Model for Video Inference
+#### Deploying the Model for Video Inference
 
 For video inference, please refer to the following code. **Modify the defined variables in `__main__` according to the actual situation**:
 
@@ -590,9 +590,9 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-## 4. YOLOv8 Fruit Classification
+## YOLOv8 Fruit Classification
 
-### 4.1 Setting up YOLOv8 Source Code and Training Environment
+### Setting up YOLOv8 Source Code and Training Environment
 
 For setting up the YOLOv8 training environment, please refer to [ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics).
 
@@ -603,7 +603,7 @@ pip install ultralytics
 
 If you have already set up the environment, you can skip this step.
 
-### 4.2 Preparing Training Data
+### Preparing Training Data
 
 You can create a new folder first `yolov8`, please download the provided sample dataset. The sample dataset contains classification, detection and segmentation datasets provided for the scenes using three types of fruits (apple, banana, orange). Unzip the dataset to `yolov8` in the directory, please use `fruits_cls` as a data set for fruit classification tasks. The sample dataset also contains a desktop signature scene dataset for rotation object detection `yolo_pen_obb`.
 
@@ -617,7 +617,7 @@ unzip datasets.zip
 
 If you have already downloaded the data, you can skip this step.
 
-### 4.3 Training a Fruit Classification Model with YOLOv8
+### Training a Fruit Classification Model with YOLOv8
 
 Execute the command in the `yolov8` directory to train a three - class fruit classification model using `yolov8`:
 
@@ -625,7 +625,7 @@ Execute the command in the `yolov8` directory to train a three - class fruit cla
 yolo classify train data=datasets/fruits_cls model=yolov8n-cls.pt epochs=100 imgsz=224
 ```
 
-### 4.4 Converting the Fruit Classification kmodel
+### Converting the Fruit Classification kmodel
 
 For model conversion, the following libraries need to be installed in the training environment:
 
@@ -675,19 +675,19 @@ cd ../../
 | input_height   | Enter height                   | The height of the model input                                                                                   | int   |
 | ptq_option     | Quantitative method            | The quantification method of data and weights is 0 as [uint8,uint8], 1 as [uint8,int16], and 2 as [int16,uint8] | 0/1/2 |
 
-### 4.5 Deploying the Model on K230 Using MicroPython
+### Deploying the Model on K230 Using MicroPython
 
-#### 4.5.1 Burning the Image and Installing CanMV IDE
+#### Burning the Image and Installing CanMV IDE
 
 💡 **Firmware introduction**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
 Download and install CanMV IDE (Download link:[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), write code in the IDE and run it.
 
-#### 4.5.2 Copying Model Files
+#### Copying Model Files
 
 Connect the IDE and copy the converted model and test images to the `CanMV/data` directory. This path can be customized, and you only need to modify the corresponding path when writing the code.
 
-#### 4.5.3 YOLOv8 Module
+#### YOLOv8 Module
 
 The `YOLOv8` class integrates four tasks of `YOLOv8`, including classification (classify), detection (detect), segmentation (segment) and obb; it supports two inference modes, including image (image) and video stream (video); this class encapsulates the kmodel inference process of `YOLOv8`.
 
@@ -714,7 +714,7 @@ from libs.YOLO import YOLOv8
 | max_boxes_num | Maximum number of detection boxes | The maximum number of detection boxes allowed to be returned in one frame of an image; | int |
 | debug_mode | Debug mode | Whether the timing function is effective, with optional values 0/1. 0 means no timing, and 1 means timing; | int [0 - 1] |
 
-#### 4.5.4 Deploying the Model to Implement Image Inference
+#### Deploying the Model to Implement Image Inference
 
 For image inference, please refer to the following code. **Modify the defined parameter variables in `__main__` according to the actual situation**:
 
@@ -744,7 +744,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-#### 4.5.5 Deploying the Model to Implement Video Inference
+#### Deploying the Model to Implement Video Inference
 
 For video inference, please refer to the following code. **Modify the defined variables in `__main__` according to the actual situation**:
 
@@ -786,9 +786,9 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-## 5. YOLOv8 Fruit Detection
+## YOLOv8 Fruit Detection
 
-### 5.1 Setting up YOLOv8 Source Code and Training Environment
+### Setting up YOLOv8 Source Code and Training Environment
 
 For setting up the YOLOv8 training environment, please refer to [ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics).
 
@@ -799,7 +799,7 @@ pip install ultralytics
 
 If you have already set up the environment, you can skip this step.
 
-### 5.2 Preparing Training Data
+### Preparing Training Data
 
 You can create a new folder first `yolov8`, please download the provided sample dataset. The sample dataset contains classification, detection and segmentation datasets provided for the scenes using three types of fruits (apple, banana, orange). Unzip the dataset to `yolov8` in the directory, please use `fruits_yolo` as a data set for fruit detection tasks. The sample dataset also contains a desktop signature scene dataset for rotation object detection `yolo_pen_obb`.
 
@@ -813,7 +813,7 @@ unzip datasets.zip
 
 If you have already downloaded the data, you can skip this step.
 
-### 5.3 Training a Fruit Detection Model with YOLOv8
+### Training a Fruit Detection Model with YOLOv8
 
 Execute the command in the `yolov8` directory to train a three - class fruit detection model using `yolov8`:
 
@@ -821,7 +821,7 @@ Execute the command in the `yolov8` directory to train a three - class fruit det
 yolo detect train data=datasets/fruits_yolo.yaml model=yolov8n.pt epochs=300 imgsz=320
 ```
 
-### 5.4 Converting the Fruit Detection kmodel
+### Converting the Fruit Detection kmodel
 
 For model conversion, the following libraries need to be installed in the training environment:
 
@@ -871,19 +871,19 @@ cd ../../
 | input_height   | Enter height                   | The height of the model input                                                                                   | int   |
 | ptq_option     | Quantitative method            | The quantification method of data and weights is 0 as [uint8,uint8], 1 as [uint8,int16], and 2 as [int16,uint8] | 0/1/2 |
 
-### 5.5 Deploying the Model on K230 Using MicroPython
+### Deploying the Model on K230 Using MicroPython
 
-#### 5.5.1 Burning the Image and Installing CanMV IDE
+#### Burning the Image and Installing CanMV IDE
 
 💡 **Firmware introduction**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
 Download and install CanMV IDE (Download link:[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), write code in the IDE and run it.
 
-#### 5.5.2 Copying Model Files
+#### Copying Model Files
 
 Connect the IDE and copy the converted model and test images to the `CanMV/data` directory. This path can be customized, and you only need to modify the corresponding path when writing the code.
 
-#### 5.5.3 YOLOv8 Module
+#### YOLOv8 Module
 
 The `YOLOv8` class integrates four tasks of `YOLOv8`, namely classification (classify), detection (detect), segmentation (segment) and obb. It supports two inference modes, namely image (image) and video stream (video). This class encapsulates the kmodel inference process of `YOLOv8`.
 
@@ -910,7 +910,7 @@ from libs.YOLO import YOLOv8
 | max_boxes_num | Maximum number of detection boxes | The maximum number of detection boxes allowed to be returned in one frame of an image; | int |
 | debug_mode | Debug mode | Whether the timing function is effective, with optional values 0 or 1. 0 means no timing, and 1 means timing; | int [0 - 1] |
 
-#### 5.5.4 Deploying the Model to Implement Image Inference
+#### Deploying the Model to Implement Image Inference
 
 For image inference, please refer to the following code. **Modify the defined parameter variables in `__main__` according to the actual situation**:
 
@@ -941,7 +941,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-#### 5.5.5 Deploying the Model to Implement Video Inference
+#### Deploying the Model to Implement Video Inference
 
 For video inference, please refer to the following code. **Modify the defined variables in `__main__` according to the actual situation**:
 
@@ -983,9 +983,9 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-## 6. YOLOv8 Fruit Segmentation
+## YOLOv8 Fruit Segmentation
 
-### 6.1 Setting up YOLOv8 Source Code and Training Environment
+### Setting up YOLOv8 Source Code and Training Environment
 
 For setting up the training environment of YOLOv8, please refer to [ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics).
 
@@ -996,7 +996,7 @@ pip install ultralytics
 
 If you have already set up the environment, you can skip this step.
 
-### 6.2 Preparing Training Data
+### Preparing Training Data
 
 You can create a new folder first `yolov8`, please download the provided sample dataset. The sample dataset contains classification, detection and segmentation datasets provided for the scenes using three types of fruits (apple, banana, orange). Unzip the dataset to `yolov8` in the directory, please use `fruits_seg` as a dataset for the fruit segmentation task. The sample dataset also contains a desktop signature scene dataset for rotation object detection `yolo_pen_obb`.
 
@@ -1010,7 +1010,7 @@ unzip datasets.zip
 
 If you have already downloaded the data, you can skip this step.
 
-### 6.3 Training a Fruit Segmentation Model with YOLOv8
+### Training a Fruit Segmentation Model with YOLOv8
 
 Execute the command in the `yolov8` directory to train a three - class fruit segmentation model using `yolov8`:
 
@@ -1018,7 +1018,7 @@ Execute the command in the `yolov8` directory to train a three - class fruit seg
 yolo segment train data=datasets/fruits_seg.yaml model=yolov8n-seg.pt epochs=100 imgsz=320
 ```
 
-### 6.4 Converting the Fruit Segmentation kmodel
+### Converting the Fruit Segmentation kmodel
 
 For model conversion, the following libraries need to be installed in the training environment:
 
@@ -1068,19 +1068,19 @@ cd ../../
 | input_height   | Enter height                   | The height of the model input                                                                                   | int   |
 | ptq_option     | Quantitative method            | The quantification method of data and weights is 0 as [uint8,uint8], 1 as [uint8,int16], and 2 as [int16,uint8] | 0/1/2 |
 
-### 6.5 Deploying the Model on K230 Using MicroPython
+### Deploying the Model on K230 Using MicroPython
 
-#### 6.5.1 Burning the Image and Installing CanMV IDE
+#### Burning the Image and Installing CanMV IDE
 
 💡 **Firmware introduction**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
 Download and install CanMV IDE (Download link:[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), write code in the IDE and run it.
 
-#### 6.5.2 Copying Model Files
+#### Copying Model Files
 
 Connect the IDE and copy the converted model and test images to the `CanMV/data` directory. This path can be customized, and you only need to modify the corresponding path when writing the code.
 
-#### 6.5.3 YOLOv8 Module
+#### YOLOv8 Module
 
 The `YOLOv8` class integrates four tasks of `YOLOv8`, namely classification (classify), detection (detect), segmentation (segment) and obb. It supports two inference modes, namely image (image) and video stream (video). This class encapsulates the kmodel inference process of `YOLOv8`.
 
@@ -1107,7 +1107,7 @@ from libs.YOLO import YOLOv8
 | max_boxes_num | Maximum number of detection boxes | The maximum number of detection boxes allowed to be returned in one frame of an image; | int |
 | debug_mode | Debug mode | Whether the timing function is effective, with optional values 0 or 1. 0 means no timing, and 1 means timing; | int [0 - 1] |
 
-#### 6.5.4 Deploying the Model to Implement Image Inference
+#### Deploying the Model to Implement Image Inference
 
 For image inference, please refer to the following code. **Modify the defined parameter variables in `__main__` according to the actual situation**:
 
@@ -1139,7 +1139,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-#### 6.5.5 Deploying the Model to Implement Video Inference
+#### Deploying the Model to Implement Video Inference
 
 For video inference, please refer to the following code. **Modify the defined variables in `__main__` according to the actual situation**:
 
@@ -1181,9 +1181,9 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-## 7. YOLOv8 Rotation Object Detection
+## YOLOv8 Rotation Object Detection
 
-### 7.1 Setting up YOLOv8 Source Code and Training Environment
+### Setting up YOLOv8 Source Code and Training Environment
 
  For setting up the training environment of YOLOv8, please refer to [ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics).
 
@@ -1194,7 +1194,7 @@ pip install ultralytics
 
 If you have already set up the environment, you can skip this step.
 
-### 7.2 Training data preparation
+### Training data preparation
 
 You can create a new folder first `yolov8`, please download the provided sample dataset. The sample dataset contains datasets provided separately for the scenes using a rotation object detection category (pen). Unzip the dataset to `yolov8` in the directory, please use `yolo_pen_obb` as a data set for the rotation object detection task.
 
@@ -1208,7 +1208,7 @@ unzip datasets.zip
 
 If you have downloaded the data, please ignore this step.
 
-### 7.3 Training a Obb Model with YOLOv8
+### Training a Obb Model with YOLOv8
 
 For model conversion, the following libraries need to be installed in the training environment:
 
@@ -1258,19 +1258,19 @@ cd ../../
 | input_height   | Enter height                   | The height of the model input                                                                                   | int   |
 | ptq_option     | Quantitative method            | The quantification method of data and weights is 0 as [uint8,uint8], 1 as [uint8,int16], and 2 as [int16,uint8] | 0/1/2 |
 
-### 7.5 Deploying the Model on K230 Using MicroPython
+### Deploying the Model on K230 Using MicroPython
 
-#### 7.5.1 Burning the Image and Installing CanMV IDE
+#### Burning the Image and Installing CanMV IDE
 
 💡 **Firmware introduction**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
 Download and install CanMV IDE (Download link:[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), write code in the IDE and run it.
 
-#### 7.5.2 Copying Model Files
+#### Copying Model Files
 
 Connect to the IDE and copy the converted model and test images to the path `CanMV/data` in the directory. This path can be customized, you only need to modify the corresponding path when writing the code.
 
-#### 7.5.3 YOLOv8 module
+#### YOLOv8 module
 
  The `YOLOv8` class integrates four tasks of `YOLOv8`, namely classification (classify), detection (detect), segmentation (segment) and obb. It supports two inference modes, namely image (image) and video stream (video). This class encapsulates the kmodel inference process of `YOLOv8`.
 
@@ -1297,7 +1297,7 @@ from libs.YOLO import YOLOv8
 | max_boxes_num | Maximum number of detection boxes | The maximum number of detection boxes allowed to be returned in one frame of an image; | int |
 | debug_mode | Debug mode | Whether the timing function is effective, with optional values 0 or 1. 0 means no timing, and 1 means timing; | int [0 - 1] |
 
-#### 7.5.4 Deploying the Model to Implement Image Inference
+#### Deploying the Model to Implement Image Inference
 
 For picture reasoning, please refer to the following code.**Modify according to actual situation`__main__`Definition parameter variables in**;
 
@@ -1328,7 +1328,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-#### 7.5.5 Deploying the Model to Implement Video Inference
+#### Deploying the Model to Implement Video Inference
 
 For video inference, please refer to the following code.**Modify according to actual situation`__main__`Definition variables in**;
 
@@ -1371,9 +1371,9 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-## 8. YOLO11 Fruit Classification
+## YOLO11 Fruit Classification
 
-### 8.1 Setting up YOLO11 Source Code and Training Environment
+### Setting up YOLO11 Source Code and Training Environment
 
 For setting up the training environment of YOLO11, please refer to [ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics).
 
@@ -1384,7 +1384,7 @@ pip install ultralytics
 
 If you have already set up the environment, you can skip this step.
 
-### 8.2 Preparing Training Data
+### Preparing Training Data
 
 You can create a new folder first `yolo11`, please download the provided sample dataset. The sample dataset contains classification, detection and segmentation datasets provided for the scenes using three types of fruits (apple, banana, orange). Unzip the dataset to `yolo11` in the directory, please use `fruits_cls` as a data set for fruit classification tasks. The sample dataset also contains a desktop signature scene dataset for rotation object detection `yolo_pen_obb`.
 
@@ -1398,7 +1398,7 @@ unzip datasets.zip
 
 If you have already downloaded the data, you can skip this step.
 
-### 8.3 Training a Fruit Classification Model with YOLO11
+### Training a Fruit Classification Model with YOLO11
 
 Execute the command in the `yolo11` directory to train a three - class fruit classification model using `yolo11`:
 
@@ -1406,7 +1406,7 @@ Execute the command in the `yolo11` directory to train a three - class fruit cla
 yolo classify train data=datasets/fruits_cls model=yolo11n-cls.pt epochs=100 imgsz=224
 ```
 
-### 8.4 Converting the Fruit Classification kmodel
+### Converting the Fruit Classification kmodel
 
 For model conversion, the following libraries need to be installed in the training environment:
 
@@ -1456,19 +1456,19 @@ cd ../../
 | input_height   | Enter height                   | The height of the model input                                                                                   | int   |
 | ptq_option     | Quantitative method            | The quantification method of data and weights is 0 as [uint8,uint8], 1 as [uint8,int16], and 2 as [int16,uint8] | 0/1/2 |
 
-### 8.5 Deploying the Model on K230 Using MicroPython
+### Deploying the Model on K230 Using MicroPython
 
-#### 8.5.1 Burning the Image and Installing CanMV IDE
+#### Burning the Image and Installing CanMV IDE
 
 💡 **Firmware introduction**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
 Download and install CanMV IDE (Download link:[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), write code in the IDE and run it.
 
-#### 8.5.2 Copying Model Files
+#### Copying Model Files
 
 Connect the IDE and copy the converted model and test images to the `CanMV/data` directory. This path can be customized, and you only need to modify the corresponding path when writing the code.
 
-#### 8.5.3 YOLO11 Module
+#### YOLO11 Module
 
 The `YOLO11` class integrates four tasks of `YOLO11`, namely classification (classify), detection (detect), segmentation (segment), obb. It supports two inference modes, namely image (image) and video stream (video). This class encapsulates the kmodel inference process of `YOLO11`.
 
@@ -1495,7 +1495,7 @@ from libs.YOLO import YOLO11
 | max_boxes_num | Maximum number of detection boxes | The maximum number of detection boxes allowed to be returned in one frame of an image; | int |
 | debug_mode | Debug mode | Whether the timing function is effective, with optional values 0 or 1. 0 means no timing, and 1 means timing; | int [0 - 1] |
 
-#### 8.5.4 Deploying the Model to Implement Image Inference
+#### Deploying the Model to Implement Image Inference
 
 For image inference, please refer to the following code. **Modify the defined parameter variables in `__main__` according to the actual situation**:
 
@@ -1525,7 +1525,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-#### 8.5.5 Deploying the Model to Implement Video Inference
+#### Deploying the Model to Implement Video Inference
 
 For video inference, please refer to the following code. **Modify the defined variables in `__main__` according to the actual situation**:
 
@@ -1565,9 +1565,9 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-## 9. YOLO11 Fruit Detection
+## YOLO11 Fruit Detection
 
-### 9.1 Setting up YOLO11 Source Code and Training Environment
+### Setting up YOLO11 Source Code and Training Environment
 
 For setting up the training environment of YOLO11, please refer to [ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics).
 
@@ -1578,7 +1578,7 @@ pip install ultralytics
 
 If you have already set up the environment, you can skip this step.
 
-### 9.2 Preparing Training Data
+### Preparing Training Data
 
 You can create a new folder first `yolo11`, please download the provided sample dataset. The sample dataset contains classification, detection and segmentation datasets provided for the scenes using three types of fruits (apple, banana, orange). Unzip the dataset to `yolo11` in the directory, please use `fruits_yolo` as a data set for fruit detection tasks. The sample dataset also contains a desktop signature scene dataset for rotation object detection `yolo_pen_obb`.
 
@@ -1592,7 +1592,7 @@ unzip datasets.zip
 
 If you have already downloaded the data, you can skip this step.
 
-### 9.3 Training a Fruit Detection Model with YOLO11
+### Training a Fruit Detection Model with YOLO11
 
 Execute the command in the `yolo11` directory to train a three - class fruit detection model using `yolo11`:
 
@@ -1600,7 +1600,7 @@ Execute the command in the `yolo11` directory to train a three - class fruit det
 yolo detect train data=datasets/fruits_yolo.yaml model=yolo11n.pt epochs=300 imgsz=320
 ```
 
-### 9.4 Converting the Fruit Detection kmodel
+### Converting the Fruit Detection kmodel
 
 For model conversion, the following libraries need to be installed in the training environment:
 
@@ -1650,19 +1650,19 @@ cd ../../
 | input_height   | Enter height                   | The height of the model input                                                                                   | int   |
 | ptq_option     | Quantitative method            | The quantification method of data and weights is 0 as [uint8,uint8], 1 as [uint8,int16], and 2 as [int16,uint8] | 0/1/2 |
 
-### 9.5 Deploying the Model on K230 Using MicroPython
+### Deploying the Model on K230 Using MicroPython
 
-#### 9.5.1 Burning the Image and Installing CanMV IDE
+#### Burning the Image and Installing CanMV IDE
 
 💡 **Firmware introduction**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
 Download and install CanMV IDE (Download link:[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), write code in the IDE and run it.
 
-#### 8.5.2 Copying the Model Files
+#### Copying the Model Files
 
 Connect to the IDE and copy the converted model and test images to the `CanMV/data` directory. This path can be customized; you just need to modify the corresponding path when writing the code.
 
-#### 9.5.3 The YOLO11 Module
+#### The YOLO11 Module
 
 The `YOLO11` class integrates four tasks of `YOLO11`, namely classification (`classify`), detection (`detect`), segmentation (`segment`), and obb. It supports two inference modes, namely image (`image`) and video stream (`video`). This class encapsulates the kmodel inference process of `YOLO11`.
 
@@ -1689,7 +1689,7 @@ from libs.YOLO import YOLO11
 | max_boxes_num | Maximum number of detection boxes | The maximum number of detection boxes allowed to be returned in one frame of the image. | int |
 | debug_mode | Debug mode | Whether the timing function is enabled. The available options are 0 and 1. 0 means no timing, and 1 means timing is enabled. | int [0/1] |
 
-#### 9.5.4 Deploying the Model for Image Inference
+#### Deploying the Model for Image Inference
 
 For image inference, please refer to the following code. **Modify the defined parameter variables in `__main__` according to the actual situation**:
 
@@ -1720,7 +1720,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-#### 9.5.5 Deploying the Model for Video Inference
+#### Deploying the Model for Video Inference
 
 For video inference, please refer to the following code. **Modify the defined parameter variables in `__main__` according to the actual situation**:
 
@@ -1763,9 +1763,9 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-## 10. YOLO11 Fruit Segmentation
+## YOLO11 Fruit Segmentation
 
-### 10.1 Setting up the YOLO11 Source Code and Training Environment
+### Setting up the YOLO11 Source Code and Training Environment
 
 To set up the YOLO11 training environment, please refer to [ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics).
 
@@ -1776,7 +1776,7 @@ pip install ultralytics
 
 If you have already set up the environment, you can skip this step.
 
-### 10.2 Preparing the Training Data
+### Preparing the Training Data
 
 You can create a new folder first `yolo11`, please download the provided sample dataset. The sample dataset contains classification, detection and segmentation datasets provided for the scenes using three types of fruits (apple, banana, orange). Unzip the dataset to `yolo11` in the directory, please use `fruits_seg` as a dataset for the fruit segmentation task. The sample dataset also contains a desktop signature scene dataset for rotation object detection `yolo_pen_obb`.
 
@@ -1790,7 +1790,7 @@ unzip datasets.zip
 
 If you have already downloaded the data, you can skip this step.
 
-### 10.3 Training a Fruit Segmentation Model with YOLO11
+### Training a Fruit Segmentation Model with YOLO11
 
 Execute the following command in the `yolo11` directory to train a three-class fruit segmentation model using YOLO11:
 
@@ -1798,7 +1798,7 @@ Execute the following command in the `yolo11` directory to train a three-class f
 yolo segment train data=datasets/fruits_seg.yaml model=yolo11n-seg.pt epochs=100 imgsz=320
 ```
 
-### 10.4 Converting the Fruit Segmentation kmodel
+### Converting the Fruit Segmentation kmodel
 
 The following libraries need to be installed in the training environment for model conversion:
 
@@ -1848,19 +1848,19 @@ cd ../../
 | input_height   | Enter height                   | The height of the model input                                                                                   | int   |
 | ptq_option     | Quantitative method            | The quantification method of data and weights is 0 as [uint8,uint8], 1 as [uint8,int16], and 2 as [int16,uint8] | 0/1/2 |
 
-### 10.5 Deploying the Model on K230 Using MicroPython
+### Deploying the Model on K230 Using MicroPython
 
-#### 10.5.1 Burning the Image and Installing CanMV IDE
+#### Burning the Image and Installing CanMV IDE
 
 💡 **Firmware introduction**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
 Download and install CanMV IDE (Download link:[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), write code in the IDE and run it.
 
-#### 10.5.2 Copying the Model Files
+#### Copying the Model Files
 
 Connect to the IDE and copy the converted model and test images to the `CanMV/data` directory. This path can be customized; you just need to modify the corresponding path when writing the code.
 
-#### 10.5.3 YOLO11 Module
+#### YOLO11 Module
 
 The `YOLO11` class integrates four tasks of YOLO11, namely classification (classify), detection (detect), segmentation (segment), and obb. It supports two inference modes, namely image (image) and video stream (video). This class encapsulates the kmodel inference process of YOLO11.
 
@@ -1887,7 +1887,7 @@ from libs.YOLO import YOLO11
 | max_boxes_num | Maximum number of detection boxes | The maximum number of detection boxes allowed to be returned in one frame of the image. | int |
 | debug_mode | Debug mode | Whether the timing function is enabled. The available options are 0 and 1. 0 means no timing, and 1 means timing is enabled. | int [0/1] |
 
-#### 10.5.4 Deploying the Model for Image Inference
+#### Deploying the Model for Image Inference
 
 For image inference, please refer to the following code. **Modify the defined parameter variables in `__main__` according to the actual situation**:
 
@@ -1919,7 +1919,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-#### 10.5.5 Deploying the Model for Video Inference
+#### Deploying the Model for Video Inference
 
 For video inference, please refer to the following code. **Modify the defined parameter variables in `__main__` according to the actual situation**:
 
@@ -1963,9 +1963,9 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-## 11. YOLO11 Rotation Object Detection
+## YOLO11 Rotation Object Detection
 
-### 11.1 Setting up the YOLO11 Source Code and Training Environment
+### Setting up the YOLO11 Source Code and Training Environment
 
  To set up the YOLO11 training environment, please refer to [ultralytics/ultralytics: Ultralytics YOLO 🚀 (github.com)](https://github.com/ultralytics/ultralytics).
 
@@ -1976,7 +1976,7 @@ pip install ultralytics
 
 If you have already set up the environment, you can skip this step.
 
-### 11.2 Preparing the Training Data
+### Preparing the Training Data
 
 You can create a new folder first `yolo11`, please download the provided sample dataset. The sample dataset contains a rotating object detection dataset provided by single-class rotating pen detection (pen) for the scenes. Unzip the dataset to `yolo11` in the directory, please use `yolo_pen_obb` as a data set for the rotation object detection task.
 
@@ -1990,7 +1990,7 @@ unzip datasets.zip
 
 If you have downloaded the data, please ignore this step.
 
-### 11.3 Training a Obb Model with YOLO11
+### Training a Obb Model with YOLO11
 
 The following libraries need to be installed in the training environment for model conversion:
 
@@ -2040,19 +2040,19 @@ cd ../../
 | input_height   | Enter height                   | The height of the model input                                                                                   | int   |
 | ptq_option     | Quantitative method            | The quantification method of data and weights is 0 as [uint8,uint8], 1 as [uint8,int16], and 2 as [int16,uint8] | 0/1/2 |
 
-### 11.5 Deploying the Model on K230 Using MicroPython
+### Deploying the Model on K230 Using MicroPython
 
-#### 11.5.1 Burning the Image and Installing CanMV IDE
+#### Burning the Image and Installing CanMV IDE
 
 💡 **Firmware introduction**: Please `github` download the latest ones according to your development board type [PreRelease firmware](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) to ensure **Latest features** being supported! Or use the latest code to compile the firmware yourself. See the tutorial:[Firmware Compilation](../../userguide/how_to_build.md).
 
 Download and install CanMV IDE (Download link:[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1)), write code in the IDE and run it.
 
-#### 11.5.2 Copying the Model Files
+#### Copying the Model Files
 
 Connect to the IDE and copy the converted model and test images to the path `CanMV/data` in the directory. This path can be customized, you only need to modify the corresponding path when writing the code.
 
-#### 11.5.3 YOLO11 module
+#### YOLO11 module
 
 The `YOLO11` class integrates four tasks of YOLO11, namely classification (classify), detection (detect), segmentation (segment), and obb. It supports two inference modes, namely image (image) and video stream (video). This class encapsulates the kmodel inference process of YOLO11.
 
@@ -2079,7 +2079,7 @@ from libs.YOLO import YOLO11
 | max_boxes_num | Maximum number of detection boxes | The maximum number of detection boxes allowed to be returned in one frame of the image. | int |
 | debug_mode | Debug mode | Whether the timing function is enabled. The available options are 0 and 1. 0 means no timing, and 1 means timing is enabled. | int [0/1] |
 
-#### 11.5.4 Deploying the Model for Image Inference
+#### Deploying the Model for Image Inference
 
 For picture reasoning, please refer to the following code.**Modify according to actual situation`__main__`Definition parameter variables in**;
 
@@ -2110,7 +2110,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-#### 11.5.5 Deploying the Model for Video Inference
+#### Deploying the Model for Video Inference
 
 For video inference, please refer to the following code.**Modify according to actual situation`__main__`Definition variables in**;
 
@@ -2153,7 +2153,7 @@ if __name__ == "__main__":
     pl.destroy()
 ```
 
-## 12. Verification of kmodel Conversion
+## Verification of kmodel Conversion
 
 The model conversion script toolkits (`test_yolov5/test_yolov8/test_yolo11`) downloaded for different models contain scripts for kmodel verification.
 
@@ -2172,9 +2172,9 @@ The model conversion script toolkits (`test_yolov5/test_yolov8/test_yolo11`) dow
 >
 > Add the `Lib/site-packages` path under the `Python` environment where `nncase` is installed to the system variable `Path` of the environment variables.
 
-### 12.1 Comparing the Outputs of the onnx and kmodel
+### Comparing the Outputs of the onnx and kmodel
 
-#### 12.1.1 Generating the Input bin Files
+#### Generating the Input bin Files
 
 Enter the `classify/detect/segment` directory and execute the following command:
 
@@ -2184,7 +2184,7 @@ python save_bin.py --image ../test_images/test.jpg --input_width 224 --input_hei
 
 After executing the script, the bin files `onnx_input_float32.bin` and `kmodel_input_uint8.bin` will be generated in the current directory, which will serve as the input files for the onnx model and the kmodel.
 
-#### 12.1.2 Comparing the Outputs
+#### Comparing the Outputs
 
 Copy the converted models `best.onnx` and `best.kmodel` to the `classify/detect/segment` directory, and then execute the verification script with the following command:
 
@@ -2205,7 +2205,7 @@ output 0 cosine similarity : 0.9999530911445618
 output 1 cosine similarity : 0.9983288645744324
 ```
 
-### 12.2 Inference on Images Using the onnx Model
+### Inference on Images Using the onnx Model
 
 Enter the `classify/detect/segment` directory, open `test_cls_onnx.py`, modify the parameters in `main()` to adapt to your model, and then execute the command:
 
@@ -2217,7 +2217,7 @@ After the command is successfully executed, the result will be saved as `onnx_cl
 
 > The detection and segmentation tasks are similar. Execute `test_det_onnx.py` and `test_seg_onnx.py` respectively.
 
-### 12.3 Inference on Images Using the kmodel
+### Inference on Images Using the kmodel
 
 Enter the `classify/detect/segment` directory, open `test_cls_kmodel.py`, modify the parameters in `main()` to adapt to your model, and then execute the command:
 
@@ -2229,15 +2229,15 @@ After the command is successfully executed, the result will be saved as `kmodel_
 
 > The detection and segmentation tasks are similar. Execute `test_det_kmodel.py` and `test_seg_kmodel.py` respectively.
 
-## 13. Tuning Guide
+## Tuning Guide
 
 When the performance of the model on the K230 is not satisfactory, you can generally consider tuning from aspects such as threshold settings, model size, input resolution, quantization methods, and the quality of training data.
 
-### 13.1 Adjusting Thresholds
+### Adjusting Thresholds
 
 Adjust the confidence threshold, nms threshold, and mask threshold to optimize the deployment effect without changing the model. In the detection task, increasing the confidence threshold and lowering the nms threshold will lead to a decrease in the number of detection boxes, and conversely, reducing the confidence threshold and increasing the nms threshold will lead to an increase in the number of detection boxes. In the segmentation task, the mask threshold will affect the partitioning of the segmentation area. You can first adjust according to the actual scenario to find the threshold value under the better effect.
 
-### 13.2 Changing the Model
+### Changing the Model
 
 Select models of different sizes to balance speed, memory footprint, and accuracy. The n/s/m/l model can be selected for training and transformation according to actual needs.
 
@@ -2293,7 +2293,7 @@ The following data takes the kmdel obtained by training in the example data set 
 | yolo11m | 320×320          | obb  | 14fps                    | 11fps                           |
 | yolo11l | 320×320          | obb  | 12fps                    | 9fps                            |
 
-### 13.3 Changing the Input Resolution
+### Changing the Input Resolution
 
 Change the input resolution of the model to suit your scene. Larger resolutions may improve deployment results, but will take more inference time.
 
@@ -2329,7 +2329,7 @@ The following data takes the kmdel obtained by training in the example data set 
 | yolo11n | 320×320          | obb  | 40fps                    | 25fps                           |
 | yolo11n | 640×640          | obb  | 12fps                    | 9fps                            |
 
-### 13.4 Modifying the Quantization Method
+### Modifying the Quantization Method
 
 The model conversion script provides 3 quantization parameters,`data` and `weights` conduct `uint8` quantitative or `int16` quantification.
 
@@ -2357,11 +2357,11 @@ The following data takes the kmdel obtained by the detection example data set pr
 | yolo11n | 320×320          | det  | [uint8,int16]                           | 38fps                    | 24fps                           |
 | yolo11n | 320×320          | det  | [int16,uint8]                           | 32fps                    | 22fps                           |
 
-### 13.5 Improving Data Quality
+### Improving Data Quality
 
 If the training results are poor, improve the quality of the dataset by optimizing aspects such as the data volume, reasonable data distribution, annotation quality, and training parameter settings.
 
-### 13.6 Tuning Tips
+### Tuning Tips
 
 - The quantization parameters have a greater impact on the performance of YOLOv8 and YOLO11 than on YOLOv5, as can be seen by comparing different quantized models.
 - The input resolution has a greater impact on the inference speed than the model size.

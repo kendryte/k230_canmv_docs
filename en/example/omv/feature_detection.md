@@ -1,14 +1,14 @@
-# 7. Explanation of Eigenvalue Detection Routines
+# Explanation of Eigenvalue Detection Routines
 
-## 1. Overview
+## Overview
 
 In OpenMV, `find_hog`, `find_lines`, `find_rects`, `find_features`, and `get_regression` are functions used for image processing and feature detection.
 
 CanMV supports OpenMV algorithms and can also use these functions.
 
-## 2. Function Description
+## Function Description
 
-### 2.1 find_hog
+### find_hog
 
 The `find_hog` function is used to detect objects in an image using HOG (Histogram of Oriented Gradients) feature descriptors. HOG is a commonly used feature description method for object detection.
 
@@ -28,7 +28,7 @@ objects = img.find_hog(roi=None, threshold=0.5, min_size=(0, 0))
 
 Returns a list of detected objects, each represented as a `Rect` object containing the position and size of the object.
 
-### 2.2 find_lines
+### find_lines
 
 The `find_lines` function is used to detect lines in an image. This function is suitable for finding long lines in the image.
 
@@ -48,7 +48,7 @@ lines = img.find_lines(threshold=1000, theta_margin=20, rho_margin=20)
 
 Returns a list of line information. Each line is represented as a `Line` object containing the start point, end point, length, and angle of the line.
 
-### 2.3 find_rects
+### find_rects
 
 The `find_rects` function is used to detect rectangular regions in an image. This function can be used to find square or rectangular objects in the image.
 
@@ -67,7 +67,7 @@ rects = img.find_rects(threshold=2000, margin=10)
 
 Returns a list of rectangle information. Each rectangle is represented as a `Rect` object containing the coordinates and size of the rectangle.
 
-### 2.4 find_features
+### find_features
 
 The `find_features` function is used to detect feature points in an image. These feature points can be used for tasks such as image matching and tracking.
 
@@ -86,7 +86,7 @@ features = img.find_features(algorithm, threshold=10)
 
 Returns a list of feature point information. Each feature point is represented as a `Feature` object containing the position and other information of the feature point.
 
-### 2.5 get_regression
+### get_regression
 
 The `get_regression` function is used to detect regression lines from an image, i.e., lines that fit data points. It is typically used to mark trends or directions in the data.
 
@@ -106,7 +106,7 @@ line = img.get_regression(threshold=1000, min_length=10, max_distance=5)
 
 Returns a `Line` object containing the regression line information, representing the fitted line.
 
-### 2.6 Summary
+### Summary
 
 These functions are important tools in the OpenMV image processing library, each serving different vision tasks:
 
@@ -116,7 +116,7 @@ These functions are important tools in the OpenMV image processing library, each
 - `find_features`: Detect feature points in the image.
 - `get_regression`: Detect regression lines in the image.
 
-## 3. Example
+## Example
 
 Here is a demo for finding lines. For more demos, please refer to the examples included in the firmware's virtual USB drive.
 

@@ -1,14 +1,14 @@
-# 2.9 `PWM` Module API Manual  
+# `PWM` Module API Manual  
 
-## 1. Overview  
+## Overview  
 
 The K230 integrates two PWM hardware modules, each with three output channels. The output frequency of each module is adjustable, but the three channels share the same clock, while the duty cycle can be independently configured. Therefore, channels 0, 1, and 2 share the same output frequency, and channels 3, 4, and 5 also share the same output frequency. For the I/O configuration of the channel outputs, refer to the IOMUX module.  
 
-## 2. API Introduction  
+## API Introduction  
 
 The PWM class is located in the `machine` module.  
 
-### 2.1 Example Code  
+### Example Code  
 
 ```python  
 import time  
@@ -46,7 +46,7 @@ time.sleep(1)
 pwm0.deinit()  
 ```  
 
-### 2.2 Constructor  
+### Constructor  
 
 ```python  
 pwm = PWM(channel, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)  
@@ -62,7 +62,7 @@ pwm = PWM(channel, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
 
 > Only one of `duty`, `duty_ns`, or `duty_u16` can be set at a time.  
 
-### 2.3 `init` Method  
+### `init` Method  
 
 ```python  
 PWM.init(freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)  
@@ -70,9 +70,9 @@ PWM.init(freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
 
 **Parameters**  
 
-Refer to [Constructor](#22-constructor).  
+Refer to [Constructor](#constructor).  
 
-### 2.4 `deinit` Method  
+### `deinit` Method  
 
 ```python  
 PWM.deinit()  
@@ -88,7 +88,7 @@ None
 
 None  
 
-### 2.5 `freq` Method  
+### `freq` Method  
 
 ```python  
 PWM.freq([freq])  
@@ -104,7 +104,7 @@ Get or set the output frequency of the PWM channel.
 
 Returns the current PWM channel output frequency or `None`.  
 
-### 2.6 `duty` Method  
+### `duty` Method  
 
 ```python  
 PWM.duty([duty])  
@@ -120,7 +120,7 @@ Get or set the duty cycle of the PWM channel.
 
 Returns the current PWM channel duty cycle or `None`.  
 
-### 2.7 `duty_u16` Method  
+### `duty_u16` Method  
 
 ```python  
 PWM.duty_u16([duty_u16])  
@@ -136,7 +136,7 @@ Get or set the duty cycle of the PWM channel.
 
 Returns the current PWM channel duty cycle or `None`.  
 
-### 2.8 `duty_ns` Method  
+### `duty_ns` Method  
 
 ```python  
 PWM.duty_ns([duty_ns])  

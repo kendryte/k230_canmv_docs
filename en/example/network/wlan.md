@@ -1,15 +1,15 @@
-# 2. Wireless Network Example Explanation
+# Wireless Network Example Explanation
 
-## 1. Overview
+## Overview
 
 This tutorial will guide you on how to perform basic wireless network (WiFi) operations using MicroPython's `network` module on CanMV. This includes connecting to a wireless access point (AP) as a station (STA) and creating your own access point (AP).
 
 * **sta_test()**: Demonstrates how to connect to a wireless network as a station (STA), including checking the current connection status, scanning available networks, connecting to a specific AP, viewing IP configuration, and disconnecting.
 * **ap_test()**: Shows how to configure and start a wireless access point (AP), including setting SSID, channel, and password, and checking the AP's configuration and status.
 
-## 2. Interface Calls and Function Descriptions
+## Interface Calls and Function Descriptions
 
-### 2.1 sta_test
+### sta_test
 
 * **`network.WLAN(id)`**: Initializes a WLAN object. `id` is 0 for STA mode.
 * **`sta.active(bool)`**: Activates or deactivates STA mode. Pass `True` to activate, `False` to deactivate. If called without arguments, it returns the current activation status.
@@ -19,7 +19,7 @@ This tutorial will guide you on how to perform basic wireless network (WiFi) ope
 * **`sta.isconnected()`**: Returns `True` if the STA is connected to an AP, otherwise returns `False`.
 * **`sta.disconnect()`**: Disconnects the STA from the current AP.
 
-#### 2.1.1 Complete Example
+#### Complete Example
 
 ```python
 import network
@@ -50,7 +50,7 @@ def sta_test():
 sta_test()
 ```
 
-### 2.2 ap_test
+### ap_test
 
 * **`network.WLAN(network.AP_IF)`**: Initializes a WLAN object and sets it to AP mode.
 * **`ap.active(bool)`**: Activates or deactivates AP mode. Pass `True` to activate, `False` to deactivate. If called without arguments, it returns the current activation status.
@@ -58,7 +58,7 @@ sta_test()
 * **`ap.config(key)`**: If `key` is a string representation of a configuration item like `'ssid'`, `'channel'`, etc., it returns the value of that configuration item.
 * **`ap.status()`**: Returns the current status of the AP.
 
-#### 2.2.1 Complete Example
+#### Complete Example
 
 ```python
 import network

@@ -1,12 +1,12 @@
-# 1. nncase_runtime Module Usage Guide
+# nncase_runtime Module Usage Guide
 
-## 1. Overview
+## Overview
 
 This document introduces the CanMV nncase_runtime module, guiding developers on how to use MicroPython to call the `KPU` and `AI2D` modules.
 
-## 2. Function Introduction
+## Function Introduction
 
-### 2.1. Import Libraries
+### Import Libraries
 
 Before using the nncase_runtime module, you need to import the relevant libraries:
 
@@ -15,7 +15,7 @@ import nncase_runtime as nn
 import ulab.numpy as np
 ```
 
-### 2.2. KPU Initialization
+### KPU Initialization
 
 Initialize the model inference module:
 
@@ -23,7 +23,7 @@ Initialize the model inference module:
 kpu = nn.kpu()
 ```
 
-### 2.3. AI2D Initialization
+### AI2D Initialization
 
 Initialize the image processing module:
 
@@ -31,7 +31,7 @@ Initialize the image processing module:
 ai2d = nn.ai2d()
 ```
 
-### 2.4. Load Model
+### Load Model
 
 There are two ways to load the model: by file path or binary data.
 
@@ -45,9 +45,9 @@ with open("test.kmodel", "rb") as f:
     kpu.load_kmodel(data)
 ```
 
-### 2.5. Using KPU for Inference Alone
+### Using KPU for Inference Alone
 
-#### 2.5.1. Set Model Input
+#### Set Model Input
 
 Before model inference, you need to set the corresponding model input data:
 
@@ -61,7 +61,7 @@ kpu.set_input_tensor(1, kpu_input_1)
 kpu.set_input_tensor(2, kpu_input_2)
 ```
 
-#### 2.5.2. Execute Inference and Get Results
+#### Execute Inference and Get Results
 
 Execute inference and get results:
 
@@ -72,11 +72,11 @@ result = kpu.get_output_tensor(i)  # Returns the i-th output tensor
 data = result.to_numpy()  # Converts the output tensor to a numpy object
 ```
 
-### 2.6. Using AI2D+KPU for Inference
+### Using AI2D+KPU for Inference
 
 Use AI2D to preprocess data collected from the camera, then use KPU for inference. For configuration of input devices such as cameras, refer to the [AI Demo Documentation](../../../zh/example/ai/AI_Demo说明文档.md).
 
-#### 2.6.1. Configure AI2D Parameters
+#### Configure AI2D Parameters
 
 AI2D functions include `crop`, `shift`, `pad`, `resize`, `affine`. Configure the corresponding parameters as needed; unused functions can be ignored.
 
@@ -94,7 +94,7 @@ ai2d.set_resize_param(True, nn.interp_method.tf_bilinear, nn.interp_mode.half_pi
 ai2d_builder = ai2d.build([1, 3, 224, 224], [1, 3, 256, 256])
 ```
 
-#### 2.6.2. AI2D+KPU Inference
+#### AI2D+KPU Inference
 
 Execute AI2D and KPU combined inference:
 
@@ -114,7 +114,7 @@ result = kpu.get_output_tensor(i)  # Returns the i-th output tensor
 data = result.to_numpy()  # Converts the output tensor to a numpy object
 ```
 
-### 2.7. Release Memory
+### Release Memory
 
 Ensure that all `global` variable reference counts are zero before the program ends to avoid memory leaks. You can also call `gc.collect()` at the beginning of the program to release any unreleased memory.
 
@@ -139,6 +139,6 @@ gc.collect()
 nn.shrink_memory_pool()
 ```
 
-## 3. Summary
+## Summary
 
 This module provides a basic framework for using KPU and AI2D for deep learning inference. Developers can configure models and parameters according to specific needs, perform image processing and inference tasks, and manage memory to improve program stability and performance.

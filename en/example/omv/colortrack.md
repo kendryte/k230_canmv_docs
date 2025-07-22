@@ -1,20 +1,20 @@
-# 6. Color Recognition (find_blobs) Routine Explanation
+# Color Recognition (find_blobs) Routine Explanation
 
-## 1. Overview
+## Overview
 
 `find_blobs` is an image processing function in OpenMV used to find and recognize "blobs" in an image. These blobs refer to areas with similar colors or brightness in the image. This function is commonly used in visual detection and recognition applications, such as object tracking and color recognition.
 
 CanMV supports OpenMV algorithms and can also use `find_blobs`.
 
-## 2. Function Explanation
+## Function Explanation
 
-### 2.1 Basic Usage
+### Basic Usage
 
 ```python
 blobs = img.find_blobs([thresholds], area_threshold=area_threshold, pixels_threshold=pixels_threshold, merge=True, margin=0)
 ```
 
-### 2.2 Parameter Explanation
+### Parameter Explanation
 
 - thresholds: This is a list containing color ranges used to define the color range of the blobs to be found. It is usually a tuple containing two or three elements. For example, `(100, 200, -64, 127, -128, 127)` represents a range in the HSV color space, where the first and second values are Hue, the third and fourth values are Saturation, and the last two values are Value.
 
@@ -26,7 +26,7 @@ blobs = img.find_blobs([thresholds], area_threshold=area_threshold, pixels_thres
 
 - margin: The margin used when merging blobs. Set to a positive integer to indicate the maximum distance for merging blobs. The default value is 0.
 
-### 2.3 Return Value
+### Return Value
 
 The `find_blobs` function returns a list containing information about the blobs. Each blob is a `Blob` object and typically includes the following attributes:
 
@@ -35,7 +35,7 @@ The `find_blobs` function returns a list containing information about the blobs.
 - `w` and `h`: The width and height of the blob.
 - `area`: The area of the blob (in pixels).
 
-## 3. Example
+## Example
 
 Here is an example of single-color tracking. For more detailed demos, please refer to the examples included in the firmware's virtual U-disk.
 

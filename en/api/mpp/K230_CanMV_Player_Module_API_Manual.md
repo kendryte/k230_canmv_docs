@@ -1,14 +1,14 @@
-# 3.8 `Player` Module API Manual
+# `Player` Module API Manual
 
-## 1. Overview
+## Overview
 
 This document provides a detailed introduction to the K230_CanMV Player module API, which is designed to support the playback of MP4 format files. This module can simultaneously play audio and video, with audio formats supporting G.711A/U and video formats supporting H.264/H.265 encoding.
 
-## 2. API Introduction
+## API Introduction
 
 The module provides the `Player` class, which includes the following methods:
 
-### 2.1 Constructor
+### Constructor
 
 **Description**
 
@@ -41,7 +41,7 @@ player = Player(Display.ST7701)
 player = Player(Display.LT9611)
 ```
 
-### 2.2 Player.load
+### Player.load
 
 **Description**
 
@@ -70,7 +70,7 @@ player.load("test.mp4")
 **Note**  
 The current version only supports playing MP4 format files.
 
-### 2.3 Player.start
+### Player.start
 
 **Description**
 
@@ -94,7 +94,7 @@ None
 | 0                 | Success                         |
 | Non-zero          | Failure                         |
 
-### 2.4 Player.pause
+### Player.pause
 
 **Description**
 
@@ -118,7 +118,7 @@ None
 | 0                 | Success                         |
 | Non-zero          | Failure                         |
 
-### 2.5 Player.resume
+### Player.resume
 
 **Description**
 
@@ -142,7 +142,7 @@ None
 | 0                 | Success                         |
 | Non-zero          | Failure                         |
 
-### 2.6 Player.stop
+### Player.stop
 
 **Description**
 
@@ -166,7 +166,7 @@ None
 | 0                 | Success                         |
 | Non-zero          | Failure                         |
 
-### 2.7 Player.set_event_callback
+### Player.set_event_callback
 
 **Description**
 
@@ -195,9 +195,9 @@ player.set_event_callback(callback=player_event)
 | 0                 | Success                         |
 | Non-zero          | Failure                         |
 
-## 3. Data Structure Description
+## Data Structure Description
 
-### 3.1 play_event_type
+### play_event_type
 
 **Description**
 
@@ -210,9 +210,9 @@ Defines the types of playback events.
 | K_PLAYER_EVENT_EOF             | Playback End        |
 | K_PLAYER_EVENT_PROGRESS        | Playback Progress   |
 
-## 4. Example Program
+## Example Program
 
-### 4.1 Example 1
+### Example 1
 
 ```python
 from media.player import *

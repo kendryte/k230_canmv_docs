@@ -1,10 +1,10 @@
-# 11. FFT Example
+# FFT Example
 
-## 1. Overview
+## Overview
 
 The FFT (Fast Fourier Transform) module can perform a Fourier transform on input data and return the corresponding frequency amplitudes. Through FFT operations, time-domain signals can be converted into frequency-domain signals, which helps in analyzing the frequency components of the signal.
 
-## 2. Example
+## Example
 
 The following example demonstrates how to use the FFT module to perform a Fourier transform.
 
@@ -44,7 +44,7 @@ res = fft1.freq(64, 38400)  # Get the frequency values of all frequency points
 print(res)
 ```
 
-## 3. Code Explanation
+## Code Explanation
 
 1. **Import Modules**:
    - Import the necessary modules, including `FFT`, `array`, `math`, and `numpy`.

@@ -1,14 +1,14 @@
-# 2.10 `SPI` Module API Manual
+# `SPI` Module API Manual
 
-## 1. Overview
+## Overview
 
 The K230 integrates three SPI hardware modules internally, supporting chip select polarity configuration and adjustable clock rates. The I/O configuration for channel output can refer to the IOMUX module.
 
-## 2. API Introduction
+## API Introduction
 
 The SPI class is located in the `machine` module.
 
-### 2.1 Example Code
+### Example Code
 
 ```python
 from machine import SPI
@@ -26,7 +26,7 @@ spi.write_readinto(write_buf, read_buf)
 spi.deinit()
 ```
 
-### 2.2 Constructor
+### Constructor
 
 ```python
 spi = machine.SPI(id, baudrate=20, polarity=0, phase=0, bits=8)
@@ -40,7 +40,7 @@ spi = machine.SPI(id, baudrate=20, polarity=0, phase=0, bits=8)
 - `phase`: Clock phase.
 - `bits`: Data width.
 
-### 2.3 `read` Method
+### `read` Method
 
 ```python
 spi.read(nbytes)
@@ -56,7 +56,7 @@ Reads the specified number of bytes.
 
 Returns a `bytes` object.
 
-### 2.4 `readinto` Method
+### `readinto` Method
 
 ```python
 spi.readinto(buf)
@@ -72,7 +72,7 @@ Reads data into the specified buffer.
 
 None
 
-### 2.5 `write` Method
+### `write` Method
 
 ```python
 spi.write(buf)
@@ -88,7 +88,7 @@ Sends data.
 
 None
 
-### 2.6 `write_readinto` Method
+### `write_readinto` Method
 
 ```python
 spi.write_readinto(write_buf, read_buf)
@@ -105,7 +105,7 @@ Reads data into the specified variable while sending data.
 
 None
 
-### 2.7 `deinit` Method
+### `deinit` Method
 
 ```python
 spi.deinit()

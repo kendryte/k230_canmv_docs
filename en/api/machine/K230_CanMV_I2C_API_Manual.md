@@ -1,14 +1,14 @@
-# 2.7 `I2C` Module API Manual
+# `I2C` Module API Manual
 
-## 1. Overview
+## Overview
 
 The K230 chip is equipped with 5 I2C hardware modules, supporting standard 100 kb/s, fast 400 kb/s, and high-speed 3.4 Mb/s communication modes. For IO configuration of channel output, please refer to the IOMUX module.
 
-## 2. Master Device API Introduction
+## Master Device API Introduction
 
 The `I2C` class is located in the `machine` module.
 
-### 2.1 Example Code
+### Example Code
 
 ```python
 from machine import I2C
@@ -44,7 +44,7 @@ i2c.writeto_mem(addr, memaddr, buf, mem_size=8)
 i2c.deinit()
 ```
 
-### 2.2 Constructor
+### Constructor
 
 ```python
 i2c = I2C(id, freq=100000, timeout = 1000, [scl, sda)
@@ -58,7 +58,7 @@ i2c = I2C(id, freq=100000, timeout = 1000, [scl, sda)
 - `scl`: Soft I2C scl pin number.
 - `sda`: Soft I2C sda pin number.
 
-### 2.3 `scan` Method
+### `scan` Method
 
 ```python
 i2c.scan()
@@ -74,7 +74,7 @@ None
 
 Returns a list containing all detected slave addresses.
 
-### 2.4 `readfrom` Method
+### `readfrom` Method
 
 ```python
 i2c.readfrom(addr, len, True)
@@ -92,7 +92,7 @@ Reads data of a specified length from the bus.
 
 Returns the read data as `bytes`.
 
-### 2.5 `readfrom_into` Method
+### `readfrom_into` Method
 
 ```python
 i2c.readfrom_into(addr, buf, True)
@@ -110,7 +110,7 @@ Reads data from a specified I2C address into a buffer.
 
 None
 
-### 2.6 `writeto` Method
+### `writeto` Method
 
 ```python
 i2c.writeto(addr, buf, True)
@@ -128,7 +128,7 @@ Writes data to a slave.
 
 Number of bytes successfully sent.
 
-### 2.7 `readfrom_mem` Method
+### `readfrom_mem` Method
 
 ```python
 i2c.readfrom_mem(addr, memaddr, nbytes, mem_size=8)
@@ -147,7 +147,7 @@ Reads values from memory, used for I2C memory-type devices.
 
 Returns the read data as `bytes`.
 
-### 2.8 `readfrom_mem_into` Method
+### `readfrom_mem_into` Method
 
 ```python
 i2c.readfrom_mem_into(addr, memaddr, buf, mem_size=8)
@@ -166,7 +166,7 @@ Reads data into a buffer, used for I2C memory-type devices.
 
 None
 
-### 2.9 `writeto_mem` Method
+### `writeto_mem` Method
 
 ```python
 i2c.writeto_mem(addr, memaddr, buf, mem_size=8)
@@ -185,7 +185,7 @@ Writes data to a slave register, used for I2C memory-type devices.
 
 None
 
-## 3. Slave Device API Introduction
+## Slave Device API Introduction
 
 The `I2C_Slave` class is located in the `machine` module.
 
@@ -193,7 +193,7 @@ The K230 I2C controller defaults to master mode but can switch to slave mode thr
 
 ![menuconfig](../../../zh/api/images/i2c_slave_menuconfig.png)
 
-### 3.1 Example Code
+### Example Code
 
 In the following example, we use the K210 as the master device and the K230 as the slave device to demonstrate communication between the master and slave via the I2C bus. The K230's IO5 is used to notify the master to read data when there is a change.
 
@@ -265,7 +265,7 @@ buf = i2c.readfrom_mem(0x10, 0, 20)
 print(buf)
 ```
 
-### 3.2 `list` Method
+### `list` Method
 
 Gets a list of all available I2C slave device IDs in the current system. This list is crucial for specifying the correct device ID when initializing an `I2C_Slave` object.
 
@@ -282,7 +282,7 @@ Returns a list containing all available I2C slave device IDs in the system. Thes
 - The ID values and their corresponding devices depend on the hardware platform and system configuration.
 - If there are no available slave devices, the returned list may be empty.
 
-### 3.3 Constructor
+### Constructor
 
 ```python
 i2c = I2C_Slave(id, addr=0x10, mem_size=20)
@@ -300,7 +300,7 @@ This constructor creates an I2C slave object, enabling the device to operate in 
 
 Returns the created I2C slave object.
 
-### 3.4 `readfrom_mem` Method
+### `readfrom_mem` Method
 
 ```python
 i2c.readfrom_mem(addr, n)
@@ -317,7 +317,7 @@ Reads data from the mapped memory address (data written by the master device thr
 
 Returns a `bytearray` containing the n bytes of data read from the specified address.
 
-### 3.5 `writeto_mem` Method
+### `writeto_mem` Method
 
 ```python
 i2c.writeto_mem(addr, data)

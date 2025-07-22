@@ -1,4 +1,4 @@
-# 1. Peripheral Routine Explanation
+# Peripheral Routine Explanation
 
 ```{toctree}
 :maxdepth: 1

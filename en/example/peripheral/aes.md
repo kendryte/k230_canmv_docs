@@ -1,12 +1,12 @@
-# 13. Explanation of AES Routines
+# Explanation of AES Routines
 
-## 1. Overview
+## Overview
 
 The K230 comes with a built-in cryptographic algorithm accelerator that supports AES and SM4 national cryptographic algorithms for encryption and decryption operations.
 
-## 2. Examples
+## Examples
 
-### 2.1 AES-GCM Example
+### AES-GCM Example
 
 This example demonstrates AES-GCM encryption and decryption computations.
 
@@ -47,7 +47,7 @@ print(val[:1] == b'\x00')
 # Other test cases...
 ```
 
-### 2.2 SM4 Example
+### SM4 Example
 
 This example demonstrates encryption and decryption computations in SM4's ECB, CFB, OFB, CBC, and CTR modes.
 

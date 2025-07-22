@@ -1,10 +1,10 @@
-# 5. SPI Examples
+# SPI Examples
 
-## 1. Overview
+## Overview
 
 The K230 integrates three SPI hardware modules, supporting configuration of chip select polarity and clock rate. The output IO of the SPI channel can be configured through the IOMUX module, making it very suitable for high-speed data transmission.
 
-## 2. Example
+## Example
 
 The following example demonstrates how to use the SPI interface to read the ID of a Flash memory.
 
@@ -66,7 +66,7 @@ spi.write_readinto(a, b)
 print(b)
 ```
 
-## 3. Code Explanation
+## Code Explanation
 
 1. **FPIOA Configuration**:
    - Use the `FPIOA` module to configure the GPIO pins used for SPI (e.g., CS, CLK, and data lines).

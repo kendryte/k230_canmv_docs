@@ -1,15 +1,15 @@
-# 5. Explanation of the UDP-Client Example
+# Explanation of the UDP-Client Example
 
-## 1. Environment Preparation
+## Environment Preparation
 
 To ensure a smooth demonstration of UDP communication, we need to confirm that the following environment is correctly configured:
 
-### 1.1 Hardware Connection
+### Hardware Connection
 
 - Ensure that your CanMV development board and computer are connected to the same router or switch via Ethernet cable to form a local area network (LAN).
 - Ensure that the router or switch is working properly to guarantee network stability.
 
-### 1.2 Disable Firewall
+### Disable Firewall
 
 - To avoid the firewall blocking UDP communication, it is recommended to temporarily disable the computer's firewall.
 
@@ -17,11 +17,11 @@ To ensure a smooth demonstration of UDP communication, we need to confirm that t
 :scale: 50 %
 ```
 
-### 1.3 Tools Preparation
+### Tools Preparation
 
 - Download and install [NetAssist Network Debugging Assistant](https://www.bing.com/search?q=netassist+cmsoft) as a network communication testing tool to help with sending and receiving network data.
 
-### 1.4 Obtain IP Address
+### Obtain IP Address
 
 - Open the command prompt (CMD), enter `ipconfig`, and record the IP address of the computer's network card for subsequent configuration and testing.
 
@@ -29,11 +29,11 @@ To ensure a smooth demonstration of UDP communication, we need to confirm that t
 :scale: 50 %
 ```
 
-## 2. Client Example Analysis
+## Client Example Analysis
 
 This UDP client example demonstrates how to create a simple UDP client, including connecting to a server, sending data, and closing the connection. You can learn the basic methods of building UDP communication applications through this example.
 
-### 2.1 Import Necessary Libraries
+### Import Necessary Libraries
 
 ```python
 import socket  
@@ -45,7 +45,7 @@ import time
 - The `network` library is used to configure network interfaces, such as enabling LAN or WLAN.
 - The `time` library provides delay operations, usually used to control data sending frequency or timeout handling.
 
-### 2.2 Configure Network Interface
+### Configure Network Interface
 
 ```python
 def network_use_wlan(is_wlan=True):
@@ -73,7 +73,7 @@ This function configures the network interface based on whether a wireless netwo
 1. **WLAN Mode**: Attempts to connect to a Wi-Fi network and waits to obtain a valid IP address before returning.
 1. **LAN Mode**: Activates the LAN interface and uses DHCP mode to obtain an IP address.
 
-### 2.3 Create UDP Socket
+### Create UDP Socket
 
 ```python
 # Get the server's IP and port number  
@@ -88,7 +88,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 Here, the server's IP and port information is obtained through `socket.getaddrinfo`, and the address and port number are extracted. Then, a UDP socket is created.
 
-### 2.4 Send Data
+### Send Data
 
 ```python
 # Send test messages
@@ -104,7 +104,7 @@ for i in range(10):
 
 In the loop, the program generates test messages and sends them to the specified server address using the `sendto` function. The message needs to be converted into a byte string before sending. After sending successfully, the number of bytes sent is printed, and a short delay is set.
 
-### 2.5 Close Socket
+### Close Socket
 
 ```python
 # Close the socket
@@ -114,7 +114,7 @@ print("Client ended.")
 
 After the data is sent, the socket is closed to release resources.
 
-### 2.6 Complete Example
+### Complete Example
 
 ```python
 import socket
@@ -170,7 +170,7 @@ def udpclient():
 udpclient()
 ```
 
-## 3. Run and Test
+## Run and Test
 
 1. Use NetAssist Network Debugging Assistant to establish a UDP connection:
 

@@ -1,12 +1,12 @@
-# 2. Display Example Explanation
+# Display Example Explanation
 
-## 1. Overview
+## Overview
 
 The K230 is equipped with one MIPI-DSI (1x4 lane) interface, which can drive a MIPI screen or convert to drive an HDMI monitor through an interface chip. Additionally, for convenience during debugging, we also support a virtual display. Users can choose the `VIRT` output device to preview images in CanMV-IDE even without an HDMI monitor or LCD screen.
 
-## 2. Examples
+## Examples
 
-### 2.1 Using HDMI to Output Images
+### Using HDMI to Output Images
 
 This example outputs a 1080P image via an HDMI display.
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     display_test()
 ```
 
-### 2.2 Using LCD to Output Images
+### Using LCD to Output Images
 
 This example outputs an 800x480 image via an LCD (ST7701).
 
@@ -129,7 +129,7 @@ if __name__ == "__main__":
     display_test()
 ```
 
-### 2.3 Using VIRT to Debug and Preview Images
+### Using VIRT to Debug and Preview Images
 
 This example uses a virtual display output device, allowing users to customize resolution and frame rate for debugging in CanMV-IDE.
 

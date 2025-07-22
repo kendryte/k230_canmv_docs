@@ -1,10 +1,10 @@
-# 7. ADC Example
+# ADC Example
 
-## 1. Overview
+## Overview
 
 The K230 integrates an internal ADC hardware module, providing 6 channels. It has a sampling resolution of 12 bits (range 0-4095) and a sampling rate of up to 1 MHz.
 
-## 2. Example
+## Example
 
 The following example demonstrates how to use the ADC interface to read sampling values and voltage.
 
@@ -21,7 +21,7 @@ print(adc.read_u16())
 print(adc.read_uv(), "uV")
 ```
 
-## 3. Code Explanation
+## Code Explanation
 
 1. **Instantiate ADC**:
    - Create an `ADC` object and specify the channel number (0 in this example) to access the ADC functionality of that channel.

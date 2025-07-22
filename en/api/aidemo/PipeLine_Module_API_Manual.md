@@ -1,12 +1,12 @@
-# 5.1 PipeLine Module API Manual
+# PipeLine Module API Manual
 
-## 1. Overview
+## Overview
 
 This manual is intended to guide developers to build a complete Media process when developing AI Demos using MicroPython, achieving the functions of acquiring images from the Camera and displaying AI inference results. This module encapsulates the default configuration of a single camera with dual channels. One channel directly sends the images from the Camera to the Display module for display; the other channel uses the `get_frame` interface to obtain a frame of image for use by the AI program.
 
-## 2. API Introduction
+## API Introduction
 
-### 2.1 init
+### init
 
 **Description**
 
@@ -36,7 +36,7 @@ pl=PipeLine(rgb888p_size=[1920,1080],display_mode='hdmi',display_size=None,osd_l
 |--------|---------------------------------|
 | PipeLine | PipeLine instance |
 
-### 2.2 create
+### create
 
 **Description**
 
@@ -68,7 +68,7 @@ pl.create(sensor=sensor)
 |--------|---------------------------------|
 | None |  |
 
-### 2.3 get_frame
+### get_frame
 
 **Description**
 
@@ -86,7 +86,7 @@ img=pl.get_frame()
 |--------|---------------------------------|
 | img | Image data in the format of ulab.numpy.ndarray with a resolution of rgb888p_size |
 
-### 2.4 show_image
+### show_image
 
 **Description**
 
@@ -104,7 +104,7 @@ pl.show_image()
 |--------|---------------------------------|
 | None |  |
 
-### 2.5 get_display_size
+### get_display_size
 
 **Description**
 
@@ -122,7 +122,7 @@ display_size=pl.get_display_size()
 |--------|---------------------------------|
 | list | Return the display width and height [display_width, display_height] of the screen configuration |
 
-### 2.6 destroy
+### destroy
 
 **Description**
 
@@ -140,7 +140,7 @@ img=pl.destroy()
 |--------|---------------------------------|
 | None |  |
 
-## 3. Example Program
+## Example Program
 
 The following is an example program:
 

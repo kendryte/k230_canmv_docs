@@ -1,4 +1,4 @@
-# 2. Micropython Specific Libraries
+# Micropython Specific Libraries
 
 ```{toctree}
 :maxdepth: 1

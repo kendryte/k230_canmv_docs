@@ -1,4 +1,4 @@
-# 1.4 `gc` – Memory Management API Manual
+# `gc` – Memory Management API Manual
 
 This module implements a subset of the CPython memory management module's functionality. For more details, please refer to the original CPython documentation: [gc](https://docs.python.org/3.5/library/gc.html#module-gc).
 
@@ -9,9 +9,9 @@ On the `K230`, the following interfaces have been added to obtain memory informa
 - `sys_page`: Used for user application memory management.
 - `sys_mmz`: Used for multimedia driver memory management, suitable for modules like `Sensor`, `Display`, etc.
 
-## 1. Functions
+## Functions
 
-### 1.1 `enable`
+### `enable`
 
 ```python
 gc.enable()
@@ -19,7 +19,7 @@ gc.enable()
 
 Enables the automatic garbage collection mechanism.
 
-### 1.2 `disable`
+### `disable`
 
 ```python
 gc.disable()
@@ -27,7 +27,7 @@ gc.disable()
 
 Disables the automatic garbage collection mechanism. While disabled, heap memory allocation is still possible, and garbage collection can be performed manually by calling `gc.collect()`.
 
-### 1.3 `collect`
+### `collect`
 
 ```python
 gc.collect()
@@ -35,7 +35,7 @@ gc.collect()
 
 Manually runs the garbage collection process to reclaim unused memory.
 
-### 1.4 `mem_alloc`
+### `mem_alloc`
 
 ```python
 gc.mem_alloc()
@@ -47,7 +47,7 @@ Returns the number of bytes of currently allocated heap memory.
 This feature is an extension of MicroPython and is not included in CPython.
 ```
 
-### 1.5 `mem_free`
+### `mem_free`
 
 ```python
 gc.mem_free()
@@ -59,7 +59,7 @@ Returns the number of bytes of currently available heap memory. If the remaining
 This feature is an extension of MicroPython and is not included in CPython.
 ```
 
-### 1.6 `threshold`
+### `threshold`
 
 ```python
 gc.threshold([amount])
@@ -73,7 +73,7 @@ Without parameters, this function returns the current threshold setting. A retur
 This function is an extension of MicroPython. CPython has a similar `set_threshold()` function, but due to differences in the garbage collection mechanism, its signature and semantics are different.
 ```
 
-### 1.7 `sys_total`
+### `sys_total`
 
 ```python
 gc.sys_total()
@@ -81,7 +81,7 @@ gc.sys_total()
 
 Queries the system `total` memory size, in bytes.
 
-### 1.8 `sys_heap`
+### `sys_heap`
 
 ```python
 gc.sys_heap()
@@ -89,7 +89,7 @@ gc.sys_heap()
 
 Queries the system `heap` memory usage, returning a tuple containing 3 elements representing `total` (total memory), `free` (available memory), and `used` (used memory), in bytes.
 
-### 1.9 `sys_page`
+### `sys_page`
 
 ```python
 gc.sys_page()
@@ -97,7 +97,7 @@ gc.sys_page()
 
 Queries the system `page` memory usage, returning a tuple containing 3 elements representing `total` (total memory), `free` (available memory), and `used` (used memory), in bytes.
 
-### 1.10 `sys_mmz`
+### `sys_mmz`
 
 ```python
 gc.sys_mmz()

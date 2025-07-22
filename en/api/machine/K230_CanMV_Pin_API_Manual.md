@@ -1,10 +1,10 @@
-# 2.6 `Pin` Module API Manual
+# `Pin` Module API Manual
 
-## 1. Overview
+## Overview
 
 The K230 chip contains 64 GPIO (General Purpose Input/Output) pins, each of which can be configured as either input or output mode, supporting pull-up and pull-down resistor configurations and drive capability settings. These pins can be flexibly used for various digital input/output scenarios.
 
-## 2. API Introduction
+## API Introduction
 
 The `Pin` class is located in the `machine` module and is used to control the GPIO pins of the K230 chip.
 
@@ -202,7 +202,7 @@ Enables IO interrupt functionality.
 **Return Value**  
 mq_irq object
 
-## 3. Constant Definitions
+## Constant Definitions
 
 ### Modes
 

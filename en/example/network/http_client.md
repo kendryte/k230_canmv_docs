@@ -1,14 +1,14 @@
-# 7. HTTP-Client Example Explanation
+# HTTP-Client Example Explanation
 
-## 1. Environment Setup
+## Environment Setup
 
 First, ensure that the CanMV development board is connected to a router or switch via an Ethernet port, and that the router is functioning properly with internet access. This is the basic setup for making HTTP requests.
 
-## 2. Detailed Example
+## Detailed Example
 
 The following Python example demonstrates how to implement an HTTP client on the CanMV development board. This client sends an HTTP GET request to a specified server (in this case, Baidu) and receives the response content.
 
-### 2.1 Import Necessary Modules
+### Import Necessary Modules
 
 ```python
 import network  
@@ -18,7 +18,7 @@ import socket
 - The `network` module is used to manage network interfaces.
 - The `socket` module provides the underlying interface for network communication.
 
-### 2.2 Define the Main Function
+### Define the Main Function
 
 ```python
 def main(use_stream=True):  
@@ -27,7 +27,7 @@ def main(use_stream=True):
 
 The `main` function defines a parameter `use_stream` which determines whether to use a stream interface to read the response data. The default value is `True`, which controls the data reception method.
 
-### 2.3 Configure Network Interface
+### Configure Network Interface
 
 ```python
 def network_use_wlan(is_wlan=True):
@@ -55,7 +55,7 @@ This function configures the network interface based on the input:
 1. **WLAN Mode**: Connects to a specified Wi-Fi network (SSID is "Canaan") using the wireless network interface (WLAN).
 1. **LAN Mode**: Automatically obtains an IP address using the wired network interface (LAN).
 
-### 2.4 Create and Configure Socket
+### Create and Configure Socket
 
 ```python
 # Create socket object  
@@ -80,7 +80,7 @@ print("Connection address:", addr)
 
 This code creates a `socket` object and uses the `getaddrinfo` function to obtain the server's (Baidu) address and port information. It employs a retry mechanism to enhance robustness.
 
-### 2.5 Send HTTP Request and Receive Response
+### Send HTTP Request and Receive Response
 
 ```python
 # Connect to the server  
@@ -102,7 +102,7 @@ s.close()
 
 The code selects whether to use the stream interface or directly use the socket interface to send an HTTP request and read the response data based on the `use_stream` parameter.
 
-### 2.6 Function Invocation
+### Function Invocation
 
 ```python
 # Test both stream and non-stream interfaces  
@@ -112,7 +112,7 @@ main(use_stream=False)
 
 The `main` function is called with different `use_stream` parameters to test the effects of reading the HTTP response using stream and non-stream methods. If `use_stream` is `True`, it uses the stream interface to send the request and read the entire response; if `False`, it directly sends the request and receives a fixed length of response data (4096 bytes in this example). Finally, the socket connection is closed to release resources.
 
-### 2.7 Complete Example
+### Complete Example
 
 ```python
 import network

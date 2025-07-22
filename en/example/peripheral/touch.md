@@ -1,10 +1,10 @@
-# 12. TOUCH Routine
+# TOUCH Routine
 
-## 1. Overview
+## Overview
 
 The touch module of the K230 is based on the touch framework encapsulated by RT-Smart, supporting operations for single-point and multi-point capacitive touch screens as well as resistive touch screens.
 
-## 2. Example
+## Example
 
 The following example demonstrates how to use the TOUCH module to read touch data.
 
@@ -26,7 +26,7 @@ print(p)
 # print(p[0].event)
 ```
 
-## 3. Code Explanation
+## Code Explanation
 
 1. **Import the module**:
    - Import the `TOUCH` module.

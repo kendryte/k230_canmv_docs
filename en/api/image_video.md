@@ -1,4 +1,4 @@
-# 3. Image Multimedia
+# Image Multimedia
 
 ```{toctree}
 :maxdepth: 1

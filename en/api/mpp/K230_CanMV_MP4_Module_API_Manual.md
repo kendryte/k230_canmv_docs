@@ -1,14 +1,14 @@
-# 3.7 `MP4` Module API Manual
+# `MP4` Module API Manual
 
-## 1. Overview
+## Overview
 
 This document provides a detailed introduction to the K230_CanMV MP4 module API's functionality and usage. The MP4 module is primarily used for generating MP4 files. Developers do not need to focus on the underlying implementation details; they can simply call the provided APIs to generate MP4 files with different encoding formats and video resolutions. This document will introduce both the MP4Container API and the kd_mp4* API, helping developers quickly get started and flexibly use these interfaces.
 
-## 2. MP4Container API Introduction
+## MP4Container API Introduction
 
 The `MP4Container` class provides a convenient way to record camera footage and capture audio to generate MP4 files. This module simplifies the MP4 file processing workflow, making it suitable for application scenarios where there is no need to focus on the underlying implementation details.
 
-### 2.1 MP4Container.Create
+### MP4Container.Create
 
 **Description**
 
@@ -33,7 +33,7 @@ MP4Container.Create(mp4Cfg)
 | 0            | Success     |
 | Non-0        | Failure     |
 
-### 2.2 MP4Container.Start
+### MP4Container.Start
 
 **Description**
 
@@ -56,7 +56,7 @@ None
 | 0            | Success     |
 | Non-0        | Failure     |
 
-### 2.3 MP4Container.Process
+### MP4Container.Process
 
 **Description**
 
@@ -79,7 +79,7 @@ None
 | 0            | Success     |
 | Non-0        | Failure     |
 
-### 2.4 MP4Container.Stop
+### MP4Container.Stop
 
 **Description**
 
@@ -102,7 +102,7 @@ None
 | 0            | Success     |
 | Non-0        | Failure     |
 
-### 2.5 MP4Container.Destroy
+### MP4Container.Destroy
 
 **Description**
 
@@ -125,11 +125,11 @@ None
 | 0            | Success     |
 | Non-0        | Failure     |
 
-## 3. kd_mp4* API Introduction
+## kd_mp4* API Introduction
 
 This section provides a detailed description of the low-level function interfaces related to the MP4 module, which are used for more flexible control over the creation, writing, and reading of MP4 files. These interfaces are suitable for developers who need higher flexibility and control, allowing them to finely manage various aspects of MP4 files, including container creation, track management, data writing, and reading, and integrate with other modules to create a comprehensive solution.
 
-### 3.1 kd_mp4_create
+### kd_mp4_create
 
 **Description**
 Creates an MP4 container instance and initializes the configuration.
@@ -153,7 +153,7 @@ ret = kd_mp4_create(handle, mp4_cfg)
 | 0            | Success           |
 | Non-0        | Failure, see specific implementation for error codes |
 
-### 3.2 kd_mp4_create_track
+### kd_mp4_create_track
 
 **Description**
 Creates an audio/video track in the MP4 container.
@@ -177,7 +177,7 @@ ret = kd_mp4_create_track(handle, track_handle, track_info)
 | 0            | Success           |
 | Non-0        | Failure           |
 
-### 3.3 kd_mp4_destroy_tracks
+### kd_mp4_destroy_tracks
 
 **Description**
 Destroys all created tracks in the MP4 container.
@@ -199,7 +199,7 @@ ret = kd_mp4_destroy_tracks(handle)
 | 0            | Success           |
 | Non-0        | Failure           |
 
-### 3.4 kd_mp4_write_frame
+### kd_mp4_write_frame
 
 **Description**
 Writes a frame of audio/video data to the MP4 file.
@@ -223,7 +223,7 @@ ret = kd_mp4_write_frame(handle, track_id, frame_data)
 | 0            | Success           |
 | Non-0        | Failure           |
 
-### 3.5 kd_mp4_get_file_info
+### kd_mp4_get_file_info
 
 **Description**
 Gets global information of the MP4 file (e.g., total duration, number of tracks).
@@ -247,7 +247,7 @@ ret = kd_mp4_get_file_info(handle, file_info)
 | 0            | Success           |
 | Non-0        | Failure           |
 
-### 3.6 kd_mp4_get_track_by_index
+### kd_mp4_get_track_by_index
 
 **Description**
 Gets detailed information of a specified track by index.
@@ -272,7 +272,7 @@ ret = kd_mp4_get_track_by_index(handle, track_index, track_info)
 | 0            | Success           |
 | Non-0        | Failure           |
 
-### 3.7 kd_mp4_get_frame
+### kd_mp4_get_frame
 
 **Description**
 Reads a frame of audio/video data from the MP4 file.
@@ -297,7 +297,7 @@ ret = kd_mp4_get_frame(handle, frame_data)
 
 - MP4Container.Create
 
-### 4.3 MP4Container Type
+### MP4Container Type
 
 **Description**
 
@@ -310,7 +310,7 @@ Enumeration of MP4Container types.
 | MP4_CONFIG_TYPE_MUXER      | Muxer type                 |
 | MP4_CONFIG_TYPE_DEMUXER    | Demuxer type, currently unsupported |
 
-### 4.4 video_payload_type
+### video_payload_type
 
 **Description**
 
@@ -323,7 +323,7 @@ Video encoding types.
 | MP4_CODEC_ID_H264          | H.264 video encoding type  |
 | MP4_CODEC_ID_H265          | H.265 video encoding type  |
 
-### 4.5 audio_payload_type
+### audio_payload_type
 
 **Description**
 
@@ -336,7 +336,7 @@ Audio encoding types.
 | MP4_CODEC_ID_G711U         | G.711U audio encoding type |
 | MP4_CODEC_ID_G711A         | G.711A audio encoding type |
 
-### 4.6 k_mp4_config_s
+### k_mp4_config_s
 
 **Description**
 
@@ -350,7 +350,7 @@ Global configuration structure for MP4 container.
 | muxer_config               | Muxer configuration (file name, encoding format, etc.) |
 | demuxer_config             | Demuxer configuration (currently unsupported) |
 
-### 4.7 k_mp4_track_info_s
+### k_mp4_track_info_s
 
 **Description**
 
@@ -365,7 +365,7 @@ Track information structure for creating audio/video tracks.
 | video_info                 | Video parameters (resolution, encoding format, etc.) |
 | audio_info                 | Audio parameters (sampling rate, number of channels, etc.) |
 
-### 4.8 k_mp4_frame_data_s
+### k_mp4_frame_data_s
 
 **Description**
 

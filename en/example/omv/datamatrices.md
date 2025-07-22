@@ -1,12 +1,12 @@
-# 4. Explanation of the DM Code Recognition Routine
+# Explanation of the DM Code Recognition Routine
 
-## 1. Overview
+## Overview
 
 The Data Matrix code is a type of two-dimensional barcode widely used for identifying and tracking small products. It consists of small black and white squares arranged in a rectangular or square grid.
 
 CanMV supports the OpenMV algorithm capable of recognizing Data Matrix codes. The relevant interface is `find_datamatrices`.
 
-## 2. Example
+## Example
 
 This example sets the camera output to a 640x480 grayscale image and uses `image.find_datamatrices` to recognize Data Matrix codes.
 

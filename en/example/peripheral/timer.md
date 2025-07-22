@@ -1,10 +1,10 @@
-# 10. TIMER Example
+# TIMER Example
 
-## 1. Overview
+## Overview
 
 The K230 contains 6 Timer hardware modules with a minimum timing period of 1 microsecond. These timers enable precise timing and periodic tasks.
 
-## 2. Example
+## Example
 
 The following example demonstrates how to use the Timer module for timing operations.
 
@@ -27,7 +27,7 @@ time.sleep(2)
 tim.deinit()
 ```
 
-## 3. Code Explanation
+## Code Explanation
 
 1. **Instantiate Timer**:
    - Create a `Timer` object, `-1` indicates using a software timer.

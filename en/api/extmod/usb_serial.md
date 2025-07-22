@@ -1,4 +1,4 @@
-# 2.19 `USB Serial` Module API Manual
+# `USB Serial` Module API Manual
 
 ## Overview
 

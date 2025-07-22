@@ -1,10 +1,10 @@
-# 15. LED Routine Explanation
+# LED Routine Explanation
 
-## 1. Overview
+## Overview
 
 The K230 development board comes with an onboard LED light that users can easily control using the `machine.LED` module. This feature can be used to indicate status or provide visual feedback.
 
-## 2. Example
+## Example
 
 The following example demonstrates how to use the LED module of the K230 to control the LED's on/off state and brightness:
 
@@ -33,7 +33,7 @@ while True:
     time.sleep_ms(250)     # Pause for 250 milliseconds
 ```
 
-## 3. Code Explanation
+## Code Explanation
 
 This routine demonstrates how to control the LED on the K230 development board using its LED module. By adjusting the LED's state and brightness, developers can achieve various visual effects to enhance the interactive experience.
 

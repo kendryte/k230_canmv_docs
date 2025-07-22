@@ -1,10 +1,10 @@
-# 4. Ai2d Preprocessing Examples
+# Ai2d Preprocessing Examples
 
-## 1. Overview
+## Overview
 
 Based on the interfaces provided by the `nncase_runtime` module, the AIDemo part has performed secondary encapsulation on `nncase_runtime.ai2d`. The encapsulation file is in the `/sdcard/libs/AI2D.py` module. The provided interfaces can be found in: [Ai2d Module API Manual](../../api/aidemo/Ai2d Module API Manual.md). For the 5 preprocessing methods provided by Ai2d, this document provides examples, visualizing the results of preprocessing to help users better understand and use the Ai2d preprocessing process. The unencapsulated `nncase_runtime.ai2d` interfaces can be found in: [nncase_usage](./nncase_usage.md).
 
-## 2. resize Method
+## resize Method
 
 The resize method is an operation widely used in image preprocessing. It is mainly used to change the size of an image. Whether it is to enlarge or reduce an image, this method can be used to achieve it. Here is the sample code for implementing the resize process using `Ai2d`.
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     pl.destroy()                            # Destroy the PipeLine instance
 ```
 
-## 3. crop Method
+## crop Method
 
 The crop method is an operation used to extract (crop) the region of interest (ROI) from the original image. It can select a part of the image as a new image according to the specified coordinates and size. Here is the sample code for implementing the crop process using `Ai2d`.
 
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     pl.destroy()                            # Destroy the PipeLine instance
 ```
 
-## 4. pad Method
+## pad Method
 
 The pad (padding) method is a technique for padding the edges of an image in the image preprocessing stage. It changes the size of the image by adding pixel values around the image (top, bottom, left, and right). These added pixel values can be customized. Here is the sample code for implementing the pad process using `Ai2d`.
 
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     pl.destroy()                            # Destroy the PipeLine instance
 ```
 
-## 5. affine Method
+## affine Method
 
 The affine (affine transformation) method is a technique used for geometric transformation of images in image preprocessing. It can implement various geometric transformation operations such as rotation, translation, and scaling of images, and can maintain the "straightness" of the image (i.e., a straight line remains a straight line after transformation) and "parallelism" (i.e., parallel lines remain parallel after transformation). Here is the sample code for implementing the affine process using `Ai2d`.
 
@@ -191,7 +191,7 @@ if __name__ == "__main__":
     pl.destroy()                            # Destroy PipeLine instance
 ```
 
-## 6. shift Method
+## shift Method
 
 The shift method is a bitwise right shift method used in data preprocessing, where each right shift halves the original data. Here is an example code demonstrating the use of Ai2d to implement the affine transformation process.
 

@@ -1,4 +1,4 @@
-# 1.3 `utime` Time-Related Functions API Manual
+# `utime` Time-Related Functions API Manual
 
 This module implements a subset of the functionality of the CPython module as described below. For more detailed information, please refer to the original CPython documentation: [time](https://docs.python.org/3.5/library/time.html#module-time).
 

@@ -1,10 +1,10 @@
-# 2. GPIO Example
+# GPIO Example
 
-## 1. Overview
+## Overview
 
 The K230 chip integrates 64 GPIO pins, each of which can be configured as either input or output mode. It also supports pull-up and pull-down resistor configurations as well as drive strength settings. The flexible configuration of GPIO pins makes it widely applicable in various scenarios.
 
-## 2. Example
+## Example
 
 The following code example demonstrates how to configure and control GPIO pins using the GPIO module:
 

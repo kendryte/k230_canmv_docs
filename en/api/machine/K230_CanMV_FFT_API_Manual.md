@@ -1,14 +1,14 @@
-# 2.5 `FFT` Module API Manual
+# `FFT` Module API Manual
 
-## 1. Overview
+## Overview
 
 The FFT (Fast Fourier Transform) module is used to perform a Fourier transform on input time-domain data, converting it into frequency-domain data and returning the corresponding frequency magnitudes. Through FFT operations, time-domain signals can be effectively transformed into frequency-domain signals, facilitating the analysis of the signal's frequency components.
 
-## 2. API Introduction
+## API Introduction
 
 The FFT module provides an `FFT` class, supporting three main functions: `run()`, `freq()`, and `amplitude()`, which are used for performing Fast Fourier Transform, frequency calculation, and amplitude calculation, respectively.
 
-### 2.1 Class `machine.FFT`
+### Class `machine.FFT`
 
 **Description**
 
@@ -42,7 +42,7 @@ fft1 = FFT(data, 64, 0)
 | 0            | Operation successful. |
 | Non-zero     | Operation failed.     |
 
-### 2.1.1 `run()` Method
+### `run()` Method
 
 **Description**
 
@@ -64,7 +64,7 @@ None
 |--------------|-----------------------------------------------------------|
 | `res`        | Returns a `list` containing the frequency-domain data, which includes `points` tuples, each containing 2 elements: the real part and the imaginary part. |
 
-### 2.1.2 `freq()` Method
+### `freq()` Method
 
 **Description**
 
@@ -89,7 +89,7 @@ res = FFT.freq(points, sample_rate)
 |--------------|--------------------------------------|
 | `res`        | Returns a list containing the frequency values for each frequency point. |
 
-### 2.1.3 `amplitude()` Method
+### `amplitude()` Method
 
 **Description**
 

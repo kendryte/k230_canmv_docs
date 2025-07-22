@@ -1,4 +1,4 @@
-# 3. AI Routine Explanation
+# AI Routine Explanation
 
 ```{toctree}
 :maxdepth: 1

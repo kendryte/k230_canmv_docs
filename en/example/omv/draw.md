@@ -1,14 +1,14 @@
-# 5. Common Image Drawing Routines Explanation
+# Common Image Drawing Routines Explanation
 
-## 1. Overview
+## Overview
 
 OpenMV is a small embedded machine vision module widely used for rapid development of computer vision applications. OpenMV's image drawing methods can be used to draw various shapes and text on images for visual feedback and debugging.
 
 CanMV supports OpenMV image drawing methods and adds some, such as [draw_string_advanced](../../api/openmv/image.md#129-draw_string_advanced) for drawing Chinese strings.
 
-## 2. Common Functions
+## Common Functions
 
-### 2.1 draw_string_advanced
+### draw_string_advanced
 
 The `draw_string_advanced` function uses freetype to render text and supports Chinese, and users can also specify the font.
 
@@ -32,7 +32,7 @@ image.draw_string_advanced(x, y, char_size, str, [color, font])
 img.draw_string_advanced(10, 10, 32, "你好世界", color=(255, 0, 0))  # Draw red text
 ```
 
-### 2.2 draw_line
+### draw_line
 
 The `draw_line` function can draw a line on the image.
 
@@ -54,7 +54,7 @@ image.draw_line(x0, y0, x1, y1, color)
 img.draw_line(10, 10, 100, 100, color=(255, 0, 0))  # Draw red line
 ```
 
-### 2.3 draw_rectangle
+### draw_rectangle
 
 The `draw_rectangle` function can draw a rectangle on the image.
 
@@ -77,7 +77,7 @@ image.draw_rectangle(x, y, w, h, color, thickness=1)
 img.draw_rectangle(20, 20, 50, 30, color=(0, 255, 0), thickness=2)  # Draw green rectangle
 ```
 
-### 2.4 draw_circle
+### draw_circle
 
 The `draw_circle` function can draw a circle on the image.
 
@@ -100,7 +100,7 @@ image.draw_circle(x, y, r, color, thickness=1)
 img.draw_circle(60, 60, 30, color=(0, 0, 255), thickness=3)  # Draw blue circle
 ```
 
-### 2.5 draw_cross
+### draw_cross
 
 The `draw_cross` function can draw a cross on the image.
 
@@ -123,7 +123,7 @@ image.draw_cross(x, y, color, size=5, thickness=1)
 img.draw_cross(40, 40, color=(255, 255, 0), size=10, thickness=2)  # Draw yellow cross
 ```
 
-### 2.6 draw_arrow
+### draw_arrow
 
 The `draw_arrow` function can draw an arrow line on the image.
 
@@ -146,7 +146,7 @@ image.draw_arrow(x0, y0, x1, y1, color, thickness=1)
 img.draw_arrow(10, 10, 100, 100, color=(255, 0, 0), thickness=2)  # Draw red arrow
 ```
 
-### 2.7 draw_ellipse
+### draw_ellipse
 
 The `draw_ellipse` function can draw an ellipse on the image.
 
@@ -169,7 +169,7 @@ image.draw_ellipse(cx, cy, rx, ry, color, thickness=1)
 img.draw_ellipse(60, 60, 30, 20, color=(0, 0, 255), thickness=3)  # Draw blue ellipse
 ```
 
-### 2.8 draw_image
+### draw_image
 
 The `draw_image` function can draw another image on the current image.
 
@@ -193,7 +193,7 @@ overlay = image.Image("overlay.bmp")
 img.draw_image(overlay, 10, 10, alpha=128, scale=1.0)  # Draw overlay.bmp at (10, 10)
 ```
 
-### 2.9 draw_keypoints
+### draw_keypoints
 
 The `draw_keypoints` function can draw keypoints on the image.
 
@@ -217,7 +217,7 @@ keypoints = [(30, 30), (50, 50), (70, 70)]
 img.draw_keypoints(keypoints, size=10, color=(255, 255, 0), thickness=2)  # Draw yellow keypoints
 ```
 
-### 2.10 flood_fill
+### flood_fill
 
 The `flood_fill` function can perform a flood fill algorithm on the image, starting from a specified point and filling with a specified color.
 
@@ -241,7 +241,7 @@ image.flood_fill(x, y, color, threshold, invert=False, clear_background=False)
 img.flood_fill(30, 30, color=(255, 0, 0), threshold=30, invert=False, clear_background=False)  # Start flood fill with red color from (30, 30)
 ```
 
-### 2.11 draw_string
+### draw_string
 
 The `draw_string` function can draw a string on the image.
 
@@ -264,7 +264,7 @@ image.draw_string(x, y, text, color, scale=1)
 img.draw_string(10, 10, "Hello OpenMV", color=(255, 255, 255), scale=2)  # Draw white string
 ```
 
-## 3. Example
+## Example
 
 This example is for demonstration purposes only.
 

@@ -1,15 +1,15 @@
-# 6. UDP Server Example Explanation
+# UDP Server Example Explanation
 
-## 1. Environment Preparation
+## Environment Preparation
 
 To ensure a smooth demonstration of UDP communication, we need to confirm that the following environment is correctly configured:
 
-### 1.1 Hardware Connection
+### Hardware Connection
 
 - Ensure that your CanMV development board and computer are connected to the same router or switch via Ethernet cable, forming a local area network (LAN).
 - Ensure that the router or switch is functioning properly to maintain a stable network connection.
 
-### 1.2 Disable Firewall
+### Disable Firewall
 
 - To prevent the firewall from blocking UDP communication, it is recommended to temporarily disable the firewall on your computer.
 
@@ -17,11 +17,11 @@ To ensure a smooth demonstration of UDP communication, we need to confirm that t
 :scale: 50 %
 ```
 
-### 1.3 Tool Preparation
+### Tool Preparation
 
 - Download and install [NetAssist Network Debug Assistant](https://www.bing.com/search?q=netassist+cmsoft) as a network communication testing tool to help with sending and receiving network data.
 
-### 1.4 Obtain IP Address
+### Obtain IP Address
 
 - Open the command prompt (CMD), enter `ipconfig`, and query and record the IP address of the computer's network card for subsequent configuration and testing.
 
@@ -29,11 +29,11 @@ To ensure a smooth demonstration of UDP communication, we need to confirm that t
 :scale: 50 %
 ```
 
-## 2. Server Example Analysis
+## Server Example Analysis
 
 This example demonstrates how to create a simple UDP server, including configuring the network interface, creating a socket, binding the address and port, receiving and sending data, and closing the socket. Through this example, you can learn how to build a basic network communication application.
 
-### 2.1 Import Necessary Libraries
+### Import Necessary Libraries
 
 ```python
 import socket  
@@ -45,7 +45,7 @@ import time
 - `network`: Used to configure network interfaces, such as LAN or WLAN.
 - `time`: Used for delay processing, which may be used for timeout control in network requests.
 
-### 2.2 Configure Network Interface
+### Configure Network Interface
 
 ```python
 def network_use_wlan(is_wlan=True):
@@ -80,7 +80,7 @@ This code configures the network interface based on the input parameters, follow
    - Activate the LAN interface and check its status. If not activated, raise an exception.
    - Use DHCP to obtain an IP address, print the network configuration, and return the IP address.
 
-### 2.3 Create UDP Socket
+### Create UDP Socket
 
 ```python
 # Create UDP socket  
@@ -95,7 +95,7 @@ s.bind(addr)
 
 We created a UDP-type socket and set the `SO_REUSEADDR` option to allow address reuse. Then, we used `getaddrinfo` to get the address and port number information and bound the socket to that address and port.
 
-### 2.4 Receive and Send Data
+### Receive and Send Data
 
 ```python
 # Delay 1 second to ensure socket binding is complete  
@@ -119,7 +119,7 @@ print("UDP Server exited!!")
 
 The program receives up to 800 bytes of data using the `recvfrom` method and prints the received data and client address. Then, it constructs a reply message and sends it using `sendto`. The program includes exception handling to capture and debug errors.
 
-### 2.5 Complete Example
+### Complete Example
 
 ```python
 # Configure TCP/UDP socket debugging tool
@@ -183,7 +183,7 @@ udpserver()
 
 For specific interface definitions, please refer to [socket](../../api/extmod/K230_CanMV_socket_API_Manual.md) and [network](../../api/extmod/K230_CanMV_network_API_Manual.md).
 
-## 3. Example Phenomenon and Operation Instructions
+## Example Phenomenon and Operation Instructions
 
 After running the code, the serial terminal will output the server's IP address and port number information:
 

@@ -1,12 +1,12 @@
-# 3.3 `Audio` Module API Manual
+# `Audio` Module API Manual
 
-## 1. Overview
+## Overview
 
 This manual aims to provide a detailed introduction to the CanMV audio module, guiding developers on how to achieve audio capture and playback functions by calling the Python API interface.
 
-## 2. API Introduction
+## API Introduction
 
-### 2.1 mpp.wave
+### mpp.wave
 
 The `wave` module provides a convenient way to read and process WAV files. Using the `wave.open` function, you can open a WAV file and return the corresponding class object.
 
@@ -15,7 +15,7 @@ The `wave` module provides a convenient way to read and process WAV files. Using
 
 This module, when used in conjunction with the `pyaudio` module, can easily achieve the playback and capture of WAV file audio and save WAV audio files.
 
-#### 2.1.1 open
+#### open
 
 **Description**
 
@@ -41,11 +41,11 @@ def open(f, mode=None)
 | Wave_read or Wave_write class object | Success                         |
 | Others                        | Failure, raises an exception      |
 
-#### 2.1.2 wave.Wave_read
+#### wave.Wave_read
 
 The `Wave_read` class provides methods for obtaining metadata from a WAV file (such as sample rate, sample points, number of channels, and sampling precision) and reading WAV audio data from the file.
 
-##### 2.1.2.1 get_channels
+##### get_channels
 
 **Description**
 
@@ -68,7 +68,7 @@ None
 | >0           | Success     |
 | 0            | Failure     |
 
-##### 2.1.2.2 get_sampwidth
+##### get_sampwidth
 
 **Description**
 
@@ -91,7 +91,7 @@ None
 | >0 (Valid range [1, 2, 3, 4] corresponding to sampling precision [8, 16, 24, 32]) | Success     |
 | 0                                                | Failure     |
 
-##### 2.1.2.3 get_framerate
+##### get_framerate
 
 **Description**
 
@@ -114,7 +114,7 @@ None
 | >0 (Valid range (8000~192000)) | Success     |
 | 0                        | Failure     |
 
-##### 2.1.2.4 read_frames
+##### read_frames
 
 **Description**
 
@@ -138,11 +138,11 @@ def read_frames(self, nframes)
 |---------------|-------------|
 | bytes sequence |             |
 
-#### 2.1.3 wave.Wave_write
+#### wave.Wave_write
 
 The `Wave_write` class provides methods for setting metadata for a WAV file (such as sample rate, sample points, number of channels, and sampling precision) and saving PCM audio data to a WAV file.
 
-##### 2.1.3.1 set_channels
+##### set_channels
 
 **Description**
 
@@ -164,7 +164,7 @@ def set_channels(self, nchannels)
 
 None
 
-##### 2.1.3.2 set_sampwidth
+##### set_sampwidth
 
 **Description**
 
@@ -186,7 +186,7 @@ def set_sampwidth(self, sampwidth)
 
 None
 
-##### 2.1.3.3 set_framerate
+##### set_framerate
 
 **Description**
 
@@ -208,7 +208,7 @@ def set_framerate(self, framerate)
 
 None
 
-##### 2.1.3.4 write_frames
+##### write_frames
 
 **Description**
 
@@ -230,15 +230,15 @@ def write_frames(self, data)
 
 None
 
-### 2.2 mpp.pyaudio
+### mpp.pyaudio
 
-The `pyaudio` module is used for audio processing, responsible for capturing and playing binary PCM audio data. To play WAV format files or save captured data as WAV files, it needs to be used in conjunction with the `mpp.wave` library, as detailed in the [Example Programs](#3-example-programs) section.
+The `pyaudio` module is used for audio processing, responsible for capturing and playing binary PCM audio data. To play WAV format files or save captured data as WAV files, it needs to be used in conjunction with the `mpp.wave` library, as detailed in the [Example Programs](#example-programs) section.
 
-#### 2.2.1 pyaudio.PyAudio
+#### pyaudio.PyAudio
 
 Responsible for managing multiple audio input and output channels, each channel is represented as a Stream class object.
 
-##### 2.2.1.1 open
+##### open
 
 **Description**
 
@@ -261,7 +261,7 @@ Variable parameters, refer to [`Stream.__init__`].
 | py:class:`Stream`       | Success                           |
 | Others                  | Failure, raises an exception      |
 
-##### 2.2.1.2 close
+##### close
 
 **Description**
 
@@ -285,7 +285,7 @@ None
 
 This function will call the `close` method in the Stream object and remove the Stream object from the PyAudio object. Therefore, this function can be omitted, and the Stream.close method can be called directly.
 
-##### 2.2.1.3 terminate
+##### terminate
 
 **Description**
 
@@ -309,11 +309,11 @@ None
 
 This function will call the `close` method in the Stream object and remove the Stream object from the PyAudio object. Therefore, this function can be omitted, and the Stream.close method can be called directly.
 
-#### 2.2.2 pyaudio.Stream
+#### pyaudio.Stream
 
 The `Stream` class object is used to manage a single audio input or output channel.
 
-##### 2.2.2.1 `__init__`
+##### `__init__`
 
 **Description**
 
@@ -358,7 +358,7 @@ def __init__(self,
 
 None
 
-##### 2.2.2.2 start_stream
+##### start_stream
 
 **Description**
 
@@ -378,7 +378,7 @@ None
 
 None
 
-##### 2.2.2.3 stop_stream
+##### stop_stream
 
 **Description**
 
@@ -398,7 +398,7 @@ None
 
 None
 
-##### 2.2.2.4 read
+##### read
 
 **Description**
 
@@ -422,7 +422,7 @@ def read(self, frames)
 |---------------|-------------------|
 | bytes         | Read audio data   |
 
-##### 2.2.2.5 write
+##### write
 
 **Description**
 
@@ -444,7 +444,7 @@ def write(self, data)
 
 None
 
-##### 2.2.2.6 volume
+##### volume
 
 **Description**
 
@@ -468,7 +468,7 @@ def volume(self, vol=None, channel=LEFT_RIGHT)
 When setting the volume, return value: None
 When getting the volume, return value: tuple
 
-##### 2.2.2.7 enable_audio3a
+##### enable_audio3a
 
 **Description**
 
@@ -490,7 +490,7 @@ def enable_audio3a(self, audio3a_value)
 
 None
 
-##### 2.2.2.8 audio3a_send_far_echo_frame
+##### audio3a_send_far_echo_frame
 
 **Description**
 
@@ -513,9 +513,9 @@ def audio3a_send_far_echo_frame(self, frame_data, data_len)
 
 None
 
-### 3. Example Programs
+### Example Programs
 
-#### 3.1 Example of Playing a WAV File
+#### Example of Playing a WAV File
 
 ```python
 import pyaudio
@@ -547,7 +547,7 @@ def play_wav(file_path):
     p.terminate()
 ```
 
-#### 3.2 Example of Capturing Audio and Saving as a WAV File
+#### Example of Capturing Audio and Saving as a WAV File
 
 ```python
 import pyaudio
@@ -586,6 +586,6 @@ def record_wav(file_path, duration):
     wf.close()
 ```
 
-### 4. Summary
+### Summary
 
 Through this manual, developers can easily use the CanMV audio module to achieve audio playback and capture functions. This module combines the advantages of the `wave` and `pyaudio` libraries, providing convenient interfaces and clear API documentation, making it easy to quickly develop and apply audio-related projects.

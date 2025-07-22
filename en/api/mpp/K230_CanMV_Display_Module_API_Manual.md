@@ -1,18 +1,18 @@
-# 3.2 `Display` Module API Manual
+# `Display` Module API Manual
 
 ```{attention}
 This module has significant changes starting from firmware version V0.7. If you are using firmware prior to V0.7, please refer to the old version of the documentation.
 ```
 
-## 1. Overview
+## Overview
 
 This manual is intended to guide developers on using the Micro Python API to call the CanMV Display module for image display functionality.
 
 To add a custom screen, refer to [Display Debugger](../../example/media/how_to_add_new_mipi_panel.md).
 
-## 2. API Introduction
+## API Introduction
 
-### 2.1 init
+### init
 
 **Description**
 
@@ -29,10 +29,10 @@ init(type=None, width=None, height=None, osd_num=1, to_ide=False, fps=None, qual
 
 | Parameter Name | Description                          | Input / Output | Notes |
 |----------------|--------------------------------------|----------------|-------|
-| type           | [Display device type](#31-type)      | Input          | Required |
+| type           | [Display device type](#type)      | Input          | Required |
 | width          | Resolution width                     | Input          | Default value depends on `type` |
 | height         | Resolution height                    | Input          | Default value depends on `type` |
-| osd_num        | Number of layers supported in [show_image](#22-show_image) | Input | Larger values occupy more memory |
+| osd_num        | Number of layers supported in [show_image](#show_image) | Input | Larger values occupy more memory |
 | to_ide         | Whether to transfer screen display to IDE display | Input | Occupies more memory when enabled |
 | fps            | Display frame rate                   | Input          | Only supports `VIRT` type |
 | quality        | Sets `Jpeg` compression quality      | Input          | Effective only when `to_ide=True`, range [10-100] |
@@ -43,7 +43,7 @@ init(type=None, width=None, height=None, osd_num=1, to_ide=False, fps=None, qual
 |--------------|----------------------------------------|
 | None         |                                        |
 
-### 2.2 show_image
+### show_image
 
 **Description**
 
@@ -62,9 +62,9 @@ show_image(img, x=0, y=0, layer=None, alpha=255, flag=0)
 | img            | Image to display                     | Input          |       |
 | x              | X value of the starting coordinate   | Input          |       |
 | y              | Y value of the starting coordinate   | Input          |       |
-| layer          | Display on the [specified layer](#32-layer) | Input | Only supports `OSD` layer. For multiple layers, set `osd_num` in [init](#21-init) |
+| layer          | Display on the [specified layer](#layer) | Input | Only supports `OSD` layer. For multiple layers, set `osd_num` in [init](#init) |
 | alpha          | Layer blending alpha                 | Input          |       |
-| flag           | Display [flag](#33-flag)             | Input          |       |
+| flag           | Display [flag](#flag)             | Input          |       |
 
 **Return Value**  
 
@@ -72,7 +72,7 @@ show_image(img, x=0, y=0, layer=None, alpha=255, flag=0)
 |--------------|----------------------------------------|
 | None         |                                        |
 
-### 2.3 deinit
+### deinit
 
 **Description**
 
@@ -92,7 +92,7 @@ deinit()
 |--------------|----------------------------------------|
 | None         |                                        |
 
-### 2.4 bind_layer
+### bind_layer
 
 **Description**
 
@@ -110,11 +110,11 @@ bind_layer(src=(mod, dev, layer), dstlayer, rect=(x, y, w, h), pix_format, alpha
 | Parameter Name | Description                          | Input / Output | Notes |
 |----------------|--------------------------------------|----------------|-------|
 | src            | Output information of `sensor` or `vdec` | Input      | Obtainable via `sensor.bind_info()` |
-| dstlayer       | Display layer to bind to [display layer](#32-layer) | Input | Can be bound to `video` or `osd` layer |
+| dstlayer       | Display layer to bind to [display layer](#layer) | Input | Can be bound to `video` or `osd` layer |
 | rect           | Display area                         | Input          | Obtainable via `sensor.bind_info()` |
 | pix_format     | Image pixel format                   | Input          | Obtainable via `sensor.bind_info()` |
 | alpha          | Layer blending alpha                 | Input          |       |
-| flag           | Display [flag](#33-flag)             | Input          | `LAYER_VIDEO1` not supported |
+| flag           | Display [flag](#flag)             | Input          | `LAYER_VIDEO1` not supported |
 
 **Return Value**  
 
@@ -122,7 +122,7 @@ bind_layer(src=(mod, dev, layer), dstlayer, rect=(x, y, w, h), pix_format, alpha
 |--------------|----------------------------------------|
 | None         |                                        |
 
-### 2.5 width
+### width
 
 **Description**
 
@@ -138,7 +138,7 @@ width(layer=None)
 
 | Parameter Name | Description                          | Input / Output | Notes |
 |----------------|--------------------------------------|----------------|-------|
-| layer          | Specifies the [display layer](#32-layer) to query. If `None`, returns the screen resolution width. | Input | Optional |
+| layer          | Specifies the [display layer](#layer) to query. If `None`, returns the screen resolution width. | Input | Optional |
 
 **Return Value**  
 
@@ -146,7 +146,7 @@ width(layer=None)
 |--------------|----------------------------------------|
 | width        | Width of the screen or specified layer |
 
-### 2.6 height
+### height
 
 **Description**
 
@@ -162,7 +162,7 @@ height(layer=None)
 
 | Parameter Name | Description                          | Input / Output | Notes |
 |----------------|--------------------------------------|----------------|-------|
-| layer          | Specifies the [display layer](#32-layer) to query. If `None`, returns the screen resolution height. | Input | Optional |
+| layer          | Specifies the [display layer](#layer) to query. If `None`, returns the screen resolution height. | Input | Optional |
 
 **Return Value**  
 
@@ -170,9 +170,9 @@ height(layer=None)
 |--------------|----------------------------------------|
 | height       | Height of the screen or specified layer |
 
-## 3. Data Structure Description
+## Data Structure Description
 
-### 3.1 type
+### type
 
 | Type    | Example Initialization Parameters               | Notes                              |
 |---------|-------------------------------------------------|-----------------------------------|
@@ -199,20 +199,20 @@ height(layer=None)
 |         | `Display.init(Display.LT9611, width=1280, height=720, fps=30)` | 1280x720@30                      |
 |         | `Display.init(Display.LT9611, width=640, height=480, fps=60)` | 640x480@60                       |
 
-### 3.2 layer
+### layer
 
 K230 supports 2 video layers and 4 OSD layers:
 
 | Display Layer  | Description                                     | Notes          |
 |----------------|-------------------------------------------------|----------------|
-| LAYER_VIDEO1   |                                                 | Only usable in [bind_layer](#24-bind_layer), supports hardware rotation |
-| LAYER_VIDEO2   |                                                 | Only usable in [bind_layer](#24-bind_layer), no hardware rotation support |
-| LAYER_OSD0     |                                                 | Usable in [show_image](#22-show_image) and [bind_layer](#24-bind_layer) |
-| LAYER_OSD1     |                                                 | Usable in [show_image](#22-show_image) and [bind_layer](#24-bind_layer) |
-| LAYER_OSD2     |                                                 | Usable in [show_image](#22-show_image) and [bind_layer](#24-bind_layer) |
-| LAYER_OSD3     |                                                 | Usable in [show_image](#22-show_image) and [bind_layer](#24-bind_layer) |
+| LAYER_VIDEO1   |                                                 | Only usable in [bind_layer](#bind_layer), supports hardware rotation |
+| LAYER_VIDEO2   |                                                 | Only usable in [bind_layer](#bind_layer), no hardware rotation support |
+| LAYER_OSD0     |                                                 | Usable in [show_image](#show_image) and [bind_layer](#bind_layer) |
+| LAYER_OSD1     |                                                 | Usable in [show_image](#show_image) and [bind_layer](#bind_layer) |
+| LAYER_OSD2     |                                                 | Usable in [show_image](#show_image) and [bind_layer](#bind_layer) |
+| LAYER_OSD3     |                                                 | Usable in [show_image](#show_image) and [bind_layer](#bind_layer) |
 
-### 3.3 flag
+### flag
 
 | Flag               | Description            | Notes |
 |--------------------|------------------------|-------|
@@ -225,7 +225,7 @@ K230 supports 2 video layers and 4 OSD layers:
 | FLAG_MIRROR_VER    | Vertical mirroring     |       |
 | FLAG_MIRROR_BOTH   | Horizontal & vertical mirroring |       |
 
-## 4. Sample Program
+## Sample Program
 
 ```python
 from media.display import *  # Import the display module to use display related interfaces

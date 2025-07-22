@@ -1,10 +1,10 @@
-# 5. Explanation of Lvgl Example
+# Explanation of Lvgl Example
 
-## 1. Overview
+## Overview
 
 The CanMV K230 integrates the [lv_binding_micropython](https://github.com/lvgl/lv_binding_micropython) project, allowing users to develop graphical user interfaces (GUI) using lvgl. This example demonstrates the functionality of displaying animated images using lvgl on the CanMV development board.
 
-## 2. Example
+## Example
 
 The following example program demonstrates how to use the lvgl library to display animated images on the CanMV development board. This example relies on some resource files, and it is recommended to use the lvgl routines included in the firmware.
 
