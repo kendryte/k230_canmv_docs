@@ -6,9 +6,13 @@ USB Serial 模块提供了通过 USB 串口进行数据通信的功能。本模�
 
 该模块支持通过 AT 指令与 4G 模块通信。
 
+## API 介绍
+
+Serial 类属于 usb 模块。
+
 ## 构造函数
 
-### `usb_serial(path="/dev/ttyUSB1", timeout_ms=300)`
+### `Serial(path="/dev/ttyUSB1", timeout_ms=300)`
 
 创建一个 USB Serial 对象。
 
@@ -24,10 +28,10 @@ USB Serial 对象
 **示例：**
 
 ```python
-import usb_serial
+from usb import Serial
 
 # 创建 USB Serial 对象
-serial = usb_serial.usb_serial("/dev/ttyUSB1", timeout_ms=300)
+serial = Serial("/dev/ttyUSB1", timeout_ms=300)
 ```
 
 ## 方法
