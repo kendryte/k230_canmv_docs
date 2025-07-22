@@ -1,14 +1,14 @@
-# 2.14 `UART` 模块 API 手册
+# `UART` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 K230 内部集成了五个 UART（通用异步收发传输器）硬件模块，其中 UART0 被小核 SH 占用，UART3 被大核 SH 占用，剩余的 UART1、UART2 和 UART4 可供用户使用。UART 的 I/O 配置可参考 IOMUX 模块。
 
-## 2. API 介绍
+## API 介绍
 
 UART 类位于 `machine` 模块中。
 
-### 2.1 示例代码
+### 示例代码
 
 ```python
 from machine import UART
@@ -33,7 +33,7 @@ r = u1.readinto(b)
 u1.deinit()
 ```
 
-### 2.2 构造函数
+### 构造函数
 
 ```python
 uart = UART(id, baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, stop=UART.STOPBITS_ONE, timeout = 0)
@@ -48,7 +48,7 @@ uart = UART(id, baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, s
 - `stop`: 停止位数，有效值为 `STOPBITS_ONE`、`STOPBITS_TWO`，可选参数，默认值为 `STOPBITS_ONE`。
 - `timeout`: 读数据超时，单位为 `ms`
 
-### 2.3 `init` 方法
+### `init` 方法
 
 ```python
 UART.init(baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, stop=UART.STOPBITS_ONE)
@@ -64,7 +64,7 @@ UART.init(baudrate=115200, bits=UART.EIGHTBITS, parity=UART.PARITY_NONE, stop=UA
 
 无
 
-### 2.4 `read` 方法
+### `read` 方法
 
 ```python
 UART.read([nbytes])
@@ -80,7 +80,7 @@ UART.read([nbytes])
 
 返回一个包含读取字节的字节对象。
 
-### 2.5 `readline` 方法
+### `readline` 方法
 
 ```python
 UART.readline()
@@ -96,7 +96,7 @@ UART.readline()
 
 返回一个包含读取字节的字节对象。
 
-### 2.6 `readinto` 方法
+### `readinto` 方法
 
 ```python
 UART.readinto(buf[, nbytes])
@@ -113,7 +113,7 @@ UART.readinto(buf[, nbytes])
 
 返回读取并存入 `buf` 的字节数。
 
-### 2.7 `write` 方法
+### `write` 方法
 
 ```python
 UART.write(buf)
@@ -129,7 +129,7 @@ UART.write(buf)
 
 返回写入的字节数。
 
-### 2.8 `deinit` 方法
+### `deinit` 方法
 
 ```python
 UART.deinit()

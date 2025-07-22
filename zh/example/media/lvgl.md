@@ -1,10 +1,10 @@
-# 5. Lvgl 例程讲解
+# Lvgl 例程讲解
 
-## 1. 概述
+## 概述
 
 CanMV K230 集成了[lv_binding_micropython](https://github.com/lvgl/lv_binding_micropython)项目，用户可以利用lvgl进行图形用户界面（GUI）开发。本示例展示了在 CanMV 开发板上实现 lvgl 动图显示的功能。
 
-## 2. 示例
+## 示例
 
 下面的示例程序演示了如何在CanMV开发板上使用lvgl库显示动态图像。该示例依赖于一些资源文件，建议使用固件内自带的lvgl例程。
 

@@ -1,16 +1,16 @@
-# 2. YOLOv8检测示例
+# YOLOv8检测示例
 
-## 1. 概述
+## 概述
 
 K230 CanMV YOLOv8检测是通过 MicroPython 语言开发实现的一个简单应用，具备摄像头数据采集推理和检测目标并画框功能。该示例程序应用到了 K230 CanMV 平台的多个硬件模块：AI2D、KPU、Sensor、Display 等。该应用主要说明如何在K230的多媒体模块下实现AI推理！
 
 📌 **该示例是AI Demo中PipeLine结构的详细实现，PipeLine结构是基于本应用的代码逻辑进行的应用层简化封装。当PipeLine结构无法满足用户开发需求时，可以参考这一部分代码实现开发！**
 
-## 2. 硬件环境
+## 硬件环境
 
 运行该示例程序需要如下硬件环境：K230 CanMV开发板及配套Sensor模组。
 
-## 3. 示例代码
+## 示例代码
 
 ```python
 import os,sys
@@ -247,7 +247,7 @@ MediaManager.deinit()
 nn.shrink_memory_pool()
 ```
 
-## 4. 运行示例代码
+## 运行示例代码
 
 通过`CanMV IDE K230` 打开示例程序代码，并点击运行按钮开始运行YOLOv8检测示例程序。有关IDE的使用请参考：**[如何使用IDE](../../userguide/how_to_use_ide.md)**
 

@@ -1,14 +1,14 @@
-# 2.4 `ADC` 模块 API 手册
+# `ADC` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 K230 处理器内部集成了一个 ADC（模数转换）硬件模块，提供 6 个独立通道。该模块的采样分辨率为 12 位，即输出范围为 0-4095，采样速率为 1 MHz。
 
-## 2. API 介绍
+## API 介绍
 
 ADC 类属于 `machine` 模块。
 
-### 2.1 示例
+### 示例
 
 ```python
 from machine import ADC
@@ -23,7 +23,7 @@ print(adc.read_u16())
 print(adc.read_uv(), "uV")
 ```
 
-### 2.2 构造函数
+### 构造函数
 
 ```python
 adc = ADC(channel)
@@ -33,7 +33,7 @@ adc = ADC(channel)
 
 - `channel`: 表示要使用的 ADC 通道号，范围为 [0, 5]。
 
-### 2.3 `read_u16`
+### `read_u16`
 
 ```python
 ADC.read_u16()
@@ -51,7 +51,7 @@ ADC.read_u16()
 
 返回该 ADC 通道的采样值，范围为 [0, 4095]。
 
-### 2.4 `read_uv`
+### `read_uv`
 
 ```python
 ADC.read_uv()

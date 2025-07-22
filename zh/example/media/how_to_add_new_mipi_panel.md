@@ -1,13 +1,13 @@
 
-# 1. 新增一个mipi屏幕
+# 新增一个mipi屏幕
 
 在本文档会演示如何新增一个 368(H) X 552(V) 的 `mipi` 屏幕。
 
-## 1.1 使用屏幕调试助手
+## 使用屏幕调试助手
 
 在 [CanMV-K230](https://github.com/kendryte/canmv_k230) 工程中的子仓库 [mpp](https://github.com/canmv-k230/mpp/) 里增加了一个屏幕调试助手，用户可将该功能使能后，通过修改存储在 `SDCard` 中的配置文件快速的调试屏幕时序以及初始化序列，不再需要频繁的修改代码编译固件。
 
-### 1.1.1 使能 `DSI Debugger`
+### 使能 `DSI Debugger`
 
 在工程根目录执行 `make menuconfig`，使能选项 `Enable DSI Debuger`。
 
@@ -15,7 +15,7 @@
 
 保存配置后，编译生成新的固件，烧录固件。
 
-### 1.1.2 生成 `display_debugger_config.txt`
+### 生成 `display_debugger_config.txt`
 
 在工程中有一个配置文件的模板，路径为 `src/rtsmart/mpp/userapps/src/connector/display_debugger_config.txt`。它的各项参数含义大概如下：
 
@@ -38,24 +38,24 @@ vfp=140
 # !!! every line length should < 256
 
 # cmd_type:
-# 0x05  Command type: Single byte data (DCS Short Write, no parameters)
-# 0x15  Command type: Two byte data (DCS Short Write, 1 parameter)
-# 0x39  Command type: Multi byte data (DCS Long Write, n parameters n >= 2)
+# x05  Command type: Single byte data (DCS Short Write, no parameters)
+# x15  Command type: Two byte data (DCS Short Write, 1 parameter)
+# x39  Command type: Multi byte data (DCS Long Write, n parameters n >= 2)
 
 # format: cmd_type, delay_ms, cmd_data_length, cmd_data0 ... cmd_dataN
 
 # 初始化序列的格式为：cmd_type, delay_ms, cmd_data_length, cmd_data0 ... cmd_dataN
 #
 # 现在支持3种Command type：
-# 0x05 只写一个字节，不带参数
-# 0x15 只写两个字节，带一个参数
-# 0x39 可写多个字节，带大于两个参数
+# x05 只写一个字节，不带参数
+# x15 只写两个字节，带一个参数
+# x39 可写多个字节，带大于两个参数
 #
 # 以 0x39,10,3,0xE8,0x00,0x0C 为例
-# 0x39                  0x39命令，代表我们现在要写多个字节数据
-# 10                    十进制数，代表我们执行完这个命令之后要延时10个毫秒才会执行下一条命令
-# 3                     十进制数，代表我们这次的0x39命令会写3个字节的数据
-# 0xE8,0x00,0x0C        3个字节的数据里面，0xE8是命令，0x00,0x0C是参数，即这是一个带两个参数的命令
+# x39                  0x39命令，代表我们现在要写多个字节数据
+# 十进制数，代表我们执行完这个命令之后要延时10个毫秒才会执行下一条命令
+# 十进制数，代表我们这次的0x39命令会写3个字节的数据
+# xE8,0x00,0x0C        3个字节的数据里面，0xE8是命令，0x00,0x0C是参数，即这是一个带两个参数的命令
 #
 # 注意，0x39 和 0xE8 都是命令，但是要区分开。前者是MIPI显示接口协议中的一种命令类型，后者是屏幕初始化序列里面的一个特定的命令字节，通常在屏幕初始化过程中用来指定某些设置，具体而言，这个命令可能是用来启用或禁用某些功能（如显示模式、对比度、颜色配置等）。
 
@@ -166,23 +166,23 @@ vfp=250
 0x15,50,2,0x29,0x00
 ```
 
-### 1.1.3 将配置文件放入`SDCard`
+### 将配置文件放入`SDCard`
 
 开机后，将配置文件放入`SDCard`根目录
 
 ![SDCard Path](https://www.kendryte.com/api/post/attachment?id=485)
 
-### 1.1.4 验证并调整配置
+### 验证并调整配置
 
-#### 1.1.4.1 在 `CanMV IDE K230` 打开 `Display` 相关的Sample
+#### 在 `CanMV IDE K230` 打开 `Display` 相关的Sample
 
 ![Open Display Sample](https://www.kendryte.com/api/post/attachment?id=483)
 
-#### 1.1.4.2 修改Sample代码以使用 `DSI Debugger`
+#### 修改Sample代码以使用 `DSI Debugger`
 
 ![Mod Sample Code](https://www.kendryte.com/api/post/attachment?id=484)
 
-#### 1.1.4.3 运行Sample，查看结果
+#### 运行Sample，查看结果
 
 ![Check Sample Result](https://www.kendryte.com/api/post/attachment?id=487)
 
@@ -190,11 +190,11 @@ vfp=250
 
 ![Check Panel Result](https://www.kendryte.com/api/post/attachment?id=499)
 
-## 1.2 配置文件参数调整
+## 配置文件参数调整
 
 SDCard中配置文件的参数基本分为两部分，前半部分是屏幕时序相关，后半部分是屏幕厂家提供的初始化序列，接下来我们分别了解一下这两部分的具体含义。
 
-### 1.2.1 屏幕时序
+### 屏幕时序
 
 ```shell
 [config]
@@ -223,7 +223,7 @@ vfp=250
 
 ![Calc Timing](https://www.kendryte.com/api/post/attachment?id=489)
 
-### 1.2.2 初始化序列
+### 初始化序列
 
 本文档示例的屏幕厂家提供了如下的初始化序列，我们根据需要转换为符合格式的 `display_debugger_config.txt` 文件即可。
 
@@ -280,17 +280,17 @@ vfp=250
 ```shell
 
 {0xB0,16,{0x0F,0x1E,0x25,0x0D,0x11,0x06,0x12,0x08,0x08,0x2A,0x05,0x12,0x10,0x2B,0x32,0x1F}},
-# 1. 将多余的{}去掉
-# 2. 0xB0 是命令，其余的都是16个字节是参数，所以我们选择 0x39 命令，长度应该是 16 + 1 = 17
-# 3. 不需要延时，所以转化结果如下：
+# 将多余的{}去掉
+# xB0 是命令，其余的都是16个字节是参数，所以我们选择 0x39 命令，长度应该是 16 + 1 = 17
+# 不需要延时，所以转化结果如下：
 0x39,0,17,0xB0,0x0F,0x1E,0x25,0x0D,0x11,0x06,0x12,0x08,0x08,0x2A,0x05,0x12,0x10,0x2B,0x32,0x1F
 
 
 {0x11,0,{0x00}},
 {REGFLAG_DELAY,120,{}},
-# 1. 将多余的{}去掉
-# 2. 0x11 是命令，其余的1个字节是参数，所以我们选择 0x15 命令，长度应该是 1 + 1 = 2
-# 3. 后面的REGFLAG_DELAY代表还有120毫秒的延时，所以转化结果为如下：
+# 将多余的{}去掉
+# x11 是命令，其余的1个字节是参数，所以我们选择 0x15 命令，长度应该是 1 + 1 = 2
+# 后面的REGFLAG_DELAY代表还有120毫秒的延时，所以转化结果为如下：
 
 0x15,120,2,0x11,0x00
 
@@ -300,7 +300,7 @@ vfp=250
 
 ```
 
-## 1.3 在工程代码中添加屏幕
+## 在工程代码中添加屏幕
 
 经过前面的调试，我们已经有了适配该款屏幕的参数了，可以在工程中添加一款屏幕了。
 

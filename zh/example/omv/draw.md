@@ -1,14 +1,14 @@
-# 5. 常用图像绘制例程讲解
+# 常用图像绘制例程讲解
 
-## 1. 概述
+## 概述
 
 OpenMV 是一个小型嵌入式机器视觉模块，广泛用于快速开发计算机视觉应用。OpenMV 的图像绘制方法可以用于在图像上绘制各种形状和文字，以便进行视觉反馈和调试。
 
 CanMV支持OpenMV 图像绘制方法，并增加了一些，如绘制中文字符串的[draw_string_advanced](../../api/openmv/image.md#129-draw_string_advanced)
 
-## 2. 常用函数
+## 常用函数
 
-### 2.1 draw_string_advanced
+### draw_string_advanced
 
 `draw_string_advanced` 函数使用freetype渲染文字，支持中文，用户也可指定字体
 
@@ -32,7 +32,7 @@ image.draw_string_advanced(x,y,char_size,str,[color, font])
 img.draw_string_advanced(10, 10, 32, "你好世界", color=(255, 0, 0))  # 绘制红色线
 ```
 
-### 2.2 draw_line
+### draw_line
 
 `draw_line` 函数可实现在图像上绘制一条线。
 
@@ -54,7 +54,7 @@ image.draw_line(x0, y0, x1, y1, color)
 img.draw_line(10, 10, 100, 100, color=(255, 0, 0))  # 绘制红色线
 ```
 
-### 2.3 draw_rectangle
+### draw_rectangle
 
 `draw_rectangle` 函数可实现在图像上绘制一个矩形。
 
@@ -77,7 +77,7 @@ image.draw_rectangle(x, y, w, h, color, thickness=1)
 img.draw_rectangle(20, 20, 50, 30, color=(0, 255, 0), thickness=2)  # 绘制绿色矩形
 ```
 
-### 2.4 draw_circle
+### draw_circle
 
 `draw_circle`函数可实现在图像上绘制一个圆。
 
@@ -101,7 +101,7 @@ image.draw_circle(x, y, r, color, thickness=1)
 
 ```
 
-### 2.5 draw_cross
+### draw_cross
 
 `draw_cross`函数可实现在图像上绘制一个十字交叉。
 
@@ -125,7 +125,7 @@ image.draw_cross(x, y, color, size=5, thickness=1)
 
 ```
 
-### 2.6 draw_arrow
+### draw_arrow
 
 `draw_arrow`函数可实现在图像上绘制一条箭头线。
 
@@ -148,7 +148,7 @@ image.draw_arrow(x0, y0, x1, y1, color, thickness=1)
 img.draw_arrow(10, 10, 100, 100, color=(255, 0, 0), thickness=2)  # 绘制红色箭头
 ```
 
-### 2.7 draw_ellipse
+### draw_ellipse
 
 `draw_ellipse`函数可实现在图像上绘制一个椭圆。
 
@@ -171,7 +171,7 @@ image.draw_ellipse(cx, cy, rx, ry, color, thickness=1)
 img.draw_ellipse(60, 60, 30, 20, color=(0, 0, 255), thickness=3)  # 绘制蓝色椭圆
 ```
 
-### 2.8 draw_image
+### draw_image
 
 `draw_image`函数可实现在当前图像上绘制另一个图像。
 
@@ -195,7 +195,7 @@ image.draw_image(img, x, y, alpha=128, scale=1.0)
   img.draw_image(overlay, 10, 10, alpha=128, scale=1.0)  # 在(10, 10)位置绘制 overlay.bmp
 ```
 
-### 2.9 draw_keypoints
+### draw_keypoints
 
 `draw_keypoints`函数可实现在图像上绘制关键点。
 
@@ -219,7 +219,7 @@ keypoints = [(30, 30), (50, 50), (70, 70)]
 img.draw_keypoints(keypoints, size=10, color=(255, 255, 0), thickness=2)  # 绘制黄色关键点
 ```
 
-### 2.10 flood_fill
+### flood_fill
 
 `flood_fill`函数可实现在图像上执行洪水填充算法，从指定的起点开始填充指定的颜色。
 
@@ -243,7 +243,7 @@ image.flood_fill(x, y, color, threshold, invert=False, clear_background=False)
 img.flood_fill(30, 30, color=(255, 0, 0), threshold=30, invert=False, clear_background=False)  # 从(30, 30)开始填充红色
 ```
 
-### 2.11 draw_string
+### draw_string
 
 `draw_string`函数可实现在图像上绘制字符串。
 
@@ -266,7 +266,7 @@ image.draw_string(x, y, text, color, scale=1)
 img.draw_string(10, 10, "Hello OpenMV", color=(255, 255, 255), scale=2)  # 绘制白色字符串
 ```
 
-## 3. 示例
+## 示例
 
 本示例仅做功能展示
 

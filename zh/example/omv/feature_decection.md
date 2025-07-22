@@ -1,14 +1,14 @@
-# 7. 特征值检测例程讲解
+# 特征值检测例程讲解
 
-## 1. 概述
+## 概述
 
 在 OpenMV 中，`find_hog`、`find_lines`、`find_rects`、`find_features` 和 `get_regression` 是一些用于图像处理和特征检测的函数。
 
 CanMV支持OpenMV算法，同样可以使用这些函数
 
-## 2. 函数说明
+## 函数说明
 
-### 2.1 find_hog
+### find_hog
 
 `find_hog` 函数用于在图像中检测使用 HOG (Histogram of Oriented Gradients) 特征描述符的物体。HOG 是一种常用于对象检测的特征描述方法。
 
@@ -28,7 +28,7 @@ objects = img.find_hog(roi=None, threshold=0.5, min_size=(0, 0))
 
 返回一个包含检测到的对象的列表，每个对象是一个 `Rect` 对象，包含了对象的位置和大小。
 
-### 2.2 find_lines
+### find_lines
 
 `find_lines` 函数用于在图像中检测直线。该函数适用于寻找图像中的长直线。
 
@@ -48,7 +48,7 @@ lines = img.find_lines(threshold=1000, theta_margin=20, rho_margin=20)
 
   返回一个包含直线信息的列表。每条直线是一个 `Line` 对象，包含了直线的起点、终点、长度和角度。
 
-### 2.3 find_rects
+### find_rects
 
 `find_rects` 函数用于检测图像中的矩形区域。这个函数可以用于找到图像中的方形或矩形物体。
 
@@ -67,7 +67,7 @@ rects = img.find_rects(threshold=2000, margin=10)
 
   返回一个包含矩形信息的列表。每个矩形是一个 `Rect` 对象，包含矩形的坐标和大小。
 
-### 2.4 find_features
+### find_features
 
 `find_features` 函数用于检测图像中的特征点。这些特征点可以用于图像匹配、跟踪等任务。
 
@@ -86,7 +86,7 @@ features = img.find_features(algorithm, threshold=10)
 
   返回一个包含特征点信息的列表。每个特征点是一个 `Feature` 对象，包含了特征点的位置和其他信息。
 
-### 2.5 get_regression
+### get_regression
 
 `get_regression` 函数用于从图像中检测回归线，即拟合数据点的直线。通常用于标记数据的趋势或方向。
 
@@ -106,7 +106,7 @@ line = img.get_regression(threshold=1000, min_length=10, max_distance=5)
 
   返回一个包含回归线信息的 `Line` 对象，表示拟合的直线。
 
-### 2.6 总结
+### 总结
 
 这些函数是 OpenMV 图像处理库中的重要工具，分别用于不同的视觉任务：
 
@@ -116,7 +116,7 @@ line = img.get_regression(threshold=1000, min_length=10, max_distance=5)
 - `find_features`: 检测图像中的特征点。
 - `get_regression`: 检测图像中的回归线。
 
-## 3. 示例
+## 示例
 
 这里只列举一个寻找线段的demo，具体demo还请查看固件自带虚拟U盘中的例程
 

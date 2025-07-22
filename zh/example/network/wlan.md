@@ -1,15 +1,15 @@
-# 2. 使用无线网例程讲解
+# 使用无线网例程讲解
 
-## 1. 概述
+## 概述
 
 本教程将指导您如何在 CanMV 使用 MicroPython 的 `network` 模块进行无线网络（ WiFi）的基本操作，包括作为站点（ STA）连接到无线访问点（ AP）和创建自己的访问点（ AP）。
 
 * **sta_test()**: 演示了如何作为站点（ STA）连接到无线网络，包括查看当前连接状态、扫描可用网络、连接特定 AP、查看 IP 配置以及断开连接。
 * **ap_test()**: 展示了如何配置并启动一个无线访问点（ AP），包括设置 SSID、信道和密码，并检查 AP 的配置和状态。
 
-## 2. 接口调用与功能说明
+## 接口调用与功能说明
 
-### 2.1 sta_test
+### sta_test
 
 * **`network.WLAN(id)`**: 初始化一个 WLAN 对象，`id` 为 0 时表示 STA 模式。
 * **`sta.active(bool)`**: 激活或关闭 STA 模式。当传入 `True` 时激活，传入 `False` 时关闭。如果不带参数调用，则返回当前激活状态。
@@ -19,7 +19,7 @@
 * **`sta.isconnected()`**: 返回 `True` 如果 STA 已连接到 AP，否则返回 `False`。
 * **`sta.disconnect()`**: 断开 STA 与当前 AP 的连接。
 
-#### 2.1.1 完整例程
+#### 完整例程
 
 ```python
 import network
@@ -50,7 +50,7 @@ def sta_test():
 sta_test()
 ```
 
-### 2.2 ap_test
+### ap_test
 
 * **`network.WLAN(network.AP_IF)`**: 初始化一个 WLAN 对象，并设置为 AP 模式。
 * **`ap.active(bool)`**: 激活或关闭 AP 模式。当传入 `True` 时激活，传入 `False` 时关闭。如果不带参数调用，则返回当前激活状态。
@@ -58,7 +58,7 @@ sta_test()
 * **`ap.config(key)`**: 如果 `key` 是 `'ssid'`、`'channel'` 等配置项的字符串表示，则返回该配置项的值。
 * **`ap.status()`**: 返回 AP 的当前状态。
 
-#### 2.2.1 完整例程
+#### 完整例程
 
 ```python
 import network

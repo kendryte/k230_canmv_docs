@@ -1,14 +1,14 @@
-# 2.18 `LED` 模块 API 手册
+# `LED` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 开发板包含一个 LED 三原色灯珠，用户可以通过 API 控制三原色的亮度。
 
-## 2. API 介绍
+## API 介绍
 
 LED 类位于 `machine` 模块下。
 
-### 2.1 示例
+### 示例
 
 ```python
 from machine import LED
@@ -35,7 +35,7 @@ while True:
     time.sleep_ms(250)
 ```
 
-### 2.2 构造函数
+### 构造函数
 
 ```python
 led = LED(id)
@@ -45,7 +45,7 @@ led = LED(id)
 
 - `id`: LED 的标识符，1 或 "LED_RED" 表示红灯；2 或 "LED_GREEN" 表示绿灯；3 或 "LED_BLUE" 表示蓝灯。
 
-### 2.3 `value` 方法
+### `value` 方法
 
 ```python
 led.value(val)
@@ -61,7 +61,7 @@ led.value(val)
 
 无
 
-### 2.4 `on` 方法
+### `on` 方法
 
 ```python
 led.on()
@@ -77,7 +77,7 @@ led.on()
 
 无
 
-### 2.5 `off` 方法
+### `off` 方法
 
 ```python
 led.off()

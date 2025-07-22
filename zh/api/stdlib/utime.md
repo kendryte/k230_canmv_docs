@@ -1,4 +1,4 @@
-# 1.3 `utime` 时间相关功能 API 手册
+# `utime` 时间相关功能 API 手册
 
 该模块实现了部分 CPython 模块的功能子集，具体如下所述。更多详细信息，请参考 CPython 原始文档：[time](https://docs.python.org/3.5/library/time.html#module-time)。
 

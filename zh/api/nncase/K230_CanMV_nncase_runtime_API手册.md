@@ -1,6 +1,6 @@
-# 4.1 `nncase_runtime` 模块 API 手册
+# `nncase_runtime` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 本手册旨在介绍 CanMV 平台的 nncase_runtime 模块，指导开发人员在 MicroPython 环境下调用 KPU（神经网络处理单元）及 AI2D 模块，以实现高效的深度学习推理和图像处理功能。
 
@@ -10,9 +10,9 @@
 | nncase_runtime.kpu  | kpu模块                                     |
 | nncase_runtime.ai2d | ai2d模块                                    |
 
-## 2. API 介绍
+## API 介绍
 
-### 2.1 from_numpy
+### from_numpy
 
 **描述**
 
@@ -37,7 +37,7 @@ runtime_tensor = nncase_runtime.from_numpy(ulab.numpy)
 | runtime_tensor | 返回创建的 runtime_tensor 对象。  |
 | 其他           | 如果失败，将抛出 C++ 异常。     |
 
-### 2.2 to_numpy
+### to_numpy
 
 **描述**
 
@@ -61,11 +61,11 @@ result = runtime_tensor.to_numpy()
 | ulab.numpy | 返回从 runtime_tensor 转换后的 ulab.numpy 对象。 |
 | 其他       | 如果失败，将抛出 C++ 异常。                    |
 
-### 2.3 nncase_runtime.kpu
+### nncase_runtime.kpu
 
 kpu 模块提供了用于调用 KPU 硬件执行神经网络模型推理的基本功能，包括加载模型、设置输入数据、执行推理及获取输出结果等。
 
-#### 2.3.1 load_kmodel
+#### load_kmodel
 
 **描述**
 
@@ -92,7 +92,7 @@ load_kmodel(path)
 | 无     | 加载成功。          |
 | 其他   | 如果失败，将抛出 C++ 异常。 |
 
-#### 2.3.2 set_input_tensor
+#### set_input_tensor
 
 **描述**
 
@@ -118,7 +118,7 @@ set_input_tensor(index, runtime_tensor)
 | 无     | 设置成功。          |
 | 其他   | 如果失败，将抛出 C++ 异常。 |
 
-#### 2.3.3 get_input_tensor
+#### get_input_tensor
 
 **描述**
 
@@ -143,7 +143,7 @@ get_input_tensor(index)
 | runtime_tensor | 包含输入数据信息的 tensor。 |
 | 其他           | 如果失败，将抛出 C++ 异常。 |
 
-#### 2.3.4 set_output_tensor
+#### set_output_tensor
 
 **描述**
 
@@ -169,7 +169,7 @@ set_output_tensor(index, runtime_tensor)
 | 无     | 设置成功。          |
 | 其他   | 如果失败，将抛出 C++ 异常。 |
 
-#### 2.3.5 get_output_tensor
+#### get_output_tensor
 
 **描述**
 
@@ -194,7 +194,7 @@ get_output_tensor(index)
 | runtime_tensor | 获取第 index 个输出的 runtime_tensor。 |
 | 其他           | 如果失败，将抛出 C++ 异常。      |
 
-#### 2.3.6 run
+#### run
 
 **描述**
 
@@ -213,7 +213,7 @@ run()
 | 无     | 推理成功            |
 | 其他   | 如果失败，将抛出 C++ 异常。 |
 
-#### 2.3.7 inputs_size
+#### inputs_size
 
 **描述**
 
@@ -232,7 +232,7 @@ inputs_size()
 | size_t | kmodel 的输入个数。  |
 | 其他   | 如果失败，将抛出 C++ 异常。 |
 
-#### 2.3.8 outputs_size
+#### outputs_size
 
 **描述**
 
@@ -251,7 +251,7 @@ outputs_size()
 | size_t | kmodel 的输出个数。  |
 | 其他   | 如果失败，将抛出 C++ 异常。 |
 
-#### 2.3.9 get_input_desc
+#### get_input_desc
 
 **描述**
 
@@ -275,7 +275,7 @@ get_input_desc(index)
 | :---------- | --------------------------------------------- |
 | MemoryRange | 第 index 个输入的信息，包括 `dtype`, `start`, `size`。 |
 
-#### 2.3.10 get_output_desc
+#### get_output_desc
 
 **描述**
 
@@ -299,9 +299,9 @@ get_output_desc(index)
 | :---------- | --------------------------------------------- |
 | MemoryRange | 第 index 个输出的信息，包括 `dtype`, `start`, `size`。 |
 
-### 2.4 nncase_runtime.ai2d
+### nncase_runtime.ai2d
 
-#### 2.4.1 build
+#### build
 
 **描述**
 
@@ -327,7 +327,7 @@ build(input_shape, output_shape)
 | ai2d_builder | 返回用于执行的 ai2d_builder 对象。 |
 | 其他         | 如果失败，将抛出 C++ 异常。    |
 
-#### 2.4.2 run
+#### run
 
 **描述**
 
@@ -353,7 +353,7 @@ ai2d_builder.run(input_tensor, output_tensor)
 | 无     | 成功。              |
 | 其他   | 如果失败，将抛出 C++ 异常。 |
 
-#### 2.4.3 set_dtype
+#### set_dtype
 
 **描述**
 
@@ -374,7 +374,7 @@ set_dtype(src_format, dst_format, src_type, dst_type)
 | src_type   | datatype_t  | 输入数据类型 |
 | dst_type   | datatype_t  | 输出数据类型 |
 
-#### 2.4.4 set_crop_param
+#### set_crop_param
 
 **描述**
 
@@ -396,7 +396,7 @@ set_crop_param(crop_flag, start_x, start_y, width, height)
 | width     | int  | 宽度               |
 | height    | int  | 高度               |
 
-#### 2.4.5 set_shift_param
+#### set_shift_param
 
 【描述】
 
@@ -415,7 +415,7 @@ set_shift_param(shift_flag, shift_val)
 | shift_flag | bool | 是否开启shift功能 |
 | shift_val  | int  | 右移的比特数      |
 
-#### 2.4.6 set_pad_param
+#### set_pad_param
 
 【描述】
 
@@ -436,7 +436,7 @@ set_pad_param(pad_flag, paddings, pad_mode, pad_val)
 | pad_mode | int  | 只支持pad constant，配置0即可                                                                 |
 | pad_val  | list | 每个channel的padding value                                                                    |
 
-#### 2.4.7 set_resize_param
+#### set_resize_param
 
 【描述】
 
@@ -456,7 +456,7 @@ set_resize_param(resize_flag, interp_method, interp_mode)
 | interp_method | ai2d_interp_method | resize插值方法     |
 | interp_mode   | ai2d_interp_mode   | resize模式         |
 
-#### 2.4.8 set_affine_param
+#### set_affine_param
 
 【描述】
 
@@ -480,7 +480,7 @@ set_affine_param(affine_flag, interp_method, cord_round, bound_ind, bound_val, b
 | bound_smooth  | uint32_t           | 边界平滑0或者1                                                                                                           |
 | M             | list               | 仿射变换矩阵对应的vector，仿射变换为Y=\[a_0, a_1; a_2, a_3\] \cdot  X + \[b_0, b_1\] $, 则  M=[a_0,a_1,b_0,a_2,a_3,b_1 ] |
 
-### 2.5 shrink_memory_pool
+### shrink_memory_pool
 
 【描述】
 
@@ -496,7 +496,7 @@ gc.collect()
 nncase_runtime.shrink_memory_pool()
 ```
 
-## 3. 参考示例
+## 参考示例
 
 ```python
 import os
@@ -539,6 +539,6 @@ for i in range(kpu.outputs_size()):
     print(result.shape)
 ```
 
-## 4. 结论
+## 结论
 
 通过使用 nncase_runtime 模块，开发人员能够在 CanMV 平台上实现高效的深度学习推理和图像处理功能。本手册提供了 API 的详细描述和使用示例，旨在帮助开发人员快速上手并高效开发相关应用。

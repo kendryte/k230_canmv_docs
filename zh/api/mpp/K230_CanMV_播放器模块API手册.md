@@ -1,14 +1,14 @@
-# 3.8 `播放器`模块 API 手册
+# `播放器`模块 API 手册
 
-## 1. 概述
+## 概述
 
 本文件详细介绍 K230_CanMV 播放器模块 API，旨在支持 MP4 格式文件的播放。该模块能够同时播放音频与视频，音频格式支持 G.711A/U，视频格式支持 H.264/H.265 编码。
 
-## 2. API 介绍
+## API 介绍
 
 该模块提供了 `Player` 类，包含以下方法：
 
-### 2.1 构造函数
+### 构造函数
 
 **描述**
 
@@ -41,7 +41,7 @@ player = Player(Display.ST7701)
 player = Player(Display.LT9611)
 ```
 
-### 2.2 Player.load
+### Player.load
 
 **描述**
 
@@ -70,7 +70,7 @@ player.load("test.mp4")
 **注意事项**  
 当前版本仅支持播放 MP4 格式文件。
 
-### 2.3 Player.start
+### Player.start
 
 **描述**
 
@@ -94,7 +94,7 @@ player.start()
 | 0      | 成功 |
 | 非0    | 失败 |
 
-### 2.4 Player.pause
+### Player.pause
 
 **描述**
 
@@ -118,7 +118,7 @@ player.pause()
 | 0      | 成功 |
 | 非0    | 失败 |
 
-### 2.5 Player.resume
+### Player.resume
 
 **描述**
 
@@ -142,7 +142,7 @@ player.resume()
 | 0      | 成功 |
 | 非0    | 失败 |
 
-### 2.6 Player.stop
+### Player.stop
 
 **描述**
 
@@ -166,7 +166,7 @@ player.stop()
 | 0      | 成功 |
 | 非0    | 失败 |
 
-### 2.7 Player.set_event_callback
+### Player.set_event_callback
 
 **描述**
 
@@ -195,9 +195,9 @@ player.set_event_callback(callback=player_event)
 | 0      | 成功 |
 | 非0    | 失败 |
 
-## 3. 数据结构描述
+## 数据结构描述
 
-### 3.1 play_event_type
+### play_event_type
 
 **描述**
 
@@ -210,9 +210,9 @@ player.set_event_callback(callback=player_event)
 | K_PLAYER_EVENT_EOF            | 播放结束 |
 | K_PLAYER_EVENT_PROGRESS        | 播放进度 |
 
-## 4. 示例程序
+## 示例程序
 
-### 4.1 例程 1
+### 例程 1
 
 ```python
 from media.player import *

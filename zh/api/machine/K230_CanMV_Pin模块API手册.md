@@ -1,10 +1,10 @@
-# 2.6 `Pin` 模块 API 手册
+# `Pin` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 K230 芯片内部包含 64 个 GPIO（通用输入输出）引脚，每个引脚均可配置为输入或输出模式，并支持上下拉电阻配置和驱动能力设置。这些引脚能够灵活用于各种数字输入输出场景。
 
-## 2. API 介绍
+## API 介绍
 
 `Pin` 类位于 `machine` 模块中，用于控制 K230 芯片的 GPIO 引脚。
 
@@ -203,7 +203,7 @@ Pin.irq(handler=None, trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING, *, priority=1, w
 
 mq_irq 对象
 
-## 3. 常量定义
+## 常量定义
 
 ### 模式
 

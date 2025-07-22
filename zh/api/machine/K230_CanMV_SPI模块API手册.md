@@ -1,14 +1,14 @@
-# 2.11 `SPI` 模块 API 手册
+# `SPI` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 K230 内部集成了三个 SPI 硬件模块，支持片选极性配置和可调时钟速率。通道输出的 I/O 配置可参考 IOMUX 模块。
 
-## 2. API 介绍
+## API 介绍
 
 SPI 类位于 `machine` 模块中。
 
-### 2.1 示例代码
+### 示例代码
 
 ```python
 from machine import SPI
@@ -26,7 +26,7 @@ spi.write_readinto(write_buf, read_buf)
 spi.deinit()
 ```
 
-### 2.2 构造函数
+### 构造函数
 
 ```python
 spi = machine.SPI(id, baudrate=20, polarity=0, phase=0, bits=8)
@@ -40,7 +40,7 @@ spi = machine.SPI(id, baudrate=20, polarity=0, phase=0, bits=8)
 - `phase`: 时钟相位。
 - `bits`: 数据位宽。
 
-### 2.3 `read` 方法
+### `read` 方法
 
 ```python
 spi.read(nbytes)
@@ -56,7 +56,7 @@ spi.read(nbytes)
 
 返回一个 `bytes` 对象。
 
-### 2.4 `readinto` 方法
+### `readinto` 方法
 
 ```python
 spi.readinto(buf)
@@ -72,7 +72,7 @@ spi.readinto(buf)
 
 无
 
-### 2.5 `write` 方法
+### `write` 方法
 
 ```python
 spi.write(buf)
@@ -88,7 +88,7 @@ spi.write(buf)
 
 无
 
-### 2.6 `write_readinto` 方法
+### `write_readinto` 方法
 
 ```python
 spi.write_readinto(write_buf, read_buf)
@@ -105,7 +105,7 @@ spi.write_readinto(write_buf, read_buf)
 
 无
 
-### 2.7 `deinit` 方法
+### `deinit` 方法
 
 ```python
 spi.deinit()

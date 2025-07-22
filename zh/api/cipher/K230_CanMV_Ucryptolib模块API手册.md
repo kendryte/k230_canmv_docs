@@ -1,16 +1,16 @@
-# 1.1 `Ucryptolib` 模块 API 手册
+# `Ucryptolib` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 `Ucryptolib` 库提供了以下加解密功能：AES-ECB、AES-CBC、AES-CTR、AES-GCM 以及 SM4。其中，AES-ECB、AES-CBC 和 AES-CTR 模式由 MicroPython 的软件库原生实现，而 AES-GCM 和 SM4 则通过底层硬件加速器进行加速。
 
 ***注意：本文档不详细介绍 AES-ECB、AES-CBC 和 AES-CTR 模式的加解密步骤，相关信息请参考 MicroPython 的 [cryptolib 官方文档](https://docs.micropython.org/en/latest/library/cryptolib.html)。***
 
-## 2. API 介绍
+## API 介绍
 
 `Ucryptolib` 库提供了两个主要类：`aes` 和 `sm4`，这两个类分别实现了加密 (`encrypt`) 和解密 (`decrypt`) 操作。
 
-### 2.1 类 `aes`
+### 类 `aes`
 
 **描述**
 
@@ -48,7 +48,7 @@ ciphertext = cipher.encrypt(plaintext)
 decrypted_text = cipher.decrypt(ciphertext)
 ```
 
-### 2.2 类 `sm4`
+### 类 `sm4`
 
 **描述**
 

@@ -1,12 +1,12 @@
-# 5.2 Ai2d 模块 API 手册
+# Ai2d 模块 API 手册
 
-## 1. 概述
+## 概述
 
 本手册旨在指导开发人员使用 MicroPython 开发 AI Demo 时，构建预处理流程，实现使用 `nncase_runtime.ai2d` 对输入图像配置并执行预处理的功能。该模块封装了 `ai2d` 支持的预处理方法，并给出了预处理过程构建和运行的方法。
 
-## 2. API 介绍
+## API 介绍
 
-### 2.1 init
+### init
 
 **描述**
 
@@ -32,7 +32,7 @@ my_ai2d = Ai2d(debug_mode=0)
 |--------|---------------------------------|
 | Ai2d | Ai2d实例                          |
 
-### 2.2 set_ai2d_dtype
+### set_ai2d_dtype
 
 **描述**
 
@@ -63,7 +63,7 @@ my_ai2d.set_ai2d_dtype(nn.ai2d_format.RGB_packed, nn.ai2d_format.NCHW_FMT, np.ui
 |--------|---------------------------------|
 | 无     |                                 |
 
-### 2.3 crop
+### crop
 
 **描述**
 
@@ -90,7 +90,7 @@ my_ai2d.crop(0,0,200,300)
 |--------|---------------------------------|
 | 无     |                                 |
 
-### 2.4 shift
+### shift
 
 **描述**
 
@@ -114,7 +114,7 @@ my_ai2d.shift(shift_val=2)
 |--------|---------------------------------|
 | 无     |                                 |
 
-### 2.5 pad
+### pad
 
 **描述**
 
@@ -140,7 +140,7 @@ my_ai2d.pad(paddings=[0,0,0,0,5,5,15,15],pad_mode=0,pad_val=[114,114,114])
 |--------|---------------------------------|
 | 无     |                                 |
 
-### 2.6 resize
+### resize
 
 **描述**
 
@@ -165,7 +165,7 @@ my_ai2d.resize(interp_method=nn.interp_method.tf_bilinear, interp_mode=nn.interp
 |--------|---------------------------------|
 | 无     |                                 |
 
-### 2.7 affine
+### affine
 
 **描述**
 
@@ -195,7 +195,7 @@ my_ai2d.affine(interp_method=nn.interp_method.cv2_bilinear,cord_round=0, bound_i
 |--------|---------------------------------|
 | 无     |                                 |
 
-### 2.8 build
+### build
 
 **描述**
 
@@ -222,7 +222,7 @@ my_ai2d.build([1,3,512,512],[1,3,640,640])
 |--------|---------------------------------|
 | 无    |                                  |
 
-### 2.9 run
+### run
 
 **描述**
 
@@ -246,9 +246,9 @@ ai2d_output_tensor=my_ai2d.run(img)
 |--------|---------------------------------|
 | ai2d_output_tensor    | 经过ai2d预处理后的数据   |
 
-## 3. 数据结构描述
+## 数据结构描述
 
-### 3.1 type
+### type
 
 | 输入格式         | 输出格式               | 备注                  |
 | ---------------- | ---------------------- | --------------------- |
@@ -260,7 +260,7 @@ ai2d_output_tensor=my_ai2d.run(img)
 | RGB_packed       | RGB_planar/RGB_packed  |                       |
 | RAW16            | RAW16/8                | 深度图，执行shift操作 |
 
-### 3.2 interp_method
+### interp_method
 
 resize预处理方法中的插值方法。分列如下：
 
@@ -271,7 +271,7 @@ resize预处理方法中的插值方法。分列如下：
 | nn.interp_method.cv2_nearest  |     cv2的最近邻插值     |            |
 | nn.interp_method.cv2_bilinear  |    cv2的双线性插值     |            |
 
-### 3.3 interp_mode
+### interp_mode
 
 | 模式              | 说明            | 备注 |
 |-------------------|-----------------|------|
@@ -279,7 +279,7 @@ resize预处理方法中的插值方法。分列如下：
 | nn.interp_mode.align_corner  | 角点强制对齐     |      |
 | nn.interp_mode.half_pixel | 中心对齐    |      |
 
-## 4. 示例程序
+## 示例程序
 
 ```{attention}
 (1) Affine和Resize功能是互斥的，不能同时开启;  

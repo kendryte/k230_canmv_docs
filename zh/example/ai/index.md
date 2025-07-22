@@ -1,4 +1,4 @@
-# 3. AI例程讲解
+# AI例程讲解
 
 ```{toctree}
 :maxdepth: 1

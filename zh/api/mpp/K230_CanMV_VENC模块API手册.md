@@ -1,14 +1,14 @@
-# 3.6 `VENC` 模块 API 手册
+# `VENC` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 本手册详细介绍了 K230_CanMV VENC 模块的 API。开发者可以通过调用这些 API 进行视频编码，生成不同分辨率和编码格式的码流。VENC 模块需与相机模块结合使用以实现编码功能。
 
-## 2. API 介绍
+## API 介绍
 
 VENC 模块提供了 `Encoder` 类，该类包含以下方法：
 
-### 2.1 `Encoder.SetOutBufs`
+### `Encoder.SetOutBufs`
 
 **描述**
 
@@ -40,7 +40,7 @@ Encoder.SetOutBufs(chn, buf_num, width, height)
 
 **`必须在 MediaManager.init() 之前调用`**
 
-### 2.2 `Encoder.Create`
+### `Encoder.Create`
 
 **描述**
 
@@ -70,7 +70,7 @@ Encoder.Create(chn, chnAttr)
 
 VENC 最多支持 4 路编码，编码通道号取值范围为 [0, 3]，第 4 路固定用于 IDE 图像传输。除非调用 `compress_for_ide`，建议仅使用 [0, 2]。
 
-### 2.3 `Encoder.Start`
+### `Encoder.Start`
 
 **描述**
 
@@ -95,7 +95,7 @@ Encoder.Start(chn)
 | 0      | 成功   |
 | 非0    | 失败   |
 
-### 2.4 `Encoder.SendFrame`
+### `Encoder.SendFrame`
 
 **描述**
 
@@ -125,7 +125,7 @@ Encoder.SendFrame(venc_chn, frame_info)
 
 可编码完整的一帧数据或不定长度的数据流。
 
-### 2.5 `Encoder.GetStream`
+### `Encoder.GetStream`
 
 **描述**
 
@@ -151,7 +151,7 @@ Encoder.GetStream(chn, streamData)
 | 0      | 成功   |
 | 非0    | 失败   |
 
-### 2.6 `Encoder.ReleaseStream`
+### `Encoder.ReleaseStream`
 
 **描述**
 
@@ -177,7 +177,7 @@ Encoder.ReleaseStream(chn, streamData)
 | 0      | 成功   |
 | 非0    | 失败   |
 
-### 2.7 `Encoder.Stop`
+### `Encoder.Stop`
 
 **描述**
 
@@ -195,7 +195,7 @@ Encoder.Stop(chn)
 |----------|--------------|-----------|
 | chn      | 编码通道号   | 输入      |
 
-### 2.8 `Encoder.Destroy`
+### `Encoder.Destroy`
 
 **描述**
 
@@ -213,9 +213,9 @@ Encoder.Destroy(chn)
 |----------|--------------|-----------|
 | chn      | 编码通道号   | 输入      |
 
-## 3. 数据结构描述
+## 数据结构描述
 
-### 3.1 `ChnAttrStr`
+### `ChnAttrStr`
 
 **说明**
 
@@ -243,7 +243,7 @@ class ChnAttrStr:
 | pic_height     | 图像高度        |
 | gop_len        | 编码 GOP 长度    |
 
-### 3.2 `StreamData`
+### `StreamData`
 
 **说明**
 
@@ -273,7 +273,7 @@ class StreamData:
 
 `VENC_PACK_CNT_MAX` 表示码流结构体中 pack 的最大个数，当前设定为 12。
 
-### 3.3 `payload_type`
+### `payload_type`
 
 **描述**
 
@@ -286,7 +286,7 @@ class StreamData:
 | PAYLOAD_TYPE_H264     | H.264 编码格式 |
 | PAYLOAD_TYPE_H265     | H.265 编码格式 |
 
-### 3.4 `profile`
+### `profile`
 
 **描述**
 
@@ -301,7 +301,7 @@ class StreamData:
 | H264_PROFILE_HIGH      | H.264 High Profile      |
 | H265_PROFILE_MAIN      | H.265 Main Profile      |
 
-### 3.5 `stream_type`
+### `stream_type`
 
 **描述**
 
@@ -315,9 +315,9 @@ class StreamData:
 | STREAM_TYPE_I       | I 帧       |
 | STREAM_TYPE_P       | P 帧       |
 
-## 4. 示例程序
+## 示例程序
 
-### 4.1 例程 1
+### 例程 1
 
 将 VENC 绑定到 VICAP，并将获取到的编码数据保存到文件。
 
@@ -417,7 +417,7 @@ if __name__ == "__main__":
 
 ```
 
-### 4.2 例程2
+### 例程2
 
 venc编码数据流，并保存成文件。
 

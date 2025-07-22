@@ -1,10 +1,10 @@
-# 2.9 `FPIOA` 模块 API 手册
+# `FPIOA` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 FPIOA（Pin Multiplexer）模块主要负责配置物理引脚（PAD）的功能。在 SoC 中，虽然有多种功能可用，但由于引脚数量有限，多个功能可能会共享同一个 I/O 引脚。此时，每个引脚在同一时刻只能激活一种功能，因此需要通过 IOMUX（即 FPIOA）来选择合适的功能。
 
-## 2. API 介绍
+## API 介绍
 
 FPIOA 类位于 `machine` 模块中。
 
@@ -67,7 +67,7 @@ FPIOA.set_function(pin, func, ie=-1, oe=-1, pu=-1, pd=-1, st=-1, ds=-1)
 - `st`: 施密特触发器使能，可选参数
 - `ds`: 驱动能力，可选参数
 
-更多详细信息，参考[IO 驱动能力](#31-io-配置说明)
+更多详细信息，参考[IO 驱动能力](#io-配置说明)
 
 **返回值**
 
@@ -126,8 +126,8 @@ fpioa.help([number, func=False])
 1. 指定引脚的详细配置信息（设置了 `number`，未设置 `func` 或设置为 `False`）
 1. 指定功能的所有可配置引脚号（设置了 `number`，并将 `func` 设置为 `True`）
 
-## 3. 附录
+## 附录
 
-### 3.1 IO 配置说明
+### IO 配置说明
 
 ![io-ds](https://www.kendryte.com/api/post/attachment?id=436)

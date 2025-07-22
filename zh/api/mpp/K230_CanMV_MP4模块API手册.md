@@ -1,14 +1,14 @@
-# 3.7 `MP4` 模块 API 手册
+# `MP4` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 本文详细介绍了 K230_CanMV MP4 模块 API 的功能与使用方法。MP4 模块主要用于生成 MP4 文件，开发者无需关注底层实现细节，只需调用所提供的 API 即可生成不同编码格式和视频分辨率的 MP4 文件。本文将分别介绍 MP4Container API 和 kd_mp4* API，帮助开发者快速上手并灵活运用这些接口。
 
-## 2. MP4Container API 介绍
+## MP4Container API 介绍
 
 `MP4Container` 类提供了简便的方法来录制摄像头画面和采集声音，生成 MP4 文件。该模块简化了 MP4 文件的处理流程，适合不需要关注底层实现细节的应用场景。
 
-### 2.1 MP4Container.Create
+### MP4Container.Create
 
 **描述**
 
@@ -33,7 +33,7 @@ MP4Container.Create(mp4Cfg)
 | 0       | 成功       |
 | 非 0    | 失败       |
 
-### 2.2 MP4Container.Start
+### MP4Container.Start
 
 **描述**
 
@@ -56,7 +56,7 @@ MP4Container.Start()
 | 0      | 成功 |
 | 非0    | 失败 |
 
-### 2.3 MP4Container.Process
+### MP4Container.Process
 
 **描述**
 
@@ -79,7 +79,7 @@ MP4Container.Process()
 | 0      | 成功 |
 | 非0    | 失败 |
 
-### 2.4 MP4Container.Stop
+### MP4Container.Stop
 
 **描述**
 
@@ -102,7 +102,7 @@ MP4Container.Stop()
 | 0      | 成功 |
 | 非0    | 失败 |
 
-### 2.5 MP4Container.Destroy
+### MP4Container.Destroy
 
 **描述**
 
@@ -125,11 +125,11 @@ MP4Container.Destroy()
 | 0      | 成功 |
 | 非0    | 失败 |
 
-## 3. kd_mp4* API介绍
+## kd_mp4* API介绍
 
 本节详细描述与 MP4 模块相关的底层函数接口，用于更灵活地控制 MP4 文件的创建、写入和读取。这些接口适用于需要更高灵活性和控制力的开发者，允许他们精细控制 MP4 文件的各个方面，包括容器的创建、轨道管理、数据写入和读取等操作，并与其他模块配合生成一个综合性的解决方案。
 
-### 3.1 kd_mp4_create
+### kd_mp4_create
 
 **描述**
 创建 MP4 容器实例并初始化配置。
@@ -145,7 +145,7 @@ ret = kd_mp4_create(handle, mp4_cfg)
 | 参数名称  | 描述                  | 输入/输出 |
 |-----------|-----------------------|-----------|
 | handle    | 输出参数，返回 MP4 实例句柄 | 输出      |
-| [config](#46-k_mp4_config_s)    | MP4 容器配置结构体指针 | 输入      |
+| [config](#k_mp4_config_s)    | MP4 容器配置结构体指针 | 输入      |
 
 **返回值**
 | 返回值  | 描述       |
@@ -153,7 +153,7 @@ ret = kd_mp4_create(handle, mp4_cfg)
 | 0       | 成功       |
 | 非 0    | 失败，错误码见具体实现 |
 
-### 3.2 kd_mp4_create_track
+### kd_mp4_create_track
 
 **描述**
 在 MP4 容器中创建音视频轨道。
@@ -169,7 +169,7 @@ ret = kd_mp4_create_track(handle, track_handle, track_info)
 | 参数名称     | 描述                  | 输入/输出 |
 |--------------|-----------------------|-----------|
 | handle       | MP4 实例句柄         | 输入      |
-| [track_info](#47-k_mp4_track_info_s)   | 轨道信息结构体指针    | 输入      |
+| [track_info](#k_mp4_track_info_s)   | 轨道信息结构体指针    | 输入      |
 
 **返回值**
 | 返回值  | 描述       |
@@ -177,7 +177,7 @@ ret = kd_mp4_create_track(handle, track_handle, track_info)
 | 0       | 成功       |
 | 非 0    | 失败       |
 
-### 3.3 kd_mp4_destroy_tracks
+### kd_mp4_destroy_tracks
 
 **描述**
 销毁 MP4 容器中所有已创建的轨道。
@@ -201,7 +201,7 @@ ret = kd_mp4_destroy_tracks(handle)
 
 ---
 
-### 3.4 kd_mp4_write_frame
+### kd_mp4_write_frame
 
 **描述**
 向 MP4 文件写入一帧音视频数据。
@@ -217,7 +217,7 @@ ret = kd_mp4_write_frame(handle, track_id, frame_data)
 |--------------|-----------------------|-----------|
 | handle       | MP4 实例句柄         | 输入      |
 | track_id     | 目标轨道的 ID        | 输入      |
-| [frame_data](#48-k_mp4_frame_data_s)   | 帧数据结构体指针      | 输入      |
+| [frame_data](#k_mp4_frame_data_s)   | 帧数据结构体指针      | 输入      |
 
 **返回值**
 | 返回值  | 描述       |
@@ -225,7 +225,7 @@ ret = kd_mp4_write_frame(handle, track_id, frame_data)
 | 0       | 成功       |
 | 非 0    | 失败       |
 
-### 3.5 kd_mp4_get_file_info
+### kd_mp4_get_file_info
 
 **描述**
 获取 MP4 文件的全局信息（如总时长、轨道数量）。
@@ -249,7 +249,7 @@ ret = kd_mp4_get_file_info(handle, file_info)
 | 0       | 成功       |
 | 非 0    | 失败       |
 
-### 3.6 kd_mp4_get_track_by_index
+### kd_mp4_get_track_by_index
 
 **描述**
 通过索引获取指定轨道的详细信息。
@@ -276,7 +276,7 @@ ret = kd_mp4_get_track_by_index(handle, track_index, track_info)
 
 ---
 
-### 3.7 kd_mp4_get_frame
+### kd_mp4_get_frame
 
 **描述**
 从 MP4 文件中读取一帧音视频数据。
@@ -299,9 +299,9 @@ ret = kd_mp4_get_frame(handle, frame_data)
 | 0       | 成功       |
 | 非 0    | 失败       |
 
-## 4. 数据结构描述
+## 数据结构描述
 
-### 4.1 Mp4CfgStr
+### Mp4CfgStr
 
 **说明**
 
@@ -335,7 +335,7 @@ class Mp4CfgStr:
 
 - MP4Container.Create
 
-### 4.2 MuxerCfgStr
+### MuxerCfgStr
 
 **说明**
 
@@ -367,7 +367,7 @@ class MuxerCfgStr:
 
 - MP4Container.Create
 
-### 4.3 MP4Container 类型
+### MP4Container 类型
 
 **说明**
 
@@ -380,7 +380,7 @@ MP4Container 类型枚举。
 | MP4_CONFIG_TYPE_MUXER          | muxer 类型               |
 | MP4_CONFIG_TYPE_DEMUXER        | demuxer 类型，目前不支持 |
 
-### 4.4 video_payload_type
+### video_payload_type
 
 **说明**
 
@@ -393,7 +393,7 @@ MP4Container 类型枚举。
 | MP4_CODEC_ID_H264            | H.264 视频编码类型        |
 | MP4_CODEC_ID_H265            | H.265 视频编码类型        |
 
-### 4.5 audio_payload_type
+### audio_payload_type
 
 **说明**
 
@@ -406,7 +406,7 @@ MP4Container 类型枚举。
 | MP4_CODEC_ID_G711U           | G.711U 音频编码类型       |
 | MP4_CODEC_ID_G711A           | G.711A 音频编码类型       |
 
-### 4.6 k_mp4_config_s
+### k_mp4_config_s
 
 **说明**
 MP4 容器的全局配置结构体。
@@ -420,7 +420,7 @@ MP4 容器的全局配置结构体。
 
 ---
 
-### 4.7 k_mp4_track_info_s
+### k_mp4_track_info_s
 
 **说明**
 轨道信息结构体，用于创建音视频轨道。
@@ -435,7 +435,7 @@ MP4 容器的全局配置结构体。
 
 ---
 
-### 4.8 k_mp4_frame_data_s
+### k_mp4_frame_data_s
 
 **说明**
 帧数据结构体，用于读写音视频帧。
@@ -449,9 +449,9 @@ MP4 容器的全局配置结构体。
 | data_length   | 数据长度（字节）                  |
 | eof           | 结束标志（1 表示最后一帧）        |
 
-## 5. 示例程序
+## 示例程序
 
-### 5.1 例程 1
+### 例程 1
 
 该实例用于演示如何调用 `Mp4Container` 类来生成 MP4 文件。通过该例程，开发者可以录制摄像头画面和采集声音，生成 MP4 文件。该示例展示了如何创建 `Mp4Container` 实例、配置 MP4 文件参数、启动和停止 MP4 录制过程。适合需要快速上手 MP4 文件生成的开发者。
 
@@ -498,7 +498,7 @@ def canmv_mp4_muxer_test():
 canmv_mp4_muxer_test()
 ```
 
-### 5.2 例程 2
+### 例程 2
 
 该实例用于演示如何调用 kd_mp4* API 来直接操作 MP4 模块。通过该例程，开发者可以了解如何创建 MP4 容器、创建音视频轨道、写入音视频帧数据以及销毁 MP4 容器。该例程展示了更底层的操作方式，适合需要精细控制 MP4 文件生成过程的开发者。
 
@@ -696,7 +696,7 @@ if __name__ == "__main__":
     vi_bind_venc_mp4_test("/sdcard/examples/test.mp4", 1280, 720)
 ```
 
-### 5.3 例程 3
+### 例程 3
 
 该实例用于演示如何调用 kd_mp4* API 来直接操作 MP4 模块，通过该例程，开发者可以解复用 MP4 文件，提取视频和音频流。
 

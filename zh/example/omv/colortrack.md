@@ -1,20 +1,20 @@
-# 6. 颜色识别(find_blobs)例程讲解
+# 颜色识别(find_blobs)例程讲解
 
-## 1. 概述
+## 概述
 
 `find_blobs` 是 OpenMV 的图像处理函数，用于在图像中寻找并识别“斑点”（blobs）。这些斑点是指图像中具有相似颜色或亮度的区域。这个函数通常用于视觉检测和识别应用中，例如物体跟踪、颜色识别等。
 
 CanMV支持OpenMV算法，同样可以使用`find_blobs`
 
-## 2. 函数讲解
+## 函数讲解
 
-### 2.1 基本用法
+### 基本用法
 
 ```python
 blobs = img.find_blobs([thresholds], area_threshold=area_threshold, pixels_threshold=pixels_threshold, merge=True, margin=0)
 ```
 
-### 2.2 参数解释
+### 参数解释
 
 - thresholds: 这是一个包含颜色范围的列表，用于定义要查找的斑点的颜色范围。通常是一个包含两个或三个元素的元组。例如，`(100, 200, -64, 127, -128, 127)` 表示 HSV 颜色空间中的范围，其中第一个和第二个值是 Hue，第三和第四值是 Saturation，最后两个值是 Value。
 
@@ -26,7 +26,7 @@ blobs = img.find_blobs([thresholds], area_threshold=area_threshold, pixels_thres
 
 - margin: 用于合并斑点时的边距。设置为一个正整数，表示合并斑点时的最大距离。默认值是 0。
 
-### 2.3 返回值
+### 返回值
 
 `find_blobs` 函数返回一个包含斑点信息的列表。每个斑点都是一个 `Blob` 对象，通常包含以下属性：
 
@@ -35,7 +35,7 @@ blobs = img.find_blobs([thresholds], area_threshold=area_threshold, pixels_thres
 - `w` 和 `h`：斑点的宽度和高度。
 - `area`：斑点的面积（像素数）。
 
-## 3. 示例
+## 示例
 
 这里只列举一个单独的颜色追踪例子，具体demo还请查看固件自带虚拟U盘中的例程
 

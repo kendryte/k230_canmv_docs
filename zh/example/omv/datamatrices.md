@@ -1,12 +1,12 @@
-# 4. 识别 DM 码例程讲解
+# 识别 DM 码例程讲解
 
-## 1. 概述
+## 概述
 
 Data Matrix 码是一种二维条码，广泛用于小型产品的标识和跟踪。它由小黑白方块组成，这些方块在矩形或正方形的网格中排列。
 
 CanMV 支持 OpenMV 算法，能够识别 Data Matrix 码，相关接口为 `find_datamatrices`。
 
-## 2. 示例
+## 示例
 
 本示例设置摄像头输出为 640x480 的灰度图像，并使用 `image.find_datamatrices` 来识别 Data Matrix 码。
 

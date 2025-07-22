@@ -1,14 +1,14 @@
-# 2.16 `RTC` 模块 API 手册
+# `RTC` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 当前 CanMV K230 提供一个类 RTC（实时时钟）模块，用户可以用其设置和获取当前系统时间。
 
-## 2. API 介绍
+## API 介绍
 
 RTC 类位于 `machine` 模块下。
 
-### 2.1 示例
+### 示例
 
 ```python
 from machine import RTC
@@ -21,7 +21,7 @@ print(rtc.datetime())
 rtc.init((2024, 2, 28, 2, 23, 59, 0, 0))
 ```
 
-### 2.2 构造函数
+### 构造函数
 
 ```python
 rtc = RTC()
@@ -31,7 +31,7 @@ rtc = RTC()
 
 无
 
-### 2.3 `init` 方法
+### `init` 方法
 
 ```python
 rtc.init(year, month, day, hour, minute, second, microsecond, tzinfo)
@@ -52,7 +52,7 @@ rtc.init(year, month, day, hour, minute, second, microsecond, tzinfo)
 
 无
 
-### 2.4 `datetime` 方法
+### `datetime` 方法
 
 ```python
 print(rtc.datetime())

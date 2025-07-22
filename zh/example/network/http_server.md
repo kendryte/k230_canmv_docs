@@ -1,14 +1,14 @@
-# 8. HTTP-Server 例程讲解
+# HTTP-Server 例程讲解
 
-## 1. 环境准备
+## 环境准备
 
 首先，确保你的 CanMV 开发板通过网口与路由器或交换机相连，并且路由器能够正常工作并具备访问互联网的能力。此环境是实现 HTTP 请求的前提。
 
-## 2. 服务端例程详解
+## 服务端例程详解
 
 下面展示了一个基于 CanMV 开发板的简单 HTTP 服务器 Python 例程。该服务器监听端口 8081，能够响应客户端的 HTTP 请求。
 
-### 2.1 导入必要的模块
+### 导入必要的模块
 
 ```python
 import socket  
@@ -18,7 +18,7 @@ import time
 
 通过导入 `socket`、`network` 和 `time` 模块，`socket` 模块用于网络通信，`network` 管理网络接口（如 LAN），`time` 提供时间相关功能。
 
-### 2.2 定义响应内容
+### 定义响应内容
 
 ```python
 CONTENT = b"""\  
@@ -29,7 +29,7 @@ Hello #%d from k230 canmv MicroPython!
 
 定义一个字节字符串 `CONTENT`，作为 HTTP 响应主体。 `%d` 是计数器占位符，表示每次请求的序号。
 
-### 2.3 定义主函数
+### 定义主函数
 
 ```python
 def main(micropython_optimize=True):  
@@ -38,7 +38,7 @@ def main(micropython_optimize=True):
 
 定义了 `main` 函数，参数 `micropython_optimize` 控制是否启用 MicroPython 的特定优化方式。
 
-### 2.4 配置网络接口
+### 配置网络接口
 
 ```python
 def network_use_wlan(is_wlan=True):
@@ -63,7 +63,7 @@ def network_use_wlan(is_wlan=True):
 
 这段代码依据 `is_wlan` 参数选择 WLAN 或 LAN 接口。WLAN 模式下连接到指定 Wi-Fi 网络，而 LAN 模式则通过 DHCP 获取 IP 地址。获取并打印网络配置后，返回 IP。
 
-### 2.5 创建并配置 socket
+### 创建并配置 socket
 
 ```python
 # 创建 socket 对象  
@@ -81,7 +81,7 @@ print("监听中，请在浏览器中访问 http://%s:8081/" % (network.LAN().if
 
 代码创建 socket，并启用 `SO_REUSEADDR` 选项以允许端口重用。绑定地址并开始监听端口 8081，最多支持 5 个连接请求。
 
-### 2.6 处理客户端请求
+### 处理客户端请求
 
 ```python
 counter = 0  
@@ -118,7 +118,7 @@ while True:
 
 服务器主循环接受客户端连接，选择不同的读取方式处理请求，发送带有计数器的响应，并关闭连接。连接关闭后，等待 2 秒进入下次循环。
 
-### 2.7 完整例程
+### 完整例程
 
 ```python
 import socket
@@ -192,7 +192,7 @@ main()
 
 具体接口定义请参考 [socket](../../api/extmod/K230_CanMV_socket模块API手册.md)、[network](../../api/extmod/K230_CanMV_network模块API手册.md)。
 
-## 3. 例程现象与操作说明
+## 例程现象与操作说明
 
 在 CanMV IDE K230 中运行该例程后，IDE 串口终端会显示如下信息：
 

@@ -1,12 +1,12 @@
-# 2.19 `SPI_LCD` 模块 API 手册
+# `SPI_LCD` 模块 API 手册
 
-## 1. 概述
+## 概述
 
 `SPI_LCD` 模块提供了通过 SPI 总线与 LCD 显示屏进行交互的接口，包括屏幕初始化、绘图、文本显示等操作。
 
-## 2. API 介绍
+## API 介绍
 
-### 2.1 构造函数
+### 构造函数
 
 ```python
 SPI_LCD(spi: SPI, dc: Pin, cs: Pin = None, rst: Pin = None, bl: Pin = None, type: int = SPI_LCD.ST7789)
@@ -27,7 +27,7 @@ SPI_LCD(spi: SPI, dc: Pin, cs: Pin = None, rst: Pin = None, bl: Pin = None, type
 
 - `SPI_LCD` 对象。
 
-### 2.2 `configure` 方法
+### `configure` 方法
 
 ```python
 lcd.configure(width, height, hmirror=False, vflip=False, bgr=False)
@@ -51,7 +51,7 @@ lcd.configure(width, height, hmirror=False, vflip=False, bgr=False)
 必须在 init 之前配置模块参数
 ```
 
-### 2.3 `init` 方法
+### `init` 方法
 
 ```python
 lcd.init(custom_command=False)
@@ -67,7 +67,7 @@ lcd.init(custom_command=False)
 
 - img: `Image` 对象，用户可使用该buffer进行图像绘制操作
 
-### 2.4 `command` 方法
+### `command` 方法
 
 ```python
 lcd.command(cmd, data)
@@ -84,7 +84,7 @@ lcd.command(cmd, data)
 
 - 无返回值。
 
-### 2.5 `deinit` 方法
+### `deinit` 方法
 
 ```python
 lcd.deinit()
@@ -96,7 +96,7 @@ lcd.deinit()
 
 - 无返回值。
 
-### 2.6 显示尺寸获取方法
+### 显示尺寸获取方法
 
 ```python
 lcd.width()
@@ -118,7 +118,7 @@ lcd.height()
 
 - 高度值。
 
-### 2.7 显示方向与属性
+### 显示方向与属性
 
 ```python
 lcd.hmirror()
@@ -130,7 +130,7 @@ lcd.bgr()
 
 传入参数 `True` 或者 `False` 进行属性设置，不传参数则返回当前配置
 
-#### 2.8 `get_direction` 方法
+#### `get_direction` 方法
 
 ```python
 lcd.get_direction()
@@ -142,7 +142,7 @@ lcd.get_direction()
 
 - 方向寄存器的值
 
-### 2.9 背光控制
+### 背光控制
 
 ```python
 lcd.light(value)
@@ -158,7 +158,7 @@ lcd.light(value)
 
 - 无返回值。
 
-### 2.10 像素操作
+### 像素操作
 
 ```python
 lcd.get(x,y)
@@ -184,7 +184,7 @@ lcd.pixel(x, y, color)
 
 - 无返回值。
 
-### 2.11 屏幕填充
+### 屏幕填充
 
 ```python
 lcd.fill(color)
@@ -202,7 +202,7 @@ lcd.fill(color)
 
 - 无返回值。
 
-### 2.12 图片显示
+### 图片显示
 
 ```python
 lcd.show(img=None, x = 0, y = 0)
@@ -222,13 +222,13 @@ lcd.show_image(img=None, x = 0, y = 0)
 
 - 无返回值。
 
-## 3. 屏幕类型
+## 屏幕类型
 
 `SPI_LCD.ST7789`: `ST7789` 主控，4线 `SPI` 接口
 
-## 4. 示例代码
+## 示例代码
 
-### 4.1 在屏幕上显示字符
+### 在屏幕上显示字符
 
 ```python
 import time, image

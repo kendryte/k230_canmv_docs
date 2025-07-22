@@ -1,14 +1,14 @@
-# 3.5 `VDEC`模块 API 手册
+# `VDEC`模块 API 手册
 
-## 1. 概述
+## 概述
 
 本文件详细介绍了 K230_CanMV VDEC 模块的 API。该模块支持 H.264 和 H.265 解码，并能够与 VO 模块进行绑定，将解码后的数据输出至 VO 显示设备。
 
-## 2. API 介绍
+## API 介绍
 
 本模块提供了 `Decoder` 类，该类包含以下方法：
 
-### 2.1 Decoder.\_\_init__
+### Decoder.\_\_init__
 
 **描述**
 
@@ -37,7 +37,7 @@ decoder = Decoder(K_PT_H264)
 
 VDEC 模块最多支持四路并发解码。
 
-### 2.2 Decoder.Create
+### Decoder.Create
 
 **描述**
 
@@ -61,7 +61,7 @@ decoder.create()
 | 0      | 成功    |
 | 非 0   | 失败    |
 
-### 2.3 Decoder.destroy
+### Decoder.destroy
 
 **描述**
 
@@ -85,7 +85,7 @@ decoder.destroy()
 | 0      | 成功    |
 | 非 0   | 失败    |
 
-### 2.4 Decoder.Start
+### Decoder.Start
 
 **描述**
 
@@ -109,7 +109,7 @@ decoder.Start()
 | 0      | 成功    |
 | 非 0   | 失败    |
 
-### 2.5 Decoder.decode
+### Decoder.decode
 
 **描述**
 
@@ -135,7 +135,7 @@ decoder.decode(stream_data)
 | 0      | 成功    |
 | 非 0   | 失败    |
 
-### 2.6 Decoder.stop
+### Decoder.stop
 
 **描述**
 
@@ -159,7 +159,7 @@ decoder.stop()
 | 0      | 成功    |
 | 非 0   | 失败    |
 
-### 2.7 Decoder.bind_info
+### Decoder.bind_info
 
 **描述**
 
@@ -185,9 +185,9 @@ vdec.bind_info(width=vdec_width, height=vdec_height, chn=0)
 |--------|------|
 | 无     |      |
 
-## 3. 数据结构描述
+## 数据结构描述
 
-### 3.1 StreamData
+### StreamData
 
 **说明**  
 
@@ -209,9 +209,9 @@ class StreamData:
 | data     | 码流数据   |
 | pts      | 时间戳信息 |
 
-## 4. 示例程序
+## 示例程序
 
-### 4.1 示例 1
+### 示例 1
 
 ```python
 from media.media import *
