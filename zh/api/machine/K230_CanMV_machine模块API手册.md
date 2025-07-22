@@ -22,6 +22,22 @@ machine.reset()
 
 无
 
+### `bootloader` 方法
+
+```python
+machine.bootloader()
+```
+
+进入引导加载程序。
+
+**参数**
+
+无
+
+**返回值**
+
+无
+
 ### `mem_copy` 方法
 
 ```python

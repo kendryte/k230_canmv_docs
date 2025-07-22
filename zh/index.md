@@ -186,13 +186,13 @@ if __name__ == "__main__":
     else:
         display_size=[800,480]
     # 设置模型路径和其他参数
-    kmodel_path = "/sdcard/app/tests/kmodel/face_detection_320.kmodel"
+    kmodel_path = "/sdcard/examples/kmodel/face_detection_320.kmodel"
     # 其它参数
     confidence_threshold = 0.5
     nms_threshold = 0.2
     anchor_len = 4200
     det_dim = 4
-    anchors_path = "/sdcard/app/tests/utils/prior_data_320.bin"
+    anchors_path = "/sdcard/examples/utils/prior_data_320.bin"
     anchors = np.fromfile(anchors_path, dtype=np.float)
     anchors = anchors.reshape((anchor_len, det_dim))
     rgb888p_size = [1920, 1080]
