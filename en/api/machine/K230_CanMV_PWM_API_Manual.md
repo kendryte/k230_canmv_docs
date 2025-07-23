@@ -11,50 +11,72 @@ The PWM class is located in the `machine` module.
 ### Example Code  
 
 ```python  
-import time  
-from machine import PWM  
-from machine import FPIOA  
+import time
+from machine import PWM, FPIOA
 
-# Instantiate FPIOA  
-fpioa = FPIOA()  
+CONSTRUCT_WITH_FPIOA = False
 
-# Set PIN42 as PWM channel 0  
-fpioa.set_function(42, fpioa.PWM0)  
+PWM_CHANNEL = 0
 
-# Instantiate PWM channel 0 with a frequency of 1000Hz and a duty cycle of 50% (enabled by default)  
-pwm0 = PWM(0)  
+PWM_PIN = 42
+TEST_FREQ = 1000  # Hz
 
-# Adjust the frequency of channel 0 to 2000Hz  
-pwm0.freq(2000)  
 
-# Adjust the duty cycle of channel 0 to 50% (32768 / 65535)  
-pwm0.duty_u16(32768)  
-print(pwm0.duty_u16())  
+# Initialize PWM with 50% duty
+try:
+    if CONSTRUCT_WITH_FPIOA:
+        fpioa = FPIOA()
+        fpioa.set_function(PWM_PIN, fpioa.PWM0 + PWM_CHANNEL)
+        pwm = PWM(PWM_CHANNEL, freq=TEST_FREQ, duty=50)
+    else:
+        pwm = PWM(PWM_PIN, freq=TEST_FREQ, duty=50)
+except Exception:
+    print("FPIOA setup skipped or failed")
 
-# Output for 1 second and then disable  
-time.sleep(1)  
-pwm0.deinit()  
-time.sleep(1)  
+print("[INIT] freq: {}Hz, duty: {}%".format(pwm.freq(), pwm.duty()))
+time.sleep(0.5)
 
-# Adjust channel 0 frequency to 10KHz with a duty cycle of 30%  
-pwm0.freq(10000)  
-pwm0.duty(30)  
-print(pwm0.duty())  
+# duty() getter and setter
+print("[TEST] duty()")
+pwm.duty(25)
+print("Set duty to 25%, got:", pwm.duty(), "→ duty_u16:", pwm.duty_u16(), "→ duty_ns:", pwm.duty_ns())
+time.sleep(0.2)
 
-# Output for 1 second and then disable  
-time.sleep(1)  
-pwm0.deinit()  
+# duty_u16()
+print("[TEST] duty_u16()")
+pwm.duty_u16(32768)  # 50%
+print("Set duty_u16 to 32768, got:", pwm.duty_u16(), "→ duty():", pwm.duty(), "→ duty_ns():", pwm.duty_ns())
+time.sleep(0.2)
+
+# duty_ns()
+print("[TEST] duty_ns()")
+period_ns = 1000000000 // pwm.freq()
+duty_ns_val = (period_ns * 75) // 100  # 75%
+pwm.duty_ns(duty_ns_val)
+print("Set duty_ns to", duty_ns_val, "ns (≈75%), got:", pwm.duty_ns(), "→ duty():", pwm.duty(), "→ duty_u16():", pwm.duty_u16())
+time.sleep(0.2)
+
+# Change frequency and re-check duty values
+print("[TEST] Change frequency to 500Hz")
+pwm.freq(500)
+print("New freq:", pwm.freq())
+print("Duty after freq change → duty():", pwm.duty(), "→ duty_u16():", pwm.duty_u16(), "→ duty_ns():", pwm.duty_ns())
+time.sleep(0.2)
+
+# Clean up
+pwm.deinit()
+print("[DONE] PWM test completed")
 ```  
 
 ### Constructor  
 
 ```python  
-pwm = PWM(channel, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)  
+pwm = PWM(channel_or_pin, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)  
 ```  
 
 **Parameters**  
 
-- `channel`: PWM channel number, range [0, 5]  
+- `channel_or_pin`: PWM channel number, range [0, 5], or Pin number, such as pin42 -> pwm0
 - `freq`: PWM channel output frequency  
 - `duty`: PWM channel duty cycle, representing the percentage of high-level duration in the entire period, range [0, 100]  
 - `duty_ns`: PWM channel high-level duration in nanoseconds (`ns`)  
