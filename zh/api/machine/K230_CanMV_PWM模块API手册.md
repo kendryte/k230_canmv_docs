@@ -25,10 +25,12 @@ TEST_FREQ = 1000  # Hz
 # Initialize PWM with 50% duty
 try:
     if CONSTRUCT_WITH_FPIOA:
+        # 使用FPIOA 配置引脚复用为PWM, 构造时传入 channel
         fpioa = FPIOA()
         fpioa.set_function(PWM_PIN, fpioa.PWM0 + PWM_CHANNEL)
         pwm = PWM(PWM_CHANNEL, freq=TEST_FREQ, duty=50)
     else:
+        # 直接传入引脚
         pwm = PWM(PWM_PIN, freq=TEST_FREQ, duty=50)
 except Exception:
     print("FPIOA setup skipped or failed")
@@ -76,7 +78,9 @@ pwm = PWM(channel_or_pin, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
 
 **参数**
 
-- `channel_or_pin`: PWM 通道号，取值范围为 [0, 5]，或者引脚号，如42对应PWM0
+- `channel_or_pin`:
+  - `channel`: PWM 通道号，取值范围为 [0, 5]，需要使用 fpioa 配置对应引脚为 PWM 复用功能
+  - `pin`: Pin 对象，或者引脚号，驱动自动设置引脚为 PWM 复用功能，具体引脚对应 PWM 请参考 [引脚复用](#pwm-引脚复用)
 - `freq`: PWM 通道输出频率
 - `duty`: PWM 通道输出占空比，表示高电平在整个周期中的百分比，取值范围为 [0, 100]
 - `duty_ns`: PWM 通道输出高电平的时间，单位为 `ns`
@@ -185,3 +189,14 @@ PWM.duty_ns([duty_ns])
 **返回值**
 
 无
+
+## PWM 引脚复用
+
+| PWM | 可选引脚 |
+|-----|---------------------|
+| PWM0 | GPIO42, GPIO54, GPIO60 |
+| PWM1 | GPIO43, GPIO55, GPIO61 |
+| PWM2 | GPIO7, GPIO46, GPIO56 |
+| PWM3 | GPIO8, GPIO47, GPIO57 |
+| PWM4 | GPIO9, GPIO52, GPIO58 |
+| PWM5 | GPIO25, GPIO53, GPIO59 |
