@@ -189,101 +189,111 @@ class uvc_video_mode:
 ### Software Decoding Example  
 
 ```python  
-import time  
-from media.display import *  
-from media.media import *  
-from media.uvc import *  
+import time, os, urandom, sys, gc
 
-DISPLAY_WIDTH = ALIGN_UP(800, 16)  
-DISPLAY_HEIGHT = 480  
+from media.display import *
+from media.media import *
+from media.uvc import *
 
-# Initialize LCD display  
-Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)  
-# Initialize media manager  
-MediaManager.init()  
+DISPLAY_WIDTH = ALIGN_UP(800, 16)
+DISPLAY_HEIGHT = 480
 
-# Detect camera  
-while True:  
-    plugin, dev = UVC.probe()  
-    if plugin:  
-        print(f"Detected USB Camera: {dev}")  
-        break  
+# use lcd as display output
+Display.init(Display.ST7701, width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT, to_ide = True)
+# init media manager
+MediaManager.init()
 
-# Set video mode  
-mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)  
-succ, mode = UVC.select_video_mode(mode)  
-print(f"Mode selection: {'Success' if succ else 'Failed'}, Actual mode: {mode}")  
+while True:
+    plugin, dev = UVC.probe()
+    if plugin:
+        print(f"detect USB Camera {dev}")
+        break
 
-# Start video stream  
-UVC.start()  
+mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)
 
-try:  
-    while True:  
-        img = UVC.snapshot()  
-        if img is not None:  
-            img = img.to_rgb565()  # Convert to RGB565 format  
-            Display.show_image(img)  # Display image  
-finally:  
-    # Cleanup resources  
-    Display.deinit()  
-    UVC.stop()  
-    time.sleep_ms(100)  
-    MediaManager.deinit()  
+succ, mode = UVC.select_video_mode(mode)
+print(f"select mode success: {succ}, mode: {mode}")
+
+UVC.start(cvt = False)
+
+fps = time.clock()
+
+while True:
+    fps.tick()
+    img = UVC.snapshot()
+    if img is not None:
+        try:
+            img = img.to_rgb565()
+            Display.show_image(img)
+            img.__del__()
+            gc.collect()
+        except OSError as e:
+            pass
+
+    print(f"fps: {fps.fps()}")
+
+# deinit display
+Display.deinit()
+UVC.stop()
+time.sleep_ms(100)
+# release media buffer
+MediaManager.deinit()
 ```  
 
 ### Hardware Decoding Example  
 
 ```python  
-import time  
-from media.display import *  
-from media.media import *  
-from media.uvc import *  
-from nonai2d import CSC  # Hardware Color Space Converter  
+import time, os, urandom, sys, gc
 
-DISPLAY_WIDTH = ALIGN_UP(800, 16)  
-DISPLAY_HEIGHT = 480  
+from media.display import *
+from media.media import *
+from media.uvc import *
 
-# Initialize hardware color space converter  
-csc = CSC(0, CSC.PIXEL_FORMAT_RGB_565)  
+from nonai2d import CSC
 
-# Initialize LCD display  
-Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)  
-# Initialize media manager  
-MediaManager.init()  
+DISPLAY_WIDTH = ALIGN_UP(800, 16)
+DISPLAY_HEIGHT = 480
 
-# Detect camera  
-while True:  
-    plugin, dev = UVC.probe()  
-    if plugin:  
-        print(f"Detected USB Camera: {dev}")  
-        break  
-    time.sleep_ms(100)  
+csc = CSC(0, CSC.PIXEL_FORMAT_RGB_565)
 
-# Set video mode  
-mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)  
-succ, mode = UVC.select_video_mode(mode)  
-print(f"Mode selection: {'Success' if succ else 'Failed'}, Actual mode: {mode}")  
+# use lcd as display output
+Display.init(Display.ST7701, width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT, to_ide = True)
+# init media manager
+MediaManager.init()
 
-# Start video stream with hardware decoding  
-UVC.start(cvt=True)  
+while True:
+    plugin, dev = UVC.probe()
+    if plugin:
+        print(f"detect USB Camera {dev}")
+        break
+    time.sleep_ms(100)
 
-clock = time.clock()  # For FPS calculation  
+mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)
 
-try:  
-    while True:  
-        clock.tick()  
-        
-        img = UVC.snapshot()  
-        if img is not None:  
-            img = csc.convert(img)  # Hardware color space conversion  
-            Display.show_image(img)  
-        
-        print(f"Current FPS: {clock.fps()}")  
-finally:  
-    # Cleanup resources  
-    Display.deinit()  
-    csc.destroy()  
-    UVC.stop()  
-    time.sleep_ms(100)  
-    MediaManager.deinit()  
+succ, mode = UVC.select_video_mode(mode)
+print(f"select mode success: {succ}, mode: {mode}")
+
+UVC.start(cvt = True)
+
+clock = time.clock()
+
+while True:
+    clock.tick()
+
+    img = UVC.snapshot()
+    if img is not None:
+        img = csc.convert(img)
+        Display.show_image(img)
+        img.__del__()
+        gc.collect()
+
+    print(f"fps: {clock.fps()}")
+
+# deinit display
+Display.deinit()
+csc.destroy()
+UVC.stop()
+time.sleep_ms(100)
+# release media buffer
+MediaManager.deinit()
 ```  
