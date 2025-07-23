@@ -10,6 +10,7 @@ machine/K230_CanMV_ADC模块API手册.md
 machine/K230_CanMV_FFT模块API手册.md
 machine/K230_CanMV_Pin模块API手册.md
 machine/K230_CanMV_I2C模块API手册.md
+machine/K230_CanMV_I2C_Slave模块API手册.md
 machine/K230_CanMV_FPIOA模块API手册.md
 machine/K230_CanMV_PWM模块API手册.md
 machine/K230_CanMV_SPI模块API手册.md
