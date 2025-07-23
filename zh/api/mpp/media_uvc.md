@@ -189,7 +189,8 @@ class uvc_video_mode:
 ### 使用软件解码
 
 ```python
-import time
+import time, os, urandom, sys, gc
+
 from media.display import *
 from media.media import *
 from media.uvc import *
@@ -197,93 +198,102 @@ from media.uvc import *
 DISPLAY_WIDTH = ALIGN_UP(800, 16)
 DISPLAY_HEIGHT = 480
 
-# 初始化LCD显示
-Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
-# 初始化媒体管理器
+# use lcd as display output
+Display.init(Display.ST7701, width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT, to_ide = True)
+# init media manager
 MediaManager.init()
 
-# 检测摄像头
 while True:
     plugin, dev = UVC.probe()
     if plugin:
-        print(f"检测到USB摄像头: {dev}")
+        print(f"detect USB Camera {dev}")
         break
 
-# 设置视频模式
 mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)
+
 succ, mode = UVC.select_video_mode(mode)
-print(f"模式设置: {'成功' if succ else '失败'}, 实际模式: {mode}")
+print(f"select mode success: {succ}, mode: {mode}")
 
-# 启动视频流
-UVC.start()
+UVC.start(cvt = False)
 
-try:
-    while True:
-        img = UVC.snapshot()
-        if img is not None:
-            img = img.to_rgb565()  # 转换为RGB565格式
-            Display.show_image(img)  # 显示图像
-finally:
-    # 清理资源
-    Display.deinit()
-    UVC.stop()
-    time.sleep_ms(100)
-    MediaManager.deinit()
+fps = time.clock()
+
+while True:
+    fps.tick()
+    img = UVC.snapshot()
+    if img is not None:
+        try:
+            img = img.to_rgb565()
+            Display.show_image(img)
+            img.__del__()
+            gc.collect()
+        except OSError as e:
+            pass
+
+    print(f"fps: {fps.fps()}")
+
+# deinit display
+Display.deinit()
+UVC.stop()
+time.sleep_ms(100)
+# release media buffer
+MediaManager.deinit()
 ```
 
 ### 使用硬件解码
 
 ```python
-import time
+import time, os, urandom, sys, gc
+
 from media.display import *
 from media.media import *
 from media.uvc import *
-from nonai2d import CSC  # 硬件色彩空间转换器
+
+from nonai2d import CSC
 
 DISPLAY_WIDTH = ALIGN_UP(800, 16)
 DISPLAY_HEIGHT = 480
 
-# 初始化硬件色彩空间转换器
 csc = CSC(0, CSC.PIXEL_FORMAT_RGB_565)
 
-# 初始化LCD显示
-Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
-# 初始化媒体管理器
+# use lcd as display output
+Display.init(Display.ST7701, width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT, to_ide = True)
+# init media manager
 MediaManager.init()
 
-# 检测摄像头
 while True:
     plugin, dev = UVC.probe()
     if plugin:
-        print(f"检测到USB摄像头: {dev}")
+        print(f"detect USB Camera {dev}")
         break
     time.sleep_ms(100)
 
-# 设置视频模式
 mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)
+
 succ, mode = UVC.select_video_mode(mode)
-print(f"模式设置: {'成功' if succ else '失败'}, 实际模式: {mode}")
+print(f"select mode success: {succ}, mode: {mode}")
 
-# 启动视频流（启用硬件解码）
-UVC.start(cvt=True)
+UVC.start(cvt = True)
 
-clock = time.clock()  # 用于计算FPS
+clock = time.clock()
 
-try:
-    while True:
-        clock.tick()
-        
-        img = UVC.snapshot()
-        if img is not None:
-            img = csc.convert(img)  # 硬件转换色彩空间
-            Display.show_image(img)
-        
-        print(f"当前FPS: {clock.fps()}")
-finally:
-    # 清理资源
-    Display.deinit()
-    csc.destroy()
-    UVC.stop()
-    time.sleep_ms(100)
-    MediaManager.deinit()
+while True:
+    clock.tick()
+
+    img = UVC.snapshot()
+    if img is not None:
+        img = csc.convert(img)
+        Display.show_image(img)
+        img.__del__()
+        gc.collect()
+
+    print(f"fps: {clock.fps()}")
+
+# deinit display
+Display.deinit()
+csc.destroy()
+UVC.stop()
+time.sleep_ms(100)
+# release media buffer
+MediaManager.deinit()
 ```
