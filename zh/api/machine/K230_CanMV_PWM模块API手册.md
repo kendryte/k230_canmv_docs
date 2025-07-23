@@ -12,49 +12,71 @@ PWM 类位于 `machine` 模块中。
 
 ```python
 import time
-from machine import PWM
-from machine import FPIOA
+from machine import PWM, FPIOA
 
-# 实例化FPIOA
-fpioa = FPIOA()
+CONSTRUCT_WITH_FPIOA = False
 
-# 设置PIN42为PWM通道0
-fpioa.set_function(42, fpioa.PWM0)
+PWM_CHANNEL = 0
 
-# 实例化PWM通道0，频率为1000Hz，占空比为50%，默认使能输出
-pwm0 = PWM(0)
+PWM_PIN = 42
+TEST_FREQ = 1000  # Hz
 
-# 调整通道0频率为2000Hz
-pwm0.freq(2000)
 
-# 调整通道0的占空比为 50% (32768 / 65535)
-pwm0.duty_u16(32768)
-print(pwm0.duty_u16())
+# Initialize PWM with 50% duty
+try:
+    if CONSTRUCT_WITH_FPIOA:
+        fpioa = FPIOA()
+        fpioa.set_function(PWM_PIN, fpioa.PWM0 + PWM_CHANNEL)
+        pwm = PWM(PWM_CHANNEL, freq=TEST_FREQ, duty=50)
+    else:
+        pwm = PWM(PWM_PIN, freq=TEST_FREQ, duty=50)
+except Exception:
+    print("FPIOA setup skipped or failed")
 
-# 输出1s之后关闭输出
-time.sleep(1)
-pwm0.deinit()
-time.sleep(1)
+print("[INIT] freq: {}Hz, duty: {}%".format(pwm.freq(), pwm.duty()))
+time.sleep(0.5)
 
-# 调整通道0频率为10KHz，占空比为 30%
-pwm0.freq(10000)
-pwm0.duty(30)
-print(pwm0.duty())
+# duty() getter and setter
+print("[TEST] duty()")
+pwm.duty(25)
+print("Set duty to 25%, got:", pwm.duty(), "→ duty_u16:", pwm.duty_u16(), "→ duty_ns:", pwm.duty_ns())
+time.sleep(0.2)
 
-# 输出1s之后关闭输出
-time.sleep(1)
-pwm0.deinit()
+# duty_u16()
+print("[TEST] duty_u16()")
+pwm.duty_u16(32768)  # 50%
+print("Set duty_u16 to 32768, got:", pwm.duty_u16(), "→ duty():", pwm.duty(), "→ duty_ns():", pwm.duty_ns())
+time.sleep(0.2)
+
+# duty_ns()
+print("[TEST] duty_ns()")
+period_ns = 1000000000 // pwm.freq()
+duty_ns_val = (period_ns * 75) // 100  # 75%
+pwm.duty_ns(duty_ns_val)
+print("Set duty_ns to", duty_ns_val, "ns (≈75%), got:", pwm.duty_ns(), "→ duty():", pwm.duty(), "→ duty_u16():", pwm.duty_u16())
+time.sleep(0.2)
+
+# Change frequency and re-check duty values
+print("[TEST] Change frequency to 500Hz")
+pwm.freq(500)
+print("New freq:", pwm.freq())
+print("Duty after freq change → duty():", pwm.duty(), "→ duty_u16():", pwm.duty_u16(), "→ duty_ns():", pwm.duty_ns())
+time.sleep(0.2)
+
+# Clean up
+pwm.deinit()
+print("[DONE] PWM test completed")
 ```
 
 ### 构造函数
 
 ```python
-pwm = PWM(channel, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
+pwm = PWM(channel_or_pin, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
 ```
 
 **参数**
 
-- `channel`: PWM 通道号，取值范围为 [0, 5]
+- `channel_or_pin`: PWM 通道号，取值范围为 [0, 5]，或者引脚号，如42对应PWM0
 - `freq`: PWM 通道输出频率
 - `duty`: PWM 通道输出占空比，表示高电平在整个周期中的百分比，取值范围为 [0, 100]
 - `duty_ns`: PWM 通道输出高电平的时间，单位为 `ns`
