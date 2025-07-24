@@ -28,6 +28,7 @@ extensions = [
 html_js_files = [
     'mermaid.min.js',
     'init_mermaid.js',
+    'transform.js'
 ]
 source_suffix = {
    '.rst': 'restructuredtext',  
