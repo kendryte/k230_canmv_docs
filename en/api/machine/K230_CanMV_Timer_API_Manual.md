@@ -12,17 +12,20 @@ The Timer class is located in the `machine` module.
 
 ```python
 from machine import Timer
+import time
 
 # Instantiate a software timer
 tim = Timer(-1)
 
-# Configure the timer in one-shot mode with a period of 100 milliseconds, callback function prints 1
+# Initialize the timer in one-shot mode with a period of 100ms
 tim.init(period=100, mode=Timer.ONE_SHOT, callback=lambda t: print(1))
+time.sleep(0.2)
 
-# Configure the timer in periodic mode with a period of 1000 milliseconds, callback function prints 2
-tim.init(period=1000, mode=Timer.PERIODIC, callback=lambda t: print(2))
+# Initialize the timer in periodic mode with a frequency of 1Hz
+tim.init(freq=1, mode=Timer.PERIODIC, callback=lambda t: print(2))
+time.sleep(2)
 
-# Deactivate the timer
+# Release timer resources
 tim.deinit()
 ```
 

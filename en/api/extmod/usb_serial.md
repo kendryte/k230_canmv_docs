@@ -6,15 +6,19 @@ The USB Serial module provides functionality for data communication via USB seri
 
 This module supports communication with 4G modules via AT commands.
 
+## API Definition
+
+The Serial class is located in the `usb` module.
+
 ## Constructor
 
-### `usb_serial(path="/dev/ttyUSB1", timeout_ms=300)`
+### `Sserial(path, timeout_ms=300)`
 
 Creates a USB Serial object.
 
 **Parameters:**
 
-- `path` (str): Serial device path, defaults to "/dev/ttyUSB1"
+- `path` (str): Serial device path
 - `timeout_ms` (int): Read/write timeout in milliseconds, defaults to 300ms
 
 **Returns:**
@@ -23,10 +27,10 @@ USB Serial object
 **Example:**
 
 ```python
-import usb_serial
+from usb import Serial
 
 # Create USB Serial object
-serial = usb_serial.usb_serial("/dev/ttyUSB1", timeout_ms=300)
+serial = Serial("/dev/ttyUSB1", timeout_ms=300)
 ```
 
 ## Methods

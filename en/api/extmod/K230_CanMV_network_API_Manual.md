@@ -64,11 +64,31 @@ This class serves as the interface for configuring WiFi networks. Example code i
 
 ```python
 import network
-# Enable STA mode and connect to WiFi access point
-nic = network.WLAN(network.STA_IF)
-nic.active(True)
-nic.connect('your-ssid', 'your-password')
-# Once configured, sockets can be used as usual
+
+def sta_test():
+    sta = network.WLAN(0)
+    if not sta.active():
+        sta.active(True)
+    # Check if STA is active
+    print(sta.active())
+    # Check STA status
+    print(sta.status())
+    # STA connects to AP
+    print(sta.connect("Canaan", "Canaan314"))
+    # Check status
+    print(sta.status())
+    # View IP configuration
+    print(sta.ifconfig())
+    # Check if connected
+    print(sta.isconnected())
+    # Disconnect
+    print(sta.disconnect())
+    # Connect to AP
+    print(sta.connect("Canaan", "Canaan314"))
+    # Check status
+    print(sta.status())
+
+sta_test()
 ```
 
 ### Constructor
@@ -105,7 +125,17 @@ nic.connect('your-ssid', 'your-password')
 
 - **WLAN.status([param])**
 
-  Returns the current network connection status. When no parameter is passed, it returns detailed connection information, including BSSID, frequency, SSID, encryption type, IP address, etc. For example:
+  Returns the current network connection status. When no parameters are passed, return the current connection status. For example:
+
+  ```python
+  # Check connection status. Equivalent to sta.isconnected()
+  print(sta.status())
+
+  # Check the signal quality of the connection
+  print(sta.status("rssi"))
+  ```
+
+  Supported configuration parameters include:
 
   - In `STA` mode:
     - `rssi`: Signal strength of the connection.
@@ -124,12 +154,20 @@ nic.connect('your-ssid', 'your-password')
   Gets or sets the network interface parameters at the IP level. When called without parameters, it returns a tuple containing the IP address, subnet mask, gateway, and DNS server; passing parameters sets these values. For example:
 
   ```python
-  nic.ifconfig(('192.168.0.4', '255.255.255.0', '192.168.0.1', '8.8.8.8'))
+  sta.ifconfig(('192.168.0.4', '255.255.255.0', '192.168.0.1', '8.8.8.8'))
   ```
 
 - **WLAN.config(param)**
 
   Gets or sets the network interface configuration parameters. Supported parameters include MAC address, SSID, WiFi channel, whether to hide SSID, password, etc. Use keyword argument syntax to set parameters; to query a parameter, pass the parameter name. For example:
+
+  ```python
+  # View 'auto_reconnect' configuration
+  print(sta.config('auto_reconnect'))
+
+  # Set up automatic reconnection
+  sta.config(auto_reconnect = True)
+  ```
 
   Supported configuration parameters include:
 

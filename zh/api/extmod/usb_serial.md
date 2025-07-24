@@ -12,13 +12,13 @@ Serial 类属于 usb 模块。
 
 ## 构造函数
 
-### `Serial(path="/dev/ttyUSB1", timeout_ms=300)`
+### `Serial(path, timeout_ms=300)`
 
 创建一个 USB Serial 对象。
 
 **参数：**
 
-- `path` (str): 串口设备路径，默认为 "/dev/ttyUSB1"
+- `path` (str): 串口设备路径
 - `timeout_ms` (int): 读写超时时间，单位为毫秒，默认为 300ms
 
 **返回值：**

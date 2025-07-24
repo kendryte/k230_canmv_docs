@@ -22,7 +22,7 @@
 **语法**  
 
 ```python
-init(type=None, width=None, height=None, osd_num=1, to_ide=False, fps=None, quality=90)
+init(type=None, width=None, height=None, osd_num=1, to_ide=False, flag=None, fps=None, quality=90)
 ```
 
 **参数**  
@@ -34,6 +34,7 @@ init(type=None, width=None, height=None, osd_num=1, to_ide=False, fps=None, qual
 | height   | 分辨率高度                   | 输入      | 可选参数,默认值根据 `type` 决定 |
 | osd_num  | 在 [show_image](#show_image) 时支持的 LAYER 数量 | 输入 | 越大占用内存越多 |
 | to_ide   | 是否将屏幕显示传输到 IDE 显示 | 输入      | 开启时占用更多内存 |
+| flag     | 显示 [标志](#flag)           | 输入      |                   |
 | fps      | 显示帧率                     | 输入      | 仅支持 `VIRT` 类型 |
 | quality  | 设置 `Jpeg` 压缩质量          | 输入      | 仅在 `to_ide=True` 时有效，范围 [10-100] |
 
@@ -52,7 +53,7 @@ init(type=None, width=None, height=None, osd_num=1, to_ide=False, fps=None, qual
 **语法**  
 
 ```python
-show_image(img, x=0, y=0, layer=None, alpha=255, flag=0)
+show_image(img, x=0, y=0, layer=None, alpha=255, flag=None)
 ```
 
 **参数**  

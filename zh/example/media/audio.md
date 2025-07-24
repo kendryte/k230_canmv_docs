@@ -50,8 +50,8 @@ def record_audio(filename, duration):
                         input=True,
                         frames_per_buffer=CHUNK)
 
-        stream.volume(LEFT,70)
-        stream.volume(RIGHT,85)
+        stream.volume(vol=70, channel=LEFT)
+        stream.volume(vol=85, channel=RIGHT)
         print("volume :",stream.volume())
 
         #启用音频3A功能：自动噪声抑制(ANS)
@@ -134,8 +134,8 @@ def loop_audio(duration):
                         frames_per_buffer=CHUNK)
 
         #设置音频输入流的音量
-        input_stream.volume(LEFT,70)
-        input_stream.volume(RIGHT,85)
+        input_stream.volume(vol=70, channel=LEFT)
+        input_stream.volume(vol=85, channel=RIGHT)
         print("input volume :",input_stream.volume())
 
         #启用音频3A功能：自动噪声抑制(ANS)
@@ -184,8 +184,8 @@ def audio_recorder(filename, duration):
                         input=True,
                         frames_per_buffer=CHUNK)
 
-        input_stream.volume(LEFT,70)
-        input_stream.volume(RIGHT,85)
+        input_stream.volume(vol=70, channel=LEFT)
+        input_stream.volume(vol=85, channel=RIGHT)
         print("input volume :",input_stream.volume())
 
         #启用音频3A功能：自动噪声抑制(ANS)
@@ -252,7 +252,7 @@ if __name__ == "__main__":
     # record_audio('/sdcard/examples/test.wav', 15)  # 录制WAV文件
     # play_audio('/sdcard/examples/test.wav')  # 播放WAV文件
     # loop_audio(15)  # 采集音频并输出
-    audio_recorder('/sdcard/examples/test.wav', 15) #录制15秒音频并播放
+    audio_recorder('/sdcard/examples/test.wav', 15) #录制15秒音频文件保存并播放
     print("音频示例完成")
 ```
 

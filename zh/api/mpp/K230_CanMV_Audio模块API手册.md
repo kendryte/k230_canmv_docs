@@ -6,10 +6,11 @@
 
 ## API 介绍
 
-### mpp.wave
+### wave
 
-`wave` 模块提供了一种简便的方法来读取和处理 WAV 文件。使用 `wave.open` 函数可以打开 WAV 文件并返回相应的类对象。
+`wave` 模块提供了一种简便的方法来读取和处理 WAV 文件。
 
+- `wave.open` 函数可以打开 WAV 文件并返回相应的类对象。
 - `wave.Wave_read` 类提供获取 WAV 文件的元数据（如采样率、采样点、声道数和采样精度）以及从文件读取 WAV 音频数据的方法。
 - `wave.Wave_write` 类提供设置 WAV 文件的元数据（如采样率、采样点、声道数和采样精度）以及保存 PCM 音频数据到 WAV 文件的方法。
 
@@ -24,7 +25,7 @@
 **语法**
 
 ```python
-def open(f, mode=None)
+open(f, mode=None)
 ```
 
 **参数**
@@ -54,7 +55,7 @@ def open(f, mode=None)
 **语法**
 
 ```python
-def get_channels(self)
+get_channels()
 ```
 
 **参数**
@@ -77,7 +78,7 @@ def get_channels(self)
 **语法**
 
 ```python
-def get_sampwidth(self)
+get_sampwidth()
 ```
 
 **参数**
@@ -100,7 +101,7 @@ def get_sampwidth(self)
 **语法**
 
 ```python
-def get_framerate(self)
+get_framerate()
 ```
 
 **参数**
@@ -123,7 +124,7 @@ def get_framerate(self)
 **语法**
 
 ```python
-def read_frames(self, nframes)
+read_frames(nframes)
 ```
 
 **参数**
@@ -151,7 +152,7 @@ def read_frames(self, nframes)
 **语法**
 
 ```python
-def set_channels(self, nchannels)
+set_channels(nchannels)
 ```
 
 **参数**
@@ -173,7 +174,7 @@ def set_channels(self, nchannels)
 **语法**
 
 ```python
-def set_sampwidth(self, sampwidth)
+set_sampwidth(sampwidth)
 ```
 
 **参数**
@@ -195,7 +196,7 @@ def set_sampwidth(self, sampwidth)
 **语法**
 
 ```python
-def set_framerate(self, framerate)
+set_framerate(framerate)
 ```
 
 **参数**
@@ -217,7 +218,7 @@ def set_framerate(self, framerate)
 **语法**
 
 ```python
-def write_frames(self, data)
+write_frames(data)
 ```
 
 **参数**
@@ -230,9 +231,9 @@ def write_frames(self, data)
 
 无
 
-### mpp.pyaudio
+### pyaudio
 
-`pyaudio` 模块用于音频处理，负责采集和播放二进制 PCM 音频数据。如需播放 WAV 格式文件或将采集到的数据保存为 WAV 文件，需与 `mpp.wave` 库结合使用，详见 [示例程序](#示例程序) 部分。
+`pyaudio` 模块用于音频处理，负责采集和播放二进制 PCM 音频数据。如需播放 WAV 格式文件或将采集到的数据保存为 WAV 文件，需与 `wave` 库结合使用，详见 [示例程序](#示例程序) 部分。
 
 #### pyaudio.PyAudio
 
@@ -247,7 +248,7 @@ def write_frames(self, data)
 **语法**
 
 ```python
-def open(self, *args, **kwargs)
+open(*args, **kwargs)
 ```
 
 **参数**
@@ -270,7 +271,7 @@ def open(self, *args, **kwargs)
 **语法**
 
 ```python
-def close(self, stream)
+close(stream)
 ```
 
 **参数**
@@ -294,7 +295,7 @@ def close(self, stream)
 **语法**
 
 ```python
-def terminate(self)
+terminate()
 ```
 
 **参数**
@@ -322,19 +323,19 @@ def terminate(self)
 **语法**
 
 ```python
-def __init__(self,
-                PA_manager,
-                rate,
-                channels,
-                format,
-                input=False,
-                output=False,
-                input_device_index=None,
-                output_device_index=None,
-                enable_codec=True,
-                frames_per_buffer=1024,
-                start=True,
-                stream_callback=None)
+__init__(
+            PA_manager,
+            rate,
+            channels,
+            format,
+            input=False,
+            output=False,
+            input_device_index=None,
+            output_device_index=None,
+            enable_codec=True,
+            frames_per_buffer=1024,
+            start=True,
+            stream_callback=None)
 ```
 
 **参数**
@@ -349,9 +350,7 @@ def __init__(self,
 | output                  | 是否为音频输出，默认值为 False        | 输入      |
 | input_device_index      | 输入通路索引 [0,1]，默认值为 None（使用默认通路 0 ） | 输入      |
 | output_device_index     | 输出通路索引 [0,1]，默认值为 None（使用默认通路 0 ） | 输入      |
-| enable_codec            | 是否启用 | |
-
-编码，默认值为 True            | 输入      |
+| enable_codec            | 是否启用编码，默认值为 True            | 输入      |
 | frames_per_buffer       | 每个缓冲区的帧数                        | 输入      |
 | start                   | 是否立即启动，默认值为 True            | 输入      |
 | stream_callback         | 输入 / 输出回调函数                       | 输入      |
@@ -369,7 +368,7 @@ def __init__(self,
 **语法**
 
 ```python
-def start_stream(self)
+start_stream()
 ```
 
 **参数**
@@ -389,7 +388,7 @@ def start_stream(self)
 **语法**
 
 ```python
-def stop_stream(self)
+stop_stream()
 ```
 
 **参数**
@@ -409,7 +408,7 @@ def stop_stream(self)
 **语法**
 
 ```python
-def read(self, frames)
+read(frames)
 ```
 
 **参数**
@@ -433,7 +432,7 @@ def read(self, frames)
 **语法**
 
 ```python
-def write(self, data)
+write(data)
 ```
 
 **参数**
@@ -455,7 +454,7 @@ def write(self, data)
 **语法**
 
 ```python
-def volume(self,vol = None, channel = LEFT_RIGHT)
+volume(vol = None, channel = LEFT_RIGHT)
 ```
 
 **参数**
@@ -463,7 +462,7 @@ def volume(self,vol = None, channel = LEFT_RIGHT)
 | 参数名称 | 描述                      | 输入 / 输出 |
 |----------|---------------------------|-----------|
 | vol     | 设置音量值 | 输入      |
-| channel     | 声道选择 | 输入      |
+| channel     | 声道选择：LEFT(左声道)，RIGHT(右声道)，LEFT_RIGHT(左右声道) | 输入      |
 
 **返回值**
 
@@ -479,7 +478,7 @@ def volume(self,vol = None, channel = LEFT_RIGHT)
 **语法**
 
 ```python
-def enable_audio3a(self, audio3a_value)
+enable_audio3a(audio3a_value)
 ```
 
 **参数**
@@ -501,7 +500,7 @@ def enable_audio3a(self, audio3a_value)
 **语法**
 
 ```python
-audio3a_send_far_echo_frame(self, frame_data,data_len)
+audio3a_send_far_echo_frame(frame_data,data_len)
 ```
 
 **参数**
@@ -515,79 +514,134 @@ audio3a_send_far_echo_frame(self, frame_data,data_len)
 
 无
 
-### 示例程序
+## 示例程序
 
-#### 播放 WAV 文件示例
-
-```python
-import pyaudio
-import wave
-
-# 播放 WAV 文件
-def play_wav(file_path):
-    # 打开 WAV 文件
-    wf = wave.open(file_path, 'rb')
-
-    # 创建 PyAudio 对象
-    p = pyaudio.PyAudio()
-
-    # 打开流
-    stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-                     channels=wf.getnchannels(),
-                     rate=wf.getframerate(),
-                     output=True)
-
-    # 读取数据并播放
-    data = wf.readframes(1024)
-    while data:
-        stream.write(data)
-        data = wf.readframes(1024)
-
-    # 关闭流
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
-```
-
-#### 采集音频并保存为 WAV 文件示例
+### 采集音频并保存为 WAV 文件示例
 
 ```python
-import pyaudio
-import wave
+import os
+from media.media import *   #导入media模块，用于初始化vb buffer
+from media.pyaudio import * #导入pyaudio模块，用于采集和播放音频
+import media.wave as wave   #导入wav模块，用于保存和加载wav音频文件
 
-# 采集音频并保存为 WAV 文件
-def record_wav(file_path, duration):
-    # 创建 PyAudio 对象
-    p = pyaudio.PyAudio()
+def exit_check():
+    try:
+        os.exitpoint()
+    except KeyboardInterrupt as e:
+        print("user stop: ", e)
+        return True
+    return False
 
-    # 打开流
-    stream = p.open(format=pyaudio.paInt16,
-                     channels=1,
-                     rate=44100,
-                     input=True,
-                     frames_per_buffer=1024)
+def record_audio(filename, duration):
+    CHUNK = 44100//25  #设置音频chunk值
+    FORMAT = paInt16       #设置采样精度,支持16bit(paInt16)/24bit(paInt24)/32bit(paInt32)
+    CHANNELS = 2           #设置声道数,支持单声道(1)/立体声(2)
+    RATE = 44100           #设置采样率
 
-    frames = []
+    try:
+        p = PyAudio()
+        p.initialize(CHUNK)    #初始化PyAudio对象
+        MediaManager.init()    #vb buffer初始化
 
-    # 采集音频数据
-    for _ in range(0, int(44100 / 1024 * duration)):
-        data = stream.read(1024)
-        frames.append(data)
+        #创建音频输入流
+        stream = p.open(format=FORMAT,
+                        channels=CHANNELS,
+                        rate=RATE,
+                        input=True,
+                        frames_per_buffer=CHUNK)
 
-    # 停止流
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
+        stream.volume(vol=70, channel=LEFT)
+        stream.volume(vol=85, channel=RIGHT)
+        print("volume :",stream.volume())
 
-    # 保存为 WAV 文件
-    wf = wave.open(file_path, 'wb')
-    wf.setnchannels(1)
-    wf.setsampwidth(2)
-    wf.setframerate(44100)
-    wf.writeframes(b''.join(frames))
-    wf.close()
+        #启用音频3A功能：自动噪声抑制(ANS)
+        stream.enable_audio3a(AUDIO_3A_ENABLE_ANS)
+
+        frames = []
+        #采集音频数据并存入列表
+        for i in range(0, int(RATE / CHUNK * duration)):
+            data = stream.read()
+            frames.append(data)
+            if exit_check():
+                break
+        #将列表中的数据保存到wav文件中
+        wf = wave.open(filename, 'wb') #创建wav 文件
+        wf.set_channels(CHANNELS) #设置wav 声道数
+        wf.set_sampwidth(p.get_sample_size(FORMAT))  #设置wav 采样精度
+        wf.set_framerate(RATE)  #设置wav 采样率
+        wf.write_frames(b''.join(frames)) #存储wav音频数据
+        wf.close() #关闭wav文件
+    except BaseException as e:
+            print(f"Exception {e}")
+    finally:
+        stream.stop_stream() #停止采集音频数据
+        stream.close()#关闭音频输入流
+        p.terminate()#释放音频对象
+        MediaManager.deinit() #释放vb buffer
+
+if __name__ == "__main__":
+    os.exitpoint(os.EXITPOINT_ENABLE)
+    print("音频示例开始")
+    record_audio('/sdcard/examples/test.wav', 5)  # 录制WAV文件
 ```
 
-### 总结
+### 播放 WAV 文件示例
+
+```python
+import os
+from media.media import *   #导入media模块，用于初始化vb buffer
+from media.pyaudio import * #导入pyaudio模块，用于采集和播放音频
+import media.wave as wave   #导入wav模块，用于保存和加载wav音频文件
+
+def exit_check():
+    try:
+        os.exitpoint()
+    except KeyboardInterrupt as e:
+        print("user stop: ", e)
+        return True
+    return False
+
+def play_audio(filename):
+    try:
+        wf = wave.open(filename, 'rb')#打开wav文件
+        CHUNK = int(wf.get_framerate()/25)#设置音频chunk值
+
+        p = PyAudio()
+        p.initialize(CHUNK) #初始化PyAudio对象
+        MediaManager.init()    #vb buffer初始化
+
+        #创建音频输出流，设置的音频参数均为wave中获取到的参数
+        stream = p.open(format=p.get_format_from_width(wf.get_sampwidth()),
+                    channels=wf.get_channels(),
+                    rate=wf.get_framerate(),
+                    output=True,frames_per_buffer=CHUNK)
+
+        #设置音频输出流的音量
+        stream.volume(vol=85)
+
+        data = wf.read_frames(CHUNK)#从wav文件中读取数一帧数据
+
+        while data:
+            stream.write(data)  #将帧数据写入到音频输出流中
+            data = wf.read_frames(CHUNK) #从wav文件中读取数一帧数据
+            if exit_check():
+                break
+    except BaseException as e:
+            print(f"Exception {e}")
+    finally:
+        stream.stop_stream() #停止音频输出流
+        stream.close()#关闭音频输出流
+        p.terminate()#释放音频对象
+        wf.close()#关闭wav文件
+
+        MediaManager.deinit() #释放vb buffer
+
+if __name__ == "__main__":
+    os.exitpoint(os.EXITPOINT_ENABLE)
+    print("音频示例开始")
+    play_audio('/sdcard/examples/test.wav')  # 播放WAV文件
+```
+
+## 总结
 
 通过本手册，开发者可以轻松地利用 CanMV 音频模块实现音频的播放与采集功能。该模块结合了 `wave` 和 `pyaudio` 库的优势，提供了便捷的接口和清晰的 API 文档，便于快速开发和应用音频相关项目。
