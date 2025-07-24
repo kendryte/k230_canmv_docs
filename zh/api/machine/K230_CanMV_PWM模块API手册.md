@@ -73,14 +73,12 @@ print("[DONE] PWM test completed")
 ### 构造函数
 
 ```python
-pwm = PWM(channel_or_pin, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
+pwm = PWM(pin, freq = -1, duty = -1, duty_u16 = -1, duty_ns = -1)
 ```
 
 **参数**
 
-- `channel_or_pin`:
-  - `channel`: PWM 通道号，取值范围为 [0, 5]，需要使用 fpioa 配置对应引脚为 PWM 复用功能
-  - `pin`: Pin 对象，或者引脚号，驱动自动设置引脚为 PWM 复用功能，具体引脚对应 PWM 请参考 [引脚复用](#pwm-引脚复用)
+- `pin`: Pin 对象，或者引脚号，驱动自动设置引脚为 PWM 复用功能，具体引脚对应 PWM 请参考 [引脚复用](#pwm-引脚复用)
 - `freq`: PWM 通道输出频率
 - `duty`: PWM 通道输出占空比，表示高电平在整个周期中的百分比，取值范围为 [0, 100]
 - `duty_ns`: PWM 通道输出高电平的时间，单位为 `ns`

@@ -1,58 +1,134 @@
-# LED例程讲解
+# NeoPixel 控制示例讲解（K230）
 
 ## 概述
 
-K230 开发板板载一颗 LED 灯，用户可以通过`machine.LED`模块方便地控制该灯珠的状态和亮度。此功能可用于指示状态或提供视觉反馈。
+本示例演示了如何在 K230 开发板上使用 `neopixel` 模块控制 **WS2812（NeoPixel）灯珠**。
+通过该模块，用户可以灵活设置每颗 RGB 灯珠的颜色，实现动态灯效、颜色渐变、定位测试等功能。
 
-## 示例
+NeoPixel（WS2812）使用单线串行通信，可以将多个 LED 串联连接，并统一控制。
+此例程包含：
 
-以下示例展示了如何使用 K230 的 LED 模块来控制 LED 灯的亮灭和亮度：
+* 批量设置统一颜色
+* 按序点亮每颗灯珠
+* 关闭所有灯珠
+
+---
+
+## 示例代码
 
 ```python
-from machine import LED
 import time
+from machine import Pin
+import neopixel
 
-# 初始化LED灯对象
-red_led = LED("LED_RED")          # 或者使用red_led = LED(1)
-green_led = LED("LED_GREEN")      # 或者使用green_led = LED(2)
-blue_led = LED("LED_BLUE")        # 或者使用blue_led = LED(3)
+# === CONFIGURATION ===
+NEOPIXEL_PIN = 42     # GPIO引脚号，可根据实际连接修改
+NUM_PIXELS   = 10     # 控制的 WS2812 灯珠数量
 
-# 关闭所有LED灯
-blue_led.off()
-green_led.off()
-red_led.off()
+# === INITIALIZE NEOPIXEL OBJECT ===
+np = neopixel.NeoPixel(Pin(NEOPIXEL_PIN), NUM_PIXELS)
 
-while True:
-    # 设置绿色LED的亮度，取值范围为0-255
-    green_led.value(50)    
-    red_led.on()           # 点亮红色LED
-    time.sleep_ms(250)     # 暂停250毫秒
+# === FUNCTION: Show solid colors ===
+def test_colors():
+    print("[TEST] Setting colors...")
+    colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (128, 128, 0)]  # 红绿蓝和黄
 
-    green_led.value(200)   # 设置绿色LED的亮度
-    red_led.off()          # 关闭红色LED
-    time.sleep_ms(250)     # 暂停250毫秒
+    for i, color in enumerate(colors):
+        for j in range(NUM_PIXELS):
+            np[j] = color
+        np.write()
+        print(f"  → Color: {color}")
+        time.sleep(0.5)
+
+# === FUNCTION: Test individual pixel addressing ===
+def test_pixels():
+    print("[TEST] Lighting up pixels one by one...")
+    for i in range(NUM_PIXELS):
+        np.fill((0, 0, 0))         # 清空
+        np[i] = (0, 255, 128)      # 点亮第 i 个为浅绿色
+        np.write()
+        print(f"  → Pixel {i} ON")
+        time.sleep(0.2)
+
+# === FUNCTION: Clear all pixels ===
+def clear():
+    np.fill((0, 0, 0))
+    np.write()
+    print("[TEST] Cleared all pixels.")
+
+# === MAIN TEST SEQUENCE ===
+def run_test():
+    test_colors()
+    test_pixels()
+    clear()
+    print("[DONE] NeoPixel test completed.")
+
+run_test()
 ```
 
-## 代码说明
+---
 
-此例程展示了如何利用K230开发板的LED模块进行灯珠的控制。通过调整LED的状态和亮度，开发者可以实现多种视觉效果，增强交互体验。
+## 代码结构解读
 
-- **导入模块**：首先导入`machine`和`time`模块，前者用于控制硬件，后者用于设置时间延迟。
-  
-- **初始化 LED 对象**：
-  - `red_led = LED("LED_RED")`：创建一个红色LED对象。
-  - `green_led = LED("LED_GREEN")`：创建一个绿色LED对象。
-  - `blue_led = LED("LED_BLUE")`：创建一个蓝色LED对象。
-  
-- **关闭 LED**：通过调用`off()`方法关闭所有LED灯，确保初始状态为关闭。
+### 1. **初始化 NeoPixel**
 
-- **主循环**：
-  - 使用`while True:`开始无限循环。
-  - 在循环内，先将绿色LED的亮度设置为50，然后点亮红色LED。
-  - `time.sleep_ms(250)`暂停程序250毫秒，以保持红色LED亮起的状态。
-  - 然后将绿色LED的亮度设置为200，并关闭红色LED。
-  - 再次暂停250毫秒。
-
-```{admonition} 提示
-有关LED模块的详细接口信息，请参考[API文档](../../api/machine/K230_CanMV_LED模块API手册.md)。
+```python
+np = neopixel.NeoPixel(Pin(42), 10)
 ```
+
+* 使用 GPIO42 控制灯带
+* 控制灯珠数量为 10 个
+* 每颗灯珠为 RGB 格式（默认 bpp=3）
+
+---
+
+### 2. **统一设置颜色（test\_colors）**
+
+```python
+colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (128, 128, 0)]
+```
+
+* 依次将所有灯珠设置为红色、绿色、蓝色、黄色
+* 通过 `np.fill()` 或逐个赋值设置颜色
+* `np.write()` 刷新数据
+
+---
+
+### 3. **逐个点亮灯珠（test\_pixels）**
+
+```python
+np[i] = (0, 255, 128)
+```
+
+* 每次只点亮第 `i` 颗灯珠，其余清零
+* 有助于测试串联方向、定位灯珠编号
+
+---
+
+### 4. **关闭所有灯珠（clear）**
+
+```python
+np.fill((0, 0, 0)); np.write()
+```
+
+* 置零所有颜色值，达到熄灭效果
+
+---
+
+## 说明与建议
+
+| 项目     | 内容说明                               |
+| ------ | ---------------------------------- |
+| GPIO选择 | 推荐使用未占用的 IO，比如 GPIO42、43 等         |
+| 最大数量   | 根据中断/时序限制，一般建议不要超过 16 个灯珠         |
+| 电源建议   | 每颗 WS2812 全亮时最大电流约 60mA，多个灯珠建议独立供电 |
+| 性能影响   | 发送数据期间关闭中断，建议控制灯珠总长度/刷新频率以免影响其他任务  |
+
+---
+
+## 更多说明
+
+如需实现 **彩虹跑马灯、渐变、亮度调整** 等效果，请查看 MicroPython 官方文档：
+👉 [https://docs.micropython.org/en/latest/library/neopixel.html](https://docs.micropython.org/en/latest/library/neopixel.html)
+
+---
