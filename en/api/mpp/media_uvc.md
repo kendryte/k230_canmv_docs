@@ -280,12 +280,18 @@ clock = time.clock()
 while True:
     clock.tick()
 
-    img = UVC.snapshot()
-    if img is not None:
-        img = csc.convert(img)
-        Display.show_image(img)
-        img.__del__()
-        gc.collect()
+    img = None
+    while img is None:
+        try:
+            img = UVC.snapshot()
+        except:
+            print("drop frame")
+            continue
+
+    img = csc.convert(img)
+    Display.show_image(img)
+    img.__del__()
+    gc.collect()
 
     print(f"fps: {clock.fps()}")
 
