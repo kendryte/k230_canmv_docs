@@ -17,4 +17,5 @@ openmv/image.md
 lvgl/lvgl.md
 mpp/media_uvc.md
 mpp/nonai2d_csc.md
+cv_lite/cv_lite.md
 ```
