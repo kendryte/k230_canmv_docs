@@ -45,8 +45,8 @@ def record_audio(filename, duration):
                         input=True,
                         frames_per_buffer=CHUNK)
 
-        stream.volume(LEFT, 70)
-        stream.volume(RIGHT, 85)
+        stream.volume(vol=70, channel=LEFT)
+        stream.volume(vol=85, channel=RIGHT)
         print("volume:", stream.volume())
 
         # Enable audio 3A feature: Automatic Noise Suppression (ANS)
@@ -128,8 +128,8 @@ def loop_audio(duration):
                               frames_per_buffer=CHUNK)
 
         # Set volume of audio input stream
-        input_stream.volume(LEFT, 70)
-        input_stream.volume(RIGHT, 85)
+        input_stream.volume(vol=70, channel=LEFT)
+        input_stream.volume(vol=85, channel=RIGHT)
         print("input volume:", input_stream.volume())
 
         # Enable audio 3A feature: Automatic Noise Suppression (ANS)
@@ -178,8 +178,8 @@ def audio_recorder(filename, duration):
                               input=True,
                               frames_per_buffer=CHUNK)
 
-        input_stream.volume(LEFT, 70)
-        input_stream.volume(RIGHT, 85)
+        input_stream.volume(vol=70, channel=LEFT)
+        input_stream.volume(vol=85, channel=RIGHT)
         print("input volume:", input_stream.volume())
 
         # Enable audio 3A feature: Automatic Noise Suppression (ANS)
@@ -246,7 +246,7 @@ if __name__ == "__main__":
     # record_audio('/sdcard/examples/test.wav', 15)  # Record WAV file
     # play_audio('/sdcard/examples/test.wav')  # Play WAV file
     # loop_audio(15)  # Capture and output audio
-    audio_recorder('/sdcard/examples/test.wav', 15)  # Record 15 seconds of audio and play
+    audio_recorder('/sdcard/examples/test.wav', 15)  # Record a 15-second audio file, save it and play it
     print("Audio example completed")
 
 ```

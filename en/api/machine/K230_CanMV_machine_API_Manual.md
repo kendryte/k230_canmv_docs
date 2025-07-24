@@ -16,6 +16,22 @@ Immediately resets the SoC (System on Chip).
 
 **Parameters**
 
+无
+
+**Return Value**
+
+无
+
+### `bootloader` Method
+
+```python
+machine.bootloader()
+```
+
+Enter the boot loader.
+
+**Parameters**
+
 None
 
 **Return Value**

@@ -6,10 +6,11 @@ This manual aims to provide a detailed introduction to the CanMV audio module, g
 
 ## API Introduction
 
-### mpp.wave
+### wave
 
-The `wave` module provides a convenient way to read and process WAV files. Using the `wave.open` function, you can open a WAV file and return the corresponding class object.
+The `wave` module provides a convenient way to read and process WAV files.
 
+- The `wave.open` function can open a WAV file and return the corresponding class object.
 - The `wave.Wave_read` class provides methods for obtaining metadata from a WAV file (such as sample rate, sample points, number of channels, and sampling precision) and reading WAV audio data from the file.
 - The `wave.Wave_write` class provides methods for setting metadata for a WAV file (such as sample rate, sample points, number of channels, and sampling precision) and saving PCM audio data to a WAV file.
 
@@ -24,7 +25,7 @@ Open a WAVE file to read or write audio data.
 **Syntax**
 
 ```python
-def open(f, mode=None)
+open(f, mode=None)
 ```
 
 **Parameters**
@@ -54,7 +55,7 @@ Get the number of channels.
 **Syntax**
 
 ```python
-def get_channels(self)
+get_channels()
 ```
 
 **Parameters**
@@ -77,7 +78,7 @@ Get the sample byte length.
 **Syntax**
 
 ```python
-def get_sampwidth(self)
+get_sampwidth()
 ```
 
 **Parameters**
@@ -100,7 +101,7 @@ Get the sample rate.
 **Syntax**
 
 ```python
-def get_framerate(self)
+get_framerate()
 ```
 
 **Parameters**
@@ -123,7 +124,7 @@ Read frame data.
 **Syntax**
 
 ```python
-def read_frames(self, nframes)
+read_frames(nframes)
 ```
 
 **Parameters**
@@ -151,7 +152,7 @@ Set the number of channels.
 **Syntax**
 
 ```python
-def set_channels(self, nchannels)
+set_channels(nchannels)
 ```
 
 **Parameters**
@@ -173,7 +174,7 @@ Set the sample byte length.
 **Syntax**
 
 ```python
-def set_sampwidth(self, sampwidth)
+set_sampwidth(sampwidth)
 ```
 
 **Parameters**
@@ -195,7 +196,7 @@ Set the sample rate.
 **Syntax**
 
 ```python
-def set_framerate(self, framerate)
+set_framerate(framerate)
 ```
 
 **Parameters**
@@ -217,7 +218,7 @@ Write audio data.
 **Syntax**
 
 ```python
-def write_frames(self, data)
+write_frames(data)
 ```
 
 **Parameters**
@@ -230,9 +231,9 @@ def write_frames(self, data)
 
 None
 
-### mpp.pyaudio
+### pyaudio
 
-The `pyaudio` module is used for audio processing, responsible for capturing and playing binary PCM audio data. To play WAV format files or save captured data as WAV files, it needs to be used in conjunction with the `mpp.wave` library, as detailed in the [Example Programs](#example-programs) section.
+The `pyaudio` module is used for audio processing, responsible for capturing and playing binary PCM audio data. To play WAV format files or save captured data as WAV files, it needs to be used in conjunction with the `wave` library, as detailed in the [Example Programs](#example-programs) section.
 
 #### pyaudio.PyAudio
 
@@ -247,7 +248,7 @@ Open a stream.
 **Syntax**
 
 ```python
-def open(self, *args, **kwargs)
+open(*args, **kwargs)
 ```
 
 **Parameters**
@@ -270,7 +271,7 @@ Close a stream.
 **Syntax**
 
 ```python
-def close(self, stream)
+close(stream)
 ```
 
 **Parameters**
@@ -294,7 +295,7 @@ Release audio resources. This function must be called to release audio resources
 **Syntax**
 
 ```python
-def terminate(self)
+terminate()
 ```
 
 **Parameters**
@@ -322,19 +323,19 @@ Constructor.
 **Syntax**
 
 ```python
-def __init__(self,
-                PA_manager,
-                rate,
-                channels,
-                format,
-                input=False,
-                output=False,
-                input_device_index=None,
-                output_device_index=None,
-                enable_codec=True,
-                frames_per_buffer=1024,
-                start=True,
-                stream_callback=None)
+__init__(
+            PA_manager,
+            rate,
+            channels,
+            format,
+            input=False,
+            output=False,
+            input_device_index=None,
+            output_device_index=None,
+            enable_codec=True,
+            frames_per_buffer=1024,
+            start=True,
+            stream_callback=None)
 ```
 
 **Parameters**
@@ -367,7 +368,7 @@ Start the stream.
 **Syntax**
 
 ```python
-def start_stream(self)
+start_stream()
 ```
 
 **Parameters**
@@ -387,7 +388,7 @@ Stop the stream.
 **Syntax**
 
 ```python
-def stop_stream(self)
+stop_stream()
 ```
 
 **Parameters**
@@ -407,7 +408,7 @@ Read audio data.
 **Syntax**
 
 ```python
-def read(self, frames)
+read(frames)
 ```
 
 **Parameters**
@@ -431,7 +432,7 @@ Write audio data.
 **Syntax**
 
 ```python
-def write(self, data)
+write(data)
 ```
 
 **Parameters**
@@ -453,7 +454,7 @@ Get or set the volume.
 **Syntax**
 
 ```python
-def volume(self, vol=None, channel=LEFT_RIGHT)
+volume(vol=None, channel=LEFT_RIGHT)
 ```
 
 **Parameters**
@@ -461,7 +462,7 @@ def volume(self, vol=None, channel=LEFT_RIGHT)
 | Parameter Name | Description       | Input/Output |
 |----------------|-------------------|--------------|
 | vol            | Set volume value  | Input        |
-| channel        | Channel selection | Input        |
+| channel        | Channel selection: LEFT(left channel), RIGHT(right channel), LEFT_RIGHT(left and right channels) | Input        |
 
 **Return Value**
 
@@ -477,7 +478,7 @@ Enable audio 3A.
 **Syntax**
 
 ```python
-def enable_audio3a(self, audio3a_value)
+enable_audio3a(audio3a_value)
 ```
 
 **Parameters**
@@ -499,7 +500,7 @@ Send far-end reference audio (i.e., audio played by the near-end speaker), used 
 **Syntax**
 
 ```python
-def audio3a_send_far_echo_frame(self, frame_data, data_len)
+audio3a_send_far_echo_frame(frame_data, data_len)
 ```
 
 **Parameters**
@@ -513,79 +514,137 @@ def audio3a_send_far_echo_frame(self, frame_data, data_len)
 
 None
 
-### Example Programs
+## Example Programs
 
-#### Example of Playing a WAV File
-
-```python
-import pyaudio
-import wave
-
-# Play a WAV file
-def play_wav(file_path):
-    # Open the WAV file
-    wf = wave.open(file_path, 'rb')
-
-    # Create a PyAudio object
-    p = pyaudio.PyAudio()
-
-    # Open a stream
-    stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-                     channels=wf.getnchannels(),
-                     rate=wf.getframerate(),
-                     output=True)
-
-    # Read data and play
-    data = wf.readframes(1024)
-    while data:
-        stream.write(data)
-        data = wf.readframes(1024)
-
-    # Close the stream
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
-```
-
-#### Example of Capturing Audio and Saving as a WAV File
+### Example of Capturing Audio and Saving as a WAV File
 
 ```python
-import pyaudio
-import wave
+import os
+from media.media import *   # Import media module for initializing vb buffer
+from media.pyaudio import * # Import pyaudio module for audio capture and playback
+import media.wave as wave   # Import wav module for saving and loading wav audio files
 
-# Capture audio and save as a WAV file
-def record_wav(file_path, duration):
-    # Create a PyAudio object
-    p = pyaudio.PyAudio()
+def exit_check():
+    try:
+        os.exitpoint()
+    except KeyboardInterrupt as e:
+        print("user stop: ", e)
+        return True
+    return False
 
-    # Open a stream
-    stream = p.open(format=pyaudio.paInt16,
-                     channels=1,
-                     rate=44100,
-                     input=True,
-                     frames_per_buffer=1024)
+def play_audio(filename):
+    try:
+        wf = wave.open(filename, 'rb')  # Open wav file
+        CHUNK = int(wf.get_framerate() / 25)  # Set audio chunk size
 
-    frames = []
+        p = PyAudio()
+        p.initialize(CHUNK)  # Initialize PyAudio object
+        MediaManager.init()  # Initialize vb buffer
 
-    # Capture audio data
-    for _ in range(0, int(44100 / 1024 * duration)):
-        data = stream.read(1024)
-        frames.append(data)
+        # Create audio output stream, set audio parameters from wav file
+        stream = p.open(format=p.get_format_from_width(wf.get_sampwidth()),
+                        channels=wf.get_channels(),
+                        rate=wf.get_framerate(),
+                        output=True, frames_per_buffer=CHUNK)
 
-    # Stop the stream
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
+        # Set volume of audio output stream
+        stream.volume(vol=85)
 
-    # Save as a WAV file
-    wf = wave.open(file_path, 'wb')
-    wf.setnchannels(1)
-    wf.setsampwidth(2)
-    wf.setframerate(44100)
-    wf.writeframes(b''.join(frames))
-    wf.close()
+        data = wf.read_frames(CHUNK)  # Read one frame of data from wav file
+
+        while data:
+            stream.write(data)  # Write frame data to audio output stream
+            data = wf.read_frames(CHUNK)  # Read one frame of data from wav file
+            if exit_check():
+                break
+    except BaseException as e:
+        print(f"Exception {e}")
+    finally:
+        stream.stop_stream()  # Stop audio output stream
+        stream.close()        # Close audio output stream
+        p.terminate()         # Release audio object
+        wf.close()            # Close wav file
+
+        MediaManager.deinit() # Release vb buffer
+
+if __name__ == "__main__":
+    os.exitpoint(os.EXITPOINT_ENABLE)
+    print("Audio example starts")
+    play_audio('/sdcard/examples/test.wav')  # Play WAV file
+    print("Audio example completed")
 ```
 
-### Summary
+### Example of Playing a WAV File
+
+```python
+import os
+from media.media import *   # Import media module for initializing vb buffer
+from media.pyaudio import * # Import pyaudio module for audio capture and playback
+import media.wave as wave   # Import wav module for saving and loading wav audio files
+
+def exit_check():
+    try:
+        os.exitpoint()
+    except KeyboardInterrupt as e:
+        print("user stop: ", e)
+        return True
+    return False
+
+def record_audio(filename, duration):
+    CHUNK = 44100 // 25  # Set audio chunk size
+    FORMAT = paInt16     # Set sampling precision, supports 16bit(paInt16)/24bit(paInt24)/32bit(paInt32)
+    CHANNELS = 2         # Set number of channels, supports mono(1)/stereo(2)
+    RATE = 44100         # Set sampling rate
+
+    try:
+        p = PyAudio()
+        p.initialize(CHUNK)    # Initialize PyAudio object
+        MediaManager.init()    # Initialize vb buffer
+
+        # Create audio input stream
+        stream = p.open(format=FORMAT,
+                        channels=CHANNELS,
+                        rate=RATE,
+                        input=True,
+                        frames_per_buffer=CHUNK)
+
+        stream.volume(vol=70, channel=LEFT)
+        stream.volume(vol=85, channel=RIGHT)
+        print("volume:", stream.volume())
+
+        # Enable audio 3A feature: Automatic Noise Suppression (ANS)
+        stream.enable_audio3a(AUDIO_3A_ENABLE_ANS)
+
+        frames = []
+        # Capture audio data and store in list
+        for i in range(0, int(RATE / CHUNK * duration)):
+            data = stream.read()
+            frames.append(data)
+            if exit_check():
+                break
+        # Save data from list to wav file
+        wf = wave.open(filename, 'wb')  # Create wav file
+        wf.set_channels(CHANNELS)       # Set wav number of channels
+        wf.set_sampwidth(p.get_sample_size(FORMAT))  # Set wav sampling precision
+        wf.set_framerate(RATE)          # Set wav sampling rate
+        wf.write_frames(b''.join(frames))  # Store wav audio data
+        wf.close()  # Close wav file
+    except BaseException as e:
+        print(f"Exception {e}")
+    finally:
+        stream.stop_stream()  # Stop capturing audio data
+        stream.close()        # Close audio input stream
+        p.terminate()         # Release audio object
+        MediaManager.deinit() # Release vb buffer
+
+
+if __name__ == "__main__":
+    os.exitpoint(os.EXITPOINT_ENABLE)
+    print("Audio example starts")
+    record_audio('/sdcard/examples/test.wav', 5)  # Record WAV file
+    print("Audio example completed")
+```
+
+## Summary
 
 Through this manual, developers can easily use the CanMV audio module to achieve audio playback and capture functions. This module combines the advantages of the `wave` and `pyaudio` libraries, providing convenient interfaces and clear API documentation, making it easy to quickly develop and apply audio-related projects.

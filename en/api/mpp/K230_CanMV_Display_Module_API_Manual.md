@@ -22,7 +22,7 @@ Initializes the Display path, including the VO module, DSI module, and LCD/HDMI.
 **Syntax**  
 
 ```python
-init(type=None, width=None, height=None, osd_num=1, to_ide=False, fps=None, quality=90)
+init(type=None, width=None, height=None, osd_num=1, to_ide=False, flag=None, fps=None, quality=90)
 ```
 
 **Parameters**  
@@ -33,6 +33,7 @@ init(type=None, width=None, height=None, osd_num=1, to_ide=False, fps=None, qual
 | width          | Resolution width                     | Input          | Default value depends on `type` |
 | height         | Resolution height                    | Input          | Default value depends on `type` |
 | osd_num        | Number of layers supported in [show_image](#show_image) | Input | Larger values occupy more memory |
+| flag           | Display [flag](#flag)             | Input          | |
 | to_ide         | Whether to transfer screen display to IDE display | Input | Occupies more memory when enabled |
 | fps            | Display frame rate                   | Input          | Only supports `VIRT` type |
 | quality        | Sets `Jpeg` compression quality      | Input          | Effective only when `to_ide=True`, range [10-100] |
@@ -52,7 +53,7 @@ Displays an image on the screen.
 **Syntax**  
 
 ```python
-show_image(img, x=0, y=0, layer=None, alpha=255, flag=0)
+show_image(img, x=0, y=0, layer=None, alpha=255, flag=None)
 ```
 
 **Parameters**  
