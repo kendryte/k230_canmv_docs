@@ -71,14 +71,12 @@ print("[DONE] PWM test completed")
 ### Constructor  
 
 ```python  
-pwm = PWM(channel_or_pin, freq=-1, duty=-1, duty_u16=-1, duty_ns=-1)  
+pwm = PWM(pin, freq=-1, duty=-1, duty_u16=-1, duty_ns=-1)  
 ```  
 
 **Parameters**  
 
-- **`channel_or_pin`**:  
-  - **`channel`**: PWM channel number, range `[0, 5]`. Requires configuring the corresponding pin for PWM multiplexing using FPIOA.  
-  - **`pin`**: Pin object or pin number. The driver automatically sets the pin to PWM multiplexing. For pin mappings, refer to [PWM Pin Multiplexing](#pwm-pin-multiplexing).  
+- **`pin`**: Pin object or pin number. The driver automatically sets the pin to PWM multiplexing. For pin mappings, refer to [PWM Pin Multiplexing](#pwm-pin-multiplexing).  
 - **`freq`**: PWM output frequency (Hz). Default: `-1` (no change).  
 - **`duty`**: Duty cycle as a percentage of the period, range `[0, 100]`. Default: `-1` (no change).  
 - **`duty_ns`**: High-level duration in nanoseconds (`ns`). Default: `-1` (no change).  

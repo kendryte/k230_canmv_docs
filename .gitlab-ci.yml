@@ -61,7 +61,7 @@ markdown-link-check:
     - uname -a
     - whoami
     - pwd
-    - find . -name \*.md -print0 | xargs -0 -n1 markdown-link-check -q
+    - find . -name \*.md -print0 | xargs -0 -n1 markdown-link-check
     # - git fetch
     # - FILELIST=$(git diff origin/dev --name-only -z --diff-filter=AM | grep "\\.md$" || true)
     # - echo $FILELIST
