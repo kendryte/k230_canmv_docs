@@ -15,6 +15,7 @@ The media module of the CanMV K230 platform provides a static class MediaManager
 ### init
 
 **Description**
+
 After the user completes the [configuration](#_config) of the `buffer`, call the `init` method to initialize. This method must be executed last.
 
 **Syntax**
@@ -38,6 +39,7 @@ MediaManager.init()
 ### deinit
 
 **Description**
+
 This method is used to destroy all requested `buffers`.
 
 **Syntax**
@@ -61,6 +63,7 @@ MediaManager.deinit()
 ### _config
 
 **Description**
+
 Used to configure the media buffer.
 
 **Syntax**
@@ -89,6 +92,7 @@ This method is only for internal use when encapsulating this module interface by
 ### link
 
 **Description**
+
 This method is used to establish connections between channels of different modules to achieve automatic data flow, without manual operation by the user. The `Display` module can automatically create a `link` through `bind_layer`.
 
 **Syntax**
@@ -118,6 +122,7 @@ This method is only for internal use when encapsulating this module interface by
 #### get
 
 **Description**
+
 After [_config](#_config) is completed, the user can obtain the `buffer` through the `MediaManager.Buffer.get` method. This method must be called after [init](#init) is executed.
 
 **Syntax**

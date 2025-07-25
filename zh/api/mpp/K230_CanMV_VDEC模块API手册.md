@@ -17,7 +17,7 @@
 **语法**  
 
 ```python
-decoder = Decoder(K_PT_H264)
+decoder = Decoder(type)
 ```
 
 **参数**  
@@ -30,14 +30,13 @@ decoder = Decoder(K_PT_H264)
 
 | 返回值 | 描述    |
 |--------|---------|
-| 0      | 成功    |
-| 非 0   | 失败    |
+| Decoder 对象 |  解码器对象   |
 
 **注意事项**  
 
 VDEC 模块最多支持四路并发解码。
 
-### Decoder.Create
+### Decoder.create
 
 **描述**
 
@@ -46,8 +45,7 @@ VDEC 模块最多支持四路并发解码。
 **语法**  
 
 ```python
-decoder = Decoder(K_PT_H264)
-decoder.create()
+Decoder.create()
 ```
 
 **参数**
@@ -58,8 +56,7 @@ decoder.create()
 
 | 返回值 | 描述    |
 |--------|---------|
-| 0      | 成功    |
-| 非 0   | 失败    |
+| 无 ||
 
 ### Decoder.destroy
 
@@ -70,8 +67,7 @@ decoder.create()
 **语法**  
 
 ```python
-decoder = Decoder(K_PT_H264)
-decoder.destroy()
+Decoder.destroy()
 ```
 
 **参数**
@@ -82,10 +78,9 @@ decoder.destroy()
 
 | 返回值 | 描述    |
 |--------|---------|
-| 0      | 成功    |
-| 非 0   | 失败    |
+| 无 ||
 
-### Decoder.Start
+### Decoder.start
 
 **描述**
 
@@ -94,8 +89,7 @@ decoder.destroy()
 **语法**  
 
 ```python
-decoder = Decoder(K_PT_H264)
-decoder.Start()
+Decoder.start()
 ```
 
 **参数**
@@ -106,8 +100,7 @@ decoder.Start()
 
 | 返回值 | 描述    |
 |--------|---------|
-| 0      | 成功    |
-| 非 0   | 失败    |
+| 无 ||
 
 ### Decoder.decode
 
@@ -118,22 +111,20 @@ decoder.Start()
 **语法**  
 
 ```python
-decoder = Decoder(K_PT_H264)
-decoder.decode(stream_data)
+Decoder.decode(stream_data)
 ```
 
 **参数**  
 
 | 参数名称   | 描述     | 输入/输出 |
 |------------|----------|-----------|
-| stream_data| 编码数据 | 输入      |
+| stream_data | 编码数据 | 输入      |
 
 **返回值**  
 
 | 返回值 | 描述    |
 |--------|---------|
-| 0      | 成功    |
-| 非 0   | 失败    |
+| 无 ||
 
 ### Decoder.stop
 
@@ -144,8 +135,7 @@ decoder.decode(stream_data)
 **语法**  
 
 ```python
-decoder = Decoder(K_PT_H264)
-decoder.stop()
+Decoder.stop()
 ```
 
 **参数**
@@ -156,8 +146,29 @@ decoder.stop()
 
 | 返回值 | 描述    |
 |--------|---------|
-| 0      | 成功    |
-| 非 0   | 失败    |
+| 无 ||
+
+### Decoder.get_vdec_channel
+
+**描述**
+
+返回解码输出通道号。
+
+**语法**  
+
+```python
+Decoder.get_vdec_channel()
+```
+
+**参数**
+
+无
+
+**返回值**  
+
+| 返回值 | 描述    |
+|--------|---------|
+| chn    | 解码输出通道号 |
 
 ### Decoder.bind_info
 
@@ -168,22 +179,25 @@ decoder.stop()
 **语法**  
 
 ```python
-vdec.bind_info(width=vdec_width, height=vdec_height, chn=0)
+Decoder.bind_info(x = 0, y = 0, width = 1920,height = 1080,pix_format=PIXEL_FORMAT_YUV_SEMIPLANAR_420,chn = 0)
 ```
 
 **参数**  
 
 | 参数名称 | 描述               | 输入/输出 |
 |----------|--------------------|-----------|
+| x        | 绑定区域的水平起始坐标 | 输入      |
+| y        | 绑定区域的垂直起始坐标 | 输入      |
 | width    | 解码帧的宽度      | 输入      |
 | height   | 解码帧的高度      | 输入      |
-| chn      | 编码输出通道号    | 输入      |
+| pix_format | 图像像素格式    | 输入      |
+| chn      | 解码输出通道号    | 输入      |
 
 **返回值**  
 
-| 返回值 | 描述 |
-|--------|------|
-| 无     |      |
+| 返回值 | 描述    |
+|--------|---------|
+| dict 对象 | 包含通道的源信息、区域尺寸和像素格式 |
 
 ## 数据结构描述
 

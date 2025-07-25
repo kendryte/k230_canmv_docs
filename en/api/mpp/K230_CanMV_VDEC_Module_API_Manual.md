@@ -17,7 +17,7 @@ Constructor to initialize the decoder instance.
 **Syntax**
 
 ```python
-decoder = Decoder(K_PT_H264)
+decoder = Decoder(type)
 ```
 
 **Parameters**
@@ -30,14 +30,13 @@ decoder = Decoder(K_PT_H264)
 
 | Return Value | Description |
 |--------------|-------------|
-| 0            | Success     |
-| Non-0        | Failure     |
+| Decoder object  | Decoder object |
 
 **Notes**
 
 The VDEC module supports up to four concurrent decodings.
 
-### Decoder.Create
+### Decoder.create
 
 **Description**
 
@@ -46,8 +45,7 @@ Creates a decoder instance.
 **Syntax**
 
 ```python
-decoder = Decoder(K_PT_H264)
-decoder.create()
+Decoder.create()
 ```
 
 **Parameters**
@@ -58,8 +56,7 @@ None
 
 | Return Value | Description |
 |--------------|-------------|
-| 0            | Success     |
-| Non-0        | Failure     |
+| None         |             |
 
 ### Decoder.destroy
 
@@ -70,8 +67,7 @@ Destroys the decoder instance.
 **Syntax**
 
 ```python
-decoder = Decoder(K_PT_H264)
-decoder.destroy()
+Decoder.destroy()
 ```
 
 **Parameters**
@@ -82,10 +78,9 @@ None
 
 | Return Value | Description |
 |--------------|-------------|
-| 0            | Success     |
-| Non-0        | Failure     |
+| None         |             |
 
-### Decoder.Start
+### Decoder.start
 
 **Description**
 
@@ -94,8 +89,7 @@ Starts the decoder and begins the decoding process.
 **Syntax**
 
 ```python
-decoder = Decoder(K_PT_H264)
-decoder.Start()
+Decoder.start()
 ```
 
 **Parameters**
@@ -106,8 +100,7 @@ None
 
 | Return Value | Description |
 |--------------|-------------|
-| 0            | Success     |
-| Non-0        | Failure     |
+| None         |             |
 
 ### Decoder.decode
 
@@ -118,8 +111,7 @@ Decodes a frame of data.
 **Syntax**
 
 ```python
-decoder = Decoder(K_PT_H264)
-decoder.decode(stream_data)
+Decoder.decode(stream_data)
 ```
 
 **Parameters**
@@ -132,8 +124,7 @@ decoder.decode(stream_data)
 
 | Return Value | Description |
 |--------------|-------------|
-| 0            | Success     |
-| Non-0        | Failure     |
+| None         |             |
 
 ### Decoder.stop
 
@@ -144,8 +135,7 @@ Releases the current decoded frame's stream buffer.
 **Syntax**
 
 ```python
-decoder = Decoder(K_PT_H264)
-decoder.stop()
+Decoder.stop()
 ```
 
 **Parameters**
@@ -156,8 +146,29 @@ None
 
 | Return Value | Description |
 |--------------|-------------|
-| 0            | Success     |
-| Non-0        | Failure     |
+| None         |             |
+
+### Decoder.get_vdec_channel
+
+**Description**
+
+Return the output channel number of the decoder.
+
+**Syntax**  
+
+```python
+Decoder.get_vdec_channel()
+```
+
+**Parameters**
+
+None
+
+**Return Values**  
+
+| Return Value | Description |
+|--------------|-------------|
+| chn          | The output channel number |
 
 ### Decoder.bind_info
 
@@ -168,22 +179,25 @@ Used to get binding information when calling `Display.bind_layer`.
 **Syntax**
 
 ```python
-vdec.bind_info(width=vdec_width, height=vdec_height, chn=0)
+Decoder.bind_info(x = 0, y = 0, width = 1920,height = 1080,pix_format=PIXEL_FORMAT_YUV_SEMIPLANAR_420,chn = 0)
 ```
 
 **Parameters**
 
 | Parameter Name | Description       | Input/Output |
 |----------------|-------------------|--------------|
+| x              | The horizontal starting coordinates of the binding area | Input |
+| y              | The vertical starting coordinate of the binding area | Input |
 | width          | Width of the decoded frame | Input |
 | height         | Height of the decoded frame | Input |
-| chn            | Encoding output channel number | Input |
+| pix_format     | The pixel format of image     | Input |
+| chn            | Decoding output channel number | Input |
 
 **Return Values**
 
 | Return Value | Description |
 |--------------|-------------|
-| None         |             |
+| dict object  | It includes the source information of the channel, the area size and the pixel format |
 
 ## Data Structure Description
 
