@@ -55,13 +55,13 @@ markdown-link-check:
   stage: test
   timeout: 10m
   tags:
-    - k230
+    - docker-runner-192.168.1.104
   image: ai.b-bug.org:5000/markdown:latest
   script:
     - uname -a
     - whoami
     - pwd
-    - find . -name \*.md -print0 | xargs -0 -n1 markdown-link-check
+    - find . -name \*.md -print0 | xargs -0 -n1 markdown-link-check -q
     # - git fetch
     # - FILELIST=$(git diff origin/dev --name-only -z --diff-filter=AM | grep "\\.md$" || true)
     # - echo $FILELIST
