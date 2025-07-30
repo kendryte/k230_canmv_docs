@@ -902,7 +902,7 @@ For example code, please refer to the license plate detection and recognition: b
 
 #### K230 CanMV Documentation
 
-Documentation link: [Welcome to K230 CanMV’s documentation! — K230 CanMV 文档 (canaan-creative.com)](https://www.kendryte.com/k230_canmv/dev/index.html)
+Documentation link: [Welcome to K230 CanMV’s documentation! — K230 CanMV 文档 (canaan-creative.com)](https://www.kendryte.com/zh/sdkResource/230canmv)
 
 ### Ulab Library Support
 
