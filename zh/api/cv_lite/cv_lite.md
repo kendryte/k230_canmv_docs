@@ -12,7 +12,7 @@
 - rgb888格式数据和openmv的`image`模块混合使用，可以使用`to_rgb565()`将其转换使用。
 
 ```{admonition} 注意
-请烧录daliy_build固件实现cv_lite支持：![每日构建固件](https://kendryte-download.canaan-creative.com/developer/releases/canmv_k230_micropython/daily_build/)
+请烧录daliy_build固件实现cv_lite支持：https://kendryte-download.canaan-creative.com/developer/releases/canmv_k230_micropython/daily_build/
 ```
 
 ## API 介绍
