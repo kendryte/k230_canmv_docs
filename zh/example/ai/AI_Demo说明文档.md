@@ -895,7 +895,7 @@ if __name__ == "__main__":
 
 #### k230 canmv文档
 
-文档链接：[Welcome to K230 CanMV’s documentation! — K230 CanMV 文档 (canaan-creative.com)](https://www.kendryte.com/k230_canmv/dev/index.html)
+文档链接：[Welcome to K230 CanMV’s documentation! — K230 CanMV 文档 (canaan-creative.com)](https://www.kendryte.com/zh/sdkResource/230canmv)
 
 #### Ulab库支持
 

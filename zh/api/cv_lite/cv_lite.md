@@ -4,6 +4,17 @@
 
 `cv_lite` 模块是针对某些特定任务在底层基于 `OpenCV` 实现的轻量图像处理模块，提供了一些常见任务的加速版本方法，作为 `openmv` 的 `image`模块中方法的**补充**。需要注意的是，**它并不是`opencv`库，仅提供部分任务的加速版本**。
 
+针对`cv_lite`模块中的常见格式，这里给出说明：
+
+- 输入数据格式：`ulab.numpy.ndarray`类型，一般通过`image.to_numpy_ref()`获取。
+- `ulab.numpy.ndarray`类型转换回`image`实例类型，一般使用`img = image.Image(image_width, image_height, image.GRAYSCALE,alloc=image.ALLOC_REF, data=np_data)`实现，注意image类型和数据量是否满足。
+- 前面两条内容没有重新分配内存，使用的是同一块内存，耗时不长。
+- rgb888格式数据和openmv的`image`模块混合使用，可以使用`to_rgb565()`将其转换使用。
+
+```{admonition} 注意
+请烧录daliy_build固件实现cv_lite支持：![每日构建固件](https://kendryte-download.canaan-creative.com/developer/releases/canmv_k230_micropython/daily_build/)
+```
+
 ## API 介绍
 
 ### grayscale_find_blobs
@@ -1445,6 +1456,67 @@ hist = cv_lite.rgb888_calc_histogram(image_shape, img_np)
 **示例**
 
 提供的示例位于`/sdcard/examples/23-CV_Lite/rgb888_calc_histogram.py`,请在K230 CanMV IDE中打开运行。
+
+### rgb888_find_corners
+
+**描述**
+
+在RGB888图像中查找图像中的角点，返回角点的坐标。
+
+**语法**  
+
+请保证Sensor配置的出图为RGB888图，否则会导致错误。
+
+```python
+import cv_lite
+
+image_shape = [240,320] # 高，宽
+
+# -------------------------------
+# 可调参数（建议调试时调整）/ Adjustable parameters (recommended for tuning)
+# -------------------------------
+max_corners       = 20        # 最大角点数 / Maximum number of corners
+quality_level     = 0.01      # Shi-Tomasi质量因子 / Corner quality factor (0.01 ~ 0.1)
+min_distance      = 20.0      # 最小角点距离 / Minimum distance between corners
+
+# 拍摄当前帧图像 / Capture current frame
+img = sensor.snapshot()
+img_np = img.to_numpy_ref()  # 获取 RGB888 ndarray 引用 / Get RGB888 ndarray reference
+
+# 调用角点检测函数，返回角点数组 [x0, y0, x1, y1, ...]
+corners = cv_lite.rgb888_find_corners(
+    image_shape, img_np,
+    max_corners,
+    quality_level,
+    min_distance
+)
+
+# 遍历角点数组，绘制角点 / Draw detected corners
+for i in range(0, len(corners), 2):
+    x = corners[i]
+    y = corners[i + 1]
+    img.draw_circle(x, y, 3, color=(0, 255, 0), fill=True)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| image_shape | 图像形状，list类型，包括宽高，如[240,320] | 输入 |  |
+| img_np | 图像数据引用 | 输入 |  |
+| max_corners | 最大角点数 | 输入 |  |
+| quality_level | Shi-Tomasi质量因子 | 输入 |  |
+| min_distance | 最小距离 | 输入 |  |
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| corners | 角点坐标数组，每两个数表示一个角点的坐标，如[x0,y0,x1,y1,...] |
+
+**示例**
+
+提供的示例位于`/sdcard/examples/23-CV_Lite/rgb888_find_corners.py`,请在K230 CanMV IDE中打开运行。
 
 ## 优化对比
 
