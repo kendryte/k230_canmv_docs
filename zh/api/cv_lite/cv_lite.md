@@ -292,6 +292,70 @@ rects = cv_lite.grayscale_find_rectangles(
 
 提供的示例位于`/sdcard/examples/23-CV_Lite/grayscale_find_rectangles.py`,请在K230 CanMV IDE中打开运行。
 
+### grayscale_find_rectangles_with_corners
+
+**描述**
+
+在灰度图像中查找矩形，返回矩形的坐标位置和角点坐标。
+
+**语法**  
+
+请保证Sensor配置的出图为灰度图，否则会导致错误。
+
+```python
+import cv_lite
+
+image_shape = [480,640]  # 高，宽
+
+# -------------------------------
+# 矩形检测可调参数 / Adjustable rectangle detection parameters
+# -------------------------------
+canny_thresh1      = 50        # Canny 边缘检测低阈值 / Canny low threshold
+canny_thresh2      = 150       # Canny 边缘检测高阈值 / Canny high threshold
+approx_epsilon     = 0.04      # 多边形拟合精度比例（越小拟合越精确）/ Polygon approximation accuracy
+area_min_ratio     = 0.001     # 最小面积比例（相对于图像总面积）/ Min area ratio
+max_angle_cos      = 0.3       # 最大角度余弦（越小越接近矩形）/ Max cosine of angle between edges
+gaussian_blur_size = 5         # 高斯模糊核尺寸（奇数）/ Gaussian blur kernel size
+
+# 拍摄一帧图像 / Capture a frame
+img = sensor.snapshot()
+img_np = img.to_numpy_ref()
+
+# 调用底层矩形检测函数
+# 返回格式：[[x0, y0, w0, h0, c1.x, c1.y, c2.x, c2.y, c3.x, c3.y, c4,x, c4.y], [x1, y1, w1, h1,c1.x, c1.y, c2.x, c2.y, c3.x, c3.y, c4,x, c4.y], ...]
+rects = cv_lite.grayscale_find_rectangles_with_corners(
+    image_shape, img_np,
+    canny_thresh1, canny_thresh2,
+    approx_epsilon,
+    area_min_ratio,
+    max_angle_cos,
+    gaussian_blur_size
+)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| image_shape | 图像形状，list类型，顺序为[高，宽]，如[480,640] | 输入 |  |
+| img_np | 图像数据引用，ulab.numpy.ndarray类型 | 输入 |  |
+| canny_thresh1 | Canny 边缘检测低阈值，int类型 | 输入 |  |
+| canny_thresh2 | Canny 边缘检测高阈值，int类型 | 输入 |  |
+| approx_epsilon | 多边形拟合精度比例，float类型 | 输入 |  |
+| area_min_ratio | 最小面积比例，float类型 | 输入 |  |
+| max_angle_cos | 最大角度余弦，float类型 | 输入 |  |
+| gaussian_blur_size | 高斯模糊核尺寸，int类型 | 输入 |  |
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| rects | 矩形位置信息列表，每个元素为一个列表包含一个矩形的坐标位置和角点坐标共12个数值|
+
+**示例**
+
+提供的示例位于`/sdcard/examples/23-CV_Lite/grayscale_find_rectangles_with_corners.py`,请在K230 CanMV IDE中打开运行。
+
 ### rgb888_find_rectangles
 
 **描述**
@@ -355,6 +419,70 @@ rects = cv_lite.rgb888_find_rectangles(
 **示例**
 
 提供的示例位于`/sdcard/examples/23-CV_Lite/rgb888_find_rectangles.py`,请在K230 CanMV IDE中打开运行。
+
+### rgb888_find_rectangles_with_corners
+
+**描述**
+
+在RGB888图像中查找矩形，返回矩形的位置信息和角点坐标。
+
+**语法**  
+
+请保证Sensor配置的出图为RGB888图，否则会导致错误。
+
+```python
+import cv_lite
+
+image_shape = [480,640]  # 高，宽
+
+# -------------------------------
+# 可调参数（建议调试时调整）/ Adjustable parameters (recommended for tuning)
+# -------------------------------
+canny_thresh1       = 50        # Canny 边缘检测低阈值 / Canny edge low threshold
+canny_thresh2       = 150       # Canny 边缘检测高阈值 / Canny edge high threshold
+approx_epsilon      = 0.04      # 多边形拟合精度（比例） / Polygon approximation precision (ratio)
+area_min_ratio      = 0.001     # 最小面积比例（0~1） / Minimum area ratio (0~1)
+max_angle_cos       = 0.5       # 最大角余弦（值越小越接近矩形） / Max cosine of angle (smaller closer to rectangle)
+gaussian_blur_size  = 5         # 高斯模糊核大小（奇数） / Gaussian blur kernel size (odd number)
+
+# 拍摄当前帧图像 / Capture current frame
+img = sensor.snapshot()
+img_np = img.to_numpy_ref()  # 获取 RGB888 ndarray 引用 / Get RGB888 ndarray reference
+
+# 调用底层矩形检测函数，
+# 返回矩形列表 [[x0, y0, w0, h0, c1.x, c1.y, c2.x, c2.y, c3.x, c3.y, c4,x, c4.y], [x1, y1, w1, h1,c1.x, c1.y, c2.x, c2.y, c3.x, c3.y, c4,x, c4.y], ...]
+rects = cv_lite.rgb888_find_rectangles_with_corners(
+    image_shape, img_np,
+    canny_thresh1, canny_thresh2,
+    approx_epsilon,
+    area_min_ratio,
+    max_angle_cos,
+    gaussian_blur_size
+)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| image_shape | 图像形状，list类型，顺序为[高，宽]，如[480,640] | 输入 |  |
+| img_np | 图像数据引用，ulab.numpy.ndarray类型 | 输入 |  |
+| canny_thresh1 | Canny 边缘检测低阈值，int类型 | 输入 |  |
+| canny_thresh2 | Canny 边缘检测高阈值，int类型 | 输入 |  |
+| approx_epsilon | 多边形拟合精度比例，float类型 | 输入 |  |
+| area_min_ratio | 最小面积比例，float类型 | 输入 |  |
+| max_angle_cos | 最大角度余弦，float类型 | 输入 |  |
+| gaussian_blur_size | 高斯模糊核尺寸，int类型 | 输入 |  |
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| rects | 矩形位置信息列表，每个元素为一个列表包含一个矩形的坐标位置和角点坐标共12个数值|
+
+**示例**
+
+提供的示例位于`/sdcard/examples/23-CV_Lite/rgb888_find_rectangles_with_corners.py`,请在K230 CanMV IDE中打开运行。
 
 ### grayscale_find_edges
 
@@ -1517,6 +1645,136 @@ for i in range(0, len(corners), 2):
 **示例**
 
 提供的示例位于`/sdcard/examples/23-CV_Lite/rgb888_find_corners.py`,请在K230 CanMV IDE中打开运行。
+
+### rgb888_undistort
+
+**描述**
+
+对RGB888图像使用摄像头标定参数和畸变系数进行畸变矫正，提供了三个方法，包括默认畸变矫正、快速畸变矫正和优化相机矩阵畸变矫正。
+
+**语法**  
+
+请保证Sensor配置的出图为RGB888图，否则会导致错误。
+
+```python
+import cv_lite
+
+image_shape = [480,640] # 高，宽
+
+# -------------------------------
+# 相机内参与畸变系数 / Camera intrinsics & distortion
+# -------------------------------
+camera_matrix = [1601.79998, 0.0, 960.2537,0.0, 1600.6784, 496.5050,0.0, 0.0, 1.0]
+dist_coeffs = [0.16096, -0.73425, -0.01634, -0.00896, 0.41294]
+dist_len=len(dist_coeffs)
+
+# 获取图像帧
+img = sensor.snapshot()
+img_np = img.to_numpy_ref()  # 获取 RGB888 图像 ndarray 引用 (HWC)
+
+# 畸变校正
+result_np = cv_lite.rgb888_undistort(image_shape,img_np,camera_matrix,dist_coeffs,dist_len)
+# 快速畸变校正
+# result_np = cv_lite.rgb888_undistort_fast(image_shape,img_np,camera_matrix,dist_coeffs,dist_len)
+# 带优化相机矩阵畸变校正
+# result_np = cv_lite.rgb888_undistort_new_cam_mat(image_shape,img_np,camera_matrix,dist_coeffs,dist_len)
+
+# 构造图像对象用于显示
+img_out = image.Image(image_shape[1], image_shape[0], image.RGB888,
+                        alloc=image.ALLOC_REF, data=result_np)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| image_shape | 图像形状，list类型，包括宽高，如[480,640] | 输入 |  |
+| img_np | 图像数据引用 | 输入 |  |
+| camera_matrix | 相机内参矩阵 | 输入 |  |
+| dist_coeffs | 畸变系数 | 输入 |  |
+| dist_len | 畸变系数长度 | 输入 |  |
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| result_np | 畸变矫正后的图像数据，ulab.numpy.ndarray格式，可以在此数据基础上创建image实例 |
+
+**示例**
+
+提供的示例位于`/sdcard/examples/23-CV_Lite/rgb888_undistort.py`,请在K230 CanMV IDE中打开运行。
+
+### rgb888_pnp_distance
+
+**描述**
+
+已知一个物体在真实世界中的尺寸和对应图像中的投影位置，结合相机内参，就能估算出相机与物体之间的相对位置，尤其是距离 Z。
+
+**语法**  
+
+请保证Sensor配置的出图为RGB888图，否则会导致错误。
+
+```python
+import cv_lite
+
+image_shape = [480, 640]  # 图像高 x 宽 / Height x Width
+
+# -------------------------------
+# 相机内参与畸变系数 / Camera intrinsics and distortion
+# -------------------------------
+camera_matrix = [
+    1601.79998, 0.0, 960.2537,
+    0.0, 1600.6784, 496.5050,
+    0.0, 0.0, 1.0
+]
+dist_coeffs = [0.16096, -0.73425, -0.01634, -0.00896, 0.41294]
+dist_len = len(dist_coeffs)
+# 实际 ROI 尺寸（单位：厘米）/ Real-world size of detected ROI (cm)
+roi_width_real = 3.0     # 例如：色块宽 3cm / Blob width in real world
+roi_height_real = 3.0    # 例如：色块高 3cm / Blob height in real world
+roi = [200, 200, 300, 300] # xywh，可以换成检测到的区域
+
+img = sensor.snapshot()          # 拍摄一帧 / Capture one frame
+img_np = img.to_numpy_ref()      # 获取图像 NumPy 引用 / Get NumPy reference to RGB data
+
+# 色块检测：返回多个色块 [x, y, w, h, ...] / Detect color blobs
+blobs = cv_lite.rgb888_find_blobs(image_shape, img_np, threshold, min_area, kernel_size)
+
+# 使用 PnP 估算距离 / Estimate distance via PnP
+distance = cv_lite.rgb888_pnp_distance(
+    image_shape, img_np, roi,
+    camera_matrix, dist_coeffs, dist_len,
+    roi_width_real, roi_height_real
+)
+
+# 绘制矩形与距离文字 / Draw bounding box and distance text
+img.draw_rectangle(roi[0], roi[1], roi[2], roi[3], color=(255, 0, 0), thickness=2)
+img.draw_string_advanced(roi[0], roi[1] - 30, 32, str(distance), color=(255, 0, 0))
+
+```
+
+**参数**
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| image_shape | 图像形状，list类型，包括宽高，如[480,640] | 输入 |  |
+| img_np | 图像数据引用 | 输入 |  |
+| roi | 待估算距离的ROI区域，list类型，包括xywh | 输入 |  |
+| camera_matrix | 相机内参矩阵 | 输入 |  |
+| dist_coeffs | 畸变系数 | 输入 |  |
+| dist_len | 畸变系数长度 | 输入 |  |
+| roi_width_real | 实际ROI宽度，单位cm | 输入 |  |
+| roi_height_real | 实际ROI高度，单位cm | 输入 |  |
+
+**返回值**
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| distance | 估算距离，单位cm |
+
+**示例**
+
+提供的示例位于`/sdcard/examples/23-CV_Lite/rgb888_pnp_distance.py`,请在K230 CanMV IDE中打开运行。
 
 ## 优化对比
 
