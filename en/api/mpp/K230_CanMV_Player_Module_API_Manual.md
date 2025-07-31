@@ -17,7 +17,7 @@ Constructs a `Player` object based on the specified `display_type`. Users need t
 **Syntax**
 
 ```python
-player = Player(Display.VIRT, [display_to_ide])
+player = Player(display_type = Display.VIRT,display_to_ide = True)
 ```
 
 **Parameters**  
@@ -62,12 +62,12 @@ player.load("test.mp4")
 
 **Return Value**
 
-| Return Value      | Description                     |
-|-------------------|---------------------------------|
-| 0                 | Success                         |
-| Non-zero          | Failure                         |
+| Return Value | Description |
+|--------------|-------------|
+| None         |             |
 
 **Note**  
+
 The current version only supports playing MP4 format files.
 
 ### Player.start
@@ -89,10 +89,9 @@ None
 
 **Return Value**  
 
-| Return Value      | Description                     |
-|-------------------|---------------------------------|
-| 0                 | Success                         |
-| Non-zero          | Failure                         |
+| Return Value | Description |
+|--------------|-------------|
+| None         |             |
 
 ### Player.pause
 
@@ -113,10 +112,9 @@ None
 
 **Return Value**  
 
-| Return Value      | Description                     |
-|-------------------|---------------------------------|
-| 0                 | Success                         |
-| Non-zero          | Failure                         |
+| Return Value | Description |
+|--------------|-------------|
+| None         |             |
 
 ### Player.resume
 
@@ -137,10 +135,9 @@ None
 
 **Return Value**  
 
-| Return Value      | Description                     |
-|-------------------|---------------------------------|
-| 0                 | Success                         |
-| Non-zero          | Failure                         |
+| Return Value | Description |
+|--------------|-------------|
+| None         |             |
 
 ### Player.stop
 
@@ -161,22 +158,37 @@ None
 
 **Return Value**  
 
-| Return Value      | Description                     |
-|-------------------|---------------------------------|
-| 0                 | Success                         |
-| Non-zero          | Failure                         |
+| Return Value | Description |
+|--------------|-------------|
+| None         |             |
+
+### Player.destroy_mp4
+
+**Description**
+
+Destroy the mp4 player
+
+**Syntax**  
+
+```python
+Player.destroy_mp4()
+```
+
+**Parameters**
+
+None
+
+**Return Value**  
+
+| Return Value | Description |
+|--------------|-------------|
+| None         |             |
 
 ### Player.set_event_callback
 
 **Description**
 
 Sets the callback function for playback events.
-
-**Parameters**  
-
-| Parameter Name    | Description                     | Input/Output |
-|-------------------|---------------------------------|--------------|
-| callback          | Callback function name          | Input        |
 
 **Syntax**  
 
@@ -188,12 +200,17 @@ player = Player()
 player.set_event_callback(callback=player_event)
 ```
 
+**Parameters**  
+
+| Parameter Name    | Description                     | Input/Output |
+|-------------------|---------------------------------|--------------|
+| callback          | Callback function name          | Input        |
+
 **Return Value**  
 
-| Return Value      | Description                     |
-|-------------------|---------------------------------|
-| 0                 | Success                         |
-| Non-zero          | Failure                         |
+| Return Value | Description |
+|--------------|-------------|
+| None         |             |
 
 ## Data Structure Description
 

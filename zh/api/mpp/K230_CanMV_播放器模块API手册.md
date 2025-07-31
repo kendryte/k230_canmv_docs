@@ -17,7 +17,7 @@
 **语法**
 
 ```python
-player = Player(Display.VIRT, [display_to_ide])
+player = Player(display_type = Display.VIRT,display_to_ide = True)
 ```
 
 **参数**  
@@ -51,7 +51,7 @@ player = Player(Display.LT9611)
 
 ```python
 player = Player()
-player.load("test.mp4")
+Player.load(filename = "test.mp4")
 ```
 
 **参数**
@@ -62,12 +62,12 @@ player.load("test.mp4")
 
 **返回值**
 
-| 返回值  | 描述        |
-|---------|-------------|
-| 0       | 成功        |
-| 非 0    | 失败        |
+| 返回值 | 描述 |
+|--------|------|
+| 无     |      |
 
 **注意事项**  
+
 当前版本仅支持播放 MP4 格式文件。
 
 ### Player.start
@@ -91,8 +91,7 @@ player.start()
 
 | 返回值 | 描述 |
 |--------|------|
-| 0      | 成功 |
-| 非0    | 失败 |
+| 无     |      |
 
 ### Player.pause
 
@@ -115,8 +114,7 @@ player.pause()
 
 | 返回值 | 描述 |
 |--------|------|
-| 0      | 成功 |
-| 非0    | 失败 |
+| 无     |      |
 
 ### Player.resume
 
@@ -139,8 +137,7 @@ player.resume()
 
 | 返回值 | 描述 |
 |--------|------|
-| 0      | 成功 |
-| 非0    | 失败 |
+| 无     |      |
 
 ### Player.stop
 
@@ -163,20 +160,35 @@ player.stop()
 
 | 返回值 | 描述 |
 |--------|------|
-| 0      | 成功 |
-| 非0    | 失败 |
+| 无     |      |
+
+### Player.destroy_mp4
+
+**描述**
+
+销毁 mp4 播放器
+
+**语法**  
+
+```python
+Player.destroy_mp4()
+```
+
+**参数**
+
+无
+
+**返回值**  
+
+| 返回值 | 描述 |
+|--------|------|
+| 无     |      |
 
 ### Player.set_event_callback
 
 **描述**
 
 设置播放事件的回调函数。
-
-**参数**  
-
-| 参数名称 | 描述            | 输入/输出 |
-|----------|-----------------|-----------|
-| callback | 回调函数名称    | 输入      |
 
 **语法**  
 
@@ -188,12 +200,17 @@ player = Player()
 player.set_event_callback(callback=player_event)
 ```
 
+**参数**  
+
+| 参数名称 | 描述            | 输入/输出 |
+|----------|-----------------|-----------|
+| callback | 回调函数名称    | 输入      |
+
 **返回值**  
 
 | 返回值 | 描述 |
 |--------|------|
-| 0      | 成功 |
-| 非0    | 失败 |
+| 无     |      |
 
 ## 数据结构描述
 

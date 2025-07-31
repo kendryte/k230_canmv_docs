@@ -51,7 +51,7 @@ This function is used to obtain the frequency-domain data after the Fourier tran
 **Syntax**
 
 ```python
-res = fft1.run()
+res = FFT.run()
 ```
 
 **Parameters**
