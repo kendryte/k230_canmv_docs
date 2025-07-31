@@ -51,7 +51,7 @@ fft1 = FFT(data, 64, 0)
 **语法**
 
 ```python
-res = fft1.run()
+res = FFT.run()
 ```
 
 **参数**

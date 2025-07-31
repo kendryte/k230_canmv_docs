@@ -28,10 +28,9 @@ MP4Container.Create(mp4Cfg)
 
 **返回值**
 
-| 返回值  | 描述       |
-|---------|------------|
-| 0       | 成功       |
-| 非 0    | 失败       |
+| 返回值 | 描述    |
+|--------|---------|
+| 无 ||
 
 ### MP4Container.Start
 
@@ -51,10 +50,9 @@ MP4Container.Start()
 
 **返回值**
 
-| 返回值 | 描述 |
-|--------|------|
-| 0      | 成功 |
-| 非0    | 失败 |
+| 返回值 | 描述    |
+|--------|---------|
+| 无 ||
 
 ### MP4Container.Process
 
@@ -74,10 +72,9 @@ MP4Container.Process()
 
 **返回值**
 
-| 返回值 | 描述 |
-|--------|------|
-| 0      | 成功 |
-| 非0    | 失败 |
+| 返回值 | 描述    |
+|--------|---------|
+| 无 ||
 
 ### MP4Container.Stop
 
@@ -97,10 +94,9 @@ MP4Container.Stop()
 
 **返回值**
 
-| 返回值 | 描述 |
-|--------|------|
-| 0      | 成功 |
-| 非0    | 失败 |
+| 返回值 | 描述    |
+|--------|---------|
+| 无 ||
 
 ### MP4Container.Destroy
 
@@ -120,10 +116,9 @@ MP4Container.Destroy()
 
 **返回值**
 
-| 返回值 | 描述 |
-|--------|------|
-| 0      | 成功 |
-| 非0    | 失败 |
+| 返回值 | 描述    |
+|--------|---------|
+| 无 ||
 
 ## kd_mp4* API介绍
 
@@ -142,12 +137,14 @@ ret = kd_mp4_create(handle, mp4_cfg)
 ```
 
 **参数**
+
 | 参数名称  | 描述                  | 输入/输出 |
 |-----------|-----------------------|-----------|
-| handle    | 输出参数，返回 MP4 实例句柄 | 输出      |
+| handle    | 输出参数，返回 MP4 实例句柄的指针 | 输出      |
 | [config](#k_mp4_config_s)    | MP4 容器配置结构体指针 | 输入      |
 
 **返回值**
+
 | 返回值  | 描述       |
 |---------|------------|
 | 0       | 成功       |
@@ -166,12 +163,15 @@ ret = kd_mp4_create_track(handle, track_handle, track_info)
 ```
 
 **参数**
+
 | 参数名称     | 描述                  | 输入/输出 |
 |--------------|-----------------------|-----------|
 | handle       | MP4 实例句柄         | 输入      |
+| track_handle       | 输出参数，音视频轨道实例的句柄指针         | 输出      |
 | [track_info](#k_mp4_track_info_s)   | 轨道信息结构体指针    | 输入      |
 
 **返回值**
+
 | 返回值  | 描述       |
 |---------|------------|
 | 0       | 成功       |
@@ -189,11 +189,13 @@ ret = kd_mp4_destroy_tracks(handle)
 ```
 
 **参数**
+
 | 参数名称  | 描述          | 输入/输出 |
 |-----------|---------------|-----------|
 | handle    | MP4 实例句柄 | 输入      |
 
 **返回值**
+
 | 返回值  | 描述       |
 |---------|------------|
 | 0       | 成功       |
@@ -213,6 +215,7 @@ ret = kd_mp4_write_frame(handle, track_id, frame_data)
 ```
 
 **参数**
+
 | 参数名称     | 描述                  | 输入/输出 |
 |--------------|-----------------------|-----------|
 | handle       | MP4 实例句柄         | 输入      |
@@ -220,6 +223,7 @@ ret = kd_mp4_write_frame(handle, track_id, frame_data)
 | [frame_data](#k_mp4_frame_data_s)   | 帧数据结构体指针      | 输入      |
 
 **返回值**
+
 | 返回值  | 描述       |
 |---------|------------|
 | 0       | 成功       |
@@ -238,12 +242,14 @@ ret = kd_mp4_get_file_info(handle, file_info)
 ```
 
 **参数**
+
 | 参数名称     | 描述                  | 输入/输出 |
 |--------------|-----------------------|-----------|
 | handle       | MP4 实例句柄         | 输入      |
 | file_info    | 文件信息结构体指针    | 输出      |
 
 **返回值**
+
 | 返回值  | 描述       |
 |---------|------------|
 | 0       | 成功       |
@@ -262,6 +268,7 @@ ret = kd_mp4_get_track_by_index(handle, track_index, track_info)
 ```
 
 **参数**
+
 | 参数名称      | 描述                  | 输入/输出 |
 |---------------|-----------------------|-----------|
 | handle        | MP4 实例句柄         | 输入      |
@@ -269,6 +276,7 @@ ret = kd_mp4_get_track_by_index(handle, track_index, track_info)
 | track_info    | 轨道信息结构体指针    | 输出      |
 
 **返回值**
+
 | 返回值  | 描述       |
 |---------|------------|
 | 0       | 成功       |
@@ -288,12 +296,14 @@ ret = kd_mp4_get_frame(handle, frame_data)
 ```
 
 **参数**
+
 | 参数名称     | 描述                  | 输入/输出 |
 |--------------|-----------------------|-----------|
 | handle       | MP4 实例句柄         | 输入      |
 | frame_data   | 帧数据结构体指针      | 输出      |
 
 **返回值**
+
 | 返回值  | 描述       |
 |---------|------------|
 | 0       | 成功       |
@@ -351,17 +361,21 @@ class MuxerCfgStr:
         self.pic_width = 0
         self.pic_height = 0
         self.audio_payload_type = 0
+        self.video_start_timestamp = 0
+        self.fmp4_flag = 0
 ```
 
 **成员**
 
-| 成员名称           | 描述                   |
-|--------------------|------------------------|
-| file_name          | 生成的 MP4 文件名     |
-| video_payload_type | 视频编码格式           |
-| pic_width          | 视频帧宽度             |
-| pic_height         | 视频帧高度             |
-| audio_payload_type | 音频编码格式           |
+| 成员名称              | 描述                   |
+|-----------------------|------------------------|
+| file_name             | 生成的 MP4 文件名     |
+| video_payload_type    | 视频编码格式           |
+| pic_width             | 视频帧宽度             |
+| pic_height            | 视频帧高度             |
+| audio_payload_type    | 音频编码格式           |
+| video_start_timestamp | 视频开始的时间戳       |
+| fmp4_flag             | fMP4格式的标志位       |
 
 #### 相关数据类型及接口
 
@@ -412,6 +426,7 @@ MP4Container 类型枚举。
 MP4 容器的全局配置结构体。
 
 **成员**
+
 | 成员名称          | 描述                              |
 |-------------------|-----------------------------------|
 | config_type       | 容器类型（如 `K_MP4_CONFIG_MUXER`）|
@@ -426,6 +441,7 @@ MP4 容器的全局配置结构体。
 轨道信息结构体，用于创建音视频轨道。
 
 **成员**
+
 | 成员名称      | 描述                              |
 |---------------|-----------------------------------|
 | track_type    | 轨道类型（如 `K_MP4_STREAM_VIDEO`）|
@@ -441,6 +457,7 @@ MP4 容器的全局配置结构体。
 帧数据结构体，用于读写音视频帧。
 
 **成员**
+
 | 成员名称      | 描述                              |
 |---------------|-----------------------------------|
 | codec_id      | 编码类型（如 `K_MP4_CODEC_ID_H264`）|
@@ -503,11 +520,11 @@ canmv_mp4_muxer_test()
 该实例用于演示如何调用 kd_mp4* API 来直接操作 MP4 模块。通过该例程，开发者可以了解如何创建 MP4 容器、创建音视频轨道、写入音视频帧数据以及销毁 MP4 容器。该例程展示了更底层的操作方式，适合需要精细控制 MP4 文件生成过程的开发者。
 
 ```python
-# Save MP4 file example
+# 保存MP4文件示例
 #
-# Note: You will need an SD card to run this example.
+# 注意：你需要一张SD卡来运行这个例子。
 #
-# You can capture audio and video and save them as MP4.The current version only supports MP4 format, video supports 264/265, and audio supports g711a/g711u.
+# 您可以捕获音频和视频，并将其保存为MP4。当前版本只支持MP4格式，视频支持264/265，音频支持g711a/g711u。
 
 from mpp.mp4_format import *
 from mpp.mp4_format_struct import *
@@ -566,10 +583,10 @@ def vi_bind_venc_mp4_test(file_name,width=1280, height=720,venc_payload_type = K
     save_idr = bytearray(width * height * 3 // 4)
     idr_index = 0
 
-    # mp4 muxer init
+    # 初始化 mp4 muxer
     mp4_handle = mp4_muxer_init(file_name, True)
 
-    # create video track
+    # 创建 video track
     if venc_payload_type == K_PT_H264:
         video_payload_type = K_MP4_CODEC_ID_H264
     elif venc_payload_type == K_PT_H265:
@@ -623,7 +640,7 @@ def vi_bind_venc_mp4_test(file_name,width=1280, height=720,venc_payload_type = K
             encoder.GetStream(venc_chn, streamData) # 获取一帧码流
             stream_type = streamData.stream_type[0]
 
-            # Retrieve first IDR frame and write to MP4 file. Note: The first frame must be an IDR frame.
+            # 检索第一个IDR帧并写入MP4文件。注意：第一帧必须是IDR帧。
             if not get_first_I_frame:
                 if stream_type == encoder.STREAM_TYPE_I:
                     get_first_I_frame = True
@@ -651,7 +668,7 @@ def vi_bind_venc_mp4_test(file_name,width=1280, height=720,venc_payload_type = K
                     encoder.ReleaseStream(venc_chn, streamData) # 释放一帧码流
                     continue
 
-            # Write video stream to MP4 file （not first idr frame）
+            # 将视频流写入MP4文件（不是第一个idr帧）
             frame_data.codec_id = video_payload_type
             frame_data.data = streamData.data[0]
             frame_data.data_length = streamData.data_size[0]
@@ -701,11 +718,11 @@ if __name__ == "__main__":
 该实例用于演示如何调用 kd_mp4* API 来直接操作 MP4 模块，通过该例程，开发者可以解复用 MP4 文件，提取视频和音频流。
 
 ```python
-# MP4 Demuxer Example
+# MP4 Demuxer示例
 #
-# This script demuxes an MP4 file, extracting video and audio streams.
-# Supported video codecs: H.264, H.265
-# Supported audio codecs: G.711A, G.711U
+# 这个脚本为解复用一个MP4文件，提取视频和音频流。
+# 支持的视频编解码器：H.264， H.265
+# 支持的音频编解码器：G.711A， G.711U
 
 from media.media import *
 from mpp.mp4_format import *
