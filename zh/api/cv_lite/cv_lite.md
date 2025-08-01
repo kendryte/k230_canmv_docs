@@ -1708,7 +1708,7 @@ img_out = image.Image(image_shape[1], image_shape[0], image.RGB888,
 
 **描述**
 
-已知一个物体在真实世界中的尺寸和对应图像中的投影位置，结合相机内参，就能估算出相机与物体之间的相对位置，尤其是距离 Z。
+已知ROI区域在真实世界中的尺寸和对应图像中的投影位置，结合相机内参，就能估算出相机与物体之间的相对位置，尤其是距离 Z。
 
 **语法**  
 
@@ -1775,6 +1775,91 @@ img.draw_string_advanced(roi[0], roi[1] - 30, 32, str(distance), color=(255, 0, 
 **示例**
 
 提供的示例位于`/sdcard/examples/23-CV_Lite/rgb888_pnp_distance.py`,请在K230 CanMV IDE中打开运行。
+
+### rgb888_pnp_distance_from_corners
+
+**描述**
+
+方法 rgb888_pnp_distance_from_corners 实现了基于 RGB888 图像的矩形目标自动识别与距离估算：它先对图像进行畸变校正与边缘检测，提取出最大的矩形轮廓并计算其四个角点，然后结合实际目标尺寸与摄像头标定参数，通过 PnP 算法解算目标到相机的三维距离，最终返回目标与相机之间的直线距离（单位为 cm），最小外接矩形和角点信息。
+
+**语法**
+
+请保证Sensor配置的出图为RGB888图，否则会导致错误。
+
+```python
+import cv_lite
+
+image_shape = [480, 640]  # 图像高 x 宽 / Height x Width
+
+# -------------------------------
+# 相机参数
+# -------------------------------
+camera_matrix = [
+    789.1207591978101,0.0,308.8211709453399,
+    0.0,784.6402477892891,220.80604393744628,
+    0.0,0.0,1.0
+]
+dist_coeffs = [-0.0032975761115662697,-0.009984467065645562,-0.01301691382446514,-0.00805834837844004,-1.063818733754765]
+dist_len = len(dist_coeffs)
+
+# -------------------------------
+# 目标实际尺寸（单位 cm）
+# -------------------------------
+obj_width_real = 20.1
+obj_height_real = 28.9
+
+# 获取一帧RGB888图像
+img = sensor.snapshot()
+# 处理成ulab.numpy.ndarray格式
+img_np = img.to_numpy_ref()
+
+# 距离估计（通过轮廓+PnP）返回格式[distance,[x,y,w,h],[[x1,y1],[x2,y2],[x3,y3],[x4,y4]]]
+res = cv_lite.rgb888_pnp_distance_from_corners(
+    image_shape, img_np,
+    camera_matrix, dist_coeffs, dist_len,
+    obj_width_real, obj_height_real
+)
+# 距离
+distance=res[0]
+# 最小外接矩形xywh
+rect=res[1]
+# 矩形角点坐标
+corners=res[2]
+
+# 如果距离估计成功
+if distance > 0:
+    img.draw_string_advanced(10, 10, 32, "Dist: %.2fcm" % distance, color=(0, 255, 0))
+    img.draw_rectangle(rect[0], rect[1], rect[2], rect[3], color=(255, 0, 0), thickness=2)
+    img.draw_cross(corners[0][0],corners[0][1],color=(255,255,255),size=5,thickness=2)
+    img.draw_cross(corners[1][0],corners[1][1],color=(255,255,255),size=5,thickness=2)
+    img.draw_cross(corners[2][0],corners[2][1],color=(255,255,255),size=5,thickness=2)
+    img.draw_cross(corners[3][0],corners[3][1],color=(255,255,255),size=5,thickness=2)
+else:
+    img.draw_string_advanced(10, 10, 32, "No Rect Found", color=(255, 0, 0))
+
+```
+
+**参数**
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| image_shape | 图像形状，list类型，包括宽高，如[480,640] | 输入 |  |
+| img_np | 图像数据引用 | 输入 |  |
+| camera_matrix | 相机内参矩阵 | 输入 |  |
+| dist_coeffs | 畸变系数 | 输入 |  |
+| dist_len | 畸变系数长度 | 输入 |  |
+| roi_width_real | 实际宽度，单位cm | 输入 |  |
+| roi_height_real | 实际高度，单位cm | 输入 |  |
+
+**返回值**
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| res | res[0]估算距离，单位cm，res[1]最小外接矩形xywh，res[2]矩形角点坐标 |
+
+**示例**
+
+提供的示例位于`/sdcard/examples/23-CV_Lite/rgb888_pnp_distance_from_corners.py`,请在K230 CanMV IDE中打开运行。
 
 ## 优化对比
 
