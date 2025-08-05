@@ -142,8 +142,8 @@ top,left,m=center_crop_param(input_size)
 
 | 返回值 | 描述                            |
 |--------|---------------------------------|
-| left    | 裁左上角距离左边界距离                   |
 | top     | 裁左上角距离上边界距离                   |
+| left    | 裁左上角距离左边界距离                   |
 | m       | 裁边长                   |
 
 ### letterbox_pad_param
@@ -159,7 +159,7 @@ from libs.Utils import letterbox_pad_param
 
 input_size=[1920,1080]
 output_size=[640,640]
-left,right,top,bottom,scale=letterbox_pad_param(input_size,output_size)
+top,bottom,left,right,scale=letterbox_pad_param(input_size,output_size)
 ```
 
 **参数**  
@@ -173,10 +173,10 @@ left,right,top,bottom,scale=letterbox_pad_param(input_size,output_size)
 
 | 返回值 | 描述                            |
 |--------|---------------------------------|
-| left    |  左侧填充值                     |
-| right   |  右侧填充值                     |
 | top     |  上侧填充值                     |
 | bottom  |  下侧填充值                     |
+| left    |  左侧填充值                     |
+| right   |  右侧填充值                     |
 | scale   |  缩放比例                       |
 
 ### center_pad_param
@@ -192,7 +192,7 @@ from libs.Utils import center_pad_param
 
 input_size=[1920,1080]
 output_size=[640,640]
-left,right,top,bottom,scale=center_pad_param(input_size,output_size)
+top,bottom,left,right,scale=center_pad_param(input_size,output_size)
 ```
 
 **参数**  
@@ -206,10 +206,10 @@ left,right,top,bottom,scale=center_pad_param(input_size,output_size)
 
 | 返回值 | 描述                            |
 |--------|---------------------------------|
-| left    |  左侧填充值                     |
-| right   |  右侧填充值                     |
 | top     |  上侧填充值                     |
 | bottom  |  下侧填充值                     |
+| left    |  左侧填充值                     |
+| right   |  右侧填充值                     |
 | scale   |  缩放比例                       |
 
 ### softmax

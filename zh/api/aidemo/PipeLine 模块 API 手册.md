@@ -25,8 +25,8 @@ pl=PipeLine(rgb888p_size=[1920,1080],display_mode='hdmi',display_size=None,osd_l
 | 参数名称 | 描述                          | 输入 / 输出 | 说明 |
 |----------|-------------------------------|-----------|------|
 | rgb888p_size | AI 程序的输入图像分辨率，list类型，包括宽高，如[1920,1080] | 输入 | 默认[224,224]，根据 AI 程序决定|
+| display_mode | 显示模式，支持 `hdmi` 和 `lcd`，str类型 | 输入 | 默认`hdmi`,根据显示配置|
 | display_size | 显示分辨率，list类型，包括宽高，如[1920,1080]，如果为None，根据显示屏决定；否则按输入设置 | 输入 | 默认None，根据显示屏决定 |
-| display_mode | 显示模式，支持 `hdmi` 和 `lcd`，str类型 | 输入 | 默认`lcd`,根据显示配置|
 | osd_layer_num| osd显示层数，用户程序在原画上叠加的层数| 输入 | 默认为1 |
 | debug_mode   | 调试计时模式，0计时，1不计时，int类型 | 输入 | 默认为0 |
 
@@ -61,6 +61,7 @@ pl.create(sensor=sensor)
 | hmirror  | 水平镜像参数                | 输入      | 可选，默认为 `None`,根据不同开发板默认配；设置时为bool类型，设为True或False |
 | vflip    | 垂直翻转参数                | 输入      | 可选，默认为 `None`,根据不同开发板默认配置；设置时为bool类型，设为True或False     |
 | fps      | sensor 帧率参数    | 输入      | 可选，默认60，设置Sensor的帧率 |
+| to_ide   | 是否将屏幕显示传输到 IDE 显示 | 输入      | 开启时占用更多内存 |
 
 **返回值**  
 

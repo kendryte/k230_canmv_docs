@@ -142,8 +142,8 @@ top, left, m = center_crop_param(input_size)
 
 | Return Value | Description |
 |--------|---------------------------------|
-| left    | Distance from the top-left corner of the cropping area to the left border |
 | top     | Distance from the top-left corner of the cropping area to the top border |
+| left    | Distance from the top-left corner of the cropping area to the left border |
 | m       | Side length of the cropping area |
 
 ### letterbox_pad_param
@@ -159,7 +159,7 @@ from libs.Utils import letterbox_pad_param
 
 input_size = [1920,1080]
 output_size = [640,640]
-left, right, top, bottom, scale = letterbox_pad_param(input_size, output_size)
+top,bottom,left,right,scale=letterbox_pad_param(input_size,output_size)
 ```
 
 **Parameters**  
@@ -173,10 +173,10 @@ left, right, top, bottom, scale = letterbox_pad_param(input_size, output_size)
 
 | Return Value | Description |
 |--------|---------------------------------|
-| left    | Left padding value |
-| right   | Right padding value |
 | top     | Top padding value |
 | bottom  | Bottom padding value |
+| left    | Left padding value |
+| right   | Right padding value |
 | scale   | Scaling ratio |
 
 ### center_pad_param
@@ -192,7 +192,7 @@ from libs.Utils import center_pad_param
 
 input_size = [1920,1080]
 output_size = [640,640]
-left, right, top, bottom, scale = center_pad_param(input_size, output_size)
+top,bottom,left,right,scale=center_pad_param(input_size,output_size)
 ```
 
 **Parameters**  
@@ -206,10 +206,10 @@ left, right, top, bottom, scale = center_pad_param(input_size, output_size)
 
 | Return Value | Description |
 |--------|---------------------------------|
-| left    | Left padding value |
-| right   | Right padding value |
 | top     | Top padding value |
 | bottom  | Bottom padding value |
+| left    | Left padding value |
+| right   | Right padding value |
 | scale   | Scaling ratio |
 
 ### softmax

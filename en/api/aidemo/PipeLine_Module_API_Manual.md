@@ -25,8 +25,8 @@ pl=PipeLine(rgb888p_size=[1920,1080],display_mode='hdmi',display_size=None,osd_l
 | Parameter Name | Description | Input / Output | Remarks |
 |----------|-------------------------------|-----------|------|
 | rgb888p_size | The input image resolution of the AI program, of list type, including width and height, such as [1920,1080] | Input | Default is [224,224], determined by the AI program |
-| display_size | The display resolution, of list type, including width and height, such as [1920,1080]. If it is None, it is determined by the display screen; otherwise, it is set according to the input. | Input | Default is None, determined by the display screen |
 | display_mode | The display mode, supporting `hdmi` and `lcd`, of str type | Input | Default is `lcd`, determined by the display configuration |
+| display_size | The display resolution, of list type, including width and height, such as [1920,1080]. If it is None, it is determined by the display screen; otherwise, it is set according to the input. | Input | Default is None, determined by the display screen |
 | osd_layer_num| The number of OSD display layers, the number of layers superimposed by the user program on the original image | Input | Default is 1 |
 | debug_mode   | The debugging timing mode, 0 for timing, 1 for no timing, of int type | Input | Default is 0 |
 
@@ -61,6 +61,7 @@ pl.create(sensor=sensor)
 | hmirror  | Horizontal mirroring parameter | Input | Optional, the default is `None`, determined by the default configuration of different development boards; when setting, it is of bool type, set to True or False |
 | vflip    | Vertical flipping parameter | Input | Optional, the default is `None`, determined by the default configuration of different development boards; when setting, it is of bool type, set to True or False |
 | fps      | Sensor frame rate parameter | Input | Optional, the default is 60, used to set the frame rate of the Sensor |
+| to_ide   | Whether to transfer screen display to IDE display | Input | Occupies more memory when enabled |
 
 **Return Value**  
 
