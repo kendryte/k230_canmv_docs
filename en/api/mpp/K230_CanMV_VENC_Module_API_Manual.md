@@ -8,6 +8,30 @@ This manual provides a detailed introduction to the API of the K230_CanMV VENC m
 
 The VENC module provides the `Encoder` class, which includes the following methods:
 
+### Encoder.\_\_init__
+
+**Description**
+
+Constructor to initialize the encoder instance.
+
+**Syntax**
+
+```python
+encoder = Encoder()
+```
+
+**Parameters**
+
+| Parameter Name | Description           | Input/Output |
+|----------------|-----------------------|--------------|
+| None |||
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| Encoder Object | Encoder Object |
+
 ### `Encoder.SetOutBufs`
 
 **Description**
@@ -20,7 +44,7 @@ Configures the output buffer of the encoder.
 Encoder.SetOutBufs(chn, buf_num, width, height)
 ```
 
-**Parameters**  
+**Parameters**
 
 | Parameter Name | Description           | Input/Output |
 |----------------|-----------------------|--------------|
@@ -29,12 +53,11 @@ Encoder.SetOutBufs(chn, buf_num, width, height)
 | width          | Width of the encoded image | Input      |
 | height         | Height of the encoded image | Input      |
 
-**Return Value**  
+**Return Value**
 
 | Return Value | Description |
 |--------------|-------------|
-| 0            | Success     |
-| Non-zero     | Failure     |
+| None         |             |
 
 **Notes**
 
@@ -52,19 +75,18 @@ Creates an encoder instance.
 Encoder.Create(chn, chnAttr)
 ```
 
-**Parameters**  
+**Parameters**
 
 | Parameter Name | Description           | Input/Output |
 |----------------|-----------------------|--------------|
 | chn            | Encoding channel number | Input       |
 | chnAttr        | Encoding channel attribute structure | Input |
 
-**Return Value**  
+**Return Value**
 
 | Return Value | Description |
 |--------------|-------------|
-| 0            | Success     |
-| Non-zero     | Failure     |
+| None         |             |
 
 **Notes**
 
@@ -82,18 +104,17 @@ Starts the encoding process.
 Encoder.Start(chn)
 ```
 
-**Parameters**  
+**Parameters**
 
 | Parameter Name | Description           | Input/Output |
 |----------------|-----------------------|--------------|
 | chn            | Encoding channel number | Input       |
 
-**Return Value**  
+**Return Value**
 
 | Return Value | Description |
 |--------------|-------------|
-| 0            | Success     |
-| Non-zero     | Failure     |
+| None         |             |
 
 ### `Encoder.SendFrame`
 
@@ -107,14 +128,14 @@ Sends image data to the encoder for encoding.
 Encoder.SendFrame(venc_chn, frame_info)
 ```
 
-**Parameters**  
+**Parameters**
 
 | Parameter Name | Description           | Input/Output |
 |----------------|-----------------------|--------------|
 | chn            | Encoding channel number | Input       |
 | frame_info     | Raw image information structure | Input |
 
-**Return Value**  
+**Return Value**
 
 | Return Value | Description |
 |--------------|-------------|
@@ -134,17 +155,18 @@ Gets a frame of encoded stream data.
 **Syntax**
 
 ```python
-Encoder.GetStream(chn, streamData)
+Encoder.GetStream(chn, streamData,timeout=-1)
 ```
 
-**Parameters**  
+**Parameters**
 
 | Parameter Name | Description           | Input/Output |
 |----------------|-----------------------|--------------|
 | chn            | Encoding channel number | Input       |
 | streamData     | Encoded stream structure | Output     |
+| timeout        | Obtain the bitstream timeout. Value range:  [-1, +∞ ) -1：Blocking. 0: Non-blocking.Greater than 0: Timeout period. | Input     |
 
-**Return Value**  
+**Return Value**
 
 | Return Value | Description |
 |--------------|-------------|
@@ -163,19 +185,18 @@ Releases a frame of stream buffer.
 Encoder.ReleaseStream(chn, streamData)
 ```
 
-**Parameters**  
+**Parameters**
 
 | Parameter Name | Description           | Input/Output |
 |----------------|-----------------------|--------------|
 | chn            | Encoding channel number | Input       |
 | streamData     | Encoded stream structure | Input      |
 
-**Return Value**  
+**Return Value**
 
 | Return Value | Description |
 |--------------|-------------|
-| 0            | Success     |
-| Non-zero     | Failure     |
+| None         |             |
 
 ### `Encoder.Stop`
 
@@ -189,11 +210,17 @@ Stops the encoding process.
 Encoder.Stop(chn)
 ```
 
-**Parameters**  
+**Parameters**
 
 | Parameter Name | Description           | Input/Output |
 |----------------|-----------------------|--------------|
 | chn            | Encoding channel number | Input       |
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| None         |             |
 
 ### `Encoder.Destroy`
 
@@ -207,11 +234,17 @@ Destroys the encoder instance.
 Encoder.Destroy(chn)
 ```
 
-**Parameters**  
+**Parameters**
 
 | Parameter Name | Description           | Input/Output |
 |----------------|-----------------------|--------------|
 | chn            | Encoding channel number | Input       |
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| None         |             |
 
 ## Data Structure Description
 
@@ -225,15 +258,19 @@ Encoding channel attribute structure.
 
 ```python
 class ChnAttrStr:
-    def __init__(self, payloadType, profile, picWidth, picHeight, gopLen=30):
+    def __init__(self, payloadType, profile, picWidth, picHeight,bit_rate = 4000,gopLen = 30,src_frame_rate = 30,dst_frame_rate = 30,mjpeg_quality_factor = 45):
         self.payload_type = payloadType
         self.profile = profile
         self.pic_width = picWidth
         self.pic_height = picHeight
         self.gop_len = gopLen
+        self.bit_rate = bit_rate
+        self.src_frame_rate = src_frame_rate
+        self.dst_frame_rate = dst_frame_rate
+        self.mjpeg_quality_factor = mjpeg_quality_factor
 ```
 
-**Members**  
+**Members**
 
 | Member Name    | Description            |
 |----------------|------------------------|
@@ -242,6 +279,10 @@ class ChnAttrStr:
 | pic_width      | Image width            |
 | pic_height     | Image height           |
 | gop_len        | Encoding GOP length    |
+| bit_rate       | Bitrate                |
+| src_frame_rate        | Input frame rate      |
+| dst_frame_rate        | Output frame rate     |
+| mjpeg_quality_factor  | MJPEG encoding quality factor (image quality compression ratio parameter)   |
 
 ### `StreamData`
 
@@ -255,18 +296,22 @@ Stream structure.
 class StreamData:
     def __init__(self):
         self.data = [0 for i in range(0, VENC_PACK_CNT_MAX)]
+        self.phy_addr = [0 for i in range(0, VENC_PACK_CNT_MAX)]
         self.data_size = [0 for i in range(0, VENC_PACK_CNT_MAX)]
         self.stream_type = [0 for i in range(0, VENC_PACK_CNT_MAX)]
+        self.pts = [0 for i in range(0, VENC_PACK_CNT_MAX)]
         self.pack_cnt = 0
 ```
 
-**Members**  
+**Members**
 
 | Member Name    | Description            |
 |----------------|------------------------|
 | data           | Stream data address    |
+| phy_addr       | Physical address of the code stream     |
 | data_size      | Stream data size       |
 | stream_type    | Frame type             |
+| pts            | Display the timestamp         |
 | pack_cnt       | Number of packs in the stream |
 
 **Notes**
@@ -279,7 +324,7 @@ class StreamData:
 
 Encoding format type.
 
-**Members**  
+**Members**
 
 | Member Name           | Description       |
 |-----------------------|-------------------|
@@ -292,7 +337,7 @@ Encoding format type.
 
 Encoding Profile.
 
-**Members**  
+**Members**
 
 | Member Name          | Description            |
 |----------------------|------------------------|
@@ -307,7 +352,7 @@ Encoding Profile.
 
 Stream frame type.
 
-**Members**  
+**Members**
 
 | Member Name          | Description       |
 |----------------------|-------------------|
