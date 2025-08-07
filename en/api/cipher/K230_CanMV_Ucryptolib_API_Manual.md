@@ -2,83 +2,71 @@
 
 ## Overview
 
-The `Ucryptolib` library provides the following encryption and decryption functionalities: AES-ECB, AES-CBC, AES-CTR, AES-GCM, and SM4. Among these, AES-ECB, AES-CBC, and AES-CTR modes are natively implemented by MicroPython's software library, while AES-GCM and SM4 are accelerated through underlying hardware accelerators.
+The `Ucryptolib` library provides the following encryption and decryption functionalities: AES-ECB, AES-CBC, AES-CTR.
 
-***Note: This document does not detail the encryption and decryption steps for AES-ECB, AES-CBC, and AES-CTR modes. For related information, please refer to MicroPython's [official cryptolib documentation](https://docs.micropython.org/en/latest/library/cryptolib.html).***
+***For related information, please refer to MicroPython's [official cryptolib documentation](https://docs.micropython.org/en/latest/library/cryptolib.html).***
 
 ## API Introduction
 
-The `Ucryptolib` library provides two main classes: `aes` and `sm4`, which implement encryption (`encrypt`) and decryption (`decrypt`) operations respectively.
+The `Ucryptolib` library provides the `aes` class, which implements encryption (`encrypt`) and decryption (`decrypt`) operations.
 
 ### Class `aes`
 
+#### Constructor
+
 **Description**
 
-The `aes` class is used to initialize an AES-GCM encryption/decryption object, supporting encryption and decryption operations. In the AES-GCM encryption/decryption algorithm, you must specify the key (`key`), mode (`mode`), initialization vector (`IV`), and additional authenticated data (`AAD`) during initialization.
+Initialize the encryption algorithm object, which is suitable for encryption/decryption.
 
-***Note: Once initialized, the encryption or decryption object can only be used for a single operation, either encryption or decryption, and cannot be used for both simultaneously.***
+***Note: After initialization, the encryption algorithm object can only be used for encryption or decryption. Running a decryption operation after an encryption operation, or vice versa, is not supported.***
 
 **Syntax**
 
 ```python
-ucryptolib.aes((key, mode, IV, AAD))
+ucryptolib.aes(key, mode[, IV])
 ```
 
 **Parameters**
 
-| Parameter Name | Description                                                      | Input/Output |
-| -------------- | ---------------------------------------------------------------- | ------------ |
-| key            | Encryption/decryption key, supports a key length of 256 bits     | Input        |
-| mode           | Encryption/decryption mode, supported mode is AES-GCM, set `mode=0` | Input        |
-| IV             | Initialization vector, length of 12 bytes                        | Input        |
-| AAD            | Additional authenticated data for data integrity verification, supports any length | Input        |
+- **key** : An encryption/decryption key (bytes-like).
+- **mode** :
+  - `1` for Electronic Code Book (ECB) mode.
+  - `2` for Cipher Block Chaining (CBC) mode.
+  - `6` for Counter mode (CTR) mode.
+- **IV** : an initialization vector for CBC mode.For Counter mode, IV is the initial value for the counter.
 
-**Example**
-
-```python
-import ucryptolib
-
-# Initialize AES-GCM object
-cipher = ucryptolib.aes(key, mode=0, IV=iv, AAD=aad)
-
-# Perform encryption operation
-ciphertext = cipher.encrypt(plaintext)
-
-# Perform decryption operation
-decrypted_text = cipher.decrypt(ciphertext)
-```
-
-### Class `sm4`
+#### encrypt
 
 **Description**
 
-The `sm4` class is used to initialize an SM4 encryption/decryption object, supporting encryption and decryption operations according to the Chinese national cryptographic standard SM4. Similar to AES-GCM, SM4 requires a key (`key`), mode (`mode`), and initialization vector (`IV`) during initialization.
+Encrypt `in_buf`. If no `out_buf` is given result is returned as a newly allocated `bytes object`. Otherwise, result is written into mutable buffer out_buf. `in_buf` and `out_buf` can also refer to the same mutable buffer, in which case data is encrypted in-place.
 
 **Syntax**
 
 ```python
-ucryptolib.sm4((key, mode, IV))
+enc = aes.encrypt(in_buf[, out_buf])
 ```
 
-**Parameters**
+#### decrypt
 
-| Parameter Name | Description                                                      | Input/Output |
-| -------------- | ---------------------------------------------------------------- | ------------ |
-| key            | SM4 encryption/decryption key, supports a key length of 128 bits | Input        |
-| mode           | Encryption/decryption mode, supports ECB (Electronic Codebook) and CBC (Cipher Block Chaining) modes | Input        |
-| IV             | Initialization vector, length of 16 bytes, must be provided in CBC mode | Input        |
+**Description**
+
+Like `encrypt()`, but for decryption.
+
+**Syntax**
+
+```python
+dec = aes.decrypt(in_buf[, out_buf])
+```
 
 **Example**
 
 ```python
-import ucryptolib
-
-# Initialize SM4 object
-cipher = ucryptolib.sm4(key, mode=1, IV=iv)
-
-# Perform encryption operation
-ciphertext = cipher.encrypt(plaintext)
-
-# Perform decryption operation
-decrypted_text = cipher.decrypt(ciphertext)
+from ucryptolib import aes
+# ECB mode
+crypto = aes(b"1234" * 4, 1)
+enc = crypto.encrypt(bytes(range(32)))
+print(enc)
+crypto = aes(b"1234" * 4, 1)
+print(crypto.decrypt(enc))
 ```
