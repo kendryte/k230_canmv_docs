@@ -1,25 +1,27 @@
-# `Hashlib` Module API Documentation
+# `uhashlib` Module API Documentation
 
 ## Overview
 
-The `uhashlib` library provides binary data hashing functionality based on MD5, SHA1, and SHA2 algorithms.
+`uhashlib` module implements binary data hashing algorithms. The exact inventory of available algorithms depends on a board. Among the algorithms which may be implemented:
 
-## API Introduction
+- `SHA256` - The current generation, modern hashing algorithm (of SHA2 series). It is suitable for cryptographically-secure purposes. Included in the MicroPython core and any board is recommended to provide this, unless it has particular code size constraints.
+- `SHA1` - A previous generation algorithm. Not recommended for new usages, but SHA1 is a part of number of Internet standards and existing applications, so boards targeting network connectivity and interoperability will try to provide this.
+- `MD5` - A legacy algorithm, not considered cryptographically secure. Only selected boards, targeting interoperability with legacy applications, will offer this.
 
-The `uhashlib` library provides three classes: `md5`, `sha1`, and `sha256`. These classes each implement two functions: the data update function `update()` and the message digest function `digest()`. Among them, `md5` and `sha1` are software implementations in MicroPython; `sha256` is accelerated by the underlying hardware accelerator.
+***For specifics, please refer to the MicroPython [hash official documentation](https://docs.micropython.org/en/latest/library/hashlib.html)***
 
-***Note: This document does not detail the usage steps for `md5` and `sha1`. For specifics, please refer to the MicroPython [hash official documentation](https://docs.micropython.org/en/latest/library/hashlib.html)***
+### Constructor
 
-### Class `sha256`
+#### sha256
 
 **Description**
 
-The `sha256` class is used to create a SHA256 hash object and optionally send data to it.
+Create an SHA256 hasher object and optionally feed `data` into it.
 
-**Syntax**  
+**Syntax**
 
 ```python
-uhashlib.sha256([data])
+obj = uhashlib.sha256([data])
 ```
 
 **Parameters**  
@@ -30,20 +32,53 @@ uhashlib.sha256([data])
 
 **Return Value**  
 
-| Return Value | Description |
-|--------------|-------------|
-| 0            | Success     |
-| Non-0        | Failure     |
+Return the sha256 hasher object.
 
-**Example**  
+#### sha1
+
+**Description**
+
+Create an SHA1 hasher object and optionally feed `data` into it.
+
+**Syntax**
 
 ```python
-data = bytes([0]*64)
-hash_obj = uhashlib.sha256(data)
-hash_obj.update(data)
-dgst = hash_obj.digest()
-print(dgst)
+obj = uhashlib.sha1([data])
 ```
+
+**Parameters**  
+
+| Parameter Name | Description       | Input/Output |
+|----------------|-------------------|--------------|
+| data (optional) | Binary data       | Input        |
+
+**Return Value**  
+
+Return the sha1 hasher object.
+
+#### md5
+
+**Description**
+
+Create an md5 hasher object and optionally feed `data` into it.
+
+**Syntax**
+
+```python
+obj = uhashlib.md5([data])
+```
+
+**Parameters**  
+
+| Parameter Name | Description       | Input/Output |
+|----------------|-------------------|--------------|
+| data (optional) | Binary data       | Input        |
+
+**Return Value**  
+
+Return the md5 hasher object.
+
+### Hasher Object Functions
 
 #### Data Update Function `update()`
 
@@ -54,7 +89,7 @@ If you need to input binary data multiple times, you can call the `update()` fun
 **Syntax**
 
 ```python
-obj.update(data)
+hash.update(data)
 ```
 
 **Parameters**
@@ -65,39 +100,29 @@ obj.update(data)
 
 **Return Value**
 
-| Return Value | Description |
-|--------------|-------------|
-| 0            | Success     |
-| Non-0        | Failure     |
+None.
 
 #### Message Digest Function `digest()`
 
 **Description**
-Returns the hash value of all input data.
 
-***Note: In MicroPython, using this function completes the final calculation, not just displaying the result. Therefore, it can only be called once. If you need to use the value multiple times, please save it to a variable.***
+Return hash for all data passed through hash, as a bytes object.
+
+***Note:After this method is called, more data cannot be fed into the hash any longer.***
 
 **Syntax**  
 
 ```python
 dgst = hash.digest()
-print(dgst)
-
-/*********** Note ***********/
-a = hash.digest()
-b = hash.digest() # Error
 ```
 
 **Parameters**
 
-None
+None.
 
 **Return Value**  
 
-| Return Value | Description |
-|--------------|-------------|
-| 0            | Success     |
-| Non-0        | Failure     |
+Return the hash values of all the data passed through the hash.
 
 #### Hexadecimal Message Digest Function `hexdigest()`
 
@@ -105,20 +130,38 @@ This method is not implemented. You can use `binascii.hexlify(hash.digest())` to
 
 ## Example Program
 
-### Calculate Hash Value
-
 ```python
 import uhashlib
-import binascii
 
-# Initialize sha256 object
+print('###################### SHA256 Test ##############################')
+print('********************** Test-1: Only Call update() Once ******************')
+# Initialize the sha256 object
 obj = uhashlib.sha256()
-# Input data1
-obj.update(b'hello')
-# Input data2
-obj.update(b'world')
-# Compute digest
+# Enter the message
+msg = b'\x45\x11\x01\x25\x0e\xc6\xf2\x66\x52\x24\x9d\x59\xdc\x97\x4b\x73\x61\xd5\x71\xa8\x10\x1c\xdf\xd3\x6a\xba\x3b\x58\x54\xd3\xae\x08\x6b\x5f\xdd\x45\x97\x72\x1b\x66\xe3\xc0\xdc\x5d\x8c\x60\x6d\x96\x57\xd0\xe3\x23\x28\x3a\x52\x17\xd1\xf5\x3f\x2f\x28\x4f\x57\xb8'
+# The expected hash value
+dgst0 = b'\x1a\xaa\xf9\x28\x5a\xf9\x45\xb8\xa9\x7c\xf1\x4f\x86\x9b\x18\x90\x14\xc3\x84\xf3\xc7\xc2\xb7\xd2\xdf\x8a\x97\x13\xbf\xfe\x0b\xf1'
+# update the message
+obj.update(msg)
+# calculate the hash value
 dgst = obj.digest()
-print(binascii.hexlify(dgst))
-# b'936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af'
+print(dgst0 == dgst)
+# print(binascii.hexlify(dgst))
+print('********************** Test-2: Call update() Twice ******************')
+dgst0 = b'\x93\x6a\x18\x5c\xaa\xa2\x66\xbb\x9c\xbe\x98\x1e\x9e\x05\xcb\x78\xcd\x73\x2b\x0b\x32\x80\xeb\x94\x44\x12\xbb\x6f\x8f\x8f\x07\xaf'
+obj = uhashlib.sha256()
+# Update the message to the hardware multiple times
+obj.update(b'hello')
+obj.update(b'world')
+dgst = obj.digest()
+print(dgst0 == dgst)
+# print('********************** Test-3: Call digest() Twice ******************')
+# dgst0 = b'\x93\x6a\x18\x5c\xaa\xa2\x66\xbb\x9c\xbe\x98\x1e\x9e\x05\xcb\x78\xcd\x73\x2b\x0b\x32\x80\xeb\x94\x44\x12\xbb\x6f\x8f\x8f\x07\xaf'
+# obj = uhashlib.sha256()
+# obj.update(b'hello')
+# obj.update(b'world')
+# dgst = obj.digest()
+# dgst1 = obj.digest() # Error: digest() can only be called once
+# print(dgst0 == dgst)
+# print(dgst == dgst1)
 ```

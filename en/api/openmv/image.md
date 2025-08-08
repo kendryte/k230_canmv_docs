@@ -979,7 +979,7 @@ Perform convolution on the image using a specified convolution kernel for genera
 
 **Parameters:**
 
-- **size**: Kernel size, controlling the kernel size as ((size*2)+1)x((size*2)+1) pixels.
+- **size**: Kernel size, controlling the kernel size as `((size*2)+1)x((size*2)+1)` pixels.
 - **kernel**: The kernel used for convolution, which can be a tuple or a list of values within the range [-128:127].
 - **mul**: A number to multiply the convolution result with. If not set, a default value is used to prevent convolution output scaling.
 - **add**: A number to add to each pixel's convolution result.

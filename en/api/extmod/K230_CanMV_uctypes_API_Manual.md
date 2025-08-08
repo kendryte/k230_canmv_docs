@@ -4,6 +4,8 @@
 
 This module provides a way to access binary data in a structured manner. It is the "external data interface" module in MicroPython, conceptually similar to CPython's `ctypes` module, but with a simplified and optimized API tailored for embedded systems. By defining data structures with layouts similar to those in C, users can access subfields using dot notation.
 
+***For specific details, please refer to the [uctypes official documentation](https://docs.micropython.org/en/latest/library/uctypes.html#module-uctypes)***
+
 > **Warning**
 >
 > The `uctypes` module allows access to arbitrary memory addresses on the machine (including I/O and control registers). Improper use can lead to system crashes, data loss, or even hardware damage.
@@ -92,17 +94,39 @@ That is, the field value is the result of the bitwise OR operation between the o
 })
 ```
 
+i.e. value is a 2-tuple, first element of which is an offset, and second is a structure descriptor dictionary (note: offsets in recursive descriptors are relative to the structure it defines). Of course, recursive structures can be specified not just by a literal dictionary, but by referring to a structure descriptor dictionary (defined earlier) by name.
+
 - **Arrays**:
 
 ```python
 "arr": (offset | uctypes.ARRAY, size | uctypes.UINT8)
 ```
 
-- **Pointers**:
+i.e. value is a 2-tuple, first element of which is ARRAY flag ORed with offset, and second is scalar element type ORed number of elements in the array.
+
+- **Arrays of aggregate types**:
+
+```python
+"arr2": (offset | uctypes.ARRAY, size, {"b": 0 | uctypes.UINT8})
+```
+
+i.e. value is a 3-tuple, first element of which is ARRAY flag ORed with offset, second is a number of elements in the array, and third is a descriptor of element type.
+
+- **Pointer to a primitive type**:
 
 ```python
 "ptr": (offset | uctypes.PTR, uctypes.UINT8)
 ```
+
+i.e. value is a 2-tuple, first element of which is PTR flag ORed with offset, and second is a scalar element type.
+
+- **Pointer to an aggregate type**:
+
+```python
+"ptr2": (offset | uctypes.PTR, {"b": 0 | uctypes.UINT8})
+```
+
+i.e. value is a 2-tuple, first element of which is PTR flag ORed with offset, second is a descriptor of type pointed to.
 
 - **Bitfields**:
 
@@ -110,7 +134,11 @@ That is, the field value is the result of the bitwise OR operation between the o
 "bitf0": offset | uctypes.BFUINT16 | lsbit << uctypes.BF_POS | bitsize << uctypes.BF_LEN
 ```
 
-In bitfield definitions, `lsbit` is the position of the least significant bit, and `bitsize` is the length of the bitfield.
+i.e. `value` is a type of scalar value containing given bitfield (typenames are similar to scalar types, but prefixes with `BF`), ORed with offset for scalar value containing the bitfield, and further ORed with values for bit position and bit length of the bitfield within the scalar value, shifted by `BF_POS` and `BF_LEN` bits, respectively. A bitfield position is counted from the least significant bit of the scalar (having position of `0`), and is the number of right-most bit of a field (in other words, it’s a number of bits a scalar needs to be shifted right to extract the bitfield).
+
+In the example above, first a `UINT16` value will be extracted at offset `0` (this detail may be important when accessing hardware registers, where particular access size and alignment are required), and then bitfield whose rightmost bit is `lsbit` bit of this `UINT16`, and length is `bitsize` bits, will be extracted. For example, if `lsbit` is `0` and `bitsize` is `8`, then effectively it will access least-significant byte of `UINT16`.
+
+Note that bitfield operations are independent of target byte endianness, in particular, example above will access least-significant byte of `UINT16` in both little- and big-endian structures. But it depends on the least significant bit being numbered `0`. Some targets may use different numbering in their native ABI, but `uctypes` always uses the normalized numbering described above.
 
 ## API Introduction
 
@@ -136,7 +164,7 @@ Instantiates a structure object based on memory address, descriptor, and layout 
 uctypes.sizeof(struct, layout_type=NATIVE)
 ```
 
-Returns the size of the data structure (in bytes).
+Return size of data structure in bytes. The struct argument can be either a structure class or a specific instantiated structure object (or its aggregate field).
 
 **Parameters**:
 
@@ -213,6 +241,10 @@ Defines various bit-width integer types, including:
 ### `uctypes.VOID`
 
 Used to represent a void type, commonly used for pointers.
+
+### `uctypes.PTR` and `uctypes.ARRAY`
+
+Type constants for pointers and arrays. Note that there is no explicit constant for structures, it’s implicit: an aggregate type without `PTR` or `ARRAY` flags is a structure.
 
 ## Structure Descriptor and Structure Object Instantiation
 
