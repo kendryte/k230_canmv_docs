@@ -1,89 +1,125 @@
-# AES 例程讲解
+# K230 AES 加解密教程
 
-## 概述
+## 什么是 AES？
 
-K230 内置加解密算法加速器，支持 AES 和 SM4 国密算法的加解密操作。
+**AES（Advanced Encryption Standard，高级加密标准）** 是一种对称加密算法，被广泛应用于文件保护、网络通信、嵌入式设备加密等场景。
 
-## 示例
+K230 芯片内置硬件加速模块，可通过 `ucryptolib.aes` 快速实现 AES 加密和解密操作。
 
-### AES-GCM 示例
+## 支持的 AES 模式
 
-该示例演示了 AES-GCM 加解密计算。
+| 模式      | 特性描述              |
+| ------- | ----------------- |
+| ECB     | 电码本模式，最基本但不安全     |
+| CBC     | 密码块链接模式，安全性更强     |
+| CTR     | 计数器模式，适合流式数据      |
 
-```python
-print('\n###################### AES-GCM Test ##############################')
-import ucryptolib
-import collections
+## 本示例内容
 
-# 创建一个具名元组
-Aes = collections.namedtuple('Aes', ['key', 'iv', 'aad', 'pt', 'ct', 'tag'])
-aes = [
-    Aes(b'\xb5\x2c\x50\x5a\x37\xd7\x8e\xda\x5d\xd3\x4f\x20\xc2\x25\x40\xea\x1b\x58\x96\x3c\xf8\xe5\xbf\x8f\xfa\x85\xf9\xf2\x49\x25\x05\xb4',
-        b'\x51\x6c\x33\x92\x9d\xf5\xa3\x28\x4f\xf4\x63\xd7',
-        b'',
-        b'',
-        b'',
-        b'\xbd\xc1\xac\x88\x4d\x33\x24\x57\xa1\xd2\x66\x4f\x16\x8c\x76\xf0'
-    ),
-    # 更多 AES 测试数据...
-]
+本教程使用 **AES-CBC（密码块链接）模式**，展示如何对一段任意长度的数据进行：
 
-# 测试用例 1
-print('********************** Test-1: ivlen=12, ptlen=0, aadlen=0 ******************')
-print('GCM Encrypt......')
-crypto = ucryptolib.aes(aes[0].key, 0, aes[0].iv, aes[0].aad)
-inbuf = aes[0].pt
-outbuf = bytearray(16)
-val = crypto.encrypt(inbuf, outbuf)
-val0 = aes[0].ct + aes[0].tag
-print(val0 == val)
+* 数据填充（Pad）
+* 加密（Encrypt）
+* 解密（Decrypt）
+* 验证原始明文一致性
 
-print('GCM Decrypt......')
-crypto = ucryptolib.aes(aes[0].key, 0, aes[0].iv, aes[0].aad)
-inbuf = aes[0].ct + aes[0].tag
-val = crypto.decrypt(inbuf)
-print(val[:1] == b'\x00')
-
-# 其他测试用例...
-```
-
-### SM4 示例
-
-该示例演示了 SM4 的 ECB、CFB、OFB、CBC 和 CTR 模式加解密计算。
+## 示例代码
 
 ```python
-print('\n###################### SM4-ECB/CFB/OFB/CBC/CTR Test ##############################')
-Sm4 = collections.namedtuple('Sm4', ['key', 'iv', 'pt', 'ct'])
-sm4 = [
-    Sm4(b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10',
-        None,
-        b'\xaa\xaa\xaa\xaa\xbb\xbb\xbb\xbb\xcc\xcc\xcc\xcc\xdd\xdd\xdd\xdd\xee\xee\xee\xee\xff\xff\xff\xff\xaa\xaa\xaa\xaa\xbb\xbb\xbb\xbb',
-        b'\x5e\xc8\x14\x3d\xe5\x09\xcf\xf7\xb5\x17\x9f\x8f\x47\x4b\x86\x19\x2f\x1d\x30\x5a\x7f\xb1\x7d\xf9\x85\xf8\x1c\x84\x82\x19\x23\x04'
-    ),
-    # 更多 SM4 测试数据...
-]
+import urandom
+from ucryptolib import aes
 
-# 测试用例 1
-print('********************** Test-1: keybits=128, ptlen=32 ******************')
-print('SM4-ECB Encrypt......')
-crypto = ucryptolib.sm4(sm4[0].key, 1)
-inbuf = sm4[0].pt
-outbuf = bytearray(32)
-val = crypto.encrypt(inbuf, outbuf)
-val0 = sm4[0].ct
-print(val0 == val)
+# ========== 辅助函数：填充与去填充 ==========
+def pad(data):
+    pad_len = 16 - len(data) % 16
+    return data + bytes([pad_len] * pad_len)
 
-print('SM4-ECB Decrypt......')
-crypto = ucryptolib.sm4(sm4[0].key, 1)
-inbuf = sm4[0].ct
-outbuf = bytearray(32)
-val = crypto.decrypt(inbuf, outbuf)
-val0 = sm4[0].pt
-print(val0 == val)
+def unpad(data):
+    pad_len = data[-1]
+    return data[:-pad_len]
 
-# 其他测试用例...
+# ========== 加密函数 ==========
+def aes_encrypt(plaintext: bytes, key: bytes) -> bytes:
+    iv = bytes([urandom.getrandbits(8) for _ in range(16)])  # 生成随机 IV
+    cipher = aes(key, 2, iv)  # 模式 2 = CBC
+    padded = pad(plaintext)
+    ciphertext = cipher.encrypt(padded)
+    return iv + ciphertext  # 返回 IV + 密文
+
+# ========== 解密函数 ==========
+def aes_decrypt(data: bytes, key: bytes) -> bytes:
+    iv = data[:16]
+    ciphertext = data[16:]
+    cipher = aes(key, 2, iv)
+    padded_plaintext = cipher.decrypt(ciphertext)
+    return unpad(padded_plaintext)
+
+# ========== 示例使用 ==========
+key = b"0123456789abcdef"              # 16字节密钥
+plaintext = b"This is a raw data"      # 明文（不一定是16的倍数）
+
+encrypted_data = aes_encrypt(plaintext, key)
+print("密文 (IV + Ciphertext):", encrypted_data)
+
+decrypted_data = aes_decrypt(encrypted_data, key)
+print("解密后明文:", decrypted_data)
+
+assert decrypted_data == plaintext, "明文解密不一致！"
 ```
 
-```{admonition} 提示
-AES 模块具体接口请参考 [API 文档](../../api/cipher/K230_CanMV_Ucryptolib模块API手册.md)
+## 核心流程解析
+
+### 1. 补齐明文（Padding）
+
+由于 AES 加密块大小为 16 字节，需对明文进行 PKCS#7 填充：
+
+```python
+pad_len = 16 - len(data) % 16
+data + bytes([pad_len] * pad_len)
 ```
+
+### 2. 随机生成 IV
+
+在 CBC 模式中，每次加密都需新的随机初始向量（IV）：
+
+```python
+iv = bytes([urandom.getrandbits(8) for _ in range(16)])
+```
+
+### 3. CBC 模式加密 & 解密
+
+```python
+cipher = aes(key, 2, iv)   # 模式 2：CBC
+cipher.encrypt()           # 加密
+cipher.decrypt()           # 解密
+```
+
+注意：CBC 模式无法验证数据完整性，若需认证请考虑 GCM 模式。
+
+## 模块接口说明
+
+| 函数/类名                | 功能说明                          |
+| -------------------- | ----------------------------- |
+| `aes(key, mode, iv)` | 创建 AES 加解密器，`mode=2` 为 CBC 模式 |
+| `.encrypt(data)`     | 加密字节串（长度必须为 16 的倍数）           |
+| `.decrypt(data)`     | 解密字节串（同上）                     |
+
+## 参数说明
+
+| 参数     | 类型    | 描述                        |
+| ------ | ----- | ------------------------- |
+| `key`  | bytes | 16 字节密钥（支持 128 位）         |
+| `iv`   | bytes | 16 字节初始向量，用于 CBC 加密       |
+| `data` | bytes | 原始明文 / 密文（需 pad/unpad 处理） |
+
+## 应用建议
+
+| 应用场景   | 推荐说明                           |
+| ------ | ------------------------------ |
+| 数据存储加密 | 使用 AES-CBC 加密配置文件或日志           |
+| 串口传输加密 | 加密传输数据，配合 IV 实现安全通信            |
+| 简单认证通信 | 推荐结合 HMAC 使用，否则 CBC 不具备数据完整性校验 |
+
+## 延伸阅读
+
+* 📘 [K230 Ucryptolib 模块 API 文档](../../api/cipher/K230_CanMV_Ucryptolib模块API手册.md)

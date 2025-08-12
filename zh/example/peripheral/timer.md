@@ -1,52 +1,97 @@
-# TIMER 例程
+# Timer 使用教程
 
-## 概述
+## 什么是 Timer？
 
-K230 内部包含 6 个 Timer 硬件模块，最小定时周期为 1 微秒。通过这些定时器，可以实现精确的定时和周期性任务。
+**Timer（定时器）**是一种用于**按固定时间间隔执行任务的硬件模块**。常见用途包括：
 
-## 示例
+- 周期性执行回调函数（如定时打印、定时采集）
+- 单次延迟触发事件（如启动延迟）
+- 实现软件计时器、时钟、任务调度等功能
 
-以下示例展示了如何使用 Timer 模块进行定时操作。
+## K230 Timer 特性
+
+| 特性    | 描述                                |
+| ----- | --------------------------------- |
+| 定时器数量 | 内置 6 个硬件定时器                       |
+| 时间精度  | 最小周期为 **1 微秒**                    |
+| 支持模式  | 单次模式（`ONE_SHOT`）、周期模式（`PERIODIC`） |
+| 支持类型  | 硬件定时器 / 软件定时器（编号为 -1）             |
+| 回调机制  | 超时时自动调用用户指定的函数                    |
+
+## 应用示例：定时打印任务
+
+以下示例展示如何使用 Timer 实现：
+
+1. **一次性延迟执行**
+1. **周期性定时触发**
+1. **资源释放**
+
+### 示例代码
 
 ```python
 from machine import Timer
 import time
 
-# 实例化一个软定时器
-tim = Timer(-1)
+# ========= 创建定时器 ========= #
+tim = Timer(-1)  # -1 表示软件定时器
 
-# 初始化定时器为单次模式，周期 100ms
-tim.init(period=100, mode=Timer.ONE_SHOT, callback=lambda t: print(1))
-time.sleep(0.2)
+# ========= 单次模式：100ms 后触发 ========= #
+tim.init(period=100, mode=Timer.ONE_SHOT, callback=lambda t: print("单次触发：1"))
+time.sleep(0.2)  # 主程序延迟 200ms，确保回调触发
 
-# 初始化定时器为周期模式，频率为 1Hz
-tim.init(freq=1, mode=Timer.PERIODIC, callback=lambda t: print(2))
-time.sleep(2)
+# ========= 周期模式：每秒触发一次 ========= #
+tim.init(freq=1, mode=Timer.PERIODIC, callback=lambda t: print("周期触发：2"))
+time.sleep(2)  # 主程序等待 2 秒，观察输出
 
-# 释放定时器资源
+# ========= 释放定时器 ========= #
 tim.deinit()
 ```
 
-## 代码说明
+## 关键参数说明
 
-1. **实例化 Timer**：
-   - 创建 `Timer` 对象，`-1` 表示使用软件定时器。
+| 参数名        | 类型      | 说明                                         |
+| ---------- | ------- | ------------------------------------------ |
+| `period`   | 整数 (ms) | 定时周期（单位：毫秒），用于单次或周期定时。K230的最小 period 为 5ms 。|
+| `freq`     | 整数 (Hz) | 定时频率（单位：赫兹），`1Hz` 表示每秒触发                   |
+| `mode`     | 常量      | `Timer.ONE_SHOT`（单次）或 `Timer.PERIODIC`（周期） |
+| `callback` | 函数      | 定时器触发时自动调用的函数                              |
 
-1. **单次模式定时器**：
-   - 使用 `tim.init(period=100, mode=Timer.ONE_SHOT, callback=lambda t: print(1))` 初始化定时器，设置周期为 100 毫秒，并在定时到达时执行回调函数，输出 `1`。
+## 模式详解
 
-1. **延迟**：
-   - `time.sleep(0.2)` 暂停 200 毫秒，确保能够看到定时器回调的输出。
+### 1. 单次模式 `Timer.ONE_SHOT`
 
-1. **周期模式定时器**：
-   - 使用 `tim.init(freq=1, mode=Timer.PERIODIC, callback=lambda t: print(2))` 初始化定时器，设置频率为 1Hz，定时器每秒触发一次回调，输出 `2`。
+```python
+tim.init(period=100, mode=Timer.ONE_SHOT, callback=func)
+```
 
-1. **再次延迟**：
-   - `time.sleep(2)` 暂停 2 秒，以便观察周期模式定时器的输出。
+- 定时器仅触发 **一次**
+- 时间到后自动停止
 
-1. **释放资源**：
-   - 调用 `tim.deinit()` 释放定时器资源，停止所有定时器操作。
+### 2. 周期模式 `Timer.PERIODIC`
+
+```python
+tim.init(freq=2, mode=Timer.PERIODIC, callback=func)
+```
+
+- 每 **0.5 秒** 触发一次
+- 会持续运行，直到手动停止
+
+## 使用注意事项
+
+| 注意点      | 说明                                 |
+| -------- | ---------------------------------- |
+| 软件定时器编号  | 使用 `Timer(-1)` 创建的软件定时器，不占用硬件资源    |
+| 回调函数执行时机 | 回调函数运行在系统中断上下文中，避免阻塞性操作或 `sleep()` |
+| 不可重复初始化  | 若 Timer 正在运行，重新 `init()` 会覆盖上一个设置  |
+| 释放资源     | 使用 `tim.deinit()` 关闭并释放定时器资源       |
+
+## 应用场景举例
+
+- 实时定时控制：LED 闪烁、蜂鸣器报警
+- 周期采样：传感器数据读取
+- 超时控制：任务执行超时处理
+- 系统心跳：定时打印“alive”标志
 
 ```{admonition} 提示
-Timer 模块具体接口请参考 [API 文档](../../api/machine/K230_CanMV_Timer模块API手册.md)
+Timer 模块详细用法请参考 [K230 Timer API 文档](../../api/machine/K230_CanMV_Timer模块API手册.md)
 ```
