@@ -22,6 +22,7 @@ root_doc = os.getenv('ROOT_DOC') or 'index'
 extensions = [
     'sphinx_copybutton',
     'myst_parser',
+    'sphinx.ext.mathjax',
     'sphinx_multiversion',
     'sphinxcontrib.mermaid'
 ]
@@ -57,6 +58,11 @@ html_favicon = 'favicon.ico'
 # html_theme = 'alabaster'
 html_theme = "sphinx_book_theme"
 html_static_path = ['_static']
+
+myst_enable_extensions = [
+    'dollarmath',   # 支持 $...$ 行内公式
+    'amsmath',      # 支持 \begin{align} 等多行公式
+]
 
 # if want to add top nav for canann, enable this.
 html_css_files = ['topbar.css', 'custom-theme.css']
