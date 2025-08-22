@@ -93,7 +93,7 @@ sensor.reset()
 **语法**
 
 ```python
-sensor.set_framesize(framesize=FRAME_SIZE_INVALID, chn=CAM_CHN_ID_0, alignment=0, **kwargs)
+sensor.set_framesize(framesize=FRAME_SIZE_INVALID, chn=CAM_CHN_ID_0, alignment=0, crop = None,  **kwargs)
 ```
 
 **参数**
@@ -104,6 +104,7 @@ sensor.set_framesize(framesize=FRAME_SIZE_INVALID, chn=CAM_CHN_ID_0, alignment=0
 | chn      | sensor 输出通道号   | 输入      |
 | width    | 输出图像宽度，*kw_arg*  | 输入      |
 | height   | 输出图像高度，*kw_arg*  | 输入      |
+| crop     | 输出图像裁剪区域;<br> 当输入为 `crop`=`True` 时，从画面中心自动裁切出合适的区域;<br>当输入 `crop` 为 `(crop_x, crop_y, crop_w, crop_h)` 时, `crop_x` 和 `crop_y` 为裁剪区域的左上角坐标，`crop_w` 和 `crop_h` 为裁剪区域的宽度和高度; | 输入      |
 
 **返回值**
 
@@ -559,6 +560,111 @@ print("当前增益:", current_gain)
 result = sensor.again(10)
 if result == 0:
     print("增益设置成功")
+```
+
+### sensor.auto_focus
+
+**描述**  
+
+获取或设置自动对焦功能的启用状态。  
+
+**语法**  
+
+```python
+Sensor.auto_focus(enable = None)
+```
+
+**参数**  
+
+| 参数名称 | 描述                 | 输入/输出 |
+|----------|----------|-----------|
+| enable   | 自动对焦功能的启用状态（设置时使用） | 输入     |
+
+**返回值**  
+
+| 返回值  | 描述               |
+|---------|----------|
+| bool    | 获取时返回当前状态：`True` 表示启用，`False` 表示关闭；<br>设置时返回操作结果：`True` 表示成功，`False` 表示失败。 |
+
+**举例**  
+
+```python
+# 获取自动对焦状态
+auto_focus_get = sensor.auto_focus()
+print("sensor.auto_focus():", auto_focus_get)
+
+# 设置自动对焦
+sensor.auto_focus(True)
+```
+
+**注意事项**  
+
+- 仅部分 sensor 支持。
+- 自动对焦功能时需在运行之前设置。
+
+### sensor.focus_caps
+
+**描述**  
+
+获取传感器的自动对焦功能及其范围。
+
+**语法**  
+
+```python
+focus_caps_tuple = Sensor.focus_caps()
+```
+
+**参数**  
+
+无
+
+**返回值**  
+
+| 返回值  | 描述               |
+|---------|----------|
+| focus_caps_tuple   | 包含自动对焦功能及其范围的元组：`(isSupport, minPos, maxPos)`;<br> `isSupport` 表示是否支持自动对焦功能，`minPos` 表示最小对焦位置，`maxPos` 表示最大对焦位置。 |
+
+**举例**  
+
+```python
+# 获取自动对焦功能及其范围
+focus_caps_tuple = sensor.focus_caps()
+print("focus_caps_tuple:", focus_caps_tuple)
+```
+
+### sensor.focus_pos
+
+**描述**  
+
+获取或设置传感器的当前对焦位置。
+
+**语法**  
+
+```python
+focus_pos = sensor.focus_pos(pos = None)
+```
+
+**参数**  
+
+| 参数名称 | 描述                 | 输入/输出 |
+|----------|----------|-----------|
+| pos      | 对焦位置（设置时使用） | 输入     |
+
+**返回值**  
+
+| 返回值  | 描述               |
+|----------|----------|
+| focus_pos | 获取时返回当前对焦位置；<br>设置时返回操作结果：`True` 表示成功，`False` 表示失败。 |
+
+**举例**  
+
+```python
+# 获取当前对焦位置
+current_focus_pos = sensor.focus_pos()
+print("当前对焦位置:", current_focus_pos)
+
+# 设置对焦位置
+sensor.focus_pos(300)
 ```
 
 ## 数据结构描述
