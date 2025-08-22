@@ -93,7 +93,7 @@ Set the output image size for the specified channel. Users can configure the out
 **Syntax**
 
 ```python
-sensor.set_framesize(framesize=FRAME_SIZE_INVALID, chn=CAM_CHN_ID_0, alignment=0, **kwargs)
+sensor.set_framesize(framesize=FRAME_SIZE_INVALID, chn=CAM_CHN_ID_0, alignment=0, crop = None,  **kwargs)
 ```
 
 **Parameters**
@@ -104,6 +104,7 @@ sensor.set_framesize(framesize=FRAME_SIZE_INVALID, chn=CAM_CHN_ID_0, alignment=0
 | chn            | Sensor output channel number | Input |
 | width          | Output image width, *kw_arg* | Input |
 | height         | Output image height, *kw_arg* | Input |
+| crop           | Output the cropped area of the image;<br> When `crop` = `True`, automatically crop out the appropriate area from the center of the screen;<br> When `crop` = `(crop_x, crop_y, crop_w, crop_h)`, `crop_x` and `crop_y` are the coordinates of the upper left corner of the clipping area, and `crop_w` and `crop_h` are the width and height of the clipping area;| Input |
 
 **Return Value**
 
@@ -560,6 +561,111 @@ print("Current gain:", current_gain)
 result = sensor.again(10)
 if result == 0:
     print("Gain set successfully")
+```
+
+### sensor.auto_focus
+
+**Description**
+
+Get or set the enabled status of the autofocus function.
+
+**Syntax**
+
+```python
+Sensor.auto_focus(enable = None)
+```
+
+**Parameters**
+
+| Parameter Name | Description | Input/Output |
+|----------------|-------------|--------------|
+| enable         | The enabled status of the autofocus function (for setting) | Input |
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| bool         | When obtaining, return the current status: `True` indicates enabled, and `False` indicates disabled.<br>When setting, return the operation result: `True` success, and `False` failure. |
+
+**Examples**
+
+```python
+# Get current autofocus status
+current_status = sensor.auto_focus()
+print("Auto focus status:", current_status)
+
+# Enable autofocus
+sensor.auto_focus(True)
+```
+
+**Notes**
+
+- Only supported by specific sensors.
+- The autofocus function needs to be set before running.
+
+### sensor.focus_caps
+
+**Description**
+
+Obtain the autofocus function of the sensor and its range of focus.
+
+**Syntax**
+
+```python
+focus_caps_tuple = sensor.focus_caps()
+```
+
+**Parameters**
+
+None
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| focus_caps_tuple   | A tuple containing the autofocus function and its range:`(isSupport, minPos, maxPos)`;<br> `isSupport` Indicates whether the autofocus function is supported.，`minPos` Minimum focusing position.`maxPos` Maximum focusing position. |
+
+**Examples**
+
+```python
+# Get the autofocus function and its range
+focus_caps_tuple = sensor.focus_caps()
+print("focus_caps_tuple:", focus_caps_tuple)
+```
+
+### sensor.focus_pos
+
+**Description**
+
+Get or set the current focus position of the sensor.
+
+**Syntax**
+
+```python
+focus_pos = sensor.focus_pos(pos = None)
+```
+
+**Parameters**
+
+| Parameter Name | Description | Input/Output |
+|----------------|-------------|--------------|
+| pos            | The target focus position (for setting) | Input |
+
+**Return Value**
+
+| Return Value | Description |
+|--------------|-------------|
+| focus_pos | Return to the current focusing position  (when getting);<br>Return the operation result (when setting): `True` success, `False` failure. |
+
+**Examples**
+
+```python
+# Get current focus position
+current_pos = sensor.focus_pos()
+print("Current focus position:", current_pos)
+
+# Set focus position
+sensor.focus_pos(300)
 ```
 
 ## Data Structure Description
