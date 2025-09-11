@@ -44,7 +44,7 @@ Defines the `main` function, with the parameter `micropython_optimize` controlli
 def network_use_wlan(is_wlan=True):
     if is_wlan:
         sta = network.WLAN(0)
-        sta.connect("Canaan", "Canaan314")
+        sta.connect("TEST", "12345678")
         print(sta.status())
         while sta.ifconfig()[0] == '0.0.0.0':
             os.exitpoint()
@@ -134,7 +134,7 @@ Hello #%d from k230 canmv MicroPython!
 def network_use_wlan(is_wlan=True):
     if is_wlan:
         sta = network.WLAN(0)
-        sta.connect("Canaan", "Canaan314")
+        sta.connect("TEST", "12345678")
         print(sta.status())
         while sta.ifconfig()[0] == '0.0.0.0':
             os.exitpoint()

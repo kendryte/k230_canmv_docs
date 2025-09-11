@@ -64,31 +64,33 @@ print(nic.ifconfig())
 
 ```python
 import network
+import time
 
-def sta_test():
-    sta=network.WLAN(network.STA_IF)
-    if(sta.active() == False):
-        sta.active(1)
-    # 查看 sta 是否激活
-    print(sta.active())
-    # 查看 sta 状态
-    print(sta.status())
-    #sta 连接 ap
-    print(sta.connect("Canaan","Canaan314"))
-    # 状态
-    print(sta.status())
-    # 查看 ip 配置
-    print(sta.ifconfig())
-    # 查看是否连接
-    print(sta.isconnected())
-    # 断开连接
-    print(sta.disconnect())
-    # 连接 ap
-    print(sta.connect("Canaan","Canaan314"))
-    # 查看状态
-    print(sta.status())
+SSID = "TEST"
+PASSWORD = "12345678"
 
-sta_test()
+sta = network.WLAN(network.STA_IF)
+
+sta.connect(SSID, PASSWORD)
+
+timeout = 10  # 单位：秒
+start_time = time.time()
+
+while not sta.isconnected():
+    if time.time() - start_time > timeout:
+        print("连接超时")
+        break
+    time.sleep(1)  # 请稍等片刻再连接
+
+print(sta.ifconfig())
+
+print(sta.status())
+
+# 这里的断开网络，只是一个测试。实际应用可不断开
+sta.disconnect()
+print("断开网络")
+print(sta.status())
+
 ```
 
 ### 构造函数

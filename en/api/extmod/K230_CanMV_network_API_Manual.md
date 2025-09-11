@@ -64,31 +64,33 @@ This class serves as the interface for configuring WiFi networks. Example code i
 
 ```python
 import network
+import time
 
-def sta_test():
-    sta = network.WLAN(0)
-    if not sta.active():
-        sta.active(True)
-    # Check if STA is active
-    print(sta.active())
-    # Check STA status
-    print(sta.status())
-    # STA connects to AP
-    print(sta.connect("Canaan", "Canaan314"))
-    # Check status
-    print(sta.status())
-    # View IP configuration
-    print(sta.ifconfig())
-    # Check if connected
-    print(sta.isconnected())
-    # Disconnect
-    print(sta.disconnect())
-    # Connect to AP
-    print(sta.connect("Canaan", "Canaan314"))
-    # Check status
-    print(sta.status())
+SSID = "TEST"
+PASSWORD = "12345678"
 
-sta_test()
+sta = network.WLAN(network.STA_IF)
+
+sta.connect(SSID, PASSWORD)
+
+timeout = 10  # seconds
+start_time = time.time()
+
+while not sta.isconnected():
+    if time.time() - start_time > timeout:
+        print("Connection timed out")
+        break
+    time.sleep(1)  # wait for a second before checking again
+
+print(sta.ifconfig())
+
+print(sta.status())
+
+# Disconnect from the network, not necessary, just a test.
+sta.disconnect()
+print("Disconnected from the network")
+print(sta.status())
+
 ```
 
 ### Constructor

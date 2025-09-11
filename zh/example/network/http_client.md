@@ -33,7 +33,7 @@ def main(use_stream=True):
 def network_use_wlan(is_wlan=True):
     if is_wlan:
         sta = network.WLAN(0)
-        sta.connect("Canaan", "Canaan314")
+        sta.connect("TEST", "12345678")
         print(sta.status())
         while sta.ifconfig()[0] == '0.0.0.0':
             os.exitpoint()
@@ -52,7 +52,7 @@ def network_use_wlan(is_wlan=True):
 
 该函数根据输入配置网络接口：
 
-1. **WLAN 模式**：通过无线网络接口（WLAN）连接指定的 Wi-Fi（SSID 为 "Canaan"）。
+1. **WLAN 模式**：通过无线网络接口（WLAN）连接指定的 Wi-Fi（SSID 为 "TEST"）。
 1. **LAN 模式**：通过有线网络接口（LAN）自动获取 IP 地址。
 
 ### 创建并配置 Socket
@@ -122,7 +122,7 @@ import os, time
 def network_use_wlan(is_wlan=True):
     if is_wlan:
         sta = network.WLAN(0)
-        sta.connect("Canaan", "Canaan314")
+        sta.connect("TEST", "12345678")
         print(sta.status())
         while sta.ifconfig()[0] == '0.0.0.0':
             os.exitpoint()
