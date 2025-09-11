@@ -23,31 +23,33 @@
 
 ```python
 import network
+import time
 
-def sta_test():
-    sta=network.WLAN(0)
-    if(sta.active() == False):
-        sta.active(1)
-    # 查看 sta 是否激活
-    print(sta.active())
-    # 查看 sta 状态
-    print(sta.status())
-    #sta 连接 ap
-    print(sta.connect("Canaan","Canaan314"))
-    # 状态
-    print(sta.status())
-    # 查看 ip 配置
-    print(sta.ifconfig())
-    # 查看是否连接
-    print(sta.isconnected())
-    # 断开连接
-    print(sta.disconnect())
-    # 连接 ap
-    print(sta.connect("Canaan","Canaan314"))
-    # 查看状态
-    print(sta.status())
+SSID = "TEST"
+PASSWORD = "12345678"
 
-sta_test()
+sta = network.WLAN(network.STA_IF)
+
+sta.connect(SSID, PASSWORD)
+
+timeout = 10  # 单位：秒
+start_time = time.time()
+
+while not sta.isconnected():
+    if time.time() - start_time > timeout:
+        print("连接超时")
+        break
+    time.sleep(1)  # 请稍等片刻再连接
+
+print(sta.ifconfig())
+
+print(sta.status())
+
+# 这里的断开网络，只是一个测试。实际应用可不断开
+sta.disconnect()
+print("断开连接")
+print(sta.status())
+
 ```
 
 ### ap_test
@@ -65,22 +67,12 @@ import network
 
 def ap_test():
     ap=network.WLAN(network.AP_IF)
-    if(ap.active() == False):
-        ap.active(1)
-    # 查看 ap 是否激活
-    print(ap.active())
-    # 配置并创建 ap
-    ap.config(ssid='k230_ap_wjx', channel=11, key='12345678')
-    # 查看 ap 的 ssid 号
-    print(ap.config('ssid'))
-    # 查看 ap 的 channel
-    print(ap.config('channel'))
-    # 查看 ap 的所有配置
-    print(ap.config())
-    # 查看 ap 的状态
+    #配置并创建ap
+    ap.config(ssid='k230_ap_wjx', key='12345678')
+    #查看ap信息
+    print(ap.info())
+    #查看ap的状态
     print(ap.status())
-    #sta 是否连接 ap
-    print(ap.isconnected())
 
 ap_test()
 ```

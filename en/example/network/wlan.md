@@ -23,31 +23,32 @@ This tutorial will guide you on how to perform basic wireless network (WiFi) ope
 
 ```python
 import network
+import time
 
-def sta_test():
-    sta = network.WLAN(0)
-    if not sta.active():
-        sta.active(True)
-    # Check if STA is active
-    print(sta.active())
-    # Check STA status
-    print(sta.status())
-    # STA connects to AP
-    print(sta.connect("Canaan", "Canaan314"))
-    # Check status
-    print(sta.status())
-    # View IP configuration
-    print(sta.ifconfig())
-    # Check if connected
-    print(sta.isconnected())
-    # Disconnect
-    print(sta.disconnect())
-    # Connect to AP
-    print(sta.connect("Canaan", "Canaan314"))
-    # Check status
-    print(sta.status())
+SSID = "TEST"
+PASSWORD = "12345678"
 
-sta_test()
+sta = network.WLAN(network.STA_IF)
+
+sta.connect(SSID, PASSWORD)
+
+timeout = 10  # seconds
+start_time = time.time()
+
+while not sta.isconnected():
+    if time.time() - start_time > timeout:
+        print("Connection timed out")
+        break
+    time.sleep(1)  # wait for a second before checking again
+
+print(sta.ifconfig())
+
+print(sta.status())
+
+# Disconnect from the network, not necessary, just a test.
+sta.disconnect()
+print("Disconnected from the network")
+print(sta.status())
 ```
 
 ### ap_test
@@ -64,23 +65,13 @@ sta_test()
 import network
 
 def ap_test():
-    ap = network.WLAN(network.AP_IF)
-    if not ap.active():
-        ap.active(True)
-    # Check if AP is active
-    print(ap.active())
-    # Configure and create AP
-    ap.config(ssid='k230_ap_wjx', channel=11, key='12345678')
-    # View AP SSID
-    print(ap.config('ssid'))
-    # View AP channel
-    print(ap.config('channel'))
-    # View all AP configuration
-    print(ap.config())
-    # Check AP status
+    ap=network.WLAN(network.AP_IF)
+    # Configure and create an ap
+    ap.config(ssid='k230_ap_wjx', key='12345678')
+    # View ap information
+    print(ap.info())
+    # Check the status of the ap
     print(ap.status())
-    # Check if STA is connected to AP
-    print(ap.isconnected())
 
 ap_test()
 ```

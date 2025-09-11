@@ -116,7 +116,7 @@ make menuconfig
 # 去掉 CanMV 模块使能
 ```
 
-![disable canmv](https://www.kendryte.com/api/post/attachment?id=440)
+![disable canmv](https://kendryte-download.canaan-creative.com/developer/pictures/disable_canmv.jpg)
 
 ## 代码目录说明
 

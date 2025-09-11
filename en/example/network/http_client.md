@@ -33,7 +33,7 @@ The `main` function defines a parameter `use_stream` which determines whether to
 def network_use_wlan(is_wlan=True):
     if is_wlan:
         sta = network.WLAN(0)
-        sta.connect("Canaan", "Canaan314")
+        sta.connect("TEST", "12345678")
         print(sta.status())
         while sta.ifconfig()[0] == '0.0.0.0':
             os.exitpoint()
@@ -52,7 +52,7 @@ def network_use_wlan(is_wlan=True):
 
 This function configures the network interface based on the input:
 
-1. **WLAN Mode**: Connects to a specified Wi-Fi network (SSID is "Canaan") using the wireless network interface (WLAN).
+1. **WLAN Mode**: Connects to a specified Wi-Fi network (SSID is "TEST") using the wireless network interface (WLAN).
 1. **LAN Mode**: Automatically obtains an IP address using the wired network interface (LAN).
 
 ### Create and Configure Socket
@@ -122,7 +122,7 @@ import os, time
 def network_use_wlan(is_wlan=True):
     if is_wlan:
         sta = network.WLAN(0)
-        sta.connect("Canaan", "Canaan314")
+        sta.connect("TEST", "12345678")
         print(sta.status())
         while sta.ifconfig()[0] == '0.0.0.0':
             os.exitpoint()

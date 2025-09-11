@@ -51,7 +51,7 @@ import time
 def network_use_wlan(is_wlan=True):
     if is_wlan:
         sta = network.WLAN(0)
-        sta.connect("Canaan", "Canaan314")
+        sta.connect("TEST", "12345678")
         print(sta.status())
         while sta.ifconfig()[0] == '0.0.0.0':
             os.exitpoint()
@@ -71,7 +71,7 @@ def network_use_wlan(is_wlan=True):
 This code configures the network interface based on the input parameters, following these steps:
 
 1. **WLAN Mode**:
-   - If `is_wlan=True`, configure the wireless network interface (WLAN) and connect to the specified Wi-Fi network (SSID "Canaan", password "Canaan314").
+   - If `is_wlan=True`, configure the wireless network interface (WLAN) and connect to the specified Wi-Fi network (SSID "TEST", password "12345678").
    - Output the WLAN connection status and wait for a valid IP address to be assigned.
    - After a successful connection, print the network configuration and return the IP address.
 
@@ -130,7 +130,7 @@ import network
 def network_use_wlan(is_wlan=True):
     if is_wlan:
         sta = network.WLAN(0)
-        sta.connect("Canaan", "Canaan314")
+        sta.connect("TEST", "12345678")
         print(sta.status())
         while sta.ifconfig()[0] == '0.0.0.0':
             os.exitpoint()

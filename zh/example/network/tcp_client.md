@@ -58,7 +58,7 @@ def client():
 def network_use_wlan(is_wlan=True):
     if is_wlan:
         sta = network.WLAN(0)
-        sta.connect("Canaan", "Canaan314")
+        sta.connect("TEST", "12345678")
         print(sta.status())
         while sta.ifconfig()[0] == '0.0.0.0':
             os.exitpoint()
@@ -78,7 +78,7 @@ def network_use_wlan(is_wlan=True):
 根据参数配置网络接口，流程如下：
 
 1. **WLAN 模式**：
-   - 如果 `is_wlan=True`，则配置无线网络接口（WLAN），连接到 SSID 为 "Canaan"、密码为 "Canaan314" 的 Wi-Fi。
+   - 如果 `is_wlan=True`，则配置无线网络接口（WLAN），连接到 SSID 为 "TEST"、密码为 "12345678" 的 Wi-Fi。
    - 等待并检查是否分配到有效 IP 地址，返回 IP。
 
 1. **LAN 模式**：
@@ -146,7 +146,7 @@ import os, time
 def network_use_wlan(is_wlan=True):
     if is_wlan:
         sta = network.WLAN(0)
-        sta.connect("Canaan", "Canaan314")
+        sta.connect("TEST", "12345678")
         print(sta.status())
         while sta.ifconfig()[0] == '0.0.0.0':
             os.exitpoint()
