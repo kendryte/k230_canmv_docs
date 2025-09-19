@@ -55,6 +55,7 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 | eye_gaze                | 注视估计        | 多模型任务 | ✅ | ❌ |
 | face_detection          | 人脸检测        | 单模型任务 | ✅ | ✅ |
 | face_landmark           | 人脸关键部位    | 多模型任务 | ✅ | ✅ |
+| face_liveness_rgb       | 人脸活体检测    | 多模型任务 | ✅ | ✅ |
 | face_mesh               | 人脸3D网格      | 多模型任务 | ✅ | ❌ |
 | face_parse              | 人脸解析        | 多模型任务 | ✅ | ❌ |
 | face_pose               | 人脸姿态        | 多模型任务 | ✅ | ✅ |
@@ -70,8 +71,10 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 | hand_recognition        | 手势识别        | 多模型任务 | ✅ | ✅ |
 | keyword_spotting        | 关键词唤醒      | 单模型任务 | ✅ | ✅ |
 | multi_kws               | 多命令关键词唤醒 | 单模型任务 | ✅ | ✅ |
-| licence_det             | 车牌检测        | 单模型任务 | ✅ | ✅ |
-| licence_det_rec         | 车牌识别        | 多模型任务 | ✅ | ✅ |
+| license_plate_det       | 车牌检测        | 单模型任务 | ✅ | ✅ |
+| license_plate_det_rec   | 车牌识别        | 多模型任务 | ✅ | ✅ |
+| license_plate_det_yolo   | yolo车牌检测   | 单模型任务 | ✅ | ✅ |
+| license_plate_det_rec_yolo| yolo车牌检测+识别 | 多模型任务 | ✅ | ✅ |
 | nanotracker             | 单目标跟踪      | 多模型任务 | ✅ | ✅ |
 | object_detect_yolov8n   | yolov8n目标检测 | 单模型任务 | ✅ | ✅ |
 | ocr_det                 | OCR检测         | 单模型任务 | ✅ | ❌ |

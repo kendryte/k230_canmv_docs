@@ -11,6 +11,7 @@ K230 支持丰富的 AI 应用。为了方便用户体验试用，CanMV K230 镜
 | eye_gaze                | 注视估计        | 多模型任务 | √ |  |
 | face_detection          | 人脸检测        | 单模型任务 | √ | √ |
 | face_landmark           | 人脸关键部位    | 多模型任务 | √ | √ |
+| face_liveness_rgb       | 人脸活体检测    | 多模型任务 | √ | √ |
 | face_mesh               | 人脸3D网格      | 多模型任务 | √ |  |
 | face_parse              | 人脸解析        | 多模型任务 | √ |  |
 | face_pose               | 人脸姿态        | 多模型任务 | √ | √ |
@@ -26,8 +27,10 @@ K230 支持丰富的 AI 应用。为了方便用户体验试用，CanMV K230 镜
 | hand_recognition        | 手势识别        | 多模型任务 | √ | √ |
 | keyword_spotting        | 关键词唤醒      | 单模型任务 | √ | √ |
 | multi_kws               | 多命令关键词唤醒 | 单模型任务 | √ | √ |
-| licence_det             | 车牌检测        | 单模型任务 | √ | √ |
-| licence_det_rec         | 车牌识别        | 多模型任务 | √ | √ |
+| license_plate_det       | 车牌检测        | 单模型任务 | √ | √ |
+| license_plate_det_rec   | 车牌识别        | 多模型任务 | √ | √ |
+| license_plate_det_yolo   | yolo车牌检测   | 单模型任务 | √ | √ |
+| license_plate_det_rec_yolo| yolo车牌检测+识别 | 多模型任务 | √ | √ |
 | nanotracker             | 单目标跟踪      | 多模型任务 | √ | √ |
 | object_detect_yolov8n   | yolov8n目标检测 | 单模型任务 | √ | √ |
 | ocr_det                 | OCR检测         | 单模型任务 | √ |  |
@@ -987,6 +990,16 @@ K230D芯片的开发板运行上述demo需要更改`__main__`中的`display_mode
 
 ![face_landmark_res](../images/ai_demo/face_landmark_res.jpg)
 
+### 人脸活体检测
+
+#### demo说明
+
+人脸活体检测是基于RGB图像实现的单模型活体检测示例，应用先对视频的每一帧图像进行人脸检测，然后对检测到的每一张人脸进行活体检测，判断是否为活体人脸。
+
+#### 代码
+
+打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->face_.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
+
 ### 人脸3D网格
 
 #### demo说明
@@ -1223,7 +1236,7 @@ K230D芯片的开发板运行上述demo需要更改`__main__`中的`display_mode
 
 #### 代码
 
-打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->licence_det.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
+打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->license_plate_det.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
 
 #### 演示效果
 
@@ -1237,7 +1250,35 @@ K230D芯片的开发板运行上述demo需要更改`__main__`中的`display_mode
 
 #### 代码
 
-打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->licence_det_rec.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
+打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->license_plate_det_rec.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
+
+#### 演示效果
+
+请您自行寻找车牌图片进行识别，本示例涉及车牌隐私，没有给出演示效果。
+
+### YOLO车牌检测
+
+#### demo说明
+
+车牌检测应用对视频中出现的车牌进行检测，在屏幕上用检测框标识出来。和上面类似任务不同的是本任务的模型使用CCPD2019和CCPD2020数据集进行训练，检测模型使用了yolo11n的pose模型。
+
+#### 代码
+
+打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->license_plate_det_yolo.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
+
+#### 演示效果
+
+请您自行寻找车牌图片进行检测，本示例涉及车牌隐私，没有给出演示效果。
+
+### YOLO车牌检测和识别
+
+#### demo说明
+
+车牌识别应用是一个双模型任务，首先对视频中出现的车牌进行检测，然后对检测到的每个车牌进行识别，并将识别的车牌内容标识在对应检测框附近。和上面类似任务不同的是本任务的模型使用CCPD2019和CCPD2020数据集进行训练，检测模型使用了yolo11n的pose模型。
+
+#### 代码
+
+打开IDE，选择文件->打开文件，按照如下路径选择对应的脚本打开：**此电脑->CanMV->sdcard->examples->05-AI-Demo->license_plate_det_rec_yolo.py**，您可以参考IDE显示的源码。点击IDE左下角运行按钮进行demo演示。
 
 #### 演示效果
 
