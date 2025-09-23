@@ -348,9 +348,9 @@ __init__(
 | format                  | 采样点字节数                            | 输入      |
 | input                   | 是否为音频输入，默认值为 False         | 输入      |
 | output                  | 是否为音频输出，默认值为 False        | 输入      |
-| input_device_index      | 输入通路索引 [0,1]，默认值为 None（使用默认通路 0 ） | 输入      |
-| output_device_index     | 输出通路索引 [0,1]，默认值为 None（使用默认通路 0 ） | 输入      |
-| enable_codec            | 是否启用编码，默认值为 True            | 输入      |
+| input_device_index      | 输入通路索引 [0,1]，默认值为 None（使用默认通路 0）。0：I2S 通路（由 enable_codec 决定具体链路：启用时为内置音频 codec 的模拟通路，禁用时为 I2S 数字通路）；1：PDM 数字通路 | 输入      |
+| output_device_index     | 输出通路索引 [0,1]，默认值为 None（使用默认通路 0）。0：I2S 通路（由 enable_codec 决定具体链路：启用时为内置音频 codec 的模拟通路，禁用时为 I2S 数字通路）；1：固定为 I2S 数字通路 | 输入      |
+| enable_codec            | 是否启用内置音频codec，默认值为 True            | 输入      |
 | frames_per_buffer       | 每个缓冲区的帧数                        | 输入      |
 | start                   | 是否立即启动，默认值为 True            | 输入      |
 | stream_callback         | 输入 / 输出回调函数                       | 输入      |

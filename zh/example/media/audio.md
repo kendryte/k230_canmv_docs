@@ -2,15 +2,15 @@
 
 ## 概述
 
-本例程演示了如何利用内置的 codec 链路实现 I2S 音频的采集与播放功能。用户可以通过板载麦克风采集声音，并通过耳机插口进行声音输出。
+本例程演示了如何利用内置 codec 链路实现 I2S 音频的采集与输出功能，同时支持 PDM 音频采集功能的实现。用户可通过两种方式完成音频采集：一是通过板载模拟麦克风（走 I2S 通路）采集声音；二是配合 PDM 音频子板，通过 PDM 数字麦克风（走 PDM 通路）采集声音，该通路可支持 8 声道同时采集。此外，I2S 通路还支持音频输出功能，可通过相关接口实现音频信号的输出。
 
-CanMV K230 开发板配备了一颗模拟麦克风和耳机输出接口，方便用户进行录音与音频播放的测试。
+CanMV K230 开发板配备了一颗模拟麦克风和耳机输出接口，同时支持外接 PDM 音频子板以扩展 PDM 数字麦克风接入能力，能够满足 I2S 单路音频采集与输出、PDM 8 声道音频采集的多样化测试需求，方便用户完成录音与音频播放的功能验证。
 
 ## 示例
 
 ### audio - 音频采集与播放例程
 
-该示例程序展示了 CanMV 开发板的音频采集和输出功能。
+该示例程序展示了 CanMV 开发板的i2s通路音频采集和输出功能。
 
 ```python
 # 音频输入和输出示例
@@ -257,7 +257,137 @@ if __name__ == "__main__":
 ```
 
 ```{admonition} 提示
-有关audio模块的具体接口，请参考[API文档](../../api/mpp/K230_CanMV_Audio模块API手册.md)
+有关audio i2s模块的具体接口，请参考[API文档](../../api/mpp/K230_CanMV_Audio模块API手册.md)
+```
+
+### pdm - 多声道音频采集例程
+
+该示例程序展示了PDM 数字麦克风多声道音频采集功能，支持最多 8 声道同时采集并分别保存为 WAV 文件。
+程序中通过init_audio_pdm_io()函数专门针对立创・庐山派 K230CanMV 开发板的 GPIO 引脚进行配置，将引脚 26 映射为 PDM 时钟线、引脚 27/35/36/34 分别映射为 4 路 PDM 数据线，实现了基于该开发板的多声道音频采集，并能将不同通道的音频数据分别保存为独立的 WAV 文件。
+
+```python
+# audio input and output example
+#
+# Note: You will need an SD card to run this example.
+#
+# Records audio from multiple channels and saves each to separate wav files
+
+import os
+from media.media import *   #导入media模块，用于初始化vb buffer
+from media.pyaudio import * #导入pyaudio模块，用于采集和播放音频
+import media.wave as wave   #导入wav模块，用于保存和加载wav音频文件
+from machine import FPIOA
+
+def exit_check():
+    try:
+        os.exitpoint()
+    except KeyboardInterrupt as e:
+        print("user stop: ", e)
+        return True
+    return False
+
+
+def init_audio_pdm_io():
+    """
+    初始化PDM音频接口的IO配置（基于庐山派开发板）
+
+    函数功能：配置庐山派开发板上与PDM音频采集相关的GPIO引脚功能，
+    映射PDM时钟线和数据线到指定物理引脚，设置引脚为输入/输出模式。
+    具体引脚分配如下：
+    - 引脚26：PDM时钟线(PDM_CLK)，配置为输出模式
+    - 引脚27：PDM数据0线(PDM_IN0)，配置为输入模式
+    - 引脚35：PDM数据1线(IIS_D_OUT0_PDM_IN1)，配置为输入模式
+    - 引脚36：PDM数据2线(IIS_D_IN1_PDM_IN2)，配置为输入模式
+    - 引脚34：PDM数据3线(IIS_D_IN0_PDM_IN3)，配置为输入模式
+    """
+    fpioa = FPIOA()
+    fpioa.set_function(26, FPIOA.PDM_CLK,oe=0x1,ie=0x0)   #pdm clk
+    fpioa.set_function(27, FPIOA.PDM_IN0,oe=0x0,ie=0x1)  #pdm data0
+    fpioa.set_function(35, FPIOA.IIS_D_OUT0_PDM_IN1,oe=0x0,ie=0x1)  #pdm data1
+    fpioa.set_function(36, FPIOA.IIS_D_IN1_PDM_IN2,oe=0x0,ie=0x1)  #pdm data2
+    fpioa.set_function(34, FPIOA.IIS_D_IN0_PDM_IN3,oe=0x0,ie=0x1)  #pdm data3
+
+def record_audio_pdm(base_filename, duration, num_channels):
+    CHUNK = 44100//25  #设置音频chunk值
+    FORMAT = paInt16       #设置采样精度,支持16bit(paInt16)/24bit(paInt24)/32bit(paInt32)
+    RATE = 44100           #设置采样率
+    pdm_chn_cnt = num_channels // 2
+
+    init_audio_pdm_io()  #初始化pdm音频io口
+
+    try:
+        p = PyAudio()
+        p.initialize(CHUNK)    #初始化PyAudio对象
+        MediaManager.init()    #vb buffer初始化
+
+        #创建音频输入流
+        stream = p.open(format=FORMAT,
+                        channels=num_channels,
+                        rate=RATE,
+                        input=True,
+                        frames_per_buffer=CHUNK,
+                        input_device_index=1) #使用PDM设备采集音频
+
+
+        # 初始化音频帧存储数组，每个元素对应一个通道的帧列表
+        channel_frames = [[] for _ in range(pdm_chn_cnt)]
+
+        # 计算总帧数
+        total_frames = int(RATE / CHUNK * duration)
+
+        #采集音频数据并存入列表
+        print(f"开始录制 {pdm_chn_cnt}组 {num_channels}声道pdm音频，持续 {duration} 秒...")
+        for i in range(total_frames):
+            for ch in range(pdm_chn_cnt):
+                data = stream.read(chn=ch)
+                channel_frames[ch].append(data)
+
+            # 每100帧打印一次进度
+            if i % 100 == 0:
+                progress = (i / total_frames) * 100
+                print(f"录制进度: {progress:.1f}%", end='\r')
+
+            if exit_check():
+                print("\n用户中断录制")
+                break
+
+        # 为每组pdm创建单独的WAV文件
+        for ch in range(pdm_chn_cnt):
+            # 生成带索引号的文件名，如 base_0.wav, base_1.wav
+            filename = f"{base_filename}_ch{ch}.wav"
+
+            # 将列表中的数据保存到wav文件中
+            wf = wave.open(filename, 'wb') #创建wav 文件
+            wf.set_channels(2)  # 每个文件保存双声道
+            wf.set_sampwidth(p.get_sample_size(FORMAT))  #设置wav 采样精度
+            wf.set_framerate(RATE)  #设置wav 采样率
+            wf.write_frames(b''.join(channel_frames[ch])) #存储对应通道的音频数据
+            wf.close() #关闭wav文件
+            print(f"已保存声道 {ch*2},{ch*2+1} 到 {filename}")
+
+    except BaseException as e:
+            import sys
+            sys.print_exception(e)
+    finally:
+        stream.stop_stream() #停止采集音频数据
+        stream.close()#关闭音频输入流
+        p.terminate()#释放音频对象
+        MediaManager.deinit() #释放vb buffer
+        print("录制完成，资源已释放")
+
+
+if __name__ == "__main__":
+    os.exitpoint(os.EXITPOINT_ENABLE)
+    print("pdm sample start")
+    # 录制4组共8声道音频，保存为/sdcard/examples/test_ch0.wav 至 test_ch3.wav
+    record_audio_pdm('/data/test', 15, 8)
+
+    print("pdm sample done")
+```
+
+```{admonition} 提示
+PDM音频采集需要外接PDM音频子板，具体硬件连接和引脚定义请参考开发板硬件手册。使用时需注意IO口的正确配置以确保多声道采集正常工作。
+有关audio pdm模块的具体接口，请参考[API文档](../../api/mpp/K230_CanMV_Audio模块API手册.md)
 ```
 
 ### acodec - G711 编解码例程
