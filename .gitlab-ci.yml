@@ -123,7 +123,7 @@ markdownlint:
   timeout: 45m
   image: ai.b-bug.org:5000/k230_sdk:latest
   tags:
-    - k230_sdk
+    - docker-runner-192.168.1.104
   script:
     - cd $CI_PROJECT_DIR
     - ls -alht
