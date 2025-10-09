@@ -34,7 +34,7 @@ from machine import ENCODER
 encoder = ENCODER(id=0, pin_clk=42, pin_dt=43, pin_sw=5)
 ```
 
-- `id`：编码器实例编号
+- `id`：编码器实例编号（必需，不同的id用于区分多个encoder实例，如id=0,1,2,3...）
 - `pin_clk`：时钟信号引脚（必需）
 - `pin_dt`：数据信号引脚（必需）
 - `pin_sw`：按键信号引脚（可选，不使用时可设为 -1）
