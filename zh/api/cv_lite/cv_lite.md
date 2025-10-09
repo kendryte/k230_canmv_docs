@@ -1,4 +1,4 @@
-# cv_lite 模块 API 手册
+# `cv_lite` 模块 API 手册
 
 ## 概述
 
