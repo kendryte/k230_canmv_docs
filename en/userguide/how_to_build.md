@@ -74,11 +74,8 @@ The source code of CanMV-K230 is hosted on Github. Users can download the source
 # It's recommended to create a directory in the user's home directory before downloading the code
 mkdir -p ~/canmv_k230 && cd ~/canmv_k230
 
-# Download the RT-Smart + CanMV project
+# Download the SDK
 repo init -u https://github.com/canmv-k230/manifest -b master --repo-url=https://github.com/canmv-k230/git-repo.git --repo-branch stable
-
-# Download the pure RT-Smart project
-repo init -u https://github.com/canmv-k230/manifest -b master -m rtsmart.xml --repo-url=https://github.com/canmv-k230/git-repo.git --repo-branch stable 
 
 # Synchronize the code
 repo sync
