@@ -13,9 +13,9 @@ TOUCH 类位于 `machine` 模块下。
 ```python
 from machine import TOUCH
 
-# 实例化 TOUCH 设备 0
+# 实例化 TOUCH 设备 0（系统默认触摸）
 tp = TOUCH(0)
-# 获取 TOUCH 数据
+# 获取 TOUCH 数据（返回元组，每个元素为 TOUCH_INFO 对象）
 p = tp.read()
 print(p)
 # 打印触摸点坐标
@@ -27,24 +27,21 @@ print(p)
 ### 构造函数
 
 ```python
-# when index is 0
-touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1)
+# 系统默认触摸
+touch = TOUCH(dev)
 
-# when index is 1
-touch = TOUCH(index, type = TOUCH.TYPE_CST328, rotate = -1, range_x = -1, range_y = -1, i2c : I2C = None, slave_addr = None, rst : Pin = None, int : Pin = None)
+# 自定义触摸设备（dev != 0，需指定i2c，分辨率等）
+touch = TOUCH(dev, i2c=my_i2c, range_x=800, range_y=480, rotate=TOUCH.ROTATE_0)
 ```
 
 **参数**
 
-- `index`: `TOUCH` 设备号，为 `0` 时，表示使用系统自带的触摸，为 `1` 时，表示使用 `CanMV` 专有的触摸驱动
-- `type`: 触摸驱动类型，具体定义参考[触摸类型](#触摸类型)
-- `rotate`: 面板输出坐标与屏幕坐标的旋转，取值范围为 [0-3]，具体定义参考[坐标旋转](#坐标旋转)。
-- `range_x`: `index=1` 时有效，触摸输出坐标的宽度最大值
-- `range_y`: `index=1` 时有效，触摸输出坐标的高度最大值
-- `i2c`: `index=1` 时有效，触摸使用 `I2C` 总线对象
-- `slave_addr`: `index=1` 时有效，触摸芯片的从机地址，可选参数，不传入使用驱动默认值
-- `rst`: `index=1` 时有效，触摸复位引脚对象
-- `int`: `index=1` 时有效，触摸中断引脚对象，当前不支持
+- `dev`: 触摸设备号，0为系统默认，非0为自定义设备。
+- `rotate`: 坐标旋转，见[常量](#常量)，默认-1（使用设备默认）。
+- `range_x`, `range_y`: 仅自定义设备有效，指定触摸屏分辨率。
+- `i2c`: 仅自定义设备有效，I2C总线对象，必填。
+- `rst`, `int`: 仅自定义设备有效，复位/中断引脚对象，选填。
+- 其余参数（如 type, slave_addr）已废弃。
 
 ### `read` 方法
 
@@ -56,11 +53,11 @@ TOUCH.read([count])
 
 **参数**
 
-- `count`: 最多读取的触摸点数量，取值范围为 [0:10]，默认为 0，表示读取所有触摸点。
+- `count`: 最多读取的触摸点数量，范围[1, 最大支持数]，默认1。
 
 **返回值**
 
-返回触摸点数据，类型为元组 `([tp[, tp...]])`，其中每个 `tp` 是一个 `touch_info` 类实例。
+返回触摸点数据，类型为元组 `(<TOUCH_INFO 对象>, ...)`，每个元素为 `TOUCH_INFO` 实例。
 
 ### `deinit` 方法
 
@@ -80,9 +77,9 @@ TOUCH.deinit()
 
 ## TOUCH_INFO 类
 
-TOUCH_INFO 类用于存储触摸点的信息，用户可通过相关只读属性访问。
+TOUCH_INFO 类用于存储触摸点的信息，用户可通过相关只读属性访问：
 
-- `event`: 事件码，具体参考[触摸事件](#触摸事件)。
+- `event`: 事件码，见[常量](#常量)
 - `track_id`: 触点 ID，用于多点触摸。
 - `width`: 触点宽度。
 - `x`: 触点的 x 坐标。
@@ -93,20 +90,21 @@ TOUCH_INFO 类用于存储触摸点的信息，用户可通过相关只读属性
 
 ### 触摸事件
 
-- `EVENT_NONE`: 无事件。
-- `EVENT_UP`: 触摸按下后抬起。
-- `EVENT_DOWN`: 触摸按下开始。
-- `EVENT_MOVE`: 触摸按下后移动。
+- `TOUCH.EVENT_NONE`：无事件
+- `TOUCH.EVENT_UP`：抬起
+- `TOUCH.EVENT_DOWN`：按下
+- `TOUCH.EVENT_MOVE`：移动
 
 ### 坐标旋转
 
-- `ROTATE_0`: 坐标不旋转。
-- `ROTATE_90`: 坐标旋转 90 度。
-- `ROTATE_180`: 坐标旋转 180 度。
-- `ROTATE_270`: 坐标旋转 270 度。
+- `TOUCH.ROTATE_0`：不旋转
+- `TOUCH.ROTATE_90`：旋转90度
+- `TOUCH.ROTATE_180`：旋转180度
+- `TOUCH.ROTATE_270`：旋转270度
+- `TOUCH.ROTATE_SWAP_XY`：XY互换
 
-### 触摸类型
+### 触摸类型（兼容保留，实际值均为0）
 
-- `TYPE_CST328`: `CanMV` 专有触摸驱动
-- `TYPE_CST226SE`: `CanMV` 专有触摸驱动
-- `TYPE_GT911`: `CanMV` 专有触摸驱动
+- `TOUCH.TYPE_CST226SE`
+- `TOUCH.TYPE_CST328`
+- `TOUCH.TYPE_GT911`

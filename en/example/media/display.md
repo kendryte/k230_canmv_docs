@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
 ### Using LCD to Output Images
 
-This example outputs an 800x480 image via an LCD (ST7701).
+This example outputs an 800x480 image via an LCD (ST7701). You can also select other supported panel types (such as NT35516, GC9503, etc.) by replacing `Display.ST7701` with the corresponding type and setting the appropriate resolution.
 
 ```python
 import time
@@ -80,6 +80,8 @@ import sys
 from media.display import *
 from media.media import *
 
+# Supported panel types example: Display.ST7701, Display.NT35516, Display.GC9503, Display.AML020T, etc.
+DISPLAY_TYPE = Display.ST7701
 DISPLAY_WIDTH = ALIGN_UP(800, 16)
 DISPLAY_HEIGHT = 480
 
@@ -90,7 +92,7 @@ def display_test():
     img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
 
     # Use LCD as the display output
-    Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
+    Display.init(DISPLAY_TYPE, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
     # Initialize the media manager
     MediaManager.init()
 
@@ -192,5 +194,5 @@ if __name__ == "__main__":
 ```
 
 ```{admonition} Tip
-For detailed interfaces of the Display module, please refer to the [API documentation](../../api/mpp/K230_CanMV_Display_Module_API_Manual.md).
+For detailed interfaces, supported panel types, and parameters of the Display module, please refer to the [API documentation](../../api/mpp/K230_CanMV_Display_Module_API_Manual.md).
 ```

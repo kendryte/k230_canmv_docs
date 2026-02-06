@@ -1,7 +1,7 @@
 # `Display` 模块 API 手册
 
 ```{attention}
-该模块自固件版本 V0.7 起有显著更改，若您使用的是 V0.7 之前的固件，请参考旧版本文档。
+该模块自固件版本 V0.7 起有较大更改，若您使用的是 V0.7 之前的固件，请参考旧版本文档。
 ```
 
 ## 概述
@@ -17,7 +17,6 @@
 **描述**
 
 初始化 Display 通路，包括 VO 模块、 DSI 模块和 LCD/HDMI。  
-**`必须在 MediaManager.init()之前调用`**
 
 **语法**  
 
@@ -78,8 +77,6 @@ show_image(img, x=0, y=0, layer=None, alpha=255, flag=None)
 **描述**
 
 执行反初始化， deinit 方法会关闭整个 Display 通路，包括 VO 模块、 DSI 模块和 LCD/HDMI。  
-**`必须在 MediaManager.deinit()之前调用`**  
-**`必须在 sensor.stop()之后调用`**
 
 **语法**  
 
@@ -185,20 +182,32 @@ height(layer = None):
 |         | Display.init(Display.ST7701, width = 480, height = 854) | 480x854 |
 |         | Display.init(Display.ST7701, width = 640, height = 480) | 640x480 |
 |         | Display.init(Display.ST7701, width = 480, height = 640) | 480x640 |
-|         | Display.init(Display.ST7701, width = 368, height = 552) | 368x552 |
-|         | Display.init(Display.ST7701, width = 552, height = 368) | 552x368 |
+|         | Display.init(Display.ST7701, width = 368, height = 544) | 368x544 |
+|         | Display.init(Display.ST7701, width = 544, height = 368) | 544x368 |
 | HX8399  | Display.init(Display.HX8399, width = 1920, height = 1080) | *默认值*<br>1920x1080 |
 |         | Display.init(Display.HX8399, width = 1080, height = 1920) | 1920x1080 |
 | ILI9806 | Display.init(Display.ILI9806, width = 800, height = 480) | *默认值*<br>800x480 |
 |         | Display.init(Display.ILI9806, width = 480, height = 800) | 480x800 |
-| ILI9881 | Display.init(Display.ILI9881, width = 1280, height = 800) | *默认值*<br>1280x800 |
-|         | Display.init(Display.ILI9881, width = 800, height = 1280) | 800x1280 |
 | LT9611  | Display.init(Display.LT9611, width = 1920, height = 1080, fps = 30) | *默认值*<br>1920x1080@30 |
 |         | Display.init(Display.LT9611, width = 1920, height = 1080, fps = 60) | 1920x1080@60 |
 |         | Display.init(Display.LT9611, width = 1280, height = 720, fps = 60) | 1280x720@60 |
 |         | Display.init(Display.LT9611, width = 1280, height = 720, fps = 50) | 1280x720@50 |
 |         | Display.init(Display.LT9611, width = 1280, height = 720, fps = 30) | 1280x720@30 |
 |         | Display.init(Display.LT9611, width = 640, height = 480, fps = 60) | 640x480@60 |
+| ILI9881 | Display.init(Display.ILI9881, width = 1280, height = 800) | *默认值*<br>1280x800 |
+|         | Display.init(Display.ILI9881, width = 800, height = 1280) | 800x1280 |
+| NT35516 | Display.init(Display.NT35516, width=960, height=536) | *默认值*<br>960x536 |
+|         | Display.init(Display.NT35516, width=536, height=960) | 536x960 |
+| NT35532 | Display.init(Display.NT35532, width=1920, height=1080) | *默认值*<br>1920x1080 |
+|         | Display.init(Display.NT35532, width=1080, height=1920) | 1080x1920 |
+| GC9503  | Display.init(Display.GC9503, width=800, height=480) | *默认值*<br>800x480 |
+|         | Display.init(Display.GC9503, width=480, height=800) | 480x800 |
+| ST7102  | Display.init(Display.ST7102, width=640, height=480) | *默认值*<br>640x480 |
+|         | Display.init(Display.ST7102, width=480, height=640) | 480x640 |
+| AML020T | Display.init(Display.AML020T, width=480, height=360) | *默认值*<br>480x360 |
+|         | Display.init(Display.AML020T, width=360, height=480) | 360x480 |
+| JD9852  | Display.init(Display.JD9852, width=320, height=240) | *默认值*<br>320x240 |
+|         | Display.init(Display.JD9852, width=240, height=320) | 240x320 |
 
 ### layer
 
@@ -206,12 +215,13 @@ K230 提供 2 层视频图层支持和 4 层 OSD 图层支持。分列如下：
 
 | 显示层     | 说明                                     | 备注          |
 |------------|------------------------------------------|---------------|
-| LAYER_VIDEO1 |                                          | 仅可在 [bind_layer](#bind_layer) 中使用,支持硬件旋转 |
-| LAYER_VIDEO2 |                                          | 仅可在 [bind_layer](#bind_layer) 中使用,不支持硬件旋转 |
-| LAYER_OSD0  |                                          | 支持 [show_image](#show_image) 和 [bind_layer](#bind_layer) 使用 |
-| LAYER_OSD1  |                                          | 支持 [show_image](#show_image) 和 [bind_layer](#bind_layer) 使用 |
-| LAYER_OSD2  |                                          | 支持 [show_image](#show_image) 和 [bind_layer](#bind_layer) 使用 |
-| LAYER_OSD3  |                                          | 支持 [show_image](#show_image) 和 [bind_layer](#bind_layer) 使用 |
+| LAYER_VIDEO1 |                                          | 仅支持 `NV12`(`YUV420SP`) 建议用来显示视频数据 |
+| LAYER_VIDEO2 |                                          | 仅支持 `NV12`(`YUV420SP`) 建议用来显示视频数据  |
+| LAYER_VIDEO3 |                                          | 仅支持 `NV12`(`YUV420SP`) 建议用来显示视频数据  |
+| LAYER_OSD0  |                                           | 仅支持 `RGB` 颜色空间 |
+| LAYER_OSD1  |                                           | 仅支持 `RGB` 颜色空间 |
+| LAYER_OSD2  |                                           | 仅支持 `RGB` 颜色空间 |
+| LAYER_OSD3  |                                           | 仅支持 `RGB` 颜色空间 |
 
 ### flag
 
@@ -225,6 +235,19 @@ K230 提供 2 层视频图层支持和 4 层 OSD 图层支持。分列如下：
 | FLAG_MIRROR_HOR   | 水平镜像        |      |
 | FLAG_MIRROR_VER   | 垂直镜像        |      |
 | FLAG_MIRROR_BOTH  | 水平与垂直镜像  |      |
+
+### pix_format
+
+| 颜色格式 | 说明 | 备注 |
+|---------|------|------|
+| PIXFORMAT_GRAYSCALE | 8位灰度格式 | 每个像素1字节，表示0（黑）到255（白）的灰度值 |
+| PIXFORMAT_RGB565 | RGB格式，16位/像素 | 5位红色，6位绿色，5位蓝色，无透明度通道 |
+| PIXFORMAT_ARGB8888 | ARGB格式，32位/像素 | 每个通道8位，顺序为：透明度、红色、绿色、蓝色 |
+| PIXFORMAT_ABGR8888 | ABGR格式，32位/像素 | 每个通道8位，顺序为：透明度、蓝色、绿色、红色 |
+| PIXFORMAT_RGBA8888 | RGBA格式，32位/像素 | 每个通道8位，顺序为：红色、绿色、蓝色、透明度 |
+| PIXFORMAT_BGRA8888 | BGRA格式，32位/像素 | 每个通道8位，顺序为：蓝色、绿色、红色、透明度 |
+| PIXFORMAT_RGB888 | RGB格式，24位/像素 | 每个通道8位，顺序为：红色、绿色、蓝色，无透明度通道 |
+| PIXFORMAT_BGR888 | BGR格式，24位/像素 | 每个通道8位，顺序为：蓝色、绿色、红色，无透明度通道 |
 
 ## 示例程序
 

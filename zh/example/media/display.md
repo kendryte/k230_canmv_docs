@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
 ### 使用 LCD 输出图像
 
-本示例通过 LCD（ST7701）输出 800x480 图像。
+本示例通过 LCD（ST7701）输出 800x480 图像。你也可以选择其他支持的面板类型（如 NT35516、GC9503 等），只需更换 `Display.ST7701` 为对应类型，并设置合适的分辨率。
 
 ```python
 import time
@@ -82,6 +82,8 @@ import sys
 from media.display import *
 from media.media import *
 
+# 支持的面板类型示例：Display.ST7701, Display.NT35516, Display.GC9503, Display.AML020T, 等
+DISPLAY_TYPE = Display.ST7701
 DISPLAY_WIDTH = ALIGN_UP(800, 16)
 DISPLAY_HEIGHT = 480
 
@@ -92,7 +94,7 @@ def display_test():
     img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
 
     # 使用 LCD 作为显示输出
-    Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
+    Display.init(DISPLAY_TYPE, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
     # 初始化媒体管理器
     MediaManager.init()
 
@@ -153,7 +155,7 @@ def display_test():
     # 创建用于绘制的图像
     img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
 
-    # 使用 IDE 作为输出显示，可以设定任意分辨率
+    # 使用 IDE 作为输出显示，可以设定任意分辨率和帧率
     Display.init(Display.VIRT, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, fps=60)
     # 初始化媒体管理器
     MediaManager.init()
@@ -194,5 +196,5 @@ if __name__ == "__main__":
 ```
 
 ```{admonition} 提示
-有关 Display 模块的详细接口，请参考 [API 文档](../../api/mpp/K230_CanMV_Display模块API手册.md)。
+有关 Display 模块的详细接口、支持的面板类型和参数，请参考 [API 文档](../../api/mpp/K230_CanMV_Display模块API手册.md)。
 ```
