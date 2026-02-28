@@ -99,7 +99,7 @@ make dl_toolchain
 
 ```shell
 # 列出可用的配置选项
-make list_def
+make list-def
 # 选择对应的板子配置文件
 make xxxx_defconfig
 # 开始编译
