@@ -138,6 +138,54 @@ image.to_numpy_ref()
 image.draw_string_advanced(x, y, char_size, str, [color, font])
 ```
 
+### `as_lvgl_img_src`
+
+该方法是一个 **LVGL 助手工具**，用于将图像处理库中的 `image_t` 对象快速对接至 **LVGL** 图形库。它会自动将图像设置为 LVGL 图像对象（`lv.img`）的数据源。
+
+#### **功能描述**
+
+此函数会创建一个 LVGL 图像描述符（`lv_img_dsc_t`），并将其直接指向当前图像的原始像素缓冲区。它能自动处理格式映射，并针对 **RGB888** 图像执行**原位（In-place）颜色转换**，以匹配 LVGL 所需的 BGR 字节序。
+
+#### **语法**
+
+```python
+image.as_lvgl_img_src(lv_img_obj)
+```
+
+#### **参数**
+
+- **`lv_img_obj`**: 指向已创建的 LVGL 图像对象（通过 `lv.img(parent)` 创建）。
+
+#### **返回值**
+
+- 返回传入的 `lv_img_obj` 引用，支持链式调用。
+
+#### **重要限制与注意事项**
+
+1. **支持格式**: 目前仅支持 `PIXFORMAT_RGB565` 和 `PIXFORMAT_RGB888`。
+1. **原位修改**: 对于 **RGB888** 图像，该函数会**直接修改原始图像缓冲区**（执行 RGB 转 BGR）。如果您后续还需要原始 RGB 数据，请先进行图像复制（`img.copy()`）。
+1. **内存管理**: 本操作**不会拷贝图像像素数据**。LVGL 描述符直接引用现有的图像内存。因此，在 LVGL 对象显示期间，必须确保该 `image` 对象不被释放。
+1. **硬件加速**: 在支持的硬件上，颜色转换使用 **RISC-V Vector（矢量扩展）指令** 实现，处理速度比标准 C 语言循环快约 **2 倍**（例如 640x480 分辨率下仅需约 500us）。
+
+#### **使用示例**
+
+```python
+import lvgl as lv
+
+# 1. 捕获一张图像
+img = sensor.snapshot()
+
+# 2. 创建一个 LVGL 图像组件
+ui_img = lv.img(lv.scr_act())
+
+# 3. 使用助手方法设置数据源
+# 该方法会自动处理 dsc_t 分配及 BGR 矢量转换
+img.as_lvgl_img_src(ui_img)
+
+# 4. 标准 LVGL 布局设置
+ui_img.align(lv.ALIGN.CENTER, 0, 0)
+```
+
 ### 实现有差异的方法
 
 #### 移除 `crop` 参数的 API

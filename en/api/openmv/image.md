@@ -138,6 +138,56 @@ Enhanced `draw_string`, supporting Chinese display and allowing custom fonts via
 image.draw_string_advanced(x, y, char_size, str, [color, font])
 ```
 
+### `as_lvgl_img_src`
+
+This method is an **LVGL helper tool** used to quickly bridge an `image_t` object from the image processing library to the **LVGL** graphics library. It automatically sets the image as the data source for an LVGL Image object (`lv.img`).
+
+#### **Functional Description**
+
+This function creates an LVGL image descriptor (`lv_img_dsc_t`) and points it directly to the raw pixel buffer of the current image. It automatically handles format mapping and performs an **in-place color conversion** for **RGB888** images to match the BGR byte order required by LVGL.
+
+#### **Syntax**
+
+```python
+image.as_lvgl_img_src(lv_img_obj)
+```
+
+#### **Parameters**
+
+- **`lv_img_obj`**: A reference to an existing LVGL image object (created via `lv.img(parent)`).
+
+#### **Returns**
+
+- Returns the passed `lv_img_obj` reference, supporting method chaining.
+
+#### **Important Constraints & Notes**
+
+1. **Supported Formats**: Currently only supports `PIXFORMAT_RGB565` and `PIXFORMAT_RGB888`.
+1. **In-place Mutation**: For **RGB888** images, this function **directly modifies the original image buffer** (performing the RGB to BGR swap). If you need the original RGB data later, please copy the image first using `img.copy()`.
+1. **Memory Management**: This operation **does not copy the image pixel data**. The LVGL descriptor references the existing image memory directly. Therefore, you must ensure the `image` object is not released or garbage collected while the LVGL object is being displayed.
+1. **Hardware Acceleration**: On supported hardware, the color conversion is implemented using **RISC-V Vector (RVV) extensions**, which is approximately **2x faster** than standard C loops (e.g., taking only about 500us for a 640x480 resolution).
+
+---
+
+#### **Usage Example**
+
+```python
+import lvgl as lv
+
+# 1. Capture an image
+img = sensor.snapshot()
+
+# 2. Create an LVGL image component (widget)
+ui_img = lv.img(lv.scr_act())
+
+# 3. Use the helper method to set the source
+# This handles dsc_t allocation and vectorized BGR conversion automatically
+img.as_lvgl_img_src(ui_img)
+
+# 4. Standard LVGL layout settings
+ui_img.align(lv.ALIGN.CENTER, 0, 0)
+```
+
 ### Methods with Differences
 
 #### Removed `crop` Parameter
