@@ -16,12 +16,12 @@
 
 **描述**
 
-初始化 Display 通路，包括 VO 模块、 DSI 模块和 LCD/HDMI。  
+初始化 Display 通路，包括 VO 模块、 DSI 模块和 LCD/HDMI。
 
 **语法**  
 
 ```python
-init(type=None, width=None, height=None, osd_num=1, to_ide=False, flag=None, fps=None, quality=90)
+init(type, width=0, height=0, fps=0, flag=0, osd_num=1, to_ide=False, quality=90)
 ```
 
 **参数**  
@@ -29,13 +29,154 @@ init(type=None, width=None, height=None, osd_num=1, to_ide=False, flag=None, fps
 | 参数名称 | 描述                          | 输入 / 输出 | 说明 |
 |----------|-------------------------------|-----------|------|
 | type     | [显示设备类型](#type)     | 输入      | 必选 |
-| width    | 分辨率宽度                   | 输入      | 可选参数,默认值根据 `type` 决定 |
-| height   | 分辨率高度                   | 输入      | 可选参数,默认值根据 `type` 决定 |
-| osd_num  | 在 [show_image](#show_image) 时支持的 LAYER 数量 | 输入 | 越大占用内存越多 |
-| to_ide   | 是否将屏幕显示传输到 IDE 显示 | 输入      | 开启时占用更多内存 |
-| flag     | 显示 [标志](#flag)           | 输入      |                   |
-| fps      | 显示帧率                     | 输入      | 仅支持 `VIRT` 类型 |
-| quality  | 设置 `Jpeg` 压缩质量          | 输入      | 仅在 `to_ide=True` 时有效，范围 [10-100] |
+| width    | 分辨率宽度                   | 输入      | 可选参数，默认值根据 `type` 决定 |
+| height   | 分辨率高度                   | 输入      | 可选参数，默认值根据 `type` 决定 |
+| fps      | 显示帧率                     | 输入      | 仅部分显示设备类型支持指定帧率 |
+| flag     | 显示[标志](#flag)           | 输入      |                   |
+| osd_num  | 在 [show_image](#show_image) 时支持的 OSD 图层数量 | 输入 | 越大占用内存越多，默认值为1 |
+| to_ide   | 是否将屏幕显示传输到 IDE 显示 | 输入      | 开启时占用更多内存，通过 WBC 功能实现 |
+| quality  | 设置 JPEG 压缩质量          | 输入      | 仅在 `to_ide=True` 时有效，范围 [10-100]，默认90 |
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| 无     |                                 |
+
+### deinit
+
+**描述**
+
+执行反初始化，deinit 方法会关闭整个 Display 通路，包括 VO 模块、DSI 模块和 LCD/HDMI。
+
+**语法**  
+
+```python
+deinit()
+```
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| 无     |                                 |
+
+### inited
+
+**描述**
+
+查询 Display 模块是否已初始化。
+
+**语法**  
+
+```python
+inited()
+```
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| bool   | `True` 表示已初始化，`False` 表示未初始化 |
+
+### config_layer
+
+**描述**
+
+配置显示层的属性。此方法通常在绑定层之前调用，用于设置图层的显示参数。
+
+**语法**  
+
+```python
+config_layer(rect, pix_format, layer, alpha=255, flag=0)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| rect     | 显示区域 (x, y, w, h)          | 输入      | 必选，元组形式 |
+| pix_format | 图像像素格式                | 输入      | 参见 [pix_format](#pix_format) |
+| layer    | [显示层](#layer) ID           | 输入      | 必选，指定要配置的图层 |
+| alpha    | 图层混合透明度                | 输入      | 范围 0-255，默认255（不透明） |
+| flag     | 显示[标志](#flag)             | 输入      | 默认0 |
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| int    | 配置的图层 ID                   |
+
+### bind_layer
+
+**描述**
+
+将 `sensor` 或 `vdec` 模块的输出绑定到屏幕显示。无需用户手动干预即可持续显示图像。
+
+**语法**  
+
+```python
+bind_layer(src, rect, pix_format, layer, alpha=255, flag=0)
+```
+
+**参数**
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| src      | 源通道信息 (mod, dev, chn)    | 输入      | 可通过 `sensor.bind_info()` 获取，格式为元组 |
+| rect     | 显示区域 (x, y, w, h)          | 输入      | 可通过 `sensor.bind_info()` 获取 |
+| pix_format | 图像像素格式                | 输入      | 可通过 `sensor.bind_info()` 获取 |
+| layer    | 绑定到 Display 的[显示层](#layer) | 输入      | 可绑定到 `video` 或 `osd` 层 |
+| alpha    | 图层混合透明度                | 输入      | 范围 0-255，默认255 |
+| flag     | 显示[标志](#flag)             | 输入      | 默认0 |
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| 无     |                                 |
+
+### unbind_layer
+
+**描述**
+
+解绑指定图层的绑定关系。
+
+**语法**  
+
+```python
+unbind_layer(layer)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| layer    | [显示层](#layer) ID           | 输入      | 必选 |
+
+**返回值**  
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| bool   | `True` 表示解绑成功，`False` 表示失败 |
+
+### disable_layer
+
+**描述**
+
+禁用指定的显示层。
+
+**语法**  
+
+```python
+disable_layer(layer)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| layer    | [显示层](#layer) ID           | 输入      | 必选 |
 
 **返回值**  
 
@@ -52,67 +193,20 @@ init(type=None, width=None, height=None, osd_num=1, to_ide=False, flag=None, fps
 **语法**  
 
 ```python
-show_image(img, x=0, y=0, layer=None, alpha=255, flag=None)
+show_image(img, x=0, y=0, layer=Display.LAYER_OSD0, alpha=None, pixel_format=None, flag=0)
 ```
 
 **参数**  
 
 | 参数名称 | 描述                          | 输入 / 输出 | 说明 |
 |----------|-------------------------------|-----------|------|
-| img      | 显示的图像                   | 输入      |      |
-| x        | 起始坐标的 x 值                | 输入      |      |
-| y        | 起始坐标的 y 值                | 输入      |      |
-| layer    | 显示到 [指定层](#layer)    | 输入      | 仅支持 `OSD` 层，若需要多层请在 [init](#init) 中设置 `osd_num` |
-| alpha    | 图层混合 alpha                | 输入      |      |
-| flag     | 显示 [标志](#flag)         | 输入      |      |
-
-**返回值**  
-
-| 返回值 | 描述                            |
-|--------|---------------------------------|
-| 无     |                                 |
-
-### deinit
-
-**描述**
-
-执行反初始化， deinit 方法会关闭整个 Display 通路，包括 VO 模块、 DSI 模块和 LCD/HDMI。  
-
-**语法**  
-
-```python
-deinit()
-```
-
-**返回值**  
-
-| 返回值 | 描述                            |
-|--------|---------------------------------|
-| 无     |                                 |
-
-### bind_layer
-
-**描述**
-
-将 `sensor` 或 `vdec` 模块的输出绑定到屏幕显示。无需用户手动干预即可持续显示图像。  
-**`必须在 init 之前调用`**
-
-**语法**  
-
-```python
-bind_layer(src=(mod, dev, layer), dstlayer, rect=(x, y, w, h), pix_format, alpha, flag)
-```
-
-**参数**
-
-| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
-|----------|-------------------------------|-----------|------|
-| src      | `sensor` 或 `vdec` 的输出信息   | 输入      | 可通过 `sensor.bind_info()` 获取 |
-| dstlayer | 绑定到 Display 的 [显示层](#layer) | 输入      | 可绑定到 `video` 或 `osd` 层 |
-| rect     | 显示区域                      | 输入      | 可通过 `sensor.bind_info()` 获取 |
-| pix_format | 图像像素格式                | 输入      | 可通过 `sensor.bind_info()` 获取 |
-| alpha    | 图层混合 alpha                | 输入      |      |
-| flag     | 显示 [标志](#flag)         | 输入      | `LAYER_VIDEO1` 不支持 |
+| img      | 要显示的图像对象             | 输入      | 必选 |
+| x        | 起始坐标的 x 值              | 输入      | 默认0 |
+| y        | 起始坐标的 y 值              | 输入      | 默认0 |
+| layer    | 显示到[指定层](#layer)       | 输入      | 仅支持 OSD 层，默认 `LAYER_OSD0` |
+| alpha    | 图层混合透明度               | 输入      | 范围 0-255，`None` 表示使用图层原有设置 |
+| pixel_format | 图像像素格式             | 输入      | `None` 表示使用图像原有格式，参见 [pix_format](#pix_format) |
+| flag     | 显示[标志](#flag)            | 输入      | 默认0 |
 
 **返回值**  
 
@@ -124,49 +218,115 @@ bind_layer(src=(mod, dev, layer), dstlayer, rect=(x, y, w, h), pix_format, alpha
 
 **描述**
 
-获取屏幕或某一图层的显示宽度
+获取屏幕或某一图层的显示宽度。
 
 **语法**
 
 ```python
-width(layer = None):
+width(layer=None)
 ```
 
 **参数**  
 
 | 参数名称 | 描述                          | 输入 / 输出 | 说明 |
 |----------|-------------------------------|-----------|------|
-| layer | 指定获取 [显示层](#layer) 的宽度,如果不传则表示获取屏幕的分辨率宽度 | | |
+| layer    | 指定获取[显示层](#layer)的宽度 | 输入      | 可选，如果不传则表示获取屏幕的分辨率宽度 |
 
 **返回值**  
 
 | 返回值 | 描述                            |
 |--------|---------------------------------|
-| width  | 屏幕或显示层的宽度信息 |
+| width  | 屏幕或显示层的宽度信息，单位像素 |
 
 ### height
 
 **描述**
 
-获取屏幕或某一图层的显示高度
+获取屏幕或某一图层的显示高度。
 
 **语法**
 
 ```python
-height(layer = None):
+height(layer=None)
 ```
 
 **参数**  
 
 | 参数名称 | 描述                          | 输入 / 输出 | 说明 |
 |----------|-------------------------------|-----------|------|
-| layer | 指定获取 [显示层](#layer) 的高度,如果不传则表示获取屏幕的分辨率高度 | | |
+| layer    | 指定获取[显示层](#layer)的高度 | 输入      | 可选，如果不传则表示获取屏幕的分辨率高度 |
 
 **返回值**
 
 | 返回值 | 描述                            |
 |--------|---------------------------------|
-| height  | 屏幕或显示层的高度信息 |
+| height | 屏幕或显示层的高度信息，单位像素 |
+
+### fps
+
+**描述**
+
+获取当前的显示帧率。
+
+**语法**
+
+```python
+fps()
+```
+
+**返回值**
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| int    | 当前的显示帧率，单位 fps        |
+
+### writeback
+
+**描述**
+
+查询或设置 WriteBack (WBC) 功能状态。WBC 功能用于将屏幕显示内容回传，通常用于传输到 IDE 显示。
+
+**语法**
+
+```python
+writeback(enable=None)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| enable   | 设置 WBC 功能状态             | 输入      | 可选，`True` 表示开启，`False` 表示关闭。不传参时表示查询当前状态 |
+
+**返回值**
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| bool   | 查询时返回当前 WBC 状态；设置时返回操作结果 |
+
+### writeback_dump
+
+**描述**
+
+从 WBC 抓取一帧显示内容。需要在 [init](#init) 时设置 `to_ide=True` 且 WBC 功能已开启。
+
+**语法**
+
+```python
+writeback_dump(timeout=1000)
+```
+
+**参数**  
+
+| 参数名称 | 描述                          | 输入 / 输出 | 说明 |
+|----------|-------------------------------|-----------|------|
+| timeout  | 超时时间（毫秒）              | 输入      | 默认1000ms |
+
+**返回值**
+
+| 返回值 | 描述                            |
+|--------|---------------------------------|
+| object | 返回包含视频帧信息的对象        |
 
 ## 数据结构描述
 
@@ -211,50 +371,60 @@ height(layer = None):
 
 ### layer
 
-K230 提供 2 层视频图层支持和 4 层 OSD 图层支持。分列如下：
+K230 提供 3 层视频图层支持和 4 层 OSD 图层支持。分类如下：
 
-| 显示层     | 说明                                     | 备注          |
-|------------|------------------------------------------|---------------|
-| LAYER_VIDEO1 |                                          | 仅支持 `NV12`(`YUV420SP`) 建议用来显示视频数据 |
-| LAYER_VIDEO2 |                                          | 仅支持 `NV12`(`YUV420SP`) 建议用来显示视频数据  |
-| LAYER_VIDEO3 |                                          | 仅支持 `NV12`(`YUV420SP`) 建议用来显示视频数据  |
-| LAYER_OSD0  |                                           | 仅支持 `RGB` 颜色空间 |
-| LAYER_OSD1  |                                           | 仅支持 `RGB` 颜色空间 |
-| LAYER_OSD2  |                                           | 仅支持 `RGB` 颜色空间 |
-| LAYER_OSD3  |                                           | 仅支持 `RGB` 颜色空间 |
+| 显示层 | 常量名 | 说明 | 支持格式 |
+|--------|--------|------|----------|
+| 视频层1 | `Display.LAYER_VIDEO1` | 建议用来显示视频数据 | 仅支持 `YUV420SP` |
+| 视频层2 | `Display.LAYER_VIDEO2` | 建议用来显示视频数据 | 仅支持 `YUV420SP` |
+| 视频层3 | `Display.LAYER_VIDEO3` | 建议用来显示视频数据 | 仅支持 `YUV420SP` |
+| OSD层0 | `Display.LAYER_OSD0` | 图形叠加层 | 仅支持 RGB 颜色空间 |
+| OSD层1 | `Display.LAYER_OSD1` | 图形叠加层 | 仅支持 RGB 颜色空间 |
+| OSD层2 | `Display.LAYER_OSD2` | 图形叠加层 | 仅支持 RGB 颜色空间 |
+| OSD层3 | `Display.LAYER_OSD3` | 图形叠加层 | 仅支持 RGB 颜色空间 |
 
 ### flag
 
-| 标志               | 说明            | 备注 |
-|-------------------|-----------------|------|
-| FLAG_ROTATION_0   | 旋转 `0` 度      |      |
-| FLAG_ROTATION_90  | 旋转 `90` 度     |      |
-| FLAG_ROTATION_180 | 旋转 `180` 度    |      |
-| FLAG_ROTATION_270 | 旋转 `270` 度    |      |
-| FLAG_MIRROR_NONE  | 不镜像          |      |
-| FLAG_MIRROR_HOR   | 水平镜像        |      |
-| FLAG_MIRROR_VER   | 垂直镜像        |      |
-| FLAG_MIRROR_BOTH  | 水平与垂直镜像  |      |
+| 标志 | 常量名 | 说明 |
+|------|--------|------|
+| 不旋转 | `Display.FLAG_ROTATION_NONE` 或 `0` | 不进行旋转 |
+| 旋转0度 | `Display.FLAG_ROTATION_0` | 旋转 0 度 |
+| 旋转90度 | `Display.FLAG_ROTATION_90` | 旋转 90 度 |
+| 旋转180度 | `Display.FLAG_ROTATION_180` | 旋转 180 度 |
+| 旋转270度 | `Display.FLAG_ROTATION_270` | 旋转 270 度 |
+| 无镜像 | `Display.FLAG_MIRROR_NONE` 或 `0` | 不进行镜像 |
+| 水平镜像 | `Display.FLAG_MIRROR_HOR` | 水平镜像 |
+| 垂直镜像 | `Display.FLAG_MIRROR_VER` | 垂直镜像 |
+| 水平和垂直镜像 | `Display.FLAG_MIRROR_BOTH` | 同时进行水平和垂直镜像 |
 
 ### pix_format
 
-| 颜色格式 | 说明 | 备注 |
-|---------|------|------|
-| PIXFORMAT_GRAYSCALE | 8位灰度格式 | 每个像素1字节，表示0（黑）到255（白）的灰度值 |
-| PIXFORMAT_RGB565 | RGB格式，16位/像素 | 5位红色，6位绿色，5位蓝色，无透明度通道 |
-| PIXFORMAT_ARGB8888 | ARGB格式，32位/像素 | 每个通道8位，顺序为：透明度、红色、绿色、蓝色 |
-| PIXFORMAT_ABGR8888 | ABGR格式，32位/像素 | 每个通道8位，顺序为：透明度、蓝色、绿色、红色 |
-| PIXFORMAT_RGBA8888 | RGBA格式，32位/像素 | 每个通道8位，顺序为：红色、绿色、蓝色、透明度 |
-| PIXFORMAT_BGRA8888 | BGRA格式，32位/像素 | 每个通道8位，顺序为：蓝色、绿色、红色、透明度 |
-| PIXFORMAT_RGB888 | RGB格式，24位/像素 | 每个通道8位，顺序为：红色、绿色、蓝色，无透明度通道 |
-| PIXFORMAT_BGR888 | BGR格式，24位/像素 | 每个通道8位，顺序为：蓝色、绿色、红色，无透明度通道 |
+| 颜色格式 | 常量名 | 说明 |
+|---------|--------|------|
+| 灰度图 | `image.GRAYSCALE` 或 `PIXFORMAT_GRAYSCALE` | 8位灰度格式，每个像素1字节 |
+| RGB565 | `image.RGB565` 或 `PIXFORMAT_RGB565` | RGB格式，16位/像素 (5:6:5) |
+| ARGB8888 | `image.ARGB8888` 或 `PIXFORMAT_ARGB8888` | ARGB格式，32位/像素 (A:R:G:B) |
+| ABGR8888 | `image.ABGR8888` 或 `PIXFORMAT_ABGR8888` | ABGR格式，32位/像素 (A:B:G:R) |
+| RGBA8888 | `image.RGBA8888` 或 `PIXFORMAT_RGBA8888` | RGBA格式，32位/像素 (R:G:B:A) |
+| BGRA8888 | `image.BGRA8888` 或 `PIXFORMAT_BGRA8888` | BGRA格式，32位/像素 (B:G:R:A) |
+| RGB888 | `image.RGB888` 或 `PIXFORMAT_RGB888` | RGB格式，24位/像素 (R:G:B) |
+| BGR888 | `image.BGR888` 或 `PIXFORMAT_BGR888` | BGR格式，24位/像素 (B:G:R) |
+
+## 注意事项
+
+1. **图层支持**：`show_image` 仅支持 OSD 图层，如需使用多个 OSD 图层，请在 `init` 时设置 `osd_num` 参数。
+1. **图像尺寸**：调用 `show_image` 时，图像的尺寸不能超过屏幕分辨率。
+1. **旋转处理**：某些屏幕类型（如 ST7701 的 368x544 模式）存在硬件尺寸和应用尺寸的差异，API 会自动处理这种转换。
+1. **WBC 功能**：如需使用 `writeback_dump` 抓取屏幕内容，必须在 `init` 时设置 `to_ide=True`。
 
 ## 示例程序
 
+### 基础显示示例
+
 ```python
-from media.display import *  # 导入 display 模块，使用 display 相关接口
-from media.media import *    # 导入 media 模块，使用 media 相关接口
-import os, time, image       # 导入 image 模块，使用 image 相关接口
+from media.display import *
+from media.media import *
+import os, time, image
 
 # 使用 LCD 作为显示输出
 Display.init(Display.ST7701, width=800, height=480, to_ide=True)
@@ -273,10 +443,54 @@ try:
         time.sleep(1)
         os.exitpoint()
 except KeyboardInterrupt as e:
-    print(" 用户停止：", e)
+    print("用户停止：", e)
 except BaseException as e:
-    print(f" 异常：{e}")
+    print(f"异常：{e}")
 
 Display.deinit()
 MediaManager.deinit()
+```
+
+### 绑定 Sensor 示例
+
+```python
+from media.display import *
+from media.sensor import *
+from media.media import *
+import time
+
+# 初始化 sensor
+sensor = Sensor()
+sensor.reset()
+sensor.set_framesize(width=800, height=480)
+sensor.set_pixformat(Sensor.RGB565)
+
+# 获取 sensor 绑定信息
+bind_info = sensor.bind_info()
+
+# 配置并绑定显示层
+Display.config_layer(rect=(0, 0, 800, 480), 
+                     pix_format=bind_info[2], 
+                     layer=Display.LAYER_VIDEO1)
+Display.bind_layer(src=bind_info[0], 
+                   rect=bind_info[1], 
+                   pix_format=bind_info[2], 
+                   layer=Display.LAYER_VIDEO1)
+
+# 初始化显示
+Display.init(Display.ST7701, width=800, height=480)
+MediaManager.init()
+
+# 启动 sensor
+sensor.run()
+
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("用户停止")
+finally:
+    sensor.stop()
+    Display.deinit()
+    MediaManager.deinit()
 ```
