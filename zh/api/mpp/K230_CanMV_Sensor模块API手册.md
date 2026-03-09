@@ -667,6 +667,234 @@ print("当前对焦位置:", current_focus_pos)
 sensor.focus_pos(300)
 ```
 
+### sensor.get_exposure_time_range
+
+**描述**
+
+获取传感器支持的曝光时间范围。
+
+**语法**
+
+```python
+sensor.get_exposure_time_range()
+```
+
+**参数**
+
+无
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| `tuple` | `(max_exposure_time_us, min_exposure_time_us)` 单位为微秒（us） |
+| `None` | 如果获取失败 |
+
+**举例**
+
+```python
+from media.sensor import Sensor
+
+sensor = Sensor()
+sensor.reset()
+
+# 获取曝光范围
+range = sensor.get_exposure_time_range()
+if range:
+    max_exp, min_exp = range
+    print(f"曝光范围：{min_exp:.2f} us - {max_exp:.2f} us")
+    print(f"         ({min_exp/1000:.2f} ms - {max_exp/1000:.2f} ms)")
+```
+
+**注意事项**
+
+- 返回值单位为微秒（us）
+- 不同传感器支持的曝光范围不同
+- 建议在设置曝光前先获取范围
+- **必须在 `sensor.run()` 之后调用**
+
+---
+
+### sensor.auto_exposure
+
+**描述**
+
+开关自动曝光或获取当前自动曝光状态。
+
+**语法**
+
+```python
+# 获取当前状态
+status = sensor.auto_exposure()
+
+# 设置状态
+sensor.auto_exposure(enable)
+```
+
+**参数**
+
+| 参数名称 | 描述 | 输入/输出 |
+|----------|------|-----------|
+| enable | `True`: 开启自动曝光<br>`False`: 关闭自动曝光（手动模式）<br>`None` 或省略：获取当前状态 | 输入 |
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| `bool` | 当前自动曝光状态（开启返回 `True`，关闭返回 `False`） |
+
+**异常**
+
+- `RuntimeError`: 如果 sensor 未初始化
+
+**举例**
+
+```python
+from media.sensor import Sensor
+
+sensor = Sensor()
+sensor.reset()
+
+# 获取当前自动曝光状态
+status = sensor.auto_exposure()
+print(f"自动曝光：{'开启' if status else '关闭'}")
+
+# 关闭自动曝光（手动模式）- 必须在 run() 之前！
+sensor.auto_exposure(False)
+
+# 设置手动曝光时间
+sensor.exposure(10000)  # 10ms
+
+# 启动传感器
+sensor.run()
+```
+
+**注意事项**
+
+- **必须在 `sensor.run()` 之前调用**
+- 关闭自动曝光后才能手动设置曝光时间
+- 目前不支持在`sensor.run()`之后动态开关自动曝光
+
+---
+
+### sensor.exposure
+
+**描述**
+
+获取或设置传感器曝光时间。
+
+**语法**
+
+```python
+# 获取当前曝光时间
+current = sensor.exposure()
+
+# 设置曝光时间
+sensor.exposure(exposure_us)
+```
+
+**参数**
+
+| 参数名称 | 描述 | 输入/输出 |
+|----------|------|-----------|
+| exposure_us | 曝光时间，单位微秒（us）<br>省略或 `None`: 获取当前曝光时间<br>`float`: 设置为指定曝光时间 | 输入 |
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| `float` | 当前曝光时间（微秒）|
+| `None` | 如果失败 |
+
+**异常**
+
+- `RuntimeError`: 如果 sensor fd 无效
+
+**举例**
+
+```python
+from media.sensor import Sensor
+
+sensor = Sensor()
+sensor.reset()
+
+# 关闭自动曝光（必须在 run 之前）
+sensor.auto_exposure(False)
+
+# 启动传感器
+sensor.run()
+
+# 获取当前曝光时间
+current = sensor.exposure()
+print(f"当前曝光：{current:.2f} us")
+
+# 设置曝光时间为 10ms
+sensor.exposure(10000)
+
+# 结合曝光范围使用
+range = sensor.get_exposure_time_range()
+if range:
+    max_exp, min_exp = range
+    # 设置为中间值
+    mid_exp = (max_exp + min_exp) / 2
+    sensor.exposure(mid_exp)
+    print(f"设置曝光：{mid_exp:.2f} us")
+```
+
+**注意事项**
+
+- **必须在 `sensor.run()` 之后调用**
+- 单位统一使用微秒（us）
+- 底层自动进行秒↔微秒的转换
+- 建议先关闭自动曝光再手动设置
+- 设置值应在 `get_exposure_time_range()` 返回的范围内
+
+---
+
+### 完整示例
+
+```python
+from media.sensor import Sensor
+
+# 初始化传感器
+sensor = Sensor()
+sensor.reset()
+sensor.set_pixformat(sensor.RGB565)
+sensor.set_framesize(sensor.FHD)
+
+# 获取曝光范围（run 之前不能调用）
+# range = sensor.get_exposure_time_range()  # 错误！
+
+# 关闭自动曝光（必须在 run 之前）
+sensor.auto_exposure(False)
+
+# 启动传感器
+sensor.run()
+
+# 现在可以调用 get_exposure_time_range 和 exposure 了
+range = sensor.get_exposure_time_range()
+if range:
+    max_exp, min_exp = range
+    print(f"曝光范围：{min_exp:.2f} us - {max_exp:.2f} us")
+    
+    # 设置为中间曝光值
+    mid_exp = (max_exp + min_exp) / 2
+    sensor.exposure(mid_exp)
+    print(f"设置曝光：{mid_exp:.2f} us")
+
+# 运行中调整曝光
+frame_count = 0
+while True:
+    img = sensor.snapshot()
+    
+    # 每 100 帧调整一次曝光
+    if frame_count % 100 == 0:
+        current = sensor.exposure()
+        print(f"当前曝光：{current:.2f} us")
+    
+    frame_count += 1
+```
+
 ## 数据结构描述
 
 ### frame_size
