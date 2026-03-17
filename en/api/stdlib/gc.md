@@ -87,7 +87,7 @@ Queries the system `total` memory size, in bytes.
 gc.sys_heap()
 ```
 
-Queries the system `heap` memory usage, returning a tuple containing 3 elements representing `total` (total memory), `free` (available memory), and `used` (used memory), in bytes.
+Queries the system `heap` memory usage, returning a tuple containing 3 elements representing `total` (total memory), `used` (used memory), and `free` (available memory), in bytes.
 
 ### `sys_page`
 
@@ -95,7 +95,7 @@ Queries the system `heap` memory usage, returning a tuple containing 3 elements 
 gc.sys_page()
 ```
 
-Queries the system `page` memory usage, returning a tuple containing 3 elements representing `total` (total memory), `free` (available memory), and `used` (used memory), in bytes.
+Queries the system `page` memory usage, returning a tuple containing 3 elements representing `total` (total memory), `used` (used memory), and `free` (available memory), in bytes.
 
 ### `sys_mmz`
 
@@ -103,4 +103,4 @@ Queries the system `page` memory usage, returning a tuple containing 3 elements 
 gc.sys_mmz()
 ```
 
-Queries the system `mmz` memory usage, returning a tuple containing 3 elements representing `total` (total memory), `free` (available memory), and `used` (used memory), in bytes.
+Queries the system `mmz` memory usage, returning a tuple containing 3 elements representing `total` (total memory), `used` (used memory), and `free` (available memory), in bytes.
