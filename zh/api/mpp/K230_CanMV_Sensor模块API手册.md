@@ -519,7 +519,7 @@ print("传感器类型:", sensor_type)
 
 **描述**  
 
-获取或设置传感器的模拟增益值（单位：dB）。
+获取或设置传感器的模拟增益值。
 
 **语法**  
 
@@ -527,7 +527,7 @@ print("传感器类型:", sensor_type)
 # 获取增益
 gain = sensor.again()
 
-# 设置增益
+# 设置增益（直接传 float 值）
 sensor.again(desired_gain)
 ```
 
@@ -535,31 +535,30 @@ sensor.again(desired_gain)
 
 | 参数名称      | 描述                 | 输入/输出 |
 |---------------|----------------------|-----------|
-| desired_gain  | 目标增益值（设置时使用） | 输入      |
+| desired_gain  | 目标增益值（设置时使用），直接传入 float 类型 | 输入      |
 
 **返回值**  
 
 | 返回值        | 描述                     |
 |---------------|--------------------------|
-| k_sensor_gain | 当前增益对象（获取时返回） |
-| int           | 操作结果（设置时返回）    |
+| k_sensor_gain | 当前增益对象（获取时返回），通过 `.gain[0]` 访问增益值 |
+| bool          | 设置成功返回 `True`    |
 
 **注意事项**  
 
 - 仅部分 sensor 支持，如 `sc132gs`
-- 设置增益时需确保传感器已初始化且处于运行状态。
+- 设置增益时需确保传感器已初始化且处于运行状态
+- 建议先调用 `get_again_range()` 获取增益范围
 
 **举例**  
 
 ```python
 # 获取当前增益
 current_gain = sensor.again()
-print("当前增益:", current_gain)
+print("当前增益:", current_gain.gain[0])
 
-# 设置增益为10 dB
-result = sensor.again(10)
-if result == 0:
-    print("增益设置成功")
+# 设置增益为 4.0
+sensor.again(4.0)
 ```
 
 ### sensor.auto_focus
@@ -967,3 +966,138 @@ while True:
 |                | 1280x720                  | 90 FPS |
 | IMX335         | 1920x1080                 | 30 FPS |
 |                | 2592x1944                 | 30 FPS |
+
+---
+
+### sensor.get_again_range
+
+**描述**
+
+获取传感器模拟增益（Again）的可设置范围。
+
+**语法**
+
+```python
+sensor.get_again_range()
+```
+
+**参数**
+
+无
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| `dict` | 包含增益范围信息的字典：<br>- `min`: 最小增益<br>- `max`: 最大增益<br>- `step`: 增益步进值 |
+| `None` | 如果获取失败 |
+
+**注意事项**
+
+- 仅部分 sensor 支持
+- 必须在 `sensor.run()` 之后调用
+- 建议在设置增益前先获取范围
+
+**举例**
+
+```python
+from media.sensor import Sensor
+
+sensor = Sensor()
+sensor.reset()
+sensor.run()
+
+# 获取增益范围
+gain_range = sensor.get_again_range()
+if gain_range:
+    min_gain = gain_range['min']
+    max_gain = gain_range['max']
+    step = gain_range['step']
+    print(f"增益范围：{min_gain:.2f} - {max_gain:.2f}")
+    print(f"步进值：{step:.6f}")
+    
+    # 设置增益为中间值
+    mid_gain = (min_gain + max_gain) / 2
+    sensor.again(mid_gain)
+```
+
+---
+
+### Sensor.list_mode
+
+**描述**
+
+列出指定传感器支持的所有分辨率和 FPS 组合。**这是静态方法，无需初始化传感器即可调用。**
+
+**语法**
+
+```python
+Sensor.list_mode(id=None)
+```
+
+**参数**
+
+| 参数名称 | 描述 | 输入/输出 |
+|----------|------|-----------|
+| id | CSI 总线编号（0-2），默认为默认传感器 | 输入 |
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| `tuple` | `(sensor_name, modes)`：<br>- `sensor_name` (str): 传感器名称<br>- `modes` (list): 包含字典的列表，每个字典包含：<br>&nbsp;&nbsp;- `width`: 宽度<br>&nbsp;&nbsp;- `height`: 高度<br>&nbsp;&nbsp;- `fps`: 帧率 |
+
+**注意事项**
+
+- **静态方法，使用 `Sensor.list_mode()` 调用，而非 `sensor.list_mode()`**
+- **无需初始化传感器，可在 `Sensor()` 之前调用**
+- 不同传感器支持的模式不同
+
+**举例**
+
+```python
+from media.sensor import Sensor
+
+# 在传感器初始化之前调用
+sensor_name, modes = Sensor.list_mode(id=2)
+print(f"传感器：{sensor_name}")
+
+if modes:
+    print(f"共支持 {len(modes)} 种模式:")
+    for i, mode in enumerate(modes):
+        print(f"{i}: {mode['width']}x{mode['height']}@{mode['fps']}fps")
+
+# 根据模式列表选择合适的分辨率
+if modes:
+    # 选择 1080P30 模式
+    for mode in modes:
+        if mode['width'] == 1920 and mode['height'] == 1080 and mode['fps'] == 30:
+            print("找到 1080P30 模式")
+            break
+
+# 然后再初始化传感器
+sensor = Sensor(id=2)
+sensor.reset()
+sensor.set_framesize(width=1920, height=1080)
+```
+
+**输出示例**
+
+```shell
+Sensor Mode List (CSI 2, gc2093_csi2):
+---------------------------------------------
+Index  Resolution      FPS   
+---------------------------------------------
+0      1920x1080       30    
+1      1280x720        60    
+2      640x480         90    
+---------------------------------------------
+Total: 3 modes
+传感器：gc2093_csi2
+共支持 3 种模式:
+0: 1920x1080@30fps
+1: 1280x720@60fps
+2: 640x480@90fps
+```
+
+---
