@@ -4,8 +4,6 @@
 
 K230 配备 1 路 MIPI-DSI（1x4 lane），可驱动 MIPI 屏幕或通过接口芯片转换驱动 HDMI 显示器。此外，为了方便调试，我们还支持虚拟显示器，用户可以选择 `VIRT` 输出设备，即使没有 HDMI 显示器或 LCD 屏幕, 也可在 CanMV-IDE 中进行图像预览。
 
-如需增加自定义屏幕，可参考[Display Debugger](./how_to_add_new_mipi_panel.md)
-
 ## 示例
 
 ### 使用 HDMI 输出图像

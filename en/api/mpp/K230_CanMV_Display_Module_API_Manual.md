@@ -8,7 +8,7 @@ This module has significant changes starting from firmware version V0.7. If you 
 
 This manual is intended to guide developers on using the Micro Python API to call the CanMV Display module for image display functionality.
 
-To add a custom screen, refer to [Display Debugger](../../example/media/how_to_add_new_mipi_panel.md).
+To add a custom screen, refer to [RTOS SDK / How to Add Panel](https://www.kendryte.com/k230_rtos/zh/main/advanced_development_guide/how_to_add_display.html).
 
 ## API Introduction
 
@@ -368,6 +368,8 @@ writeback_dump(timeout=1000)
 |           | Display.init(Display.AML020T, width=360, height=480) | 360x480 |
 | JD9852    | Display.init(Display.JD9852, width=320, height=240) | *Default*<br>320x240 |
 |           | Display.init(Display.JD9852, width=240, height=320) | 240x320 |
+| ST7789    | Display.init(Display.ST7789, width=320, height=240) | *Default*<br>320x240 |
+|           | Display.init(Display.ST7789, width=240, height=320) | 240x320 |
 
 ### layer
 

@@ -8,7 +8,7 @@
 
 本手册旨在指导开发人员使用 Micro Python API 调用 CanMV Display 模块，实现图像显示功能。
 
-如需增加自定义屏幕，可参考[Display Debugger](../../example/media/how_to_add_new_mipi_panel.md)
+如需增加自定义屏幕，可参考[RTOS SDK / How to Add Panel](https://www.kendryte.com/k230_rtos/zh/main/advanced_development_guide/how_to_add_display.html)
 
 ## API 介绍
 
@@ -368,6 +368,8 @@ writeback_dump(timeout=1000)
 |         | Display.init(Display.AML020T, width=360, height=480) | 360x480 |
 | JD9852  | Display.init(Display.JD9852, width=320, height=240) | *默认值*<br>320x240 |
 |         | Display.init(Display.JD9852, width=240, height=320) | 240x320 |
+| ST7789  | Display.init(Display.ST7789, width=320, height=240) | *默认值*<br>320x240 |
+|         | Display.init(Display.ST7789, width=240, height=320) | 240x320 |
 
 ### layer
 
