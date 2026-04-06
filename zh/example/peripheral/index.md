@@ -19,4 +19,5 @@ aes.md
 sha256.md
 led.md
 rotary_encoder.md
+usb_hid.md
 ```
