@@ -1,13 +1,13 @@
 # `gc` – Memory Management API Manual
 
-This module implements a subset of the CPython memory management module's functionality. For more details, please refer to the original CPython documentation: [gc](https://docs.python.org/3.5/library/gc.html#module-gc).
+This module implements a subset of the functionality of the CPython memory management module. For detailed information, please refer to the original CPython documentation: [gc](https://docs.python.org/3.5/library/gc.html#module-gc).
 
-On the `K230`, the following interfaces have been added to obtain memory information for the `RT-Smart` system:
+On `K230`, the following interfaces have been added to retrieve memory information of the `RT-Smart` system:
 
-- `sys_total`: System total memory size.
-- `sys_heap`: Used for kernel application memory management.
-- `sys_page`: Used for user application memory management.
-- `sys_mmz`: Used for multimedia driver memory management, suitable for modules like `Sensor`, `Display`, etc.
+- `sys_totoal`: System memory size
+- `sys_heap`: Used for memory management of kernel applications.
+- `sys_page`: Used for memory management of user applications.
+- `sys_mmz`: Used for multimedia driver memory management, applicable to modules such as `Sensor` and `Display`.
 
 ## Functions
 
@@ -17,7 +17,7 @@ On the `K230`, the following interfaces have been added to obtain memory informa
 gc.enable()
 ```
 
-Enables the automatic garbage collection mechanism.
+Enables automatic garbage collection.
 
 ### `disable`
 
@@ -25,7 +25,7 @@ Enables the automatic garbage collection mechanism.
 gc.disable()
 ```
 
-Disables the automatic garbage collection mechanism. While disabled, heap memory allocation is still possible, and garbage collection can be performed manually by calling `gc.collect()`.
+Disables automatic garbage collection. When disabled, heap memory allocation is still possible, and garbage collection can be performed by manually calling `gc.collect()`.
 
 ### `collect`
 
@@ -33,7 +33,7 @@ Disables the automatic garbage collection mechanism. While disabled, heap memory
 gc.collect()
 ```
 
-Manually runs the garbage collection process to reclaim unused memory.
+Manually runs the garbage collection process to reclaim memory that is no longer in use.
 
 ### `mem_alloc`
 
@@ -41,7 +41,7 @@ Manually runs the garbage collection process to reclaim unused memory.
 gc.mem_alloc()
 ```
 
-Returns the number of bytes of currently allocated heap memory.
+Returns the number of bytes of heap memory currently allocated.
 
 ```{admonition} Difference from CPython
 This feature is an extension of MicroPython and is not included in CPython.
@@ -53,7 +53,7 @@ This feature is an extension of MicroPython and is not included in CPython.
 gc.mem_free()
 ```
 
-Returns the number of bytes of currently available heap memory. If the remaining heap memory cannot be determined, it returns `-1`.
+Returns the number of bytes of heap memory currently available. If the amount of remaining heap memory cannot be determined, it returns `-1`.
 
 ```{admonition} Difference from CPython
 This feature is an extension of MicroPython and is not included in CPython.
@@ -65,12 +65,12 @@ This feature is an extension of MicroPython and is not included in CPython.
 gc.threshold([amount])
 ```
 
-Sets or queries the allocation threshold for garbage collection. Garbage collection is usually triggered when heap memory is low. If a threshold is set, garbage collection will also be triggered after allocating more than the set amount of bytes. The `amount` parameter is usually less than the total heap size to trigger collection before the heap is exhausted, reducing memory fragmentation. The effectiveness of this value varies by application, and the optimal value needs to be adjusted according to the application scenario.
+Sets or queries the allocation threshold for garbage collection. Garbage collection is typically triggered when heap memory is low. If a threshold is set, garbage collection will also be triggered after a total of more than the specified number of bytes have been allocated. The `amount` parameter is typically smaller than the entire heap size, with the purpose of triggering collection before the heap is exhausted to reduce memory fragmentation. The effect of this value varies by application, and the optimal value needs to be adjusted based on the application scenario.
 
-Without parameters, this function returns the current threshold setting. A return value of `-1` indicates that the allocation threshold is disabled.
+When called without arguments, this function returns the current threshold setting. A return value of `-1` indicates that the allocation threshold is disabled.
 
 ```{admonition} Difference from CPython
-This function is an extension of MicroPython. CPython has a similar `set_threshold()` function, but due to differences in the garbage collection mechanism, its signature and semantics are different.
+This function is a MicroPython extension. CPython has a similar `set_threshold()` function, but due to differences in garbage collection mechanisms, its signature and semantics differ.
 ```
 
 ### `sys_total`
@@ -79,7 +79,7 @@ This function is an extension of MicroPython. CPython has a similar `set_thresho
 gc.sys_total()
 ```
 
-Queries the system `total` memory size, in bytes.
+Queries the system memory size, in bytes.
 
 ### `sys_heap`
 
@@ -87,7 +87,7 @@ Queries the system `total` memory size, in bytes.
 gc.sys_heap()
 ```
 
-Queries the system `heap` memory usage, returning a tuple containing 3 elements representing `total` (total memory), `used` (used memory), and `free` (available memory), in bytes.
+Queries the usage of the system `heap` memory, returning a tuple containing 3 elements representing `total` (total memory), `used` (used memory), and `free` (available memory), in bytes (Byte).
 
 ### `sys_page`
 
@@ -95,7 +95,7 @@ Queries the system `heap` memory usage, returning a tuple containing 3 elements 
 gc.sys_page()
 ```
 
-Queries the system `page` memory usage, returning a tuple containing 3 elements representing `total` (total memory), `used` (used memory), and `free` (available memory), in bytes.
+Queries the usage of the system `page` memory, returning a tuple containing 3 elements representing `total` (total memory), `used` (used memory), and `free` (available memory), in bytes (Byte).
 
 ### `sys_mmz`
 
@@ -103,4 +103,4 @@ Queries the system `page` memory usage, returning a tuple containing 3 elements 
 gc.sys_mmz()
 ```
 
-Queries the system `mmz` memory usage, returning a tuple containing 3 elements representing `total` (total memory), `used` (used memory), and `free` (available memory), in bytes.
+Queries the usage of the system `mmz` memory, returning a tuple containing 3 elements representing `total` (total memory), `used` (used memory), and `free` (available memory), in bytes (Byte).

@@ -122,4 +122,4 @@ cipher.decrypt()           # 解密
 
 ## 延伸阅读
 
-* 📘 [K230 Ucryptolib 模块 API 文档](../../api/cipher/K230_CanMV_Ucryptolib模块API手册.md)
+* 📘 [K230 Ucryptolib 模块 API 文档](../../api/cipher/k230_canmv_ucryptolib_api_manual.md)

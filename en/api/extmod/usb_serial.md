@@ -2,26 +2,27 @@
 
 ## Overview
 
-The USB Serial module provides functionality for data communication via USB serial ports. This module implements the standard stream protocol interface and supports read/write operations.
+The USB Serial module provides data communication functionality through a USB serial port. This module implements the standard stream protocol interface and supports read/write operations.
 
-This module supports communication with 4G modules via AT commands.
+This module supports communication with 4G modules through AT commands.
 
-## API Definition
+## API Introduction
 
-The Serial class is located in the `usb` module.
+The Serial class belongs to the usb module.
 
 ## Constructor
 
-### `Sserial(path, timeout_ms=300)`
+### `Serial(path, timeout_ms=300)`
 
 Creates a USB Serial object.
 
 **Parameters:**
 
-- `path` (str): Serial device path
-- `timeout_ms` (int): Read/write timeout in milliseconds, defaults to 300ms
+- `path` (str): Serial port device path
+- `timeout_ms` (int): Read/write timeout in milliseconds, default is 300ms
 
-**Returns:**
+**Return Value:**
+
 USB Serial object
 
 **Example:**
@@ -37,27 +38,27 @@ serial = Serial("/dev/ttyUSB1", timeout_ms=300)
 
 ### `open([path])`
 
-Opens the USB serial device.
+Open the USB serial port device.
 
 **Parameters:**
 
-- `path` (str, optional): If provided, will use this path instead of the one specified in the constructor
+- `path` (str, optional): If provided, this path will be used instead of the path specified in the constructor
 
-**Returns:**
+**Return value:**
 
-- `True`: Open successful
-- `False`: Open failed
+- `True`: Opened successfully
+- `False`: Failed to open
 
 **Example:**
 
 ```python
-serial.open()  # Use path specified in constructor
-serial.open("/dev/ttyUSB2")  # Use new path
+serial.open()  # Use the path specified in the constructor
+serial.open("/dev/ttyUSB2")  # Use a new path
 ```
 
 ### `close()`
 
-Closes the USB serial device.
+Close the USB serial port device.
 
 **Example:**
 
@@ -67,43 +68,43 @@ serial.close()
 
 ### `read(size)`
 
-Reads data from the serial port.
+Read data from the serial port.
 
 **Parameters:**
 
 - `size` (int): Number of bytes to read
 
-**Returns:**
-Read data (bytes type)
+**Return value:**
+The data read (bytes type)
 
 ### `readinto(buf)`
 
-Reads data into a buffer.
+Read data into the buffer.
 
 **Parameters:**
 
 - `buf` (bytearray): Target buffer
 
-**Returns:**
-Number of bytes actually read
+**Return value:**
+Actual number of bytes read
 
 ### `readline()`
 
-Reads a line of data until encountering a newline character or timeout.
+Read a line of data until a newline character or timeout is encountered.
 
-**Returns:**
-Line data read (bytes type)
+**Return value:**
+The line data read (bytes type)
 
 ### `write(buf)`
 
-Writes data to the serial port.
+Write data to the serial port.
 
 **Parameters:**
 
-- `buf` (bytes/bytearray): Data to write
+- `buf` (bytes/bytearray): The data to write
 
-**Returns:**
-Number of bytes actually written
+**Return value:**
+Actual number of bytes written
 
 ## Properties
 
@@ -114,38 +115,38 @@ Gets or sets the serial device path.
 **Example:**
 
 ```python
-print(serial.path)  # Get current path
-serial.path = "/dev/ttyUSB1"  # Set new path
+print(serial.path)  # Get the current path
+serial.path = "/dev/ttyUSB1"  # Set a new path
 ```
 
 ### `timeout_ms`
 
-Gets or sets the read/write timeout (milliseconds).
+Gets or sets the read/write timeout duration (in milliseconds).
 
 **Example:**
 
 ```python
-print(serial.timeout_ms)  # Get current timeout
-serial.timeout_ms = 1000  # Set timeout to 1 second
+print(serial.timeout_ms)  # Get the current timeout duration
+serial.timeout_ms = 1000  # Set the timeout duration to 1 second
 ```
 
 ## Stream Protocol Support
 
-The USB Serial object implements the standard stream protocol and can be directly used in contexts requiring stream objects.
+The USB Serial object implements the standard stream protocol and can be used directly in scenarios requiring a stream object.
 
 **Example:**
 
 ```python
-# Read a line of data using readline()
+# Use the readline() method to read a line of data
 line = serial.readline()
 
-# Write data using write()
+# Use the write() method to write data
 serial.write(b"Hello World\n")
 ```
 
 ## Notes
 
-1. The `close()` method is automatically called when the object is destroyed
-1. All read/write operations are controlled by the `timeout_ms` parameter
-1. Calling read/write methods when the serial port is not open will raise an OSError exception
-1. The default device path is "/dev/ttyUSB1" - please modify according to actual device
+1. The `close()` method is automatically called when the object is destroyed to close the serial port
+1. All read and write operations are controlled by the `timeout_ms` parameter
+1. If the serial port is not opened, calling read/write methods will raise an OSError exception
+1. The default device path is "/dev/ttyUSB1", please modify it according to the actual device

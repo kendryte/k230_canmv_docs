@@ -1,10 +1,10 @@
-# Explanation of the DM Code Recognition Routine
+# Data Matrix Code Recognition Routine Explanation
 
 ## Overview
 
-The Data Matrix code is a type of two-dimensional barcode widely used for identifying and tracking small products. It consists of small black and white squares arranged in a rectangular or square grid.
+Data Matrix code is a type of two-dimensional barcode widely used for marking and tracking small products. It consists of small black and white squares arranged in a rectangular or square grid.
 
-CanMV supports the OpenMV algorithm capable of recognizing Data Matrix codes. The relevant interface is `find_datamatrices`.
+CanMV supports the OpenMV algorithm and is able to recognize Data Matrix codes. The relevant interface is `find_datamatrices`.
 
 ## Example
 
@@ -33,19 +33,19 @@ DETECT_HEIGHT = 480
 sensor = None
 
 try:
-    # Construct the Sensor object using default configuration
+    # Construct a Sensor object with default configuration
     sensor = Sensor(width=DETECT_WIDTH, height=DETECT_HEIGHT)
     # Reset the sensor
     sensor.reset()
 
-    # Set output size and format
+    # Set the output size and format
     sensor.set_framesize(width=DETECT_WIDTH, height=DETECT_HEIGHT)
     sensor.set_pixformat(Sensor.GRAYSCALE)
 
     # Initialize display
     Display.init(Display.VIRT, width=DETECT_WIDTH, height=DETECT_HEIGHT, fps=100)
 
-    # Initialize media manager
+    # Initialize the media manager
     MediaManager.init()
     # Start the sensor
     sensor.run()
@@ -65,7 +65,7 @@ try:
             print_args = (matrix.rows(), matrix.columns(), matrix.payload(), (180 * matrix.rotation()) / math.pi, fps.fps())
             print("Matrix [%d:%d], Content \"%s\", Rotation %f (degrees), FPS %f" % print_args)
 
-        # Render the result to the screen
+        # Draw the result to the screen
         Display.show_image(img)
         gc.collect()
 
@@ -77,7 +77,7 @@ finally:
     # Stop the sensor
     if isinstance(sensor, Sensor):
         sensor.stop()
-    # Deinitialize the display
+    # Destroy the display
     Display.deinit()
 
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
@@ -89,16 +89,16 @@ finally:
 
 ### Code Explanation
 
-- **Import Modules**: Import necessary libraries to use sensor, display, and media management functionalities.
-- **Define Image Dimensions**: Set the width and height of the detection image to 640x480.
-- **Sensor Configuration**: Create and configure the sensor object, setting the image output size and format (grayscale image).
-- **Display Initialization**: Configure the display output method, choosing IDE output.
-- **Main Loop**:
+- **Import modules**: Import the necessary libraries to use sensor, display, and media management functions.
+- **Define image dimensions**: Set the width and height of the detection image to 640x480.
+- **Sensor configuration**: Create and configure the sensor object, setting the image output size and format (grayscale image).
+- **Display initialization**: Configure the display output mode, selecting IDE output.
+- **Main loop**:
   - Capture images and check exit conditions.
-  - Recognize Data Matrix codes in the image and draw a red rectangle around the codes.
-  - Print detailed information about the Data Matrix codes, including the number of rows, columns, content, rotation angle, and frame rate.
-- **Exception Handling**: Capture user interruptions or other exceptions, ensuring the sensor stops properly and resources are released.
+  - Recognize Data Matrix codes in the image, and draw a red rectangle around the code.
+  - Print detailed information about the Data Matrix code, including the number of rows, columns, content, rotation angle, and frame rate.
+- **Exception handling**: Capture user interrupts or other exceptions, ensuring the sensor stops normally and resources are released.
 
 ```{admonition} Tip
-For specific interface definitions, please refer to [find_datamatrices](../../api/openmv/image.md#2283-find_datamatrices).
+For specific interface definitions, please refer to [find_datamatrices](../../api/openmv/image.md#find-datamatrices).
 ```

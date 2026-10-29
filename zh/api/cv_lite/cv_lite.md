@@ -12,7 +12,7 @@
 - rgb888格式数据和openmv的`image`模块混合使用，可以使用`to_rgb565()`将其转换使用。
 
 ```{admonition} 注意
-请烧录daliy_build固件实现cv_lite支持：https://kendryte-download.canaan-creative.com/developer/releases/canmv_k230_micropython/daily_build/
+请烧录daliy_build固件实现cv_lite支持：https://download.kendryte.com/developer/releases/canmv_k230_micropython/daily_build/
 ```
 
 ## API 介绍
@@ -1860,6 +1860,363 @@ else:
 **示例**
 
 提供的示例位于`/sdcard/examples/23-CV_Lite/rgb888_pnp_distance_from_corners.py`,请在K230 CanMV IDE中打开运行。
+
+### grayscale_find_lines
+
+**描述**
+
+灰度图直线检测。先做高斯模糊和 Canny 边缘检测，再用概率霍夫变换提取线段。
+
+**语法**
+
+```python
+lines = cv_lite.grayscale_find_lines(image_shape, img_np, canny_thresh1, canny_thresh2,
+                                     gaussian_blur_size, rho, theta, hough_thresh,
+                                     min_line_length, max_line_gap)
+```
+
+**参数**
+
+| 序号 | 参数名称 | 描述 | 类型 |
+|------|----------|------|------|
+| 1 | image_shape | 图像分辨率 `[height, width]` | list[int] |
+| 2 | img_np | 灰度图数据 | ndarray(uint8) |
+| 3 | canny_thresh1 | Canny 低阈值 | int |
+| 4 | canny_thresh2 | Canny 高阈值 | int |
+| 5 | gaussian_blur_size | 高斯模糊核大小，需为正奇数 | int |
+| 6 | rho | 霍夫变换的距离分辨率，单位像素，通常取 1.0 | float |
+| 7 | theta | 霍夫变换的角度分辨率，单位弧度，通常取 `math.pi/180` | float |
+| 8 | hough_thresh | 霍夫累加器阈值，越大检出的线越少越可靠 | int |
+| 9 | min_line_length | 最短线段长度，短于该值的线段被丢弃 | float |
+| 10 | max_line_gap | 同一条线上两段之间允许的最大间隔 | float |
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| list[int] | 扁平存放的线段端点，每 4 个值为一组 `[x1, y1, x2, y2]`。未检测到时返回空列表 |
+
+### rgb888_find_lines
+
+**描述**
+
+RGB888 图像直线检测。内部先转灰度，其余流程与 `grayscale_find_lines` 相同。
+
+**语法**
+
+```python
+lines = cv_lite.rgb888_find_lines(image_shape, img_np, canny_thresh1, canny_thresh2,
+                                  gaussian_blur_size, rho, theta, hough_thresh,
+                                  min_line_length, max_line_gap)
+```
+
+**参数**：与 `grayscale_find_lines` 完全相同，仅第 2 个参数改为 RGB888 数据（HWC 排布）。
+
+**返回值**：与 `grayscale_find_lines` 相同。
+
+### grayscale_find_lines_sobel
+
+**描述**
+
+灰度图直线检测的 Sobel 版本。用 Sobel 算子替代 Canny 生成边缘图，再做概率霍夫变换。相比 Canny 只需要一个阈值，参数更好调，在光照均匀的场景下速度也更快。
+
+**语法**
+
+```python
+lines = cv_lite.grayscale_find_lines_sobel(image_shape, img_np, sobel_thresh,
+                                           gaussian_blur_size, rho, theta,
+                                           hough_thresh, min_line_length, max_line_gap)
+```
+
+**参数**
+
+| 序号 | 参数名称 | 描述 | 类型 |
+|------|----------|------|------|
+| 1 | image_shape | 图像分辨率 `[height, width]` | list[int] |
+| 2 | img_np | 灰度图数据 | ndarray(uint8) |
+| 3 | sobel_thresh | Sobel 边缘图的二值化阈值 | int |
+| 4 | gaussian_blur_size | 高斯模糊核大小，需为正奇数 | int |
+| 5 | rho | 距离分辨率，单位像素 | float |
+| 6 | theta | 角度分辨率，单位弧度 | float |
+| 7 | hough_thresh | 霍夫累加器阈值 | int |
+| 8 | min_line_length | 最短线段长度 | float |
+| 9 | max_line_gap | 同一条线上两段之间允许的最大间隔 | float |
+
+**返回值**：与 `grayscale_find_lines` 相同。
+
+### grayscale_find_lines_raw
+
+**描述**
+
+灰度图直线检测的原始霍夫变换版本。直接在 Sobel 边缘图上做标准霍夫变换，通过 `x_stride` / `y_stride` 对像素做跳采样以降低计算量，适合对速度要求高、线条明显的场景。
+
+**语法**
+
+```python
+lines = cv_lite.grayscale_find_lines_raw(image_shape, img_np, x_stride, y_stride,
+                                         sobel_thresh, rho_step, theta_step, hough_thresh)
+```
+
+**参数**
+
+| 序号 | 参数名称 | 描述 | 类型 |
+|------|----------|------|------|
+| 1 | image_shape | 图像分辨率 `[height, width]` | list[int] |
+| 2 | img_np | 灰度图数据 | ndarray(uint8) |
+| 3 | x_stride | 水平方向像素采样步长，越大越快、精度越低 | int |
+| 4 | y_stride | 垂直方向像素采样步长 | int |
+| 5 | sobel_thresh | Sobel 边缘图的二值化阈值 | int |
+| 6 | rho_step | 距离步长，单位像素 | float |
+| 7 | theta_step | 角度步长，单位弧度 | float |
+| 8 | hough_thresh | 霍夫累加器阈值 | int |
+
+**返回值**：与 `grayscale_find_lines` 相同。
+
+### grayscale_find_lines_no_hough
+
+**描述**
+
+不使用霍夫变换的直线检测。先做 Canny 边缘检测，再提取轮廓并对足够长的轮廓做直线拟合。霍夫变换在边缘点很多时开销大，本接口在边缘稀疏的场景下明显更快，但对断裂的线条不如霍夫变换鲁棒。
+
+**语法**
+
+```python
+lines = cv_lite.grayscale_find_lines_no_hough(image_shape, img_np, canny_thresh1,
+                                              canny_thresh2, gaussian_blur_size,
+                                              min_contour_len)
+```
+
+**参数**
+
+| 序号 | 参数名称 | 描述 | 类型 |
+|------|----------|------|------|
+| 1 | image_shape | 图像分辨率 `[height, width]` | list[int] |
+| 2 | img_np | 灰度图数据 | ndarray(uint8) |
+| 3 | canny_thresh1 | Canny 低阈值 | int |
+| 4 | canny_thresh2 | Canny 高阈值 | int |
+| 5 | gaussian_blur_size | 高斯模糊核大小，需为正奇数 | int |
+| 6 | min_contour_len | 参与直线拟合的最短轮廓长度 | float |
+
+**返回值**：与 `grayscale_find_lines` 相同。
+
+### grayscale_find_corners
+
+**描述**
+
+灰度图角点检测（Shi-Tomasi）。
+
+**语法**
+
+```python
+corners = cv_lite.grayscale_find_corners(image_shape, img_np, max_corners,
+                                         quality_level, min_distance)
+```
+
+**参数**
+
+| 序号 | 参数名称 | 描述 | 类型 |
+|------|----------|------|------|
+| 1 | image_shape | 图像分辨率 `[height, width]` | list[int] |
+| 2 | img_np | 灰度图数据 | ndarray(uint8) |
+| 3 | max_corners | 最多返回的角点数量 | int |
+| 4 | quality_level | 角点质量下限，相对于最强角点的比例，通常取 0.01~0.1 | float |
+| 5 | min_distance | 两个角点之间的最小像素距离 | float |
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| list[int] | 扁平存放的角点坐标，每 2 个值为一组 `[x, y]` |
+
+### rgb888_find_corners_fast
+
+**描述**
+
+RGB888 图像角点检测的加速版本，参数与 [`rgb888_find_corners`](#rgb888_find_corners) 一致，内部使用了更快的实现，精度略有下降。
+
+**语法**
+
+```python
+corners = cv_lite.rgb888_find_corners_fast(image_shape, img_np, max_corners,
+                                           quality_level, min_distance)
+```
+
+**参数**
+
+| 序号 | 参数名称 | 描述 | 类型 |
+|------|----------|------|------|
+| 1 | image_shape | 图像分辨率 `[height, width]` | list[int] |
+| 2 | img_np | RGB888 数据，HWC 排布 | ndarray(uint8) |
+| 3 | max_corners | 最多返回的角点数量 | int |
+| 4 | quality_level | 角点质量下限 | float |
+| 5 | min_distance | 两个角点之间的最小像素距离 | float |
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| list[int] | 扁平存放的角点坐标，每 2 个值为一组 `[x, y]` |
+
+### rgb888_denoise
+
+**描述**
+
+RGB888 图像去噪，提供四种算法。
+
+**语法**
+
+```python
+out = cv_lite.rgb888_denoise(image_shape, img_np, method, strength)
+```
+
+**参数**
+
+| 序号 | 参数名称 | 描述 | 类型 |
+|------|----------|------|------|
+| 1 | image_shape | 图像分辨率 `[height, width]` | list[int] |
+| 2 | img_np | RGB888 数据，HWC 排布 | ndarray(uint8) |
+| 3 | method | 去噪算法，取值见下表 | int |
+| 4 | strength | 去噪强度，对应滤波核大小，需为正奇数 | int |
+
+| method | 算法 | 特点 |
+|--------|------|------|
+| 0 | 均值模糊 | 速度最快，效果一般 |
+| 1 | 高斯模糊 | 边缘更柔和 |
+| 2 | 中值滤波 | 对椒盐噪声特别有效 |
+| 3 | 双边滤波 | 边缘保留最好，速度最慢 |
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| ndarray(uint8) | 去噪后的 RGB888 数据 |
+
+### rgb888_denoise_fast
+
+**描述**
+
+`rgb888_denoise` 的加速版本，`method` 取值含义相同，用自实现的定点运算替代 OpenCV，速度更快、效果略有差异。
+
+**语法**
+
+```python
+out = cv_lite.rgb888_denoise_fast(image_shape, img_np, method, strength)
+```
+
+**参数**：与 `rgb888_denoise` 相同。
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| ndarray(uint8) | 去噪后的 RGB888 数据 |
+
+### rgb888_white_balance_gray_world_adjustable
+
+**描述**
+
+强度可调的灰度世界白平衡。相比 `rgb888_white_balance_gray_world_fast` 的全量校正，本接口通过 `alpha` 控制校正力度，便于在"偏色"和"过校正"之间取平衡。
+
+**语法**
+
+```python
+out = cv_lite.rgb888_white_balance_gray_world_adjustable(image_shape, img_np, alpha)
+```
+
+**参数**
+
+| 序号 | 参数名称 | 描述 | 类型 |
+|------|----------|------|------|
+| 1 | image_shape | 图像分辨率 `[height, width]` | list[int] |
+| 2 | img_np | RGB888 数据，HWC 排布 | ndarray(uint8) |
+| 3 | alpha | 校正强度，0 表示不校正，1 表示完全按灰度世界假设校正 | float [0~1] |
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| ndarray(uint8) | 白平衡后的 RGB888 数据 |
+
+### rgb888_perspective_transform
+
+**描述**
+
+透视变换。把图像中一块四边形区域矫正成矩形输出，常用于把倾斜拍摄的文档、车牌、标牌拉正。
+
+**语法**
+
+```python
+out = cv_lite.rgb888_perspective_transform(image_shape, img_np, roi, dst_pts,
+                                           out_width, out_height)
+```
+
+**参数**
+
+| 序号 | 参数名称 | 描述 | 类型 |
+|------|----------|------|------|
+| 1 | image_shape | 图像分辨率 `[height, width]` | list[int] |
+| 2 | img_np | RGB888 数据，HWC 排布 | ndarray(uint8) |
+| 3 | roi | 感兴趣区域 `[x, y, width, height]` | list[int] |
+| 4 | dst_pts | 源四边形的四个顶点 `[x1, y1, x2, y2, x3, y3, x4, y4]` | list[int] |
+| 5 | out_width | 输出图像宽度，必须为正 | int |
+| 6 | out_height | 输出图像高度，必须为正 | int |
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| ndarray(uint8) | shape 为 `[1, out_height, out_width, 3]` 的矫正结果 |
+
+```{admonition} 注意
+:class: warning
+`out_width` 或 `out_height` 不为正时抛出 `ValueError: output shape must be positive`；输出尺寸过大时抛出 `OverflowError: output image too large`。
+```
+
+### save_image
+
+**描述**
+
+把 RGB888 数据保存成图片文件，格式由文件扩展名决定（如 `.jpg`、`.png`）。
+
+**语法**
+
+```python
+cv_lite.save_image("/sdcard/out.jpg", image_shape, img_np)
+```
+
+**参数**
+
+| 序号 | 参数名称 | 描述 | 类型 |
+|------|----------|------|------|
+| 1 | save_path | 保存路径 | str |
+| 2 | image_shape | 图像分辨率 `[height, width]` | list[int] |
+| 3 | img_np | RGB888 数据，HWC 排布 | ndarray(uint8) |
+
+**返回值**：无。
+
+### load_image
+
+**描述**
+
+从文件读取图片，返回 `ulab.numpy.ndarray`，可直接送入其它 `cv_lite` 接口或 AI 预处理。
+
+**语法**
+
+```python
+img_np = cv_lite.load_image("/sdcard/test.jpg")
+```
+
+**参数**
+
+| 序号 | 参数名称 | 描述 | 类型 |
+|------|----------|------|------|
+| 1 | file_path | 图片文件路径 | str |
+
+**返回值**
+
+| 返回值 | 描述 |
+|--------|------|
+| ndarray(uint8) | shape 为 `[1, height, width, channel]` 的图像数据。返回的是独立的一份拷贝，与文件无关联 |
 
 ## 优化对比
 

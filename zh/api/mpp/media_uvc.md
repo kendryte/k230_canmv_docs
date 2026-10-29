@@ -254,7 +254,10 @@ print(mode)
 
 ### 示例 1：MJPEG 软解显示
 
-对应工程示例：`src/canmv/resources/examples/02-Media/uvc.py`
+对应例程：
+
+- 开发板固件路径：`/sdcard/examples/02-Media/uvc.py`
+- SDK 源码路径：`src/canmv/resources/examples/02-Media/uvc.py`
 
 ```python
 import time, gc
@@ -298,7 +301,10 @@ finally:
 
 ### 示例 2：MJPEG 硬解后再做 CSC
 
-对应工程示例：`src/canmv/resources/examples/02-Media/uvc_with_csc.py`
+对应例程：
+
+- 开发板固件路径：`/sdcard/examples/02-Media/uvc_with_csc.py`
+- SDK 源码路径：`src/canmv/resources/examples/02-Media/uvc_with_csc.py`
 
 ```python
 import time, gc

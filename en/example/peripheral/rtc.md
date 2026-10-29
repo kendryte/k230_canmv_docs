@@ -1,37 +1,76 @@
-# RTC Example
+# RTC Real-Time Clock Usage Tutorial
 
-## Overview
+## What is RTC?
 
-The K230 provides an RTC (Real-Time Clock) module that allows users to set and get the current system time, suitable for applications that require time tracking.
+**RTC (Real-Time Clock)**
+is a clock module independent of the main processor, used to track the current date and time, retaining the set time even after a system restart (if battery-powered). It is widely used in:
 
-## Example
+- Data timestamp recording (e.g., logs)
+- Scheduled trigger control
+- Low-power wake-up scenarios
 
-The following example demonstrates how to use the RTC interface to get and set the system time.
+## K230 RTC Features
+
+| Feature       | Description                                                |
+| --------- | --------------------------------------------------- |
+| Module Support | K230 has 1 built-in RTC module                          |
+| Precision     | Second-level precision, supports setting to microseconds        |
+| Typical Applications | Time synchronization, date display, event scheduling             |
+| Time Format   | Returns tuple format `(year, month, day, weekday, hour, minute, second, microsecond)` |
+
+## Application Example: Getting and Setting System Time
+
+This example demonstrates how to use the `RTC` module to set and read the system time.
+
+### Example Code
 
 ```python
 from machine import RTC
 
-# Instantiate RTC
+# ========== Initialize RTC ==========
 rtc = RTC()
 
-# Get current time
-print(rtc.datetime())
+# ========== Get Current Time ==========
+print("Current time:", rtc.datetime())
 
-# Set current time
+# ========== Set Current Time ==========
+# Set to: February 28, 2024 (Wednesday) 23:59:00.000000
 rtc.init((2024, 2, 28, 2, 23, 59, 0, 0))
+print("After new time set:", rtc.datetime())
 ```
 
-## Code Explanation
+## Interface Description
 
-1. **Instantiate RTC**:
-   - Create an `RTC` object to access RTC functionalities.
+| Method Name         | Description                                                |
+| ---------------- | ------------------------------------------------- |
+| `RTC()`          | Create RTC instance                                         |
+| `datetime()`     | Get the current RTC time, return a tuple                                  |
+| `init(datetime)` | Set the RTC time, the parameter is an 8-element tuple `(year, month, day, weekday, hour, minute, second, microsecond)` |
 
-1. **Get current time**:
-   - Call the `datetime()` method to get the current system time, which returns in the format `(year, month, day, weekday, hour, minute, second, microsecond)`.
+## Example Analysis
 
-1. **Set current time**:
-   - Call the `init()` method to set the current time. The tuple parameter includes the year, month, day, weekday, hour, minute, second, and microsecond.
+1. **Initialize RTC Object**
+   `rtc = RTC()` creates and binds a real-time clock instance.
 
-```{admonition} Tip
-For detailed interfaces and usage of the RTC module, please refer to the [API documentation](../../api/machine/K230_CanMV_RTC_Module_API_Manual.md)
-```
+1. **Get Current Time**
+   `rtc.datetime()` returns the current set time tuple, e.g., `(2024, 2, 28, 2, 23, 59, 0, 0)` represents February 28, 2024, Wednesday 23:59:00.
+
+1. **Set Current Time**
+   `rtc.init(...)` can set a new time, usually used to synchronize an external time source at program startup.
+
+## Time Tuple Description
+
+| Index | Meaning | Example Value      |
+| -- | -- | -------- |
+| 0  | Year  | 2024     |
+| 1  | Month  | 2        |
+| 2  | Day  | 28       |
+| 3  | Weekday | 2 (0=Sunday) |
+| 4  | Hour | 23       |
+| 5  | Minute | 59       |
+| 6  | Second  | 0        |
+| 7  | Microsecond | 0        |
+
+## Further Reading
+
+- [K230 RTC API Documentation](../../api/machine/k230_canmv_rtc_api_manual.md)

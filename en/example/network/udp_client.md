@@ -1,191 +1,68 @@
-# Explanation of the UDP-Client Example
+# UDP Client Example Explanation
 
-## Environment Preparation
+## Example Location
 
-To ensure a smooth demonstration of UDP communication, we need to confirm that the following environment is correctly configured:
+- Development board firmware path: `/sdcard/examples/14-Socket/udp_clinet.py`
+- SDK source code path: `src/canmv/resources/examples/14-Socket/udp_clinet.py`
 
-### Hardware Connection
+The `clinet` in the filename follows the actual spelling used in the current firmware and source code directories. This example uses the development board as a UDP sender, continuously sending 10 datagrams to the computer.
 
-- Ensure that your CanMV development board and computer are connected to the same router or switch via Ethernet cable to form a local area network (LAN).
-- Ensure that the router or switch is working properly to guarantee network stability.
+## Preparation Before Running
 
-### Disable Firewall
-
-- To avoid the firewall blocking UDP communication, it is recommended to temporarily disable the computer's firewall.
-
-```{image} ../../../zh/example/images/network/image-20240722145319713.png
-:scale: 50 %
-```
-
-### Tools Preparation
-
-- Download and install [NetAssist Network Debugging Assistant](https://www.bing.com/search?q=netassist+cmsoft) as a network communication testing tool to help with sending and receiving network data.
-
-### Obtain IP Address
-
-- Open the command prompt (CMD), enter `ipconfig`, and record the IP address of the computer's network card for subsequent configuration and testing.
-
-```{image} ../../../zh/example/images/network/image-20240722145500693.png
-:scale: 50 %
-```
-
-## Client Example Analysis
-
-This UDP client example demonstrates how to create a simple UDP client, including connecting to a server, sending data, and closing the connection. You can learn the basic methods of building UDP communication applications through this example.
-
-### Import Necessary Libraries
+First, start a UDP debugging tool on the computer and listen on a port, then modify the network parameters and target address in the script:
 
 ```python
-import socket  
-import network  
-import time
+NETWORK_TYPE = "wifi_sta"
+WLAN_DEVICE = "auto"
+WIFI_SSID = "TEST"
+WIFI_PASSWORD = "12345678"
+NETWORK_TIMEOUT = 20
 ```
 
-- The `socket` library is responsible for creating network communication sockets.
-- The `network` library is used to configure network interfaces, such as enabling LAN or WLAN.
-- The `time` library provides delay operations, usually used to control data sending frequency or timeout handling.
-
-### Configure Network Interface
-
 ```python
-def network_use_wlan(is_wlan=True):
-    if is_wlan:
-        sta = network.WLAN(0)
-        sta.connect("TEST", "12345678")
-        print(sta.status())
-        while sta.ifconfig()[0] == '0.0.0.0':
-            os.exitpoint()
-        print(sta.ifconfig())
-        ip = sta.ifconfig()[0]
-        return ip
-    else:
-        a = network.LAN()
-        if not a.active():
-            raise RuntimeError("LAN interface is not active.")
-        a.ifconfig("dhcp")
-        print(a.ifconfig())
-        ip = a.ifconfig()[0]
-        return ip
+ai = socket.getaddrinfo("192.168.1.110", 8080)
 ```
 
-This function configures the network interface based on whether a wireless network (WLAN) or a wired network (LAN) is chosen, with the following steps:
+Change `192.168.1.110` to the IP that allows communication between the computer and the development board, change `8080` to the UDP listening port on the computer side, and allow that UDP port through the firewall.
 
-1. **WLAN Mode**: Attempts to connect to a Wi-Fi network and waits to obtain a valid IP address before returning.
-1. **LAN Mode**: Activates the LAN interface and uses DHCP mode to obtain an IP address.
+## Code Flow
 
-### Create UDP Socket
+### 1. Connect to the Network
 
 ```python
-# Get the server's IP and port number  
-ai = socket.getaddrinfo('172.16.1.174', 8080)
-print("Address infos:", ai)  
-addr = ai[0][-1]  # Extract IP and port number
+netif, _ = connect_network(...)
+```
 
-print("Connecting to address:", addr) 
-# Create UDP socket
+The common network library waits for the interface to obtain an IP and selects the default uplink interface.
+
+### 2. Resolve the Target Address and Create a UDP Socket
+
+```python
+addr = socket.getaddrinfo("192.168.1.110", 8080)[0][-1]
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 ```
 
-Here, the server's IP and port information is obtained through `socket.getaddrinfo`, and the address and port number are extracted. Then, a UDP socket is created.
+`SOCK_DGRAM` indicates UDP. Unlike TCP, it does not need to establish a connection beforehand; each send specifies the target address directly.
 
-### Send Data
+### 3. Send 10 Datagrams
 
 ```python
-# Send test messages
 for i in range(10):
-    message = "K230 UDP client send test {0} \r\n".format(i)
-    print("Sending:", message)
-    # Encode the message into bytes and send
-    bytes_sent = s.sendto(message.encode(), addr)
-    print("Bytes sent:", bytes_sent)
-    # Pause for a while before the next send
+    message = "K230 udp client send test {0} \r\n".format(i)
+    s.sendto(message, addr)
     time.sleep(0.2)
 ```
 
-In the loop, the program generates test messages and sends them to the specified server address using the `sendto` function. The message needs to be converted into a byte string before sending. After sending successfully, the number of bytes sent is printed, and a short delay is set.
+Each `sendto()` corresponds to an independent UDP datagram, and the receiving end can preserve the datagram boundaries. UDP does not guarantee delivery, ordering, or deduplication; application-layer acknowledgment and retransmission are required when reliability is needed.
 
-### Close Socket
+### 4. Close the Socket
 
-```python
-# Close the socket
-s.close()
-print("Client ended.")
-```
+After the script finishes sending, it waits for 1 second, closes the Socket, and prints `end`. This example only sends data and does not call `recvfrom()`, so it will not read the server's reply.
 
-After the data is sent, the socket is closed to release resources.
+## Running and Verification
 
-### Complete Example
-
-```python
-import socket
-import os
-import time
-import network
-
-def network_use_wlan(is_wlan=True):
-    if is_wlan:
-        sta = network.WLAN(0)
-        sta.connect("TEST", "12345678")
-        print(sta.status())
-        while sta.ifconfig()[0] == '0.0.0.0':
-            os.exitpoint()
-        print(sta.ifconfig())
-        ip = sta.ifconfig()[0]
-        return ip
-    else:
-        a = network.LAN()
-        if not a.active():
-            raise RuntimeError("LAN interface is not active.")
-        a.ifconfig("dhcp")
-        print(a.ifconfig())
-        ip = a.ifconfig()[0]
-        return ip
-
-def udpclient():
-    # Configure network interface
-    network_use_wlan(True)
-  
-    # Get server address and port number
-    ai = socket.getaddrinfo('192.168.1.110', 8080)
-    print("Address infos:", ai)
-    addr = ai[0][-1]
-
-    print("Connect address:", addr)
-    # Create UDP socket
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-    for i in range(10):
-        message = "K230 UDP client send test {0} \r\n".format(i)
-        print("Sending:", message)
-        # Send string
-        bytes_sent = s.sendto(message.encode(), addr)
-        print("Bytes sent:", bytes_sent)
-        time.sleep(0.2)
-    
-    # Close the socket
-    s.close()
-    print("Client ended.")
- 
-# Start the client
-udpclient()
-```
-
-## Run and Test
-
-1. Use NetAssist Network Debugging Assistant to establish a UDP connection:
-
-```{image} ../../../zh/example/images/network/image-20240722171950467.png
-:scale: 50 %
-```
-
-1. Modify the server IP address in the code:
-
-```python
-ai = socket.getaddrinfo("172.16.1.174", 8080)
-```
-
-1. After running the example, NetAssist will display the received UDP packets:
-
-```{image} ../../../zh/example/images/network/image-20240722172037608.png
-:scale: 50 %
-```
+1. First, start the UDP receiving tool on the computer.
+2. Run `/sdcard/examples/14-Socket/udp_clinet.py`.
+3. The computer should receive 10 datagrams with sequence numbers `0` to `9`.
+4. If the serial port shows the message was sent successfully but the computer didn't receive it, focus on checking the target IP, UDP port, firewall, and the client isolation settings of the Wi-Fi
+   hotspot.

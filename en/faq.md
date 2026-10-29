@@ -2,63 +2,63 @@
 
 ## Hardware Issues
 
-### Computer Not Recognizing the Correct USB Device
+### Computer does not recognize the correct USB device
 
-#### Displaying `K230 USB Boot Device`
+#### Shows `K230 USB Boot Device`
 
-When `K230 USB Boot Device` appears, it may be due to the following reasons:
+When `K230 USB Boot Device` appears, it may be caused by the following reasons:
 
-- The startup media has not been flashed with firmware, causing the chip to fail to start and automatically enter USB flashing mode.
-- The Boot mode is set incorrectly, causing the chip to fail to read the correct firmware and thus fail to start.
+- The firmware is not burned into the boot medium, causing the chip to fail to boot and automatically enter USB burning mode.
+- The Boot mode is set incorrectly, causing the chip to fail to read the correct firmware, resulting in a boot failure.
 
-You can force the K230 to enter USB flashing mode by holding down the BOOT button. At this point, `K230 USB Boot Device` will be displayed on the computer, and you can use the [K230 Burning Tool](https://kendryte-download.canaan-creative.com/k230/downloads/burn_tool/) to flash the firmware.
+You can force the K230 into USB burning mode by holding down the BOOT button. At this point, `K230 USB Boot Device` will be displayed on the computer, and you can use [K230 Burning Tool](https://download.kendryte.com/k230/downloads/burn_tool/) to burn the firmware.
 
-When using `K230 USB Boot Device`, you need to install the corresponding driver through [Zadig](https://zadig.akeo.ie/) to use the flashing tool properly.
+When using `K230 USB Boot Device`, you need to install the corresponding driver through [Zadig](https://zadig.akeo.ie/) in order to use the burning tool properly.
 
-#### Displaying Unknown USB Device (Device Descriptor Request Failed)
+#### Shows an unknown USB device (device descriptor request failed)
 
-This situation is usually caused by flashing the wrong firmware, resulting in U-Boot failing to start. Please re-flash the correct firmware and restart the device to resolve this issue.
+This situation is usually caused by burning the wrong firmware, resulting in U-Boot failing to start. Please re-burn the correct firmware and restart the device to resolve this issue.
 
-### How to light up the LED light (WS2812) on CanMV-K230 V1.1
+### CanMV-K230 V1.1 How to Light Up LED (WS2812)
 
-The `CanmV-K230-V1.1` development board needs to modify the hardware to light up the onboard `LED` light
+The `CanmV-K230-V1.1` development board requires hardware modification to light up the onboard `LED`
 
-![how-to-fix](https://www.kendryte.com/api/post/attachment?id=435)
+![how-to-fix](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/dbd335ff2e62.jpg)
 
 ## SDK Issues
 
-### IDE Cannot Connect to Canmv-K230 Development Board
+### IDE Unable to Connect to Canmv-K230 Development Board
 
-1. Ensure that both USB ports of the development board are correctly connected to the computer.
-1. Confirm that the firmware flashed on the TF card starts with "CanMV-K230_micropython"; other types of firmware will not connect.
-1. Check if "USB Serial Device (COMxx)" is displayed in the computer's Device Manager. If not, try reconnecting the USB cable or using a different USB cable.
+1. Ensure that both USB interfaces of the development board are properly connected to the computer.
+1. Confirm that the firmware burned in the TF card starts with "CanMV-K230_micropython"; other types of firmware will not be able to connect.
+1. Check whether "USB Serial Device (COMxx)" is displayed in the computer's Device Manager. If it is not displayed, try unplugging and replugging the USB cable or replacing the USB cable.
 
 ### Using the Virtual U Disk
 
-Starting from version V0.5, CanMV supports the virtual U disk function, and the TF card of the development board will be virtualized as a U disk. After the system starts, you will see a device named "CanMV" in the "This PC" section under Devices and Drives. You can operate the TF card like a regular U disk. It stores sample codes for MicroPython, and it is recommended to use these samples first to ensure compatibility with the current image version.
+Since version V0.5, CanMV supports the virtual U disk function, and the TF card of the development board will be virtualized as a U disk. After the system starts, you will see a device named "CanMV" in the "This PC" section under Devices and Drives. You can operate the TF card just like a normal U disk. It contains MicroPython sample code, and it is recommended to prioritize using these samples to ensure compatibility with the current image version.
 
 ## nncase Issues
 
-(This section to be supplemented)
+(This section is to be supplemented)
 
-## AI Demo Issues
+## AI demo Issues
 
-(This section to be supplemented)
+(This section is to be supplemented)
 
 ## IDE Issues
 
 ### IDE Displays Low Image Frame Rate
 
-The IDE by default displays 1080P HDMI images transmitted through the VideoOutput module. Due to the limitation of USB transmission speed, the frame rate is only 15-20 FPS.
+By default, the IDE displays 1080P HDMI images transmitted back through the VideoOutput module. Due to the limitation of USB transfer speed, the frame rate is only 15-20 FPS.
 
-You can use the `image.compress_for_ide()` function to send specified images. Refer to the camera_480p.py example; the hardware encoder can achieve 30 FPS when sending 480P images. Note that the images must meet the following conditions:
+You can use the `image.compress_for_ide()` function to send a specified image. Refer to the camera_480p.py example; the hardware encoder can reach 30 FPS when sending 480P images. Note that the image must meet the following conditions:
 
-1. The image source must be the vb cache obtained through `sensor.snapshot()`.
+1. The image source must be a vb buffer obtained through `sensor.snapshot()`.
 1. The physical address of the image buffer must be aligned to 4096.
 1. The image format must be YUV420SP, YUV422SP, ARGB8888, or BGRA8888.
 
-If the image does not meet the above requirements, `compress_for_ide()` will use the CPU for encoding, and the frame rate will decrease.
+If the image does not meet the above requirements, `compress_for_ide()` will use the CPU for encoding, and the frame rate will be reduced.
 
-### Methods to Improve Frame Rate
+### Methods to Increase Frame Rate
 
-- Select `Displ.VIRT` as the display output device and set an appropriate resolution and frame rate to achieve a higher frame rate.
+- Select `Displ.VIRT` as the display output device, and set an appropriate resolution and frame rate to achieve a higher frame rate.

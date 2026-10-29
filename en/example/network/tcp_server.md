@@ -1,198 +1,92 @@
 # TCP Server Example Explanation
 
-## Environment Preparation
+## Example Location
 
-To ensure a smooth demonstration of TCP communication, we need to confirm that the following environment is correctly configured:
+- Development board firmware path: `/sdcard/examples/14-Socket/tcp_server.py`
+- SDK source code path: `src/canmv/resources/examples/14-Socket/tcp_server.py`
 
-### Hardware Connection
+This example uses the development board as a TCP server, waits for connections on port `8080`, sends a welcome message to the client, and echoes back received data.
 
-- Ensure that your CanMV development board and computer are connected to the same router or switch via Ethernet cable, forming a local area network (LAN).
-- Ensure that the router or switch is functioning properly to guarantee network connection stability.
+## Preparation Before Running
 
-### Disable Firewall
-
-- To avoid the firewall blocking TCP communication, it is recommended to temporarily disable the firewall on your computer.
-
-```{image} ../../../zh/example/images/network/image-20240722145319713.png
-:scale: 50%
-```
-
-### Tool Preparation
-
-- Download and install [NetAssist Network Debugging Assistant](https://www.bing.com/search?q=netassist+cmsoft) as a network communication testing tool to help achieve network data transmission and reception.
-
-### Obtain IP Address
-
-- Open the Command Prompt (CMD), enter `ipconfig`, and query and record the IP address of the computer's network card for subsequent configuration and testing.
-
-```{image} ../../../zh/example/images/network/image-20240722145500693.png
-:scale: 50%
-```
-
-## Server Example Analysis
-
-### Import Necessary Libraries
+Configure the network connection method at the top of the script:
 
 ```python
-import socket  
-import network  
-import time
+NETWORK_TYPE = "wifi_sta"  # "default", "lan", "wifi_sta" or "wifi_ap"
+WLAN_DEVICE = "auto"       # "auto", "usb", "sdio" or "spi"
+WIFI_SSID = "TEST"
+WIFI_PASSWORD = "12345678"
+NETWORK_TIMEOUT = 20
 ```
 
-- **socket**: Provides the functionality to create sockets, which is the foundation of network communication.
-- **network**: Used to configure network interfaces (such as LAN and WLAN).
-- **time**: Can be used for handling delay operations or network timeout control.
+A TCP client or network debugging tool is required on the computer side, and it must be able to access the IP address obtained by the development board.
 
-### Define Service Content
+## Code Flow
+
+### 1. Connect to Network and Obtain IP
 
 ```python
-CONTENT = b"""  
-Hello #%d from k230 canmv MicroPython!  
-"""
+netif, ip = connect_network(...)
 ```
 
-- Defines the content that the server will send to the client. `%d` is used to insert the current connection count.
+After a successful connection, `ip` is used to output `tcp server <IP> port:8080`, which is the address the client should connect to.
 
-### Create and Configure the Server
+### 2. Create and configure the listening Socket
 
 ```python
-def server():  
-    ip = network_use_wlan(True)  # Obtain the IP of the network interface
-
-    # Create a socket and bind it to the specified address and port  
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)  
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Allow address reuse
-    ai = socket.getaddrinfo(ip, 8080)  # Get address information  
-    addr = ai[0][-1]  # Extract address and port number  
-    s.bind(addr)  # Bind the socket to the address and port  
-    s.listen(5)  # Start listening, allowing up to 5 clients to wait for connection
-  
-    print("tcp server %s port:%d\n" % (ip, 8080))
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+addr = socket.getaddrinfo("0.0.0.0", 8080)[0][-1]
+s.bind(addr)
+s.settimeout(0)
+s.listen(5)
 ```
 
-- This part of the code creates a TCP server and binds it to the development board's IP address and port 8080. `listen(5)` indicates that up to 5 clients are allowed to wait for connection.
+- `SOCK_STREAM` creates a TCP Socket.
+- `SO_REUSEADDR` makes it easier to rebind to the same port after the script restarts.
+- `0.0.0.0` listens on all IPv4 interfaces and does not rely on dynamic netdev names.
+- `settimeout(0)` uses non-blocking mode, and `os.exitpoint()` can still be called during the wait to respond to exit requests.
 
-### Handle Client Connections
+### 3. Accept connection
 
 ```python
-counter = 1  
-while True:  
-    # Accept client connection  
-    res = s.accept()  
-    client_sock, client_addr = res  # Get client socket and address
-    print("Client address:", client_addr)
-  
-    client_sock.setblocking(False)  # Set non-blocking mode
-  
-    # Send message to client  
-    client_sock.write(CONTENT % counter)  
-  
-    while True:  
-        try:  
-            h = client_sock.read()  # Try to read client data
-            if h:  
-                print(h)  
-                client_sock.write(b"recv: " + h)  # Reply to client
-  
-            if b"end" in h:  # If "end" is received, close the connection  
-                client_sock.close()  
-                break  
-        except Exception as e:  
-            print("Error:", e)  
-            time.sleep(0.1)  # Wait a bit after encountering an error
-          
-    counter += 1  
-    if counter > 10:  
-        print("server exit!")  
-        s.close()  # Close the server
-        break
+client_sock, client_addr = s.accept()
+client_sock.setblocking(False)
 ```
 
-- This code segment handles each client connection and loops to listen for data while communicating with the client. When the "end" character is received, the server closes the connection with that client.
-- To handle exceptions in non-blocking mode, `try-except` is used to manage potential errors during data reading.
+When there are no pending connections, a non-blocking `accept()` may return `errno == 11`, and the example will continue to wait. After the connection is established, the client address is printed, and a welcome message containing the connection count is sent.
 
-### Complete Code
+### 4. Read and echo data
 
 ```python
-import socket
-import network
-import time, os
-
-CONTENT = b"""
-Hello #%d from k230 canmv MicroPython!
-"""
-
-def network_use_wlan(is_wlan=True):
-    if is_wlan:
-        sta = network.WLAN(0)
-        sta.connect("TEST", "12345678")
-        print(sta.status())
-        while sta.ifconfig()[0] == '0.0.0.0':
-            os.exitpoint()
-        print(sta.ifconfig())
-        ip = sta.ifconfig()[0]
-        return ip
-    else:
-        a = network.LAN()
-        if not a.active():
-            raise RuntimeError("LAN interface is not active.")
-        a.ifconfig("dhcp")
-        print(a.ifconfig())
-        ip = a.ifconfig()[0]
-        return ip
-
-def server():
-    ip = network_use_wlan(True)
-
-    counter = 1
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    ai = socket.getaddrinfo(ip, 8080)
-    addr = ai[0][-1]
-    s.bind(addr)
-    s.listen(5)
-    print("tcp server %s port:%d\n" % (ip, 8080))
-
-    while True:
-        res = s.accept()
-        client_sock = res[0]
-        client_addr = res[1]
-        print("Client address:", client_addr)
-        client_sock.setblocking(False)
-
-        client_stream = client_sock
-        client_stream.write(CONTENT % counter)
-
-        while True:
-            h = client_stream.read()
-            if h:
-                print(h)
-                client_stream.write(b"recv: " + h)
-            if b"end" in h:
-                client_stream.close()
-                break
-          
-        counter += 1
-        if counter > 10:
-            print("server exit!")
-            s.close()
-            break
-
-server()
+h = client_stream.read()
+if h is None:
+    continue
+if h != b"":
+    print(h)
+    client_stream.write("recv :%s" % h)
 ```
 
-## Operation Phenomenon and Instructions
+`None` means there is currently no data; non-empty data will be printed to the serial port and echoed back with `recv :` prepended. Since TCP does not preserve message boundaries, formal applications should define their own fixed-length, delimiter-based, or length-field protocols.
 
-1. Run the above server code and observe that the serial terminal will print the server's IP address and port number.
+### 5. Connection lifecycle
 
-```{image} ../../../zh/example/images/network/image-20240722162100719.png
-:scale: 50%
+The example uses data containing `end` as the end marker for the current connection, closes the client Socket, and then returns to `accept()` to wait for the next connection:
+
+```python
+if b"end" in h:
+    client_stream.close()
+    break
 ```
 
-1. Open NetAssist Network Debugging Assistant, configure it as a TCP client, and enter the IP address and port number displayed by the server terminal, then click "Connect":
+`read()` returns byte data, so the end marker should also use `b"end"`. If the current script still uses the string `"end"`, please fix it according to the writing method above first; otherwise, the runtime, which strictly distinguishes between strings and bytes, will report a type error. After the count exceeds 10, the service closes the listening Socket and exits. This example handles connections one client at a time; when persistent concurrent service is needed, connection state management and multi-client scheduling should be added.
 
-```{image} ../../../zh/example/images/network/image-20240722162513633.png
-:scale: 50%
-```
+## Running and verification
 
-1. After a successful connection, the client will receive a message from the server.
+1. Run the script and note the IP and `8080` port output on the serial port.
+2. Connect to this address in a computer TCP client.
+3. Confirm that the computer receives the welcome message, then send text.
+4. The serial port should print the received bytes, and the computer side should receive the echo with the `recv :` prefix.
+5. Send `end` to end the current connection.
+
+When the connection fails, check whether the development board's IP has changed, whether both ends are in a reachable network, and whether TCP `8080` is blocked by a firewall.

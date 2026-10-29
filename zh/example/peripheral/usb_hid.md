@@ -4,7 +4,13 @@
 
 CanMV 提供 `usb` 模块下的 HID 输入封装，可直接读取 USB 键盘、鼠标和触摸输入。
 
-当前固件内置了 3 个配套示例：
+当前固件内置了 3 个配套例程。开发板固件路径分别为：
+
+- `/sdcard/examples/03-Machine/usb_hid_keyboard.py`
+- `/sdcard/examples/03-Machine/usb_hid_mouse.py`
+- `/sdcard/examples/03-Machine/usb_hid_touch.py`
+
+对应的 SDK 源码路径分别为：
 
 - `src/canmv/resources/examples/03-Machine/usb_hid_keyboard.py`
 - `src/canmv/resources/examples/03-Machine/usb_hid_mouse.py`

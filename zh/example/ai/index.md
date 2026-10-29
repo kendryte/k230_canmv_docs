@@ -5,8 +5,11 @@
 
 nncase_usage.md
 yolov8n_detection.md
-AI_Demo说明文档.md
-Ai2d_Examples.md
-YOLO大作战.md
-CloudPlat_Deploy.md
+ai_demo_user_manual.md
+ai2d_examples.md
+yolo_battle.md
+cloudplat_deploy.md
+app_center.md
+gesture_controlled_light.md
+open_kws_app.md
 ```

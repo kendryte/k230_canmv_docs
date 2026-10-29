@@ -8,7 +8,11 @@ K230 配备 1 路 MIPI-DSI（1x4 lane），可驱动 MIPI 屏幕或通过接口�
 
 ### 使用 HDMI 输出图像
 
-本示例通过 HDMI 显示屏输出 1080P 图像。
+本示例列出当前固件支持的显示模式，选择 LT9611 HDMI 的默认模式，并根据实际显示尺寸创建图像。
+
+```{note}
+在使用较大分辨率并开启 `to_ide=True` 将画面传输到 IDE 预览时，画面偶尔会出现闪烁。这是已知问题，我们将在后续版本中修复。
+```
 
 ```python
 import time
@@ -19,20 +23,24 @@ import sys
 from media.display import *
 from media.media import *
 
-DISPLAY_WIDTH = ALIGN_UP(1920, 16)
-DISPLAY_HEIGHT = 1080
+DISPLAY_TYPE = Display.LT9611
 
 def display_test():
     print("display test")
 
-    # 创建用于绘图的图像
-    img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
-    # 使用 HDMI 作为显示输出
-    Display.init(Display.LT9611, to_ide=True)
+    print("Available display modes:")
+    for mode in Display.list_modes():
+        print(mode)
+
+    # 从上面显示的 Display.<TYPE> 值中选择一个
+    Display.init(DISPLAY_TYPE, to_ide=True)
     # 初始化媒体管理器
     MediaManager.init()
 
     try:
+        # 根据初始化后的显示尺寸创建用于绘图的图像
+        img = image.Image(Display.width(), Display.height(), image.ARGB8888)
+
         while True:
             img.clear()
             for i in range(10):
@@ -69,7 +77,7 @@ if __name__ == "__main__":
 
 ### 使用 LCD 输出图像
 
-本示例通过 LCD（ST7701）输出 800x480 图像。你也可以选择其他支持的面板类型（如 NT35516、GC9503 等），只需更换 `Display.ST7701` 为对应类型，并设置合适的分辨率。
+本示例列出当前固件支持的显示模式，并初始化 ST7701 LCD 的默认模式。如需使用其他 LCD，请将 `DISPLAY_TYPE` 修改为列表中对应的 `Display.<TYPE>` 常量。如需选择非默认模式，请将列表中的 `width`、`height` 和 `fps` 值传给 `Display.init`。
 
 ```python
 import time
@@ -80,23 +88,24 @@ import sys
 from media.display import *
 from media.media import *
 
-# 支持的面板类型示例：Display.ST7701, Display.NT35516, Display.GC9503, Display.AML020T, 等
 DISPLAY_TYPE = Display.ST7701
-DISPLAY_WIDTH = ALIGN_UP(800, 16)
-DISPLAY_HEIGHT = 480
 
 def display_test():
     print("display test")
 
-    # 创建用于绘图的图像
-    img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
+    print("Available display modes:")
+    for mode in Display.list_modes():
+        print(mode)
 
-    # 使用 LCD 作为显示输出
-    Display.init(DISPLAY_TYPE, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
+    # 从上面显示的 Display.<TYPE> 值中选择一个
+    Display.init(DISPLAY_TYPE, to_ide=True)
     # 初始化媒体管理器
     MediaManager.init()
 
     try:
+        # 根据初始化后的显示尺寸创建用于绘图的图像
+        img = image.Image(Display.width(), Display.height(), image.ARGB8888)
+
         while True:
             img.clear()
             for i in range(10):
@@ -194,5 +203,5 @@ if __name__ == "__main__":
 ```
 
 ```{admonition} 提示
-有关 Display 模块的详细接口、支持的面板类型和参数，请参考 [API 文档](../../api/mpp/K230_CanMV_Display模块API手册.md)。
+有关 Display 模块的详细接口、支持的面板类型和参数，请参考 [API 文档](../../api/mpp/k230_canmv_display_module_api_manual.md)。
 ```

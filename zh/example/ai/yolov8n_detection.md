@@ -6,6 +6,14 @@ K230 CanMV YOLOv8检测是通过 MicroPython 语言开发实现的一个简单�
 
 📌 **该示例是AI Demo中PipeLine结构的详细实现，PipeLine结构是基于本应用的代码逻辑进行的应用层简化封装。当PipeLine结构无法满足用户开发需求时，可以参考这一部分代码实现开发！**
 
+```{admonition} 注意
+:class: warning
+本示例为了展示底层流程，直接操作 Sensor/Display/KPU，与 `PipeLine` 有两点差异需要留意：
+
+- 本示例用 **通道1**（`CAM_CHN_ID_1`）给 AI 出图，而 `PipeLine` 用的是**通道2**（`CAM_CHN_ID_2`）。两者都可行，但混用两套代码时不要弄混通道号。
+- 本示例的主循环是 `while True:`，末尾的资源释放代码实际不会执行。编写自己的应用时请按 [两种主循环写法](../../ai_dev_doc.md#main-loop-patterns) 用 `try/finally` 包住主循环。
+```
+
 ## 硬件环境
 
 运行该示例程序需要如下硬件环境：K230 CanMV开发板及配套Sensor模组。
@@ -57,23 +65,12 @@ def nms(boxes,scores,thresh):
         for ovr_i,ind in enumerate(ovr):
             if ind < thresh:
                 new_order.append(order[ovr_i])
-        order = np.array(new_order,dtype=np.uint8)
+        # 这里存的是框索引，用uint16避免框数超过255时溢出（ulab支持uint8/int8/uint16/int16/float）
+        order = np.array(new_order,dtype=np.uint16)
     return keep
 
-# 计算padding缩放比例和上下左右padding大小
-def letterbox_pad_param(input_size,output_size):
-    ratio_w = output_size[0] / input_size[0]  # 宽度缩放比例
-    ratio_h = output_size[1] / input_size[1]   # 高度缩放比例
-    ratio = min(ratio_w, ratio_h)  # 取较小的缩放比例
-    new_w = int(ratio * input_size[0])  # 新宽度
-    new_h = int(ratio * input_size[1])  # 新高度
-    dw = (output_size[0] - new_w) / 2  # 宽度差
-    dh = (output_size[1] - new_h) / 2  # 高度差
-    top = int(round(0))
-    bottom = int(round(dh * 2 + 0.1))
-    left = int(round(0))
-    right = int(round(dw * 2 - 0.1))
-    return top, bottom, left, right,ratio
+# 说明：letterbox_pad_param 已由 libs.Utils 提供（脚本开头已 from libs.Utils import *），
+#      这里无需重复定义。若想了解实现细节可查看 /sdcard/libs/Utils.py。
 
 
 #-----------------------------Sensor/Display初始化部分-------------------------------
@@ -98,7 +95,7 @@ sensor.set_framesize(width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT,chn=CAM_CHN_
 sensor.set_pixformat(Sensor.YUV420SP,chn=CAM_CHN_ID_0)
 # 通道1给到AI做算法处理，格式为RGB888P
 sensor.set_framesize(width = AI_RGB888P_WIDTH , height = AI_RGB888P_HEIGHT, chn=CAM_CHN_ID_1)
-# set chn2 output format
+# 设置通道1的出图格式
 sensor.set_pixformat(Sensor.RGBP888, chn=CAM_CHN_ID_1)
 
 # 绑定通道0的摄像头图像到屏幕，防止另一个通道的AI推理过程太慢影响显示过程，导致出现卡顿效果
@@ -238,22 +235,23 @@ while True:
     gc.collect()
 
 #退出循环，释放资源
-del ai2d
-del kpu
+#注意：上面的 while True 没有正常出口，这里的释放代码实际不会执行。
+#     编写自己的应用时请把主循环放进 try 中，把下面的释放代码放进 finally。
+ai2d_builder.release()
+ai2d.release()
+kpu.release()
 sensor.stop()
 Display.deinit()
 time.sleep_ms(50)
 MediaManager.deinit()
+gc.collect()
 nn.shrink_memory_pool()
 ```
 
 ## 运行示例代码
 
-通过`CanMV IDE K230` 打开示例程序代码，并点击运行按钮开始运行YOLOv8检测示例程序。有关IDE的使用请参考：**[如何使用IDE](../../userguide/how_to_use_ide.md)**
-
-通过IDE打开示例程序并运行如下图所示：
-![canmv_ide](https://www.kendryte.com/api/post/attachment?id=609)
+推荐使用 CanMV Visual Studio Code 扩展打开示例程序代码，并运行 `CanMV: 运行当前 Python 脚本` 开始运行 YOLOv8 检测示例程序。有关 CanMV 扩展的使用请参考：**[CanMV 扩展使用说明](../../userguide/how_to_use_ide.md)**
 
 运行结果如下图所示：
 
-![yolov8_det_result](https://www.kendryte.com/api/post/attachment?id=608)
+![yolov8_det_result](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/4ce95b9cf643.png)

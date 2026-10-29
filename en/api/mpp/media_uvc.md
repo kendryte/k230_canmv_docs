@@ -1,207 +1,274 @@
-# `UVC` API Manual
+# `UVC` Module API Manual
 
-## Overview  
+## Overview
 
-The UVC module provides USB camera detection, configuration, and image capture functionality, supporting single-camera operation.
+The `UVC` module is used to access USB cameras in CanMV Python.
 
-## API Reference  
+The module uses `FOURCC` to describe video formats. The supported host input formats are:
 
-### UVC.probe - Detect Camera  
+- `UVC.FOURCC_YUY2`
+- `UVC.FOURCC_UYVY`
+- `UVC.FOURCC_NV12`
+- `UVC.FOURCC_I420`
+- `UVC.FOURCC_MJPEG`
 
-**Function**  
-Checks whether a USB camera is connected to the system (currently supports single-camera detection only).  
+Only a single UVC camera is supported by default.
 
-**Syntax**  
+## Recommended Workflow
 
-```python  
-from media.uvc import UVC  
-plugin, devname = UVC.probe()  
-```  
+1. `UVC.probe()` to detect the camera
+1. `UVC.list_video_mode()` to view the modes supported by the device
+1. `UVC.video_mode(...)` to construct the target mode
+1. `UVC.select_video_mode(...)` to select and negotiate the mode
+1. `UVC.start(...)` to start the video stream
+1. Loop calling `UVC.snapshot()` to get images
+1. `UVC.stop()` to stop the video stream
 
-**Return Values**  
+It is recommended to call `UVC.stop()` inside a `try/finally` block to ensure proper stream shutdown even on abnormal exit.
 
-| Parameter | Type | Description |  
-|-----------|------|-------------|  
-| plugin    | bool | True if camera is detected, False otherwise |  
-| devname   | str  | Camera device information in "Manufacturer#Product" format |  
+## API Reference
 
-**Example**  
+### `UVC.probe()` - Detect Camera
 
-```python  
-plugin, devinfo = UVC.probe()  
-print(f"Camera detection: {'Connected' if plugin else 'Not connected'}, Device info: {devinfo}")  
-```  
+**Function**
 
-### UVC.video_mode - Video Mode Operations  
+Detects whether a UVC camera is currently connected to the system, and returns the vendor/product string.
 
-**Function**  
-Constructs or retrieves the current video mode configuration.  
+**Syntax**
 
-**Syntax**  
+```python
+from media.uvc import UVC
 
-```python  
-# Get current mode  
-mode = UVC.video_mode()  
+plugin, devname = UVC.probe()
+```
 
-# Create new configuration  
-mode = UVC.video_mode(width, height, format, fps)  
-```  
+**Return Values**
 
-**Parameters**  
+| Return Value | Type | Description |
+|---|---|---|
+| `plugin` | `bool` | Whether a UVC camera is detected |
+| `devname` | `str` / `None` | Device information, in the format `vendor#product` |
 
-| Parameter | Type | Description |  
-|-----------|------|-------------|  
-| width     | int  | Resolution width in pixels |  
-| height    | int  | Resolution height in pixels |  
-| format    | int  | Image format (see constant definitions) |  
-| fps       | int  | Frame rate in fps |  
+**Example**
 
-**Return Value**  
-Returns a `uvc_video_mode` object.  
+```python
+plugin, devinfo = UVC.probe()
+print(f"detect: {plugin}, devinfo: {devinfo}")
+```
 
-### UVC.list_video_mode - List Supported Modes  
+### `UVC.video_mode()` - Get or Construct Video Mode
 
-**Function**  
-Retrieves all video modes supported by the camera.  
+**Function**
 
-**Syntax**  
+- When called without arguments: returns the currently negotiated video mode
+- When called with arguments: constructs a target video mode object
 
-```python  
-modes = UVC.list_video_mode()  
-```  
+**Syntax**
 
-**Return Value**  
-Returns a list of supported `uvc_video_mode` objects.  
+```python
+# Get current mode
+mode = UVC.video_mode()
 
-**Example**  
+# Construct target mode
+mode = UVC.video_mode(width, height, fourcc, fps)
+```
 
-```python  
-for i, mode in enumerate(UVC.list_video_mode()):  
-    print(f"Mode {i}: {mode.width}x{mode.height} {mode.format}@{mode.fps}fps")  
-```  
+**Parameters**
 
-### UVC.select_video_mode - Select Video Mode  
+| Parameter | Type | Description |
+|---|---|---|
+| `width` | `int` | Image width |
+| `height` | `int` | Image height |
+| `fourcc` | `int` | Pixel format, uses `UVC.FOURCC_*` constants |
+| `fps` | `int` | Target frame rate |
 
-**Function**  
-Sets the camera output mode.  
+**Description**
 
-**Syntax**  
+- When `fourcc` is omitted, `UVC.FOURCC_MJPEG` is used by default
+- When `fps` is omitted, `frameinterval = 0` is passed to the lower layer, allowing the driver to select the default frame rate
+- After `UVC.select_video_mode()` succeeds, the returned mode object will be updated to the actual negotiated values
 
-```python  
-succ, actual_mode = UVC.select_video_mode(mode)  
-```  
+### `UVC.list_video_mode()` - List Device Supported Modes
 
-**Parameters**  
+**Function**
 
-| Parameter | Type | Description |  
-|-----------|------|-------------|  
-| mode      | uvc_video_mode | Video mode configuration to set |  
+Enumerates the full list of modes supported by the camera. Each item in the list is a `uvc_video_mode` object containing width, height, `fourcc`, and `fps`.
 
-**Return Values**  
+**Syntax**
 
-| Parameter | Type | Description |  
-|-----------|------|-------------|  
-| succ      | bool | True if setting was successful |  
-| actual_mode | uvc_video_mode | The actual mode that was applied |  
+```python
+modes = UVC.list_video_mode()
+```
 
-### UVC.start - Start Video Stream  
+**Example**
 
-**Function**  
-Starts the camera video stream output.  
+```python
+for i, mode in enumerate(UVC.list_video_mode()):
+    print(f"{i}: {mode}")
+```
 
-**Syntax**  
+### `UVC.select_video_mode(mode)` - Select Video Mode
 
-```python  
-success = UVC.start(delay_ms=0, cvt=True)  
-```  
+**Function**
 
-**Parameters**  
+Initializes the UVC device according to the user-specified target mode, and returns the actual negotiated mode.
 
-| Parameter | Type | Description |  
-|-----------|------|-------------|  
-| delay_ms  | int  | Delay in milliseconds to wait for UVC camera data output (default: 0) |  
-| cvt       | bool | Whether to hardware-decode snapshot images to NV12 format (default: True) |  
+**Syntax**
 
-**Return Value**  
-Returns True if the stream started successfully.  
+```python
+succ, actual_mode = UVC.select_video_mode(mode)
+```
 
-### UVC.stop - Stop Video Stream  
+**Parameters**
 
-**Function**  
-Stops the video stream and releases resources.  
+| Parameter | Type | Description |
+|---|---|---|
+| `mode` | `uvc_video_mode` | Target mode |
 
-**Syntax**  
+**Return Values**
 
-```python  
-UVC.stop()  
-```  
+| Return Value | Type | Description |
+|---|---|---|
+| `succ` | `bool` | Whether initialization succeeded |
+| `actual_mode` | `uvc_video_mode` | The actual negotiated mode |
 
-### UVC.snapshot - Capture Frame  
+**Common `FOURCC`**
 
-**Function**  
-Captures a single frame from the video stream.  
+The `mode.fourcc` passed into `UVC.select_video_mode()` typically uses the following constants:
 
-**Syntax**  
+| Constant | Description |
+|---|---|
+| `UVC.FOURCC_YUY2` | YUY2 / YUYV 4:2:2 |
+| `UVC.FOURCC_UYVY` | UYVY 4:2:2 |
+| `UVC.FOURCC_NV12` | NV12 4:2:0 |
+| `UVC.FOURCC_I420` | I420 4:2:0 |
+| `UVC.FOURCC_MJPEG` | MJPEG compressed format |
 
-```python  
-frame = UVC.snapshot(timeout_ms=1000)  
-```  
+### `UVC.start()` - Start Video Stream
 
-**Parameters**  
+**Function**
 
-| Parameter | Type | Description |  
-|-----------|------|-------------|  
-| timeout_ms | int  | Timeout in milliseconds for frame capture (default: 1000) |  
+Starts the UVC video stream and configures the return type of `snapshot()`.
 
-**Return Value**  
-Returns image data in NV12 Frame format (if hardware decoding enabled) or JPEG/YUV422 format.  
+**Syntax**
 
-## Data Structures  
+```python
+success = UVC.start(delay_ms=0, cvt=True)
+```
 
-### uvc_video_mode Structure  
+**Parameters**
 
-```python  
-class uvc_video_mode:  
-    width: int    # Resolution width in pixels  
-    height: int   # Resolution height in pixels  
-    format: int   # Image format (see constants)  
-    fps: int      # Frame rate in fps  
-```  
+| Parameter | Type | Description |
+|---|---|---|
+| `delay_ms` | `int` | Additional wait time in milliseconds after starting |
+| `cvt` | `bool` | Whether to perform format conversion on `snapshot()` returned data |
 
-## Constant Definitions  
+**`cvt` Semantics**
 
-| Constant | Value | Description |  
-|----------|-------|-------------|  
-| UVC.FORMAT_MJPEG | 1 | MJPG compressed format (recommended for low bandwidth) |  
-| UVC.FORMAT_UNCOMPRESS | 2 | YUV422 uncompressed format (requires higher bandwidth) |  
+| Input Format | `cvt=True` | `cvt=False` |
+|---|---|---|
+| `FOURCC_MJPEG` | `snapshot()` returns NV12 frame (internally uses hardware JPEG decoding) | Returns JPEG image |
+| `FOURCC_YUY2` | Returns RGB565 image | Returns YUV422 image |
+| `FOURCC_UYVY` | Returns RGB565 image | Returns YUV422 image |
+| `FOURCC_NV12` | Not supported, will raise exception in `snapshot()` | Returns YUV420 image |
+| `FOURCC_I420` | Not supported, will raise exception in `snapshot()` | Returns YUV420 image |
 
-## Recommended Workflow  
+### `UVC.stop()` - Stop Video Stream
 
-1. Detect camera (`probe()`)  
-1. List supported modes (`list_video_mode()`)  
-1. Select an appropriate mode (`select_video_mode()`)  
-1. Start video stream (`start()`)  
-1. Capture images (`snapshot()`)  
-1. Stop video stream (`stop()`)  
+**Function**
 
-## Best Practices  
+Stops the UVC video stream and releases internal state.
 
-### Software Decoding Example  
+**Syntax**
 
-```python  
-import time, os, urandom, sys, gc
+```python
+UVC.stop()
+```
+
+### `UVC.snapshot()` - Get One Frame Image
+
+**Function**
+
+Takes one frame image from the current video stream.
+
+**Syntax**
+
+```python
+frame = UVC.snapshot()
+frame = UVC.snapshot(timeout_ms)
+```
+
+**Parameters**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `timeout_ms` | `int` | Timeout for getting one frame, in milliseconds |
+
+**Return Value**
+
+The return type depends on the current `fourcc` and `UVC.start(cvt=...)` configuration:
+
+| Current Mode | Returned Object |
+|---|---|
+| `MJPEG + cvt=True` | NV12 video frame object |
+| `MJPEG + cvt=False` | JPEG `Image` |
+| `YUY2/UYVY + cvt=True` | RGB565 `Image` |
+| `YUY2/UYVY + cvt=False` | YUV422 `Image` |
+| `NV12/I420 + cvt=False` | YUV420 `Image` |
+
+**Description**
+
+- May return `None` on timeout or when no new frame is temporarily available
+- `NV12/I420` will raise a `RuntimeError` when `cvt=True`
+
+## `uvc_video_mode` Object
+
+### Fields
+
+| Field | Type | Description |
+|---|---|---|
+| `width` | `int` | Width |
+| `height` | `int` | Height |
+| `fourcc` | `int` | Pixel format |
+| `fps` | `float` | Current mode frame rate |
+
+### Print Example
+
+```python
+mode = UVC.video_mode(640, 480, UVC.FOURCC_MJPEG, 30)
+print(mode)
+```
+
+Output example:
+
+```python
+{"width":640, "height":480, "format":mjpeg, "fourcc":0x47504a4d, "fps":30.00}
+```
+
+Note:
+
+- `format` is only reflected in the print string
+- The field actually used in code to determine the format is `mode.fourcc`
+
+## Example
+
+### Example 1: MJPEG Software Decoding Display
+
+Corresponding routine:
+
+- Development board firmware path: `/sdcard/examples/02-Media/uvc.py`
+- SDK source code path: `src/canmv/resources/examples/02-Media/uvc.py`
+
+```python
+import time, gc
 
 from media.display import *
-from media.media import *
 from media.uvc import *
 
 DISPLAY_WIDTH = ALIGN_UP(800, 16)
 DISPLAY_HEIGHT = 480
 
-# use lcd as display output
-Display.init(Display.ST7701, width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT, to_ide = True)
-# init media manager
-MediaManager.init()
+Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
 
 while True:
     plugin, dev = UVC.probe()
@@ -209,57 +276,48 @@ while True:
         print(f"detect USB Camera {dev}")
         break
 
-mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)
-
+mode = UVC.video_mode(640, 480, UVC.FOURCC_MJPEG, 30)
 succ, mode = UVC.select_video_mode(mode)
 print(f"select mode success: {succ}, mode: {mode}")
 
-UVC.start(cvt = False)
+UVC.start(cvt=False)
+clock = time.clock()
 
-fps = time.clock()
-
-while True:
-    fps.tick()
-    img = UVC.snapshot()
-    if img is not None:
-        try:
+try:
+    while True:
+        clock.tick()
+        img = UVC.snapshot()
+        if img is not None:
             img = img.to_rgb565()
             Display.show_image(img)
             img.__del__()
             gc.collect()
-        except OSError as e:
-            pass
+        print(f"fps: {clock.fps()}")
+finally:
+    UVC.stop()
+    time.sleep_ms(100)
+    Display.deinit()
+```
 
-    print(f"fps: {fps.fps()}")
+### Example 2: MJPEG Hardware Decoding Followed by CSC
 
-# deinit display
-Display.deinit()
-UVC.stop()
-time.sleep_ms(100)
-# release media buffer
-MediaManager.deinit()
-```  
+Corresponding routine:
 
-### Hardware Decoding Example  
+- Development board firmware path: `/sdcard/examples/02-Media/uvc_with_csc.py`
+- SDK source code path: `src/canmv/resources/examples/02-Media/uvc_with_csc.py`
 
-```python  
-import time, os, urandom, sys, gc
+```python
+import time, gc
 
 from media.display import *
-from media.media import *
 from media.uvc import *
-
 from nonai2d import CSC
 
 DISPLAY_WIDTH = ALIGN_UP(800, 16)
 DISPLAY_HEIGHT = 480
 
-csc = CSC(0, CSC.PIXEL_FORMAT_RGB_565)
-
-# use lcd as display output
-Display.init(Display.ST7701, width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT, to_ide = True)
-# init media manager
-MediaManager.init()
+csc = CSC(CSC.PIXEL_FORMAT_RGB_565)
+Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
 
 while True:
     plugin, dev = UVC.probe()
@@ -268,38 +326,77 @@ while True:
         break
     time.sleep_ms(100)
 
-mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)
-
+mode = UVC.video_mode(640, 480, UVC.FOURCC_MJPEG, 30)
 succ, mode = UVC.select_video_mode(mode)
 print(f"select mode success: {succ}, mode: {mode}")
 
-UVC.start(cvt = True)
-
+UVC.start(cvt=True)
 clock = time.clock()
 
-while True:
-    clock.tick()
-
-    img = None
-    while img is None:
-        try:
-            img = UVC.snapshot()
-        except:
-            print("drop frame")
+try:
+    while True:
+        clock.tick()
+        img = UVC.snapshot()
+        if img is None:
             continue
+        img = csc.convert(img)
+        Display.show_image(img)
+        img.__del__()
+        gc.collect()
+        print(f"fps: {clock.fps()}")
+finally:
+    UVC.stop()
+    time.sleep_ms(100)
+    csc.destroy()
+    Display.deinit()
+```
 
-    img = csc.convert(img)
-    Display.show_image(img)
-    img.__del__()
-    gc.collect()
+### Example 3: YUY2 Directly Converted to RGB565 for Display
 
-    print(f"fps: {clock.fps()}")
+```python
+import time, gc
 
-# deinit display
-Display.deinit()
-csc.destroy()
-UVC.stop()
-time.sleep_ms(100)
-# release media buffer
-MediaManager.deinit()
-```  
+from media.display import *
+from media.uvc import *
+
+DISPLAY_WIDTH = ALIGN_UP(800, 16)
+DISPLAY_HEIGHT = 480
+
+Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
+
+while True:
+    plugin, dev = UVC.probe()
+    if plugin:
+        print(f"detect USB Camera {dev}")
+        break
+    time.sleep_ms(100)
+
+mode = UVC.video_mode(640, 480, UVC.FOURCC_YUY2, 30)
+succ, mode = UVC.select_video_mode(mode)
+print(f"select mode success: {succ}, mode: {mode}")
+
+UVC.start(cvt=True)
+clock = time.clock()
+
+try:
+    while True:
+        clock.tick()
+        img = UVC.snapshot()
+        if img is None:
+            continue
+        Display.show_image(img)
+        img.__del__()
+        gc.collect()
+        print(f"fps: {clock.fps()}")
+finally:
+    UVC.stop()
+    time.sleep_ms(100)
+    Display.deinit()
+```
+
+## Notes
+
+1. `UVC.stop()` is recommended to always be called in `finally`.
+1. `UVC.start(cvt=True)` only affects the content returned by `snapshot()`; it does not change the `fourcc` actually negotiated on the USB side.
+1. `NV12` / `I420` currently do not support direct conversion in `snapshot(cvt=True)`.
+1. It is not recommended to connect UVC cameras and devices that heavily occupy USB bandwidth through a Hub at the same time.

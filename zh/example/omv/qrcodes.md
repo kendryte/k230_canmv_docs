@@ -99,5 +99,5 @@ finally:
 ```
 
 ```{admonition} 提示
-具体接口定义请参考 [find_qrcodes](../../api/openmv/image.md#2281-find_qrcodes)。
+具体接口定义请参考 [find_qrcodes](../../api/openmv/image.md#find-qrcodes)。
 ```

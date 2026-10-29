@@ -1,6 +1,6 @@
 # `图像处理` API 手册
 
-此模块移植自 `openmv`，功能基本一致。详情请参考 [官方文档](https://docs.openmv.io/library/omv.image.html)。本文列出与官方 API 的差异部分以及新增 API，同时包含部分原生 API 的参考。
+此模块移植自 `openmv`，功能基本一致。详情请参考 [官方文档](https://docs.openmv.io/v5.0.0/library/omv.image.html)。本文列出与官方 API 的差异部分以及新增 API，同时包含部分原生 API 的参考。
 
 ## 类 `Image`
 
@@ -129,6 +129,8 @@ image.to_numpy_ref()
 ```
 
 支持的格式：GRAYSCALE、RGB565、ARGB8888、RGB888、RGBP888。
+
+<a id="draw_string_advanced"></a>
 
 ### `draw_string_advanced`
 

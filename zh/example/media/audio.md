@@ -40,7 +40,6 @@ def record_audio(filename, duration):
 
     try:
         p = PyAudio()
-        p.initialize(CHUNK)    #初始化PyAudio对象
         MediaManager.init()    #vb buffer初始化
 
         #创建音频输入流
@@ -85,7 +84,6 @@ def play_audio(filename):
         CHUNK = int(wf.get_framerate()/25)#设置音频chunk值
 
         p = PyAudio()
-        p.initialize(CHUNK) #初始化PyAudio对象
         MediaManager.init()    #vb buffer初始化
 
         #创建音频输出流，设置的音频参数均为wave中获取到的参数
@@ -123,7 +121,6 @@ def loop_audio(duration):
 
     try:
         p = PyAudio()
-        p.initialize(CHUNK)#初始化PyAudio对象
         MediaManager.init()    #vb buffer初始化
 
         #创建音频输入流
@@ -173,7 +170,6 @@ def audio_recorder(filename, duration):
     RATE = 44100           #设置采样率
 
     p = PyAudio()
-    p.initialize(CHUNK)    #初始化PyAudio对象
     MediaManager.init()    #vb buffer初始化
 
     try:
@@ -257,7 +253,7 @@ if __name__ == "__main__":
 ```
 
 ```{admonition} 提示
-有关audio i2s模块的具体接口，请参考[API文档](../../api/mpp/K230_CanMV_Audio模块API手册.md)
+有关audio i2s模块的具体接口，请参考[API文档](../../api/mpp/k230_canmv_audio_module_api_manual.md)
 ```
 
 ### pdm - 多声道音频采集例程
@@ -317,7 +313,6 @@ def record_audio_pdm(base_filename, duration, num_channels):
 
     try:
         p = PyAudio()
-        p.initialize(CHUNK)    #初始化PyAudio对象
         MediaManager.init()    #vb buffer初始化
 
         #创建音频输入流
@@ -387,7 +382,232 @@ if __name__ == "__main__":
 
 ```{admonition} 提示
 PDM音频采集需要外接PDM音频子板，具体硬件连接和引脚定义请参考开发板硬件手册。使用时需注意IO口的正确配置以确保多声道采集正常工作。
-有关audio pdm模块的具体接口，请参考[API文档](../../api/mpp/K230_CanMV_Audio模块API手册.md)
+有关audio pdm模块的具体接口，请参考[API文档](../../api/mpp/k230_canmv_audio_module_api_manual.md)
+```
+
+### audio3a - 音频3A处理例程（AEC回声消除）
+
+该示例程序展示了 CanMV 开发板的音频3A处理功能，通过多线程实现播放和录制音频的同时进行，并在录制流上启用 AEC（回声消除）、AGC（自动增益控制）和 ANS（自动噪声抑制）功能，有效消除播放声音对录制信号的回声干扰。适用于需要对讲、语音交互等场景。
+
+```python
+# aec_playrec.py
+# 多线程播放和录制音频
+
+import os
+import _thread
+from media.media import *
+from media.pyaudio import *
+import media.wave as wave
+import time
+
+# 全局PyAudio实例
+global_p = None
+stop_flag = False        # 线程停止信号
+play_complete = False    # 播放完成标志
+play_thread_done = False # 播放线程是否结束
+record_thread_done = False # 录制线程是否结束
+DIV = 50
+
+def exit_check():
+    try:
+        os.exitpoint()
+    except KeyboardInterrupt as e:
+        print("User stopped: ", e)
+        return True
+    return False
+
+def init_global_pyaudio():
+    """初始化全局PyAudio实例"""
+    global global_p
+    if global_p is None:
+        global_p = PyAudio()
+
+def terminate_global_pyaudio():
+    """终止全局PyAudio实例"""
+    global global_p
+    if global_p is not None:
+        global_p.terminate()
+        global_p = None
+
+def get_wav_duration(wf):
+    """从WAV文件元数据计算播放时长（秒）"""
+    nframes = wf.get_frames()
+    framerate = wf.get_framerate()
+    if framerate > 0:
+        return nframes / framerate
+    return 0
+
+def play_thread_func(stream, wf):
+    """播放线程函数"""
+    global stop_flag, play_complete, play_thread_done
+    try:
+        CHUNK = int(wf.get_framerate() / DIV)
+        data = wf.read_frames(CHUNK)
+
+        while data and not stop_flag and not exit_check():
+            stream.write(data)
+            data = wf.read_frames(CHUNK)
+
+        play_complete = True
+        print("Playback completed (end of file)")
+
+    except BaseException as e:
+        import sys
+        sys.print_exception(e)
+        play_complete = True
+    finally:
+        # 释放资源
+        if stream:
+            try: stream.stop_stream(); stream.close()
+            except: pass
+        if wf:
+            try: wf.close()
+            except: pass
+        # 标记播放线程结束
+        play_thread_done = True
+        print("Playback thread finished")
+
+def record_thread_func(stream, filename, duration, channels, rate):
+    """录制线程函数 - 基于时间驱动，精确控制录制时长"""
+    global stop_flag, record_thread_done
+    CHUNK = rate // DIV
+    frames = []
+
+    try:
+        start_time = time.time()
+        while (time.time() - start_time) < duration:
+            if stop_flag or exit_check():
+                break
+            data = stream.read(block=False)
+            if data:
+                frames.append(data)
+            else:
+                time.sleep(0.01)
+
+    except BaseException as e:
+        import sys
+        sys.print_exception(e)
+    finally:
+        # 释放资源
+        if stream:
+            try: stream.stop_stream(); stream.close()
+            except: pass
+        # 保存录制文件
+        if frames:
+            try:
+                print("Saving file ...")
+                wf = wave.open(filename, 'wb')
+                wf.set_channels(channels)
+                wf.set_sampwidth(global_p.get_sample_size(paInt16))
+                wf.set_framerate(rate)
+                wf.write_frames(b''.join(frames))
+                wf.close()
+                print(f"Recorded to {filename} (duration: {len(frames)*CHUNK/rate:.2f}s)")
+            except Exception as e:
+                print(f"Save failed: {e}")
+        else:
+            print("No audio recorded")
+        # 标记录制线程结束
+        record_thread_done = True
+        print("Recording thread finished")
+
+def play_and_record(play_filename, record_filename, duration):
+    global stop_flag, play_complete, play_thread_done, record_thread_done
+    stop_flag = False
+    play_complete = False
+    play_thread_done = False
+    record_thread_done = False
+
+    play_stream = None
+    record_stream = None
+    wf_play = None
+
+    try:
+        init_global_pyaudio()
+
+        wf_play = wave.open(play_filename, 'rb')
+        channels = wf_play.get_channels()
+        rate = wf_play.get_framerate()
+        wav_duration = get_wav_duration(wf_play)
+        actual_duration = max(duration, wav_duration)
+        print(f"WAV duration: {wav_duration:.2f}s, record duration: {actual_duration:.2f}s")
+
+        play_stream = global_p.open(
+            format=global_p.get_format_from_width(wf_play.get_sampwidth()),
+            channels=channels,
+            rate=rate,
+            output=True,
+            frames_per_buffer=int(rate/DIV)
+        )
+        play_stream.volume(vol=85)
+        print(f"Play volume: {play_stream.volume()}")
+
+        record_stream = global_p.open(
+            format=paInt16,
+            channels=channels,
+            rate=rate,
+            input=True,
+            frames_per_buffer=rate//DIV
+        )
+        record_stream.volume(70, LEFT)
+        record_stream.volume(85, RIGHT)
+        record_stream.enable_audio3a(AUDIO_3A_ENABLE_AEC | AUDIO_3A_ENABLE_AGC | AUDIO_3A_ENABLE_ANS)
+        print(f"Record volume: {record_stream.volume()}")
+
+        _thread.start_new_thread(play_thread_func, (play_stream, wf_play))
+        _thread.start_new_thread(record_thread_func, (record_stream, record_filename, actual_duration, channels, rate))
+
+        start_time = time.time()
+        while True:
+            if (time.time() - start_time >= actual_duration) or exit_check():
+                stop_flag = True
+                break
+            time.sleep(0.1)
+
+        print("Waiting for threads to exit...")
+        timeout = time.time() + 10
+        while not (play_thread_done and record_thread_done):
+            if time.time() > timeout:
+                print("Warning: Thread wait timeout!")
+                break
+            time.sleep(0.1)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        stop_flag = True  # 异常时立即停止线程
+    finally:
+        if play_stream:
+            try: play_stream.stop_stream(); play_stream.close()
+            except: pass
+        if record_stream:
+            try: record_stream.stop_stream(); record_stream.close()
+            except: pass
+        if wf_play:
+            try: wf_play.close()
+            except: pass
+        # 终止PyAudio
+        terminate_global_pyaudio()
+        print("All resources released")
+
+if __name__ == "__main__":
+    os.exitpoint(os.EXITPOINT_ENABLE)
+    print("AEC play and record start")
+    PLAY_FILE = '/data/play.wav'
+    RECORD_FILE = '/data/record.wav'
+    DURATION = 30
+    play_and_record(PLAY_FILE, RECORD_FILE, DURATION)
+    print("AEC play and record done")
+```
+
+```{admonition} 提示
+音频3A功能通过 `enable_audio3a()` 接口启用，支持以下功能组合：
+- `AUDIO_3A_ENABLE_AEC`：回声消除，需同时进行播放和录制才能生效
+- `AUDIO_3A_ENABLE_AGC`：自动增益控制
+- `AUDIO_3A_ENABLE_ANS`：自动噪声抑制
+
+推荐使用 8kHz 或 16kHz 单声道音频，该采样率覆盖语音频段，3A 算法针对此频段优化处理效果最佳；同时可降低数据量和计算开销，更适合嵌入式平台的实时处理需求。
+
+其中 AEC 回声消除要求播放和录制同时进行，程序使用多线程实现播放与录制的并行处理。有关 audio3a 模块的具体接口，请参考[API文档](../../api/mpp/k230_canmv_audio_module_api_manual.md)
 ```
 
 ### acodec - G711 编解码例程
@@ -423,7 +643,6 @@ def encode_audio(filename, duration):
 
     try:
         p = PyAudio()
-        p.initialize(CHUNK)  # 初始化PyAudio对象
         enc = g711.Encoder(K_PT_G711A, CHUNK)  # 创建G711编码器对象
         MediaManager.init()   # 初始化vb buffer
 
@@ -466,7 +685,6 @@ def decode_audio(filename):
     try:
         wf = open(filename, mode='rb')  # 打开G711文件
         p = PyAudio()
-        p.initialize(CHUNK)  # 初始化PyAudio对象
         dec = g711.Decoder(K_PT_G711A, CHUNK)  # 创建G711解码器对象
         MediaManager.init()   # 初始化vb buffer
 
@@ -508,7 +726,6 @@ def loop_codec(duration):
 
     try:
         p = PyAudio()
-        p.initialize(CHUNK)  # 初始化PyAudio对象
         dec = g711.Decoder(K_PT_G711A, CHUNK)  # 创建G711解码器对象
         enc = g711.Encoder(K_PT_G711A, CHUNK)  # 创建G711编码器对象
         MediaManager.init()   # 初始化vb buffer
@@ -560,5 +777,5 @@ if __name__ == "__main__":
 ```
 
 ```{admonition} 提示
-有关 acodec 模块的具体接口，请参考[API文档](../../api/mpp/K230_CanMV_播放器模块API手册.md)
+有关 acodec 模块的具体接口，请参考[API文档](../../api/mpp/k230_canmv_player_module_api_manual.md)
 ```

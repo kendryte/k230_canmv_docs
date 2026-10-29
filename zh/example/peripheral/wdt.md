@@ -70,4 +70,4 @@ time.sleep(2)
 
 ## 延伸阅读
 
-- [K230 WDT API 文档](../../api/machine/K230_CanMV_WDT模块API手册.md)
+- [K230 WDT API 文档](../../api/machine/k230_canmv_wdt_api_manual.md)

@@ -84,7 +84,7 @@ $$
 
 ## 延伸阅读 & 工具资源
 
-- 📘 [K230 ADC 模块 API 文档](../../api/machine/K230_CanMV_ADC模块API手册.md)
-- 📘 [K230 FPIOA 模块 API 手册](../../api/machine/K230_CanMV_FPIOA模块API手册.md)
-- 📥 [K230 引脚功能对照表（Excel）](https://kendryte-download.canaan-creative.com/developer/k230/HDK/K230%E7%A1%AC%E4%BB%B6%E6%96%87%E6%A1%A3/K230_PINOUT_V1.2_20240822.xlsx)
+- 📘 [K230 ADC 模块 API 文档](../../api/machine/k230_canmv_adc_api_manual.md)
+- 📘 [K230 FPIOA 模块 API 手册](../../api/machine/k230_canmv_fpioa_api_manual.md)
+- 📥 [K230 引脚功能对照表（Excel）](https://download.kendryte.com/developer/k230/HDK/K230%E7%A1%AC%E4%BB%B6%E6%96%87%E6%A1%A3/K230_PINOUT_V1.2_20240822.xlsx)
 - 🛠️ [K230 IOMUX 配置工具](https://www.kendryte.com/zh/tools/dts_config_generation_tool)

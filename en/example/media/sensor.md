@@ -2,16 +2,16 @@
 
 ## Overview
 
-The K230 has three MIPI-CSI inputs (3x2 lane/1x4+1x2 lane) and can connect up to three cameras. Each camera supports outputting three channels, providing different resolutions and image formats.
+The K230 has 3 MIPI-CSI inputs (3x2 lane/1x4+1x2 lane), supporting up to 3 cameras. Each camera can output 3 channels, providing different resolutions and image formats.
 
 ## Examples
 
-### Capture and Display Images from Three Channels of a Single Camera on an HDMI Monitor
+### Capturing 3 Channels from a Single Camera and Displaying on an HDMI Monitor
 
-This example opens a camera, captures images from three channels, and displays them on an HDMI monitor. Channel 0 captures a 1080P image, while channels 1 and 2 capture VGA resolution images and overlay them on the image from channel 0.
+This example opens a camera, captures images from 3 channels, and displays them on an HDMI monitor. Channel 0 captures 1080P images, while channels 1 and 2 capture VGA resolution images overlaid on top of the channel 0 image.
 
 ```python
-# Camera Example
+# Camera 示例
 import time
 import os
 import sys
@@ -25,32 +25,32 @@ sensor = None
 try:
     print("camera_test")
 
-    # Construct Sensor object with default configuration
+    # 根据默认配置构建 Sensor 对象
     sensor = Sensor()
-    # Reset the sensor
+    # 复位 sensor
     sensor.reset()
 
-    # Set resolution for channel 0 to 1920x1080
+    # 设置通道 0 分辨率为 1920x1080
     sensor.set_framesize(Sensor.FHD)
-    # Set format for channel 0 to YUV420SP
+    # 设置通道 0 格式为 YUV420SP
     sensor.set_pixformat(Sensor.YUV420SP)
-    # Bind channel 0 to display VIDEO1 layer
+    # 绑定通道 0 到显示 VIDEO1 层
     bind_info = sensor.bind_info()
     Display.bind_layer(**bind_info, layer=Display.LAYER_VIDEO1)
 
-    # Set resolution and format for channel 1
+    # 设置通道 1 分辨率和格式
     sensor.set_framesize(width=640, height=480, chn=CAM_CHN_ID_1)
     sensor.set_pixformat(Sensor.RGB888, chn=CAM_CHN_ID_1)
 
-    # Set resolution and format for channel 2
+    # 设置通道 2 分辨率和格式
     sensor.set_framesize(width=640, height=480, chn=CAM_CHN_ID_2)
     sensor.set_pixformat(Sensor.RGB565, chn=CAM_CHN_ID_2)
 
-    # Initialize HDMI and IDE output display. If the screen cannot light up, refer to the K230_CanMV_Display module API manual in the API documentation for configuration.
+    # 初始化 HDMI 和 IDE 输出显示，若屏幕无法点亮，请参考 API 文档中的 K230_CanMV_Display 模块 API 手册进行配置
     Display.init(Display.LT9611, to_ide=True, osd_num=2)
-    # Initialize media manager
+    # 初始化媒体管理器
     MediaManager.init()
-    # Start the sensor
+    # 启动 sensor
     sensor.run()
 
     while True:
@@ -63,27 +63,27 @@ try:
         Display.show_image(img, x=1920 - 640, layer=Display.LAYER_OSD1)
 
 except KeyboardInterrupt as e:
-    print("User stopped: ", e)
+    print("用户停止: ", e)
 except BaseException as e:
-    print(f"Exception: {e}")
+    print(f"异常: {e}")
 finally:
-    # Stop the sensor
+    # 停止 sensor
     if isinstance(sensor, Sensor):
         sensor.stop()
-    # Destroy display
+    # 销毁显示
     Display.deinit()
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # Release media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 ```
 
-### Capture and Display Images from Two Cameras on an HDMI Monitor
+### Capturing Dual Camera Images and Displaying on an HDMI Monitor
 
-This example configures two cameras to output 960x540 images and displays them side by side on an HDMI monitor.
+This example configures 2 cameras to each output 960x540 images and displays them side by side on an HDMI monitor.
 
 ```python
-# Dual Camera Example
+# Camera 双摄示例
 import time
 import os
 import sys
@@ -98,57 +98,57 @@ sensor1 = None
 try:
     print("camera_test")
 
-    # Construct Sensor object sensor0
+    # 构建 Sensor 对象 sensor0
     sensor0 = Sensor(id=0)
     sensor0.reset()
-    # Set resolution for channel 0 to 960x540
+    # 设置通道 0 分辨率为 960x540
     sensor0.set_framesize(width=960, height=540)
-    # Set format for channel 0 to YUV420
+    # 设置通道 0 格式为 YUV420
     sensor0.set_pixformat(Sensor.YUV420SP)
-    # Bind channel 0 to display VIDEO1 layer
+    # 绑定通道 0 到显示 VIDEO1 层
     bind_info = sensor0.bind_info(x=0, y=0)
     Display.bind_layer(**bind_info, layer=Display.LAYER_VIDEO1)
 
-    # Construct Sensor object sensor1
+    # 构建 Sensor 对象 sensor1
     sensor1 = Sensor(id=1)
     sensor1.reset()
-    # Set resolution for channel 0 to 960x540
+    # 设置通道 0 分辨率为 960x540
     sensor1.set_framesize(width=960, height=540)
-    # Set format for channel 0 to YUV420
+    # 设置通道 0 格式为 YUV420
     sensor1.set_pixformat(Sensor.YUV420SP)
-    # Bind channel 0 to display VIDEO2 layer
+    # 绑定通道 0 到显示 VIDEO2 层
     bind_info = sensor1.bind_info(x=960, y=0)
     Display.bind_layer(**bind_info, layer=Display.LAYER_VIDEO2)
 
-    # Initialize HDMI and IDE output display. If the screen cannot light up, refer to the K230_CanMV_Display module API manual in the API documentation for configuration.
+    # 初始化 HDMI 和 IDE 输出显示，若屏幕无法点亮，请参考 API 文档中的 K230_CanMV_Display 模块 API 手册进行配置
     Display.init(Display.LT9611, to_ide=True)
-    # Initialize media manager
+    # 初始化媒体管理器
     MediaManager.init()
 
-    # In a multi-camera scenario, run needs to be executed only once
+    # 多摄场景仅需执行一次 run
     sensor0.run()
 
     while True:
         os.exitpoint()
         time.sleep(1)
 except KeyboardInterrupt as e:
-    print("User stopped")
+    print("用户停止")
 except BaseException as e:
-    print(f"Exception: '{e}'")
+    print(f"异常: '{e}'")
 finally:
-    # Stop each sensor
+    # 每个 sensor 都需要执行 stop
     if isinstance(sensor0, Sensor):
         sensor0.stop()
     if isinstance(sensor1, Sensor):
         sensor1.stop()
-    # Destroy display
+    # 销毁显示
     Display.deinit()
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # Release media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 ```
 
-```{admonition} Note
-For detailed interfaces of the Sensor module, please refer to the [API documentation](../../api/mpp/K230_CanMV_Sensor模块API手册.md).
+```{admonition} 提示
+有关 Sensor 模块的详细接口，请参考 [API 文档](../../api/mpp/k230_canmv_sensor_module_api_manual.md)。
 ```

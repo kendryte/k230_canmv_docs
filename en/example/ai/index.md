@@ -1,12 +1,15 @@
-# AI Routine Explanation
+# AI Routine Walkthrough
 
 ```{toctree}
 :maxdepth: 1
 
 nncase_usage.md
 yolov8n_detection.md
-AI_Demo_User_Manual.md
-AI2d_Examples.md
-YOLO_Battle.md
-CloudPlat_Deploy.md
+ai_demo_user_manual.md
+ai2d_examples.md
+yolo_battle.md
+cloudplat_deploy.md
+app_center.md
+gesture_controlled_light.md
+open_kws_app.md
 ```

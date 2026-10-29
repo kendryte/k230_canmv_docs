@@ -1,17 +1,17 @@
-# Explanation of Barcode Recognition Routine
+# Barcode Recognition Routine Explanation
 
 ## Overview
 
-A barcode is a visual pattern used to represent data by encoding information through stripes or patterns of varying widths and spaces. Barcodes are widely used across various industries for automatic identification, storage, and data management.
+A barcode is a visual pattern used to represent data, encoding information through stripes or patterns of different widths and spacings. Barcodes are widely used across various industries for automatic identification, storage, and management of data.
 
-CanMV supports the OpenMV algorithm and can recognize barcodes. The relevant interface is `find_barcodes`, which supports multiple barcode formats.
+CanMV supports OpenMV algorithms and can recognize barcodes. The relevant interface is `find_barcodes`, which supports multiple barcode formats.
 
 ## Example
 
 This example sets the camera output to a 640x480 grayscale image and uses `image.find_barcodes` to recognize barcodes.
 
 ```{tip}
-If the recognition success rate is low, try adjusting the camera's mirror and flip settings, and ensure there is a white area on both sides of the barcode.
+If the recognition success rate is low, try adjusting the camera's mirror and flip settings, and make sure to leave a white area on both sides of the barcode.
 ```
 
 ```python
@@ -55,7 +55,7 @@ DETECT_HEIGHT = 480
 sensor = None
 
 try:
-    # Construct Sensor object with default configuration
+    # Construct Sensor object using default configuration
     sensor = Sensor(width=DETECT_WIDTH, height=DETECT_HEIGHT)
     # Reset sensor
     sensor.reset()
@@ -82,7 +82,7 @@ try:
 
         # Recognize barcodes in the image
         for code in img.find_barcodes():
-            img.draw_rectangle([v for v in code.rect()], color=(255, 0, 0))  # Draw rectangle around detected barcode
+            img.draw_rectangle([v for v in code.rect()], color=(255, 0, 0))  # Draw a rectangle around the recognized barcode
             print_args = (
                 barcode_name(code), 
                 code.payload(), 
@@ -92,7 +92,7 @@ try:
             )
             print("Barcode %s, Content \"%s\", Rotation %f (degrees), Quality %d, FPS %f" % print_args)
 
-        # Draw the result on the screen
+        # Draw the result onto the screen
         Display.show_image(img)
         gc.collect()
 
@@ -110,22 +110,22 @@ finally:
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
 
-    # Release media buffer
+    # Release media buffers
     MediaManager.deinit()
 ```
 
-### Code Explanation
+### Code Description
 
-- **Import Modules**: Import necessary libraries to use sensor, display, and media management functions.
-- **barcode_name Function**: Returns the name of the barcode type for further processing and display.
-- **Sensor Configuration**: Create and configure the sensor object, including setting the width, height, and format (grayscale image) of the image output.
-- **Display Initialization**: Configure the display output method, which can be HDMI, LCD, or IDE.
-- **Main Loop**:
+- **Import modules**: Import the necessary libraries to use sensor, display, and media management functions.
+- **barcode_name function**: Returns the name of the barcode based on its type, facilitating subsequent processing and display.
+- **Sensor configuration**: Create and configure the sensor object, including setting the output image width, height, and format (grayscale image).
+- **Display initialization**: Configure the display output method, with options for HDMI, LCD, or IDE.
+- **Main loop**:
   - Capture images and check exit conditions.
-  - Recognize barcodes in the image and draw a red rectangle around the barcode.
-  - Print detailed information about the barcode, including type, content, rotation angle, quality, and current frame rate.
-- **Exception Handling**: Capture user interruptions or other exceptions to ensure the sensor stops properly and resources are released.
+  - Recognize barcodes in the image and draw a red rectangle around them.
+  - Print detailed barcode information, including type, content, rotation angle, quality, and current frame rate.
+- **Exception handling**: Catch user interruption or other exceptions to ensure the sensor stops properly and resources are released.
 
 ```{admonition} Tip
-For specific interface definitions, please refer to [find_barcodes](../../api/openmv/image.md#2284-find_barcodes).
+For specific interface definitions, please refer to [find_barcodes](../../api/openmv/image.md#find-barcodes).
 ```

@@ -1,44 +1,73 @@
-# WDT Routines
+# WDT Watchdog Tutorial
 
-## Overview
+## What is WDT?
 
-The K230 contains two WDT (Watchdog Timer) hardware modules, primarily used to restart the system when the application crashes or enters an unrecoverable state. Once the WDT is activated, if no "feed dog" operation is performed within the set timeout period, the system will automatically reset.
+**WDT (Watchdog Timer)**
+is a defensive mechanism for system stability, ensuring that when a program encounters an exception (such as an infinite loop or freeze), the system can automatically restart to resume operation.
 
-## Example
+Typical uses include:
 
-The following example demonstrates how to use the WDT interface for a simple watchdog functionality test.
+- Preventing embedded devices from being stuck for long periods
+- Ensuring programs respond in a timely manner in mission-critical tasks
+- A core component of the system self-recovery mechanism
+
+## K230 WDT Features
+
+| Feature | Description |
+| ------ | --------------------------- |
+| Supported channels | Built-in **2 WDT channels** (WDT0 / WDT1) |
+| Minimum timeout | Second-level precision, timeout is usually 1 second or more |
+| Reset mechanism | Automatically triggers **system reset** upon timeout |
+| Manual feeding | Call the `feed()` method to reset the timer before the timeout |
+
+## Application Example: Basic Watchdog Test
+
+The following example sets a 3-second timeout through WDT1, and simulates a "feed the dog" operation in the program to prevent the system from restarting.
+
+### Example Code
 
 ```python
 import time
 from machine import WDT
 
-# Instantiate WDT1 with a timeout of 3 seconds
-wdt1 = WDT(1, 3)
+# ========== Initialize WDT1 ==========
+wdt1 = WDT(1, 3)  # Channel 1, timeout 3 seconds
 
-# Wait for 2 seconds
+# ========== Wait 2 seconds ==========
 time.sleep(2)
 
-# Feed the dog operation, reset the WDT timer
-wdt1.feed()
+# ========== Feed the dog operation ==========
+wdt1.feed()       # Reset the watchdog counter to avoid triggering a system reset
 
-# Wait for another 2 seconds
+# ========== Wait another 2 seconds ==========
 time.sleep(2)
+
+# If feed() is not called again, the system will automatically restart after 3 seconds
 ```
 
-## Code Explanation
+## Interface Description
 
-1. **Instantiate WDT**:
-   - Create a `WDT` object with parameters for the WDT number and timeout period (in seconds). In this example, the timeout is set to 3 seconds.
+| Method Name                | Description                                              |
+| ----------------------- | -------------------------------------------------- |
+| `WDT(channel, timeout)` | Create a watchdog object, with parameters being the channel number and timeout duration (in seconds) |
+| `feed()`                | Feed the watchdog operation, resets the countdown counter               |
 
-1. **Delay Operation**:
-   - `time.sleep(2)` pauses execution for 2 seconds. During this period, if no feed dog operation is performed, the WDT will count to 3 seconds and then restart the system.
+## Usage Recommendations
 
-1. **Feed Dog Operation**:
-   - Call the `wdt1.feed()` method to reset the WDT timer to prevent a timeout restart.
+| Scenario                  | Recommended Operation                          |
+| --------------------- | ---------------------------------------- |
+| System task deadlock prevention | Call `feed()` in each main loop to feed the watchdog       |
+| Serial/Network stall detection | Feed the watchdog only after successfully receiving data     |
+| Multi-threaded applications    | Use a message queue to notify the main thread to feed the watchdog periodically |
 
-1. **Second Delay**:
-   - Pause for another 2 seconds. Since no `feed()` operation is called this time, the WDT will trigger a restart after the timeout.
+## Frequently Asked Questions and Troubleshooting
 
-```{admonition} Tip
-For detailed WDT module interface, please refer to the [API documentation](../../api/machine/K230_CanMV_WDT_Module_API_Manual.md)
-```
+| Issue                           | Cause and Solution                                |
+| ---------------------------- | ----------------------------------------- |
+| Program auto-restarts after running for a while | The watchdog was not fed, and the timeout reset has been triggered         |
+| Still restarts after feeding the watchdog        | Feed frequency is lower than the timeout, or the call location is not in the main loop |
+| Want to disable the watchdog                     | K230 currently has no disable interface; it is recommended to adapt and avoid it at the logic level |
+
+## Further Reading
+
+- [K230 WDT API Documentation](../../api/machine/k230_canmv_wdt_api_manual.md)

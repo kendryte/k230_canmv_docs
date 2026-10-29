@@ -1,203 +1,122 @@
 # HTTP Server Example Explanation
 
-## Environment Preparation
+## Example Location
 
-First, ensure that your CanMV development board is connected to a router or switch via an Ethernet port, and that the router is functioning properly and has internet access. This setup is a prerequisite for making HTTP requests.
+- Development board firmware path: `/sdcard/examples/14-Socket/http_server.py`
+- SDK source code path: `src/canmv/resources/examples/14-Socket/http_server.py`
 
-## Server Example Detailed Explanation
+This example starts a simple HTTP/1.1 service on the development board. After the browser connects to port `8081`, the service reads the request header and returns a device status webpage, displaying the system version, uptime, available memory, network interface, and client information, then closes the connection and exits.
 
-Below is a simple HTTP server Python example based on the CanMV development board. This server listens on port 8081 and can respond to HTTP requests from clients.
+## Preparation Before Running
 
-### Import Necessary Modules
+Set the network type and Wi-Fi parameters at the top of the script:
 
 ```python
-import socket  
-import network  
-import time
+NETWORK_TYPE = "wifi_sta"  # "default"、"lan"、"wifi_sta" or "wifi_ap"
+WLAN_DEVICE = "auto"       # "auto"、"usb"、"sdio" or "spi"
+WIFI_SSID = "TEST"
+WIFI_PASSWORD = "12345678"
+NETWORK_TIMEOUT = 20
 ```
 
-By importing the `socket`, `network`, and `time` modules, the `socket` module is used for network communication, `network` manages network interfaces (such as LAN), and `time` provides time-related functionalities.
+The browser and the development board must be on an interoperable network. In `wifi_ap` mode, first let the computer connect to the hotspot created by the development board; in `wifi_sta` or `lan` mode, both ends should be on the same LAN or have reachable routes.
 
-### Define Response Content
+## Code Flow
+
+### 1. Connect to Network and Obtain Service Address
 
 ```python
-CONTENT = b"""\  
-HTTP/1.0 200 OK  
-Hello #%d from k230 canmv MicroPython!  
-"""
+netif, ip = connect_network(
+    NETWORK_TYPE,
+    ssid=WIFI_SSID,
+    password=WIFI_PASSWORD,
+    wlan_device=WLAN_DEVICE,
+    timeout=NETWORK_TIMEOUT,
+)
 ```
 
-Defines a byte string `CONTENT` as the HTTP response body. `%d` is a placeholder for a counter, indicating the sequence number of each request.
+The returned `ip` is used to print the browser access address.
 
-### Define Main Function
+### 2. Create Listening Socket
 
 ```python
-def main(micropython_optimize=True):  
-    # ... (subsequent code)
+s = socket.socket()
+addr = socket.getaddrinfo("0.0.0.0", 8081)[0][-1]
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+s.bind(addr)
+s.listen(5)
 ```
 
-Defines the `main` function, with the parameter `micropython_optimize` controlling whether to enable specific MicroPython optimizations.
+- `0.0.0.0` means listening on all current IPv4 interfaces, not relying on dynamically generated network interface names.
+- `SO_REUSEADDR` allows the port to be rebound quickly after the script restarts.
+- `listen(5)` starts listening for TCP connections; the parameter `5` is the upper limit of the queue waiting to process connections.
 
-### Configure Network Interface
-
-```python
-def network_use_wlan(is_wlan=True):
-    if is_wlan:
-        sta = network.WLAN(0)
-        sta.connect("TEST", "12345678")
-        print(sta.status())
-        while sta.ifconfig()[0] == '0.0.0.0':
-            os.exitpoint()
-        print(sta.ifconfig())
-        ip = sta.ifconfig()[0]
-        return ip
-    else:
-        a = network.LAN()
-        if not a.active():
-            raise RuntimeError("LAN interface is not active.")
-        a.ifconfig("dhcp")
-        print(a.ifconfig())
-        ip = a.ifconfig()[0]
-        return ip
-```
-
-This code selects between WLAN or LAN interface based on the `is_wlan` parameter. In WLAN mode, it connects to a specified Wi-Fi network, while in LAN mode, it obtains an IP address via DHCP. After obtaining and printing the network configuration, it returns the IP address.
-
-### Create and Configure Socket
+### 3. Accept Browser Connection
 
 ```python
-# Create socket object  
-s = socket.socket()   
-# Set socket options to allow address reuse  
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)   
-# Bind to all network interfaces, listening on port 8081  
-ai = socket.getaddrinfo("0.0.0.0", 8081)  
-addr = ai[0][-1]  
-s.bind(addr)   
-# Start listening, with a maximum of 5 connection requests  
-s.listen(5)  
-print("Listening, connect your browser to http://%s:8081/" % (network.LAN().ifconfig()[0]))
-```
-
-This code creates a socket and enables the `SO_REUSEADDR` option to allow port reuse. It binds the address and starts listening on port 8081, supporting up to 5 connection requests.
-
-### Handle Client Requests
-
-```python
-counter = 0  
-while True:  
-    # Accept connection  
-    res = s.accept()  
-    client_sock = res[0]  
-    client_addr = res[1]  
-    print("Client address:", client_addr)  
-  
-    # Choose different reading methods based on whether optimization is enabled  
-    if not micropython_optimize:  
-        # Use stream interface (suitable for CPython)  
-        client_stream = client_sock.makefile("rwb")  
-    else:  
-        # Use MicroPython-specific interface  
-        client_stream = client_sock  
-  
-    # Read request content  
-    # ...  
-  
-    # Send response  
-    client_stream.write(CONTENT % counter)  
-    # Close connection  
-    client_stream.close()  
-  
-    counter += 1  
-    time.sleep(2)  
-    if counter > 0:  
-        print("HTTP server exit!")  
-        s.close()  
+while True:
+    try:
+        client, client_address = server.accept()
         break
+    except OSError as error:
+        if error.errno != 11:
+            raise
+    os.exitpoint()
+    time.sleep_ms(10)
 ```
 
-The server main loop accepts client connections, selects different reading methods to handle requests, sends a response with a counter, and closes the connection. After closing the connection, it waits for 2 seconds before entering the next loop.
+RT-Smart Socket's `accept()` returns `EAGAIN` when there is currently no connection. The example waits briefly and retries, while calling `os.exitpoint()` to keep the script exitable. After accepting the connection, the serial port prints the browser address, and then `read_request()` sets the client Socket to non-blocking mode.
 
-### Complete Example
+### 4. Read Complete Request Header
 
 ```python
-import socket
-import network
-import time, os
+request = bytearray()
+client.setblocking(False)
 
-CONTENT = b"""\
-HTTP/1.0 200 OK
-
-Hello #%d from k230 canmv MicroPython!
-"""
-
-def network_use_wlan(is_wlan=True):
-    if is_wlan:
-        sta = network.WLAN(0)
-        sta.connect("TEST", "12345678")
-        print(sta.status())
-        while sta.ifconfig()[0] == '0.0.0.0':
-            os.exitpoint()
-        print(sta.ifconfig())
-        ip = sta.ifconfig()[0]
-        return ip
-    else:
-        a = network.LAN()
-        if not a.active():
-            raise RuntimeError("LAN interface is not active.")
-        a.ifconfig("dhcp")
-        print(a.ifconfig())
-        ip = a.ifconfig()[0]
-        return ip
-
-def main(micropython_optimize=True):
-    ip = network_use_wlan(True)
-    s = socket.socket()
-    ai = socket.getaddrinfo("0.0.0.0", 8081)
-    addr = ai[0][-1]
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind(addr)
-    s.listen(5)
-    print("Listening, connect your browser to http://%s:8081/" % (ip))
-
-    counter = 0
-    while True:
-        res = s.accept()
-        client_sock = res[0]
-        client_addr = res[1]
-        print("Client address:", client_addr)
-        client_sock.setblocking(True)
-        client_stream = client_sock if micropython_optimize else client_sock.makefile("rwb")
-
-        while True:
-            h = client_stream.read()
-            if h is None:
-                continue
-            print(h)
-            if h.endswith(b'\r\n\r\n'):
-                break
-            os.exitpoint()
-
-        client_stream.write(CONTENT % counter)
-        client_stream.close()
-        counter += 1
-        time.sleep(2)
-        if counter > 0:
-            print("http server exit!")
-            s.close()
+while len(request) < MAX_REQUEST_BYTES:
+    chunk = client.recv(min(256, MAX_REQUEST_BYTES - len(request)))
+    if chunk:
+        request.extend(chunk)
+        if request.find(b"\r\n\r\n") >= 0:
             break
-
-main()
 ```
 
-For specific interface definitions, please refer to [socket](../../api/extmod/K230_CanMV_socket_API_Manual.md) and [network](../../api/extmod/K230_CanMV_network_API_Manual.md).
+The HTTP request header ends with an empty line, i.e., the byte sequence `\r\n\r\n`. A single `recv()` is not guaranteed to get the complete request, so the example appends each fragment to the `bytearray` until the request header is complete. The maximum request size is 4096 bytes, with a wait time of 2 seconds, to prevent abnormal clients from occupying the service indefinitely.
 
-## Example Phenomenon and Operation Instructions
+### 5. Generate Device Status Page
 
-After running this example in the CanMV IDE K230, the IDE serial terminal will display the following information:
+```python
+info = network_info(netif)
+config = info["ifconfig"]
+system = os.uname()
+```
 
-![image-20240722134617332](../../../zh/example/images/network/image-20240722134617332.png)
+`network_info()` aggregates the current interface name, default interface, connection status, IP configuration, and MAC address; `os.uname()` provides the development board name, CanMV firmware version, and MicroPython build information. The page also displays the available heap memory returned by `gc.mem_free()`, uptime, all registered network interfaces, and browser address.
 
-Copy the URL from the terminal and access it in your browser to view the server's response:
+All dynamic values are first passed through `html_escape()` before being written into the response body, to prevent device names or request endpoint information from breaking the HTML structure.
 
-![image-20240722134912486](../../../zh/example/images/network/image-20240722134912486.png)
+### 6. Return Response and Exit
+
+```python
+body = build_status_page(netif, client_address, counter)
+header = (
+    "HTTP/1.1 200 OK\r\n"
+    "Content-Type: text/html; charset=utf-8\r\n"
+    "Content-Length: %d\r\n"
+    "Connection: close\r\n"
+    "\r\n"
+) % len(body)
+
+client.setblocking(True)
+client.sendall(header.encode() + body)
+```
+
+The response uses the CRLF line terminator required by HTTP, and explicitly specifies the body length through `Content-Length`. `sendall()` will send the complete response before closing the connection. Both the client and listening Socket are closed in `finally`. This teaching example only handles one successful request; the script needs to be run again before accessing it again.
+
+## Running and Verification
+
+1. Run the script and check the serial port output for `http://<IP>:8081/`.
+2. Open this address in a browser that can access the development board.
+3. The page should display three groups of device information: System, Request, and Network, and the serial port will print the original request.
+
+When the access times out, sequentially check whether both ends can communicate with each other, whether the IP is still valid, and whether TCP port `8081` is blocked by the firewall.

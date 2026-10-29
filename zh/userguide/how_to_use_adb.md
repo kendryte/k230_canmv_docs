@@ -22,7 +22,7 @@ Components Configuration > Enable CherryUSB > Enable CherryUSB Device
 选择 CDC + ADB 或者 ADB
 ```
 
-![ENABL ADB](https://www.kendryte.com/api/post/attachment?id=770)
+![ENABL ADB](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/a4f124f2eb4b.png)
 
 ### 主机环境配置
 

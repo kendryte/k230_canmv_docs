@@ -4,8 +4,8 @@
 
 CanMV-K230 开发板采用单板设计，具备丰富的扩展接口，充分发挥了 K230 芯片的高性能优势。该开发板可直接用于多种智能产品的开发，帮助加速产品的应用落地。
 
-![board-front](../../images/CanMV-K230_front.png)
-![board-behind](../../images/CanMV-K230_behind.png)
+![board-front](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/images/CanMV-K230_front.png)
+![board-behind](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/images/CanMV-K230_behind.png)
 
 ## CanMV-K230 默认套件
 
@@ -26,4 +26,4 @@ CanMV-K230 开发板的默认套件包括以下组件：
 
 ### 使用 CanMV-K230 开发板时，需同时连接 2 根 USB 数据线
 
-![canmv-k230-board](../../images/CanMV-K230-poweron.png)
+![canmv-k230-board](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/images/CanMV-K230-poweron.png)

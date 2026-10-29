@@ -8,6 +8,6 @@
 
 ## LVGL API 参考
 
-LVGL 的 API 文档提供了全面的函数和模块说明，供开发者参考和使用。请访问以下链接获取详细信息：[lvgl_api](https://docs.lvgl.io/master/API/index.html)。
+LVGL 的 API 文档提供了全面的函数和模块说明，供开发者参考和使用。请访问以下链接获取详细信息：[lvgl_api](https://lvgl.io/docs/open)。
 
 本手册致力于帮助开发者更高效地利用 LVGL 进行图形界面的开发。

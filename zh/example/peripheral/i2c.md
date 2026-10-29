@@ -188,6 +188,6 @@ K230 采用 **7 位地址模式**，而某些设备手册或示例中使用的�
 ## 延伸阅读
 
 * [FPIOA 模块教程](./fpioa.md)
-* [K230 I2C API 手册](../../api/machine/K230_CanMV_I2C模块API手册.md)
-* [K230 引脚定义列表](https://kendryte-download.canaan-creative.com/developer/k230/HDK/K230%E7%A1%AC%E4%BB%B6%E6%96%87%E6%A1%A3/K230_PINOUT_V1.2_20240822.xlsx)
+* [K230 I2C API 手册](../../api/machine/k230_canmv_i2c_api_manual.md)
+* [K230 引脚定义列表](https://download.kendryte.com/developer/k230/HDK/K230%E7%A1%AC%E4%BB%B6%E6%96%87%E6%A1%A3/K230_PINOUT_V1.2_20240822.xlsx)
 * [Micropython I2C API](https://docs.micropython.org/en/latest/library/machine.I2C.html)

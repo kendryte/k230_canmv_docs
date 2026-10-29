@@ -1,20 +1,24 @@
-# Image Multimedia
+# Image and Multimedia
 
 ```{toctree}
 :maxdepth: 1
 
-mpp/K230_CanMV_Sensor_Module_API_Manual.md
-mpp/K230_CanMV_Display_Module_API_Manual.md
-mpp/K230_CanMV_Audio_Module_API_Manual.md
-mpp/K230_CanMV_Media_Module_API_Manual.md
-mpp/K230_CanMV_VDEC_Module_API_Manual.md
-mpp/K230_CanMV_VENC_Module_API_Manual.md
-mpp/K230_CanMV_MP4_Module_API_Manual.md
-mpp/K230_CanMV_Player_Module_API_Manual.md
-mpp/K230_CanMV_RTSP_Module_API_Manual.md
-mpp/K230_CanMV_PM_Module_API_Manual.md
+mpp/k230_canmv_sensor_module_api_manual.md
+mpp/k230_canmv_display_module_api_manual.md
+mpp/k230_canmv_audio_module_api_manual.md
+mpp/k230_canmv_media_module_api_manual.md
+mpp/k230_canmv_vdec_module_api_manual.md
+mpp/k230_canmv_venc_module_api_manual.md
+mpp/media_mjpeg.md
+mpp/k230_canmv_mp4_module_api_manual.md
+mpp/k230_canmv_player_module_api_manual.md
+mpp/k230_canmv_rtsp_module_api_manual.md
+mpp/k230_canmv_webrtc_module_api_manual.md
+mpp/k230_canmv_pm_module_api_manual.md
 openmv/image.md
+opencv/opencv.md
 lvgl/lvgl.md
 mpp/media_uvc.md
 mpp/nonai2d_csc.md
+cv_lite/cv_lite.md
 ```

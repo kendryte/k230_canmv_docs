@@ -18,7 +18,7 @@ DISPLAY_WIDTH = ALIGN_UP(1920, 16)
 DISPLAY_HEIGHT = 1080
 
 def display_init():
-    # 使用hdmi作为显示输出，如果您选择的屏幕无法点亮，请参考API文档中的K230_CanMV_Display模块API手册自行配置
+    # 使用hdmi作为显示输出，如果您选择的屏幕无法点亮，请参考API文档中的k230_canmv_display_module_api_manual自行配置
     Display.init(Display.LT9611, to_ide = True)
     # 初始化media管理器
     MediaManager.init()

@@ -1,180 +1,94 @@
-# HTTP-Client 例程讲解
+# HTTP Client 例程讲解
 
-## 环境准备
+## 例程位置
 
-首先，确保 CanMV 开发板通过网口连接到路由器或交换机，并且路由器能够正常工作，具备访问互联网的能力。这是进行 HTTP 请求的基础环境设置。
+- 开发板固件路径：`/sdcard/examples/14-Socket/http_client.py`
+- SDK 源码路径：`src/canmv/resources/examples/14-Socket/http_client.py`
 
-## 例程详解
+该例程先建立网络连接，再访问 `http://www.baidu.com/index.html`，并分别演示 Socket
+的文件流接口与普通收发接口。
 
-以下 Python 例程展示了如何在 CanMV 开发板上实现一个 HTTP 客户端，通过该客户端向指定服务器（此处为百度）发送 HTTP GET 请求，并接收响应内容。
+## 运行前准备
 
-### 导入必要的模块
-
-```python
-import network  
-import socket
-```
-
-- `network` 模块用于管理网络接口
-- `socket` 模块提供网络通信的底层接口。
-
-### 定义主函数
+在脚本顶部修改网络配置：
 
 ```python
-def main(use_stream=True):  
-    # ...（后续代码）
+NETWORK_TYPE = "wifi_sta"  # "default"、"lan"、"wifi_sta" 或 "wifi_ap"
+WLAN_DEVICE = "auto"       # "auto"、"usb"、"sdio" 或 "spi"
+WIFI_SSID = "TEST"
+WIFI_PASSWORD = "12345678"
+NETWORK_TIMEOUT = 20
 ```
 
-函数 `main` 定义了是否使用流式接口读取响应数据的参数 `use_stream`，默认为 `True`，用来控制数据接收方式。
+HTTP 客户端需要可访问互联网并能正常解析 DNS。使用有线网络时，将
+`NETWORK_TYPE` 改为 `"lan"`；复用已经联网的默认接口时使用 `"default"`。
 
-### 配置网络接口
+## 代码流程
+
+### 1. 连接网络
 
 ```python
-def network_use_wlan(is_wlan=True):
-    if is_wlan:
-        sta = network.WLAN(0)
-        sta.connect("TEST", "12345678")
-        print(sta.status())
-        while sta.ifconfig()[0] == '0.0.0.0':
-            os.exitpoint()
-        print(sta.ifconfig())
-        ip = sta.ifconfig()[0]
-        return ip
-    else:
-        a = network.LAN()
-        if not a.active():
-            raise RuntimeError("LAN interface is not active.")
-        a.ifconfig("dhcp")
-        print(a.ifconfig())
-        ip = a.ifconfig()[0]
-        return ip
+netif, _ = connect_network(
+    NETWORK_TYPE,
+    ssid=WIFI_SSID,
+    password=WIFI_PASSWORD,
+    wlan_device=WLAN_DEVICE,
+    timeout=NETWORK_TIMEOUT,
+)
 ```
 
-该函数根据输入配置网络接口：
+`connect_network()` 会等待接口取得有效 IP，并将它设为默认上行接口。网络未在
+`NETWORK_TIMEOUT` 秒内就绪时会抛出异常，HTTP 请求不会继续执行。
 
-1. **WLAN 模式**：通过无线网络接口（WLAN）连接指定的 Wi-Fi（SSID 为 "TEST"）。
-1. **LAN 模式**：通过有线网络接口（LAN）自动获取 IP 地址。
-
-### 创建并配置 Socket
+### 2. 解析服务器地址
 
 ```python
-# 创建 socket 对象  
-s = socket.socket()  
-# 获取目标地址和端口号  
-ai = []  
-for attempt in range(0, 3):  
-    try:  
-        ai = socket.getaddrinfo("www.baidu.com", 80)  
-        break  
-    except:  
-        print("getaddrinfo again")  
-  
-if ai == []:  
-    print("连接错误")  
-    s.close()  
-    return  
-  
-addr = ai[0][-1]  
-print("连接地址:", addr)
+ai = socket.getaddrinfo("www.baidu.com", 80)
+addr = ai[0][-1]
 ```
 
-创建一个 `socket` 对象，并通过 `getaddrinfo` 函数获取服务器（百度）的地址和端口号信息，使用重试机制以提高健壮性。
+例程最多重试 DNS 解析 3 次。串口中的 `Address infos` 是解析结果，
+`Connect address` 是本次连接实际使用的地址。
 
-### 发送 HTTP 请求并接收响应
+### 3. 建立 TCP 连接
 
 ```python
-# 连接到服务器  
-s.connect(addr)  
-  
-if use_stream:  
-    # 使用流式接口读取响应  
-    s = s.makefile("rwb", 0)  
-    s.write(b"GET /index.html HTTP/1.0\r\n\r\n")  
-    print(s.read())  
-else:  
-    # 直接使用 socket 接口发送和接收数据  
-    s.send(b"GET /index.html HTTP/1.0\r\n\r\n")  
-    print(s.recv(4096))  
-  
-# 关闭 socket  
-s.close()
+s = socket.socket()
+s.connect(addr)
 ```
 
-代码根据 `use_stream` 参数选择使用流式接口或直接通过 `socket` 接口发送 HTTP 请求并读取响应数据。
+HTTP/1.0 运行在 TCP 上，因此必须先连接服务器的 `80` 端口。
 
-### 函数调用
+### 4. 使用文件流接口收发
 
 ```python
-# 分别测试流式接口和非流式接口  
-main(use_stream=True)  
-main(use_stream=False)
+s = s.makefile("rwb", 0)
+s.write(b"GET /index.html HTTP/1.0\r\n\r\n")
+print(s.read())
 ```
 
-调用 `main` 函数，通过不同的 `use_stream` 参数测试流式和非流式读取 HTTP 响应的效果。如果 use_stream 为 True，则使用流式接口发送请求并读取整个响应；如果为 False，则直接发送请求并接收一定长度的响应数据（本例中为4096字节）。最后，关闭 socket 连接以释放资源。
+`makefile()` 将 Socket 包装为可调用 `read()` 和 `write()` 的流。HTTP/1.0 请求完成
+后服务器关闭连接，`read()` 因而能够读取到响应结束。
 
-### 完整例程
+### 5. 使用普通 Socket 接口收发
 
 ```python
-import network
-import socket
-import os, time
-
-def network_use_wlan(is_wlan=True):
-    if is_wlan:
-        sta = network.WLAN(0)
-        sta.connect("TEST", "12345678")
-        print(sta.status())
-        while sta.ifconfig()[0] == '0.0.0.0':
-            os.exitpoint()
-        print(sta.ifconfig())
-        ip = sta.ifconfig()[0]
-        return ip
-    else:
-        a = network.LAN()
-        if not a.active():
-            raise RuntimeError("LAN interface is not active.")
-        a.ifconfig("dhcp")
-        print(a.ifconfig())
-        ip = a.ifconfig()[0]
-        return ip
-
-def main(use_stream=True):
-    # 获取 LAN 接口
-    network_use_wlan(True)
-    # 创建 socket
-    s = socket.socket()
-    # 获取地址及端口号
-    ai = []
-    for attempt in range(0, 3):
-        try:
-            ai = socket.getaddrinfo("www.baidu.com", 80)
-            break
-        except:
-            print("getaddrinfo again")
-    
-    if ai == []:
-        print("连接错误")
-        s.close()
-        return
-
-    addr = ai[0][-1]
-    print("连接地址:", addr)
-    # 连接
-    s.connect(addr)
-
-    if use_stream:
-        s = s.makefile("rwb", 0)
-        s.write(b"GET /index.html HTTP/1.0\r\n\r\n")
-        print(s.read())
-    else:
-        s.send(b"GET /index.html HTTP/1.0\r\n\r\n")
-        print(s.recv(4096))
-
-    s.close()
-
-# main()
-main(use_stream=True)
-main(use_stream=False)
+s.send(b"GET /index.html HTTP/1.0\r\n\r\n")
+print(s.recv(4096))
 ```
 
-具体接口定义请参考 [socket](../../api/extmod/K230_CanMV_socket模块API手册.md)、[network](../../api/extmod/K230_CanMV_network 模块API手册.md)。
+普通接口使用 `send()` 和 `recv()`。一次 `recv(4096)` 最多读取 4096 字节，不保证
+取得完整响应；实际应用应循环读取，直到服务器关闭连接或协议已给出完整长度。
+
+脚本末尾依次调用 `main(use_stream=True)` 和 `main(use_stream=False)`，因此会发起两次
+独立请求。
+
+## 运行与排查
+
+1. 在 CanMV IDE 中打开开发板固件路径下的脚本并运行。
+2. 确认串口先输出联网信息，再输出 DNS 地址和 HTTP 响应。
+3. 若一直出现 `getaddrinfo again`，检查 DNS、网关和互联网连接。
+4. 若域名可解析但连接失败，检查目标服务、默认上行和网络防火墙。
+
+相关接口见 [network 模块](../../api/extmod/k230_canmv_network_api_manual.md) 和
+[socket 模块](../../api/extmod/k230_canmv_socket_api_manual.md)。

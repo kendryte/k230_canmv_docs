@@ -2,13 +2,17 @@
 
 ## Overview
 
-The K230 is equipped with one MIPI-DSI (1x4 lane) interface, which can drive a MIPI screen or convert to drive an HDMI monitor through an interface chip. Additionally, for convenience during debugging, we also support a virtual display. Users can choose the `VIRT` output device to preview images in CanMV-IDE even without an HDMI monitor or LCD screen.
+K230 is equipped with 1 MIPI-DSI channel (1x4 lane), which can drive a MIPI screen or drive an HDMI display through an interface chip conversion. In addition, for debugging convenience, we also support a virtual display. Users can select the `VIRT` output device, and even without an HDMI display or LCD screen, image preview can still be performed in CanMV-IDE.
 
 ## Examples
 
-### Using HDMI to Output Images
+### Output Image Using HDMI
 
-This example outputs a 1080P image via an HDMI display.
+This example lists the display modes supported by the current firmware, selects the default mode of LT9611 HDMI, and creates an image based on the actual display size.
+
+```{note}
+When using a larger resolution and enabling `to_ide=True` to transfer the image to the IDE for preview, the image occasionally flickers. This is a known issue and will be fixed in subsequent versions.
+```
 
 ```python
 import time
@@ -19,20 +23,24 @@ import sys
 from media.display import *
 from media.media import *
 
-DISPLAY_WIDTH = ALIGN_UP(1920, 16)
-DISPLAY_HEIGHT = 1080
+DISPLAY_TYPE = Display.LT9611
 
 def display_test():
     print("display test")
 
-    # Create an image for drawing
-    img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
-    # Use HDMI as the display output
-    Display.init(Display.LT9611, to_ide=True)
-    # Initialize the media manager
+    print("Available display modes:")
+    for mode in Display.list_modes():
+        print(mode)
+
+    # 从上面显示的 Display.<TYPE> 值中选择一个
+    Display.init(DISPLAY_TYPE, to_ide=True)
+    # 初始化媒体管理器
     MediaManager.init()
 
     try:
+        # 根据初始化后的显示尺寸创建用于绘图的图像
+        img = image.Image(Display.width(), Display.height(), image.ARGB8888)
+
         while True:
             img.clear()
             for i in range(10):
@@ -42,24 +50,24 @@ def display_test():
                 g = (urandom.getrandbits(8))
                 b = (urandom.getrandbits(8))
                 size = (urandom.getrandbits(30) % 64) + 32
-                # Draw text at the coordinates on the image
-                img.draw_string_advanced(x, y, size, "Hello World! 你好世界 ！！！", color=(r, g, b))
+                # 在图像的坐标点绘制文字
+                img.draw_string_advanced(x, y, size, "Hello World!，你好世界！！！", color=(r, g, b))
 
-            # Display the result on the screen
+            # 将结果绘制到屏幕上
             Display.show_image(img)
 
             time.sleep(1)
             os.exitpoint()
     except KeyboardInterrupt as e:
-        print("User stopped: ", e)
+        print("用户停止: ", e)
     except BaseException as e:
-        print(f"Exception: {e}")
+        print(f"异常: {e}")
 
-    # Destroy the display
+    # 销毁显示
     Display.deinit()
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # Release the media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 
 if __name__ == "__main__":
@@ -67,9 +75,9 @@ if __name__ == "__main__":
     display_test()
 ```
 
-### Using LCD to Output Images
+### Output Image Using LCD
 
-This example outputs an 800x480 image via an LCD (ST7701). You can also select other supported panel types (such as NT35516, GC9503, etc.) by replacing `Display.ST7701` with the corresponding type and setting the appropriate resolution.
+This example lists the display modes supported by the current firmware and initializes the default mode of ST7701 LCD. To use other LCDs, modify `DISPLAY_TYPE` to the corresponding `Display.<TYPE>` constant in the list. To select a non-default mode, pass the `width`, `height`, and `fps` values from the list to `Display.init`.
 
 ```python
 import time
@@ -80,23 +88,24 @@ import sys
 from media.display import *
 from media.media import *
 
-# Supported panel types example: Display.ST7701, Display.NT35516, Display.GC9503, Display.AML020T, etc.
 DISPLAY_TYPE = Display.ST7701
-DISPLAY_WIDTH = ALIGN_UP(800, 16)
-DISPLAY_HEIGHT = 480
 
 def display_test():
     print("display test")
 
-    # Create an image for drawing
-    img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
+    print("Available display modes:")
+    for mode in Display.list_modes():
+        print(mode)
 
-    # Use LCD as the display output
-    Display.init(DISPLAY_TYPE, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
-    # Initialize the media manager
+    # 从上面显示的 Display.<TYPE> 值中选择一个
+    Display.init(DISPLAY_TYPE, to_ide=True)
+    # 初始化媒体管理器
     MediaManager.init()
 
     try:
+        # 根据初始化后的显示尺寸创建用于绘图的图像
+        img = image.Image(Display.width(), Display.height(), image.ARGB8888)
+
         while True:
             img.clear()
             for i in range(10):
@@ -106,24 +115,24 @@ def display_test():
                 g = (urandom.getrandbits(8))
                 b = (urandom.getrandbits(8))
                 size = (urandom.getrandbits(30) % 64) + 32
-                # Draw text at the coordinates on the image
-                img.draw_string_advanced(x, y, size, "Hello World! 你好世界 ！！！", color=(r, g, b))
+                # 在图像的坐标点绘制文字
+                img.draw_string_advanced(x, y, size, "Hello World!，你好世界！！！", color=(r, g, b))
 
-            # Display the drawn image
+            # 将绘制的图像显示
             Display.show_image(img)
 
             time.sleep(1)
             os.exitpoint()
     except KeyboardInterrupt as e:
-        print("User stopped: ", e)
+        print("用户停止: ", e)
     except BaseException as e:
-        print(f"Exception: {e}")
+        print(f"异常: {e}")
 
-    # Destroy the display
+    # 销毁显示
     Display.deinit()
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # Release the media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 
 if __name__ == "__main__":
@@ -131,9 +140,9 @@ if __name__ == "__main__":
     display_test()
 ```
 
-### Using VIRT to Debug and Preview Images
+### Debug and Preview Image Using VIRT
 
-This example uses a virtual display output device, allowing users to customize resolution and frame rate for debugging in CanMV-IDE.
+This example uses a virtual display output device. Users can customize the resolution and frame rate for debugging in CanMV-IDE.
 
 ```python
 import time
@@ -150,12 +159,12 @@ DISPLAY_HEIGHT = 480
 def display_test():
     print("display test")
 
-    # Create an image for drawing
+    # 创建用于绘制的图像
     img = image.Image(DISPLAY_WIDTH, DISPLAY_HEIGHT, image.ARGB8888)
 
-    # Use IDE as the output display, allowing any resolution to be set
+    # 使用 IDE 作为输出显示，可以设定任意分辨率和帧率
     Display.init(Display.VIRT, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, fps=60)
-    # Initialize the media manager
+    # 初始化媒体管理器
     MediaManager.init()
 
     try:
@@ -168,24 +177,24 @@ def display_test():
                 g = (urandom.getrandbits(8))
                 b = (urandom.getrandbits(8))
                 size = (urandom.getrandbits(30) % 64) + 32
-                # Draw text at the coordinates on the image
-                img.draw_string_advanced(x, y, size, "Hello World! 你好世界 ！！！", color=(r, g, b))
+                # 在图像的坐标点绘制文字
+                img.draw_string_advanced(x, y, size, "Hello World!，你好世界！！！", color=(r, g, b))
 
-            # Display the drawn image
+            # 将绘制的图像显示
             Display.show_image(img)
 
             time.sleep(1)
             os.exitpoint()
     except KeyboardInterrupt as e:
-        print("User stopped: ", e)
+        print("用户停止: ", e)
     except BaseException as e:
-        print(f"Exception: {e}")
+        print(f"异常: {e}")
 
-    # Destroy the display
+    # 销毁显示
     Display.deinit()
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
-    # Release the media buffer
+    # 释放媒体缓冲区
     MediaManager.deinit()
 
 if __name__ == "__main__":
@@ -194,5 +203,5 @@ if __name__ == "__main__":
 ```
 
 ```{admonition} Tip
-For detailed interfaces, supported panel types, and parameters of the Display module, please refer to the [API documentation](../../api/mpp/K230_CanMV_Display_Module_API_Manual.md).
+For detailed interfaces, supported panel types, and parameters of the Display module, please refer to the [API Documentation](../../api/mpp/k230_canmv_display_module_api_manual.md).
 ```

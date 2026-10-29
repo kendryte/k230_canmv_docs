@@ -1,10 +1,25 @@
 _build
 venv
 *.pyc
-_templates/layout.html
 
+# Template and Static Files
+_static/custom-theme.css
 _static/init_mermaid.js
-_templates/versionsFlex.html
+_static/mermaid.min.js
 _static/topbar.css
-_static/*
+_static/auto-nums.css
+
+_templates/Fleft.html
+_templates/FleftEn.html
+_templates/Footer.html
+_templates/FooterEn.html
+_templates/Fright.html
+_templates/FrightEn.html
+_templates/layout.html
+_templates/versionsFlex.html
 _templates/*
+_static/*
+logs/*
+*.env
+*.key
+*.pem

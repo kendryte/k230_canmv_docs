@@ -35,7 +35,7 @@ print(p)
 ### 构造函数参数说明
 
 - `dev`: 触摸设备号，0为系统默认，非0为自定义设备。
-- `rotate`: 坐标旋转，见[常量](#常量)，默认-1（使用设备默认）。
+- `rotate`: 坐标旋转，见[常量](#constants)，默认-1（使用设备默认）。
 - `range_x`, `range_y`: 仅自定义设备有效，指定触摸屏分辨率。
 - `i2c`: 仅自定义设备有效，I2C总线对象，必填。
 - `rst`, `int`: 仅自定义设备有效，复位/中断引脚对象，选填。
@@ -43,7 +43,7 @@ print(p)
 
 ### TOUCH_INFO 对象属性
 
-- `event`: 事件码，见[常量](#常量)
+- `event`: 事件码，见[常量](#constants)
 - `track_id`: 触点ID
 - `width`: 触点宽度
 - `x`: X坐标
@@ -87,6 +87,8 @@ print(p)
 ```text
 (<TOUCH_INFO x=120 y=65 event=0 ...>, <TOUCH_INFO x=250 y=130 event=0 ...>)
 ```
+
+<a id="constants"></a>
 
 ## 常量
 
@@ -132,4 +134,4 @@ A：支持，通过 `rotate` 参数（如 `TOUCH.ROTATE_90`）可开启坐标旋
 
 ## 延伸阅读
 
-- 📄 [TOUCH 模块 API 文档](../../api/machine/K230_CanMV_TOUCH模块API手册.md)
+- 📄 [TOUCH 模块 API 文档](../../api/machine/k230_canmv_touch_api_manual.md)

@@ -1,25 +1,29 @@
-# Micropython Specific Libraries
+# MicroPython-Specific Libraries
 
 ```{toctree}
 :maxdepth: 1
 
-extmod/K230_CanMV_uctypes_API_Manual.md
-extmod/K230_CanMV_network_API_Manual.md
-extmod/K230_CanMV_socket_API_Manual.md
-machine/K230_CanMV_ADC_API_Manual.md
-machine/K230_CanMV_FFT_API_Manual.md
-machine/K230_CanMV_Pin_API_Manual.md
-machine/K230_CanMV_I2C_API_Manual.md
-machine/K230_CanMV_FPIOA_API_Manual.md
-machine/K230_CanMV_PWM_API_Manual.md
-machine/K230_CanMV_SPI_API_Manual.md
-machine/K230_CanMV_Timer_API_Manual.md
-machine/K230_CanMV_WDT_API_Manual.md
-machine/K230_CanMV_UART_API_Manual.md
-machine/K230_CanMV_machine_API_Manual.md
-machine/K230_CanMV_RTC_API_Manual.md
-machine/K230_CanMV_TOUCH_API_Manual.md
-machine/K230_CanMV_LED_API_Manual.md
-machine/K230_CanMV_SPI_LCD_Module_API.md
+extmod/k230_canmv_uctypes_api_manual.md
+extmod/k230_canmv_network_api_manual.md
+extmod/k230_canmv_socket_api_manual.md
+machine/k230_canmv_adc_api_manual.md
+machine/k230_canmv_fft_api_manual.md
+machine/k230_canmv_pin_api_manual.md
+machine/k230_canmv_i2c_api_manual.md
+machine/k230_canmv_i2c_slave_api_manual.md
+machine/k230_canmv_fpioa_api_manual.md
+machine/k230_canmv_pwm_api_manual.md
+machine/k230_canmv_spi_api_manual.md
+machine/k230_canmv_timer_api_manual.md
+machine/k230_canmv_wdt_api_manual.md
+machine/k230_canmv_uart_api_manual.md
+machine/k230_canmv_uart_periodic_tx_api_manual.md
+machine/k230_canmv_machine_api_manual.md
+machine/k230_canmv_rtc_api_manual.md
+machine/k230_canmv_otp_api_manual.md
+machine/k230_canmv_touch_api_manual.md
+machine/k230_canmv_led_api_manual.md
+machine/k230_canmv_spi_lcd_module_api.md
 extmod/usb_serial.md
+extmod/usb_hid.md
 ```

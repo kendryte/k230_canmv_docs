@@ -1,80 +1,139 @@
 # 使用无线网例程讲解
 
-## 概述
+## 例程位置
 
-本教程将指导您如何在 CanMV 使用 MicroPython 的 `network` 模块进行无线网络（ WiFi）的基本操作，包括作为站点（ STA）连接到无线访问点（ AP）和创建自己的访问点（ AP）。
+Wi-Fi STA 例程：
 
-* **sta_test()**: 演示了如何作为站点（ STA）连接到无线网络，包括查看当前连接状态、扫描可用网络、连接特定 AP、查看 IP 配置以及断开连接。
-* **ap_test()**: 展示了如何配置并启动一个无线访问点（ AP），包括设置 SSID、信道和密码，并检查 AP 的配置和状态。
+- 开发板固件路径：`/sdcard/examples/14-Socket/network_wlan_sta.py`
+- SDK 源码路径：`src/canmv/resources/examples/14-Socket/network_wlan_sta.py`
 
-## 接口调用与功能说明
+Wi-Fi AP 例程：
 
-### sta_test
+- 开发板固件路径：`/sdcard/examples/14-Socket/network_wlan_ap.py`
+- SDK 源码路径：`src/canmv/resources/examples/14-Socket/network_wlan_ap.py`
 
-* **`network.WLAN(id)`**: 初始化一个 WLAN 对象，`id` 为 0 时表示 STA 模式。
-* **`sta.active(bool)`**: 激活或关闭 STA 模式。当传入 `True` 时激活，传入 `False` 时关闭。如果不带参数调用，则返回当前激活状态。
-* **`sta.status()`**: 返回 STA 的当前状态，如是否已连接到 AP。
-* **`sta.connect(ssid, password)`**: 尝试连接到指定的 SSID 和密码的 AP。此方法不返回是否连接成功的直接结果，但可以通过检查 `sta.status()` 或 `sta.isconnected()` 来获取连接状态。
-* **`sta.ifconfig()`**: 返回 STA 的 IP 配置信息，如 IP 地址、子网掩码、网关和 DNS 服务器等。
-* **`sta.isconnected()`**: 返回 `True` 如果 STA 已连接到 AP，否则返回 `False`。
-* **`sta.disconnect()`**: 断开 STA 与当前 AP 的连接。
+## WLAN 设备选择
 
-#### 完整例程
+两个例程都使用：
 
 ```python
-import network
-import time
+WLAN_DEVICE = "auto"
+```
 
+可选值为 `"auto"`、`"usb"`、`"sdio"` 和 `"spi"`。通常保留 `"auto"`，让
+系统从已注册设备中选择。只有同时安装多块 Wi-Fi 且应用必须使用指定传输类型时，
+才固定该参数。
+
+当前 SDK 可使用 RTL8189FTV/RTL8733BS 和 Broadcom brcmfmac SDIO、RW007 SPI、
+AIC8800 USB/SDIO，以及按固件配置启用的 ESP-Hosted SPI/SDIO 方案。具体驱动、
+默认板级配置和安全模式限制见
+[Wi-Fi 驱动与设备选择](../../userguide/wifi_drivers.md)。`WLAN_DEVICE` 只选择
+传输类型，不能按厂商或型号选择同一总线上的设备。
+
+## Wi-Fi STA 例程
+
+STA 模式用于连接现有无线路由器或热点。
+
+### 1. 配置凭据
+
+```python
 SSID = "TEST"
 PASSWORD = "12345678"
+WLAN_DEVICE = "auto"
+```
 
-sta = network.WLAN(network.STA_IF)
+将 SSID 和密码修改为现场热点信息。SSID 区分大小写。
 
-sta.connect(SSID, PASSWORD)
+### 2. 连接并等待地址
 
-timeout = 10  # 单位：秒
-start_time = time.time()
+```python
+from libs.Network import connect_network
 
-while not sta.isconnected():
-    if time.time() - start_time > timeout:
-        print("连接超时")
-        break
-    time.sleep(1)  # 请稍等片刻再连接
+sta, ip = connect_network(
+    "wifi_sta",
+    ssid=SSID,
+    password=PASSWORD,
+    wlan_device=WLAN_DEVICE,
+    timeout=10,
+)
+```
 
+这一步依次完成物理 WLAN 选择、设备注册等待、热点连接、DHCP 地址等待和默认
+上行设置。失败或 10 秒内未取得地址时抛出异常，不需要应用自行无限轮询。
+
+### 3. 查看状态
+
+```python
 print(sta.ifconfig())
-
 print(sta.status())
+```
 
-# 这里的断开网络，只是一个测试。实际应用可不断开
+`ifconfig()` 返回 IP 参数，`status()` 返回连接状态。如需查看当前 Wi-Fi STA
+对应的动态设备名，可额外调用 `sta.netdev_name()`。
+
+### 4. 断开测试
+
+```python
 sta.disconnect()
 print("断开连接")
 print(sta.status())
-
 ```
 
-### ap_test
+例程最后主动断开只用于演示。实际需要持续联网的程序应删除这几行。断开后，
+默认路由管理会尝试选择其他已就绪的 LAN 或 Wi-Fi STA。
 
-* **`network.WLAN(network.AP_IF)`**: 初始化一个 WLAN 对象，并设置为 AP 模式。
-* **`ap.active(bool)`**: 激活或关闭 AP 模式。当传入 `True` 时激活，传入 `False` 时关闭。如果不带参数调用，则返回当前激活状态。
-* **`ap.config(ssid=None, password=None, channel=None, ...)`**: 配置 AP 的参数，如 SSID、密码、频道等。如果不带任何参数调用，则返回当前配置。
-* **`ap.config(key)`**: 如果 `key` 是 `'ssid'`、`'channel'` 等配置项的字符串表示，则返回该配置项的值。
-* **`ap.status()`**: 返回 AP 的当前状态。
+## Wi-Fi AP 例程
 
-#### 完整例程
+AP 模式用于让手机或电脑连接到开发板创建的热点。
+
+### 1. 创建热点
 
 ```python
-import network
+from libs.Network import connect_network
 
-def ap_test():
-    ap=network.WLAN(network.AP_IF)
-    #配置并创建ap
-    ap.config(ssid='k230_ap_wjx', key='12345678')
-    #查看ap信息
-    print(ap.info())
-    #查看ap的状态
-    print(ap.status())
-
-ap_test()
+ap, ip = connect_network(
+    "wifi_ap",
+    ssid="k230_ap_wjx",
+    password="12345678",
+    wlan_device=WLAN_DEVICE,
+)
 ```
 
-具体接口定义请参考 [network](../../api/extmod/K230_CanMV_network模块API手册.md)
+公共网络库选择 WLAN AP 设备、创建加密热点并等待 AP 地址。Wi-Fi AP 是本地
+接入接口，不会被设置为互联网默认上行。
+
+### 2. 查看热点信息
+
+```python
+print(ap.info())
+print(ap.status())
+```
+
+`info()` 返回热点配置，`status()` 返回 AP 状态。如需查看动态设备名，可调用
+`ap.netdev_name()`；需要查看已连接终端时可使用 `ap.status("stations")`。
+
+### 3. 停止热点
+
+示例保持热点运行。应用退出前如需主动停止，可调用：
+
+```python
+ap.stop()
+```
+
+## 运行与验证
+
+STA 测试：
+
+1. 打开 `/sdcard/examples/14-Socket/network_wlan_sta.py`。
+1. 修改 SSID 和密码后运行。
+1. 确认 `ifconfig()` 中 IP 不为 `0.0.0.0`。
+1. 例程执行到末尾后会主动断开。
+
+AP 测试：
+
+1. 打开 `/sdcard/examples/14-Socket/network_wlan_ap.py` 并运行。
+1. 用手机搜索并连接 `k230_ap_wjx`，密码为 `12345678`。
+1. 检查串口打印的 AP 信息和状态。
+
+若指定 `WLAN_DEVICE` 后报告设备不可用，先改回 `"auto"`。完整接口定义见
+[network 模块 API 手册](../../api/extmod/k230_canmv_network_api_manual.md)。

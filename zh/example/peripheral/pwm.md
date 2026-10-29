@@ -102,5 +102,5 @@ pwm0.deinit()
 
 ## 延伸阅读
 
-- [K230 PWM API 文档](../../api/machine/K230_CanMV_PWM模块API手册.md)
-- [FPIOA 模块完整 API 手册](../../api/machine/K230_CanMV_FPIOA模块API手册.md)
+- [K230 PWM API 文档](../../api/machine/k230_canmv_pwm_api_manual.md)
+- [FPIOA 模块完整 API 手册](../../api/machine/k230_canmv_fpioa_api_manual.md)

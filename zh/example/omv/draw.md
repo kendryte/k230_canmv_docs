@@ -4,7 +4,7 @@
 
 OpenMV 是一个小型嵌入式机器视觉模块，广泛用于快速开发计算机视觉应用。OpenMV 的图像绘制方法可以用于在图像上绘制各种形状和文字，以便进行视觉反馈和调试。
 
-CanMV支持OpenMV 图像绘制方法，并增加了一些，如绘制中文字符串的[draw_string_advanced](../../api/openmv/image.md#129-draw_string_advanced)
+CanMV支持OpenMV 图像绘制方法，并增加了一些，如绘制中文字符串的[draw_string_advanced](../../api/openmv/image.md#draw_string_advanced)
 
 ## 常用函数
 

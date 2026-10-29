@@ -1,79 +1,147 @@
-# Wireless Network Example Explanation
+# Explanation of Wireless Network Examples
 
-## Overview
+## Example Locations
 
-This tutorial will guide you on how to perform basic wireless network (WiFi) operations using MicroPython's `network` module on CanMV. This includes connecting to a wireless access point (AP) as a station (STA) and creating your own access point (AP).
+Wi-Fi STA example:
 
-* **sta_test()**: Demonstrates how to connect to a wireless network as a station (STA), including checking the current connection status, scanning available networks, connecting to a specific AP, viewing IP configuration, and disconnecting.
-* **ap_test()**: Shows how to configure and start a wireless access point (AP), including setting SSID, channel, and password, and checking the AP's configuration and status.
+- Development board firmware path: `/sdcard/examples/14-Socket/network_wlan_sta.py`
+- SDK source code path: `src/canmv/resources/examples/14-Socket/network_wlan_sta.py`
 
-## Interface Calls and Function Descriptions
+Wi-Fi AP example:
 
-### sta_test
+- Development board firmware path: `/sdcard/examples/14-Socket/network_wlan_ap.py`
+- SDK source code path: `src/canmv/resources/examples/14-Socket/network_wlan_ap.py`
 
-* **`network.WLAN(id)`**: Initializes a WLAN object. `id` is 0 for STA mode.
-* **`sta.active(bool)`**: Activates or deactivates STA mode. Pass `True` to activate, `False` to deactivate. If called without arguments, it returns the current activation status.
-* **`sta.status()`**: Returns the current status of the STA, such as whether it is connected to an AP.
-* **`sta.connect(ssid, password)`**: Attempts to connect to an AP with the specified SSID and password. This method does not directly return whether the connection was successful, but you can check the connection status using `sta.status()` or `sta.isconnected()`.
-* **`sta.ifconfig()`**: Returns the IP configuration of the STA, such as IP address, subnet mask, gateway, and DNS server.
-* **`sta.isconnected()`**: Returns `True` if the STA is connected to an AP, otherwise returns `False`.
-* **`sta.disconnect()`**: Disconnects the STA from the current AP.
+## WLAN Device Selection
 
-#### Complete Example
+Both examples use:
 
 ```python
-import network
-import time
+WLAN_DEVICE = "auto"
+```
 
+Valid values are `"auto"`, `"usb"`, `"sdio"`, and `"spi"`. Typically keep `"auto"`
+to let the system choose from registered devices. Only fix this parameter when
+multiple Wi-Fi modules are installed simultaneously and the application must
+use a specific transport type.
+
+The current SDK supports RTL8189FTV/RTL8733BS and Broadcom brcmfmac SDIO, RW007
+SPI, AIC8800 USB/SDIO, as well as ESP-Hosted SPI/SDIO solutions enabled per
+firmware configuration. For details on specific drivers, default board
+configuration, and security mode restrictions, see
+[Wi-Fi Drivers and Device Selection](../../userguide/wifi_drivers.md). `WLAN_DEVICE`
+only selects the transport type and cannot select between devices from
+different vendors or models on the same bus.
+
+## Wi-Fi STA Example
+
+STA mode is used to connect to an existing wireless router or hotspot.
+
+### 1. Configure Credentials
+
+```python
 SSID = "TEST"
 PASSWORD = "12345678"
-
-sta = network.WLAN(network.STA_IF)
-
-sta.connect(SSID, PASSWORD)
-
-timeout = 10  # seconds
-start_time = time.time()
-
-while not sta.isconnected():
-    if time.time() - start_time > timeout:
-        print("Connection timed out")
-        break
-    time.sleep(1)  # wait for a second before checking again
-
-print(sta.ifconfig())
-
-print(sta.status())
-
-# Disconnect from the network, not necessary, just a test.
-sta.disconnect()
-print("Disconnected from the network")
-print(sta.status())
+WLAN_DEVICE = "auto"
 ```
 
-### ap_test
+Modify the SSID and password to match the on-site hotspot information. SSID is
+case-sensitive.
 
-* **`network.WLAN(network.AP_IF)`**: Initializes a WLAN object and sets it to AP mode.
-* **`ap.active(bool)`**: Activates or deactivates AP mode. Pass `True` to activate, `False` to deactivate. If called without arguments, it returns the current activation status.
-* **`ap.config(ssid=None, password=None, channel=None, ...)`**: Configures the AP parameters such as SSID, password, channel, etc. If called without any parameters, it returns the current configuration.
-* **`ap.config(key)`**: If `key` is a string representation of a configuration item like `'ssid'`, `'channel'`, etc., it returns the value of that configuration item.
-* **`ap.status()`**: Returns the current status of the AP.
-
-#### Complete Example
+### 2. Connect and Wait for Address
 
 ```python
-import network
+from libs.Network import connect_network
 
-def ap_test():
-    ap=network.WLAN(network.AP_IF)
-    # Configure and create an ap
-    ap.config(ssid='k230_ap_wjx', key='12345678')
-    # View ap information
-    print(ap.info())
-    # Check the status of the ap
-    print(ap.status())
-
-ap_test()
+sta, ip = connect_network(
+    "wifi_sta",
+    ssid=SSID,
+    password=PASSWORD,
+    wlan_device=WLAN_DEVICE,
+    timeout=10,
+)
 ```
 
-For detailed interface definitions, please refer to the [network module API documentation](../../api/extmod/K230_CanMV_network_API_Manual.md).
+This step sequentially completes physical WLAN selection, device registration
+waiting, hotspot connection, DHCP address waiting, and default uplink
+configuration. An exception is thrown on failure or if no address is obtained
+within 10 seconds, so the application does not need to poll indefinitely on its
+own.
+
+### 3. Check Status
+
+```python
+print(sta.ifconfig())
+print(sta.status())
+```
+
+`ifconfig()` returns IP parameters, and `status()` returns the connection
+status. To view the dynamic device name corresponding to the current Wi-Fi
+STA, you can additionally call `sta.netdev_name()`.
+
+### 4. Disconnection Test
+
+```python
+sta.disconnect()
+print("Disconnect")
+print(sta.status())
+```
+
+The active disconnection at the end of the example is only for demonstration.
+Programs that need continuous network access should remove these lines. After
+disconnection, the default route management will attempt to select another
+ready LAN or Wi-Fi STA.
+
+## Example LocationWi-Fi STA example
+
+### 1. Create a Hotspot
+
+```python
+from libs.Network import connect_network
+
+ap, ip = connect_network(
+    "wifi_ap",
+    ssid="k230_ap_wjx",
+    password="12345678",
+    wlan_device=WLAN_DEVICE,
+)
+```
+
+The common network library selects the WLAN AP device, creates an encrypted hotspot, and waits for the AP address. The Wi-Fi AP is a local
+access interface and will not be set as the default Internet uplink.
+
+### 2. View hotspot information
+
+```python
+print(ap.info())
+print(ap.status())
+```
+
+`info()` returns the hotspot configuration, and `status()` returns the AP status. To view the dynamic device name, call
+`ap.netdev_name()`; to view connected terminals, use `ap.status("stations")`.
+
+### 3. Stop Hotspot
+
+The example keeps the hotspot running. If you need to stop it proactively before the application exits, call:
+
+```python
+ap.stop()
+```
+
+## Operation and Verification
+
+STA test:
+
+1. Open `/sdcard/examples/14-Socket/network_wlan_sta.py`.
+1. Modify the SSID and password, then run it.
+1. Confirm that the IP address in `ifconfig()` is not `0.0.0.0`.
+1. The example will actively disconnect after execution reaches the end.
+
+AP test:
+
+1. Open `/sdcard/examples/14-Socket/network_wlan_ap.py` and run it.
+1. Use a phone to search for and connect to `k230_ap_wjx`, using the password `12345678`.
+1. Check the AP information and status printed to the serial port.
+
+If the device is reported as unavailable after specifying `WLAN_DEVICE`, change it back to `"auto"` first. See the
+[network module API manual](../../api/extmod/k230_canmv_network_api_manual.md) for the complete interface definitions.

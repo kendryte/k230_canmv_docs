@@ -25,7 +25,7 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 
 它通常作为SoC（System on Chip）中的一个独立IP核存在，与CPU、内存、外设等协同工作。CPU负责系统管理、任务调度和应用逻辑，而将计算密集型的AI模型推理任务高效地交给KPU执行。下图展示了KPU在典型边缘AI SoC中的位置。
 
-![kpu_in_system](https://www.kendryte.com/api/post/attachment?id=610)
+![kpu_in_system](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/dc607bf20ffc.png)
 
 ## K230 AI 应用示例展示
 
@@ -44,56 +44,17 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 
 **注意事项：**
 
-- 部分 Demo 因内存占用较高，在 K230D 芯片上可能无法正常运行，请参考适配说明列表以选择合适的示例进行测试。
+- 部分 Demo 因内存占用较高，在 K230D 芯片上可能无法正常运行，请参考下方链接中的适配表选择合适的示例进行测试。
 
 - 关于K230和K230D的区别，请参考：**[产品中心](https://www.kendryte.com/zh/products)**
 
-| Demo 名称                | 场景            | 任务类型   | K230 | K230D |
-| ----------------------- | --------------- | ---------- | ---- | ---- |
-| body_seg                | 人体部位分割    | 单模型任务 | ✅ | ❌ |
-| dynamic_gesture         | 动态手势识别    | 多模型任务 | ✅ | ✅ |
-| eye_gaze                | 注视估计        | 多模型任务 | ✅ | ❌ |
-| face_detection          | 人脸检测        | 单模型任务 | ✅ | ✅ |
-| face_landmark           | 人脸关键部位    | 多模型任务 | ✅ | ✅ |
-| face_liveness_rgb       | 人脸活体检测    | 多模型任务 | ✅ | ✅ |
-| face_mesh               | 人脸3D网格      | 多模型任务 | ✅ | ❌ |
-| face_parse              | 人脸解析        | 多模型任务 | ✅ | ❌ |
-| face_pose               | 人脸姿态        | 多模型任务 | ✅ | ✅ |
-| face_registration       | 人脸注册        | 多模型任务 | ✅ | ❌ |
-| face_recognition        | 人脸识别        | 多模型任务 | ✅ | ❌ |
-| face_registration_lite  | 轻量人脸注册     | 多模型任务 | ✅ | ✅ |
-| face_recognition_lite   | 轻量人脸识别     | 多模型任务 | ✅ | ✅ |
-| falldown_detection      | 跌倒检测        | 单模型任务 | ✅ | ✅ |
-| finger_guessing         | 猜拳游戏        | 多模型任务 | ✅ | ✅ |
-| hand_detection          | 手掌检测        | 单模型任务 | ✅ | ✅ |
-| hand_keypoint_class     | 手掌关键点分类  | 多模型任务 | ✅ | ✅ |
-| hand_keypoint_detection | 手掌关键点检测  | 多模型任务 | ✅ | ✅ |
-| hand_recognition        | 手势识别        | 多模型任务 | ✅ | ✅ |
-| keyword_spotting        | 关键词唤醒      | 单模型任务 | ✅ | ✅ |
-| multi_kws               | 多命令关键词唤醒 | 单模型任务 | ✅ | ✅ |
-| license_plate_det       | 车牌检测        | 单模型任务 | ✅ | ✅ |
-| license_plate_det_rec   | 车牌识别        | 多模型任务 | ✅ | ✅ |
-| license_plate_det_yolo   | yolo车牌检测   | 单模型任务 | ✅ | ✅ |
-| license_plate_det_rec_yolo| yolo车牌检测+识别 | 多模型任务 | ✅ | ✅ |
-| nanotracker             | 单目标跟踪      | 多模型任务 | ✅ | ✅ |
-| object_detect_yolov8n   | yolov8n目标检测 | 单模型任务 | ✅ | ✅ |
-| ocr_det                 | OCR检测         | 单模型任务 | ✅ | ❌ |
-| ocr_rec                 | OCR识别         | 多模型任务 | ✅ | ❌ |
-| person_detection        | 人体检测        | 单模型任务 | ✅ | ✅ |
-| person_kp_detect        | 人体关键点检测  | 多模型任务 | ✅ | ✅ |
-| puzzle_game             | 拼图游戏        | 多模型任务 | ✅ | ✅ |
-| segment_yolov8n         | yolov8分割      | 单模型任务 | ✅ | ❌ |
-| self_learning           | 自学习          | 单模型任务 | ✅ | ✅ |
-| space_resize            | 局部放大器      | 多模型任务 | ✅ | ✅ |
-| tts_zh                  | 中文文本转语音  | 多模型任务 | ✅ | ❌ |
-| yolo11n_obb             | yolo11n旋转目标检测| 单模型任务 | ✅ |✅ |
-| yolov8n_obb             | yolov8n旋转目标检测| 单模型任务 | ✅ |✅ |
+完整的 Demo 列表、K230/K230D 适配情况以及每个 Demo 的说明，统一维护在 **[AI Demo说明文档](./example/ai/ai_demo_user_manual.md#ai-demo-list)**，本文不再重复列出，避免两处数据不一致。
 
 ## AI模型推理的基本流程
 
 把训练的AI模型部署在K230上的基本流程见下面的流程图：
 
-![pipeline_model_deploy](https://www.kendryte.com/api/post/attachment?id=611)
+![pipeline_model_deploy](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/587bcb799ab8.png)
 
 🏷️ **数据采集**:
 
@@ -221,7 +182,7 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 ### 数据标注
 
 ```{note}
-👉 拿到采集好的图片之后，就可以开始给它们打标签啦！根据这个任务的要求，你可以用一些常见的标注工具，比如 LabelImg、Labelme 或 X-AnyLabeling，给图片里的数字加上对应的类别、画出目标框。你可以亲自采集图像、自己动手标注，整个过程也挺有趣的。当然啦，如果你不想从头做，我们也贴心准备了一份现成的“0/1/2/3四类打印数字识别”数据集，直接点这里就能下载：[0/1/2/3四类打印数字识别数据集](https://kendryte-download.canaan-creative.com/developer/k230/yolo_dataset/number_det.zip)。省时又省力，直接上手训练也没问题！
+👉 拿到采集好的图片之后，就可以开始给它们打标签啦！根据这个任务的要求，你可以用一些常见的标注工具，比如 LabelImg、Labelme 或 X-AnyLabeling，给图片里的数字加上对应的类别、画出目标框。你可以亲自采集图像、自己动手标注，整个过程也挺有趣的。当然啦，如果你不想从头做，我们也贴心准备了一份现成的“0/1/2/3四类打印数字识别”数据集，直接点这里就能下载：[0/1/2/3四类打印数字识别数据集](https://download.kendryte.com/developer/k230/yolo_dataset/number_det.zip)。省时又省力，直接上手训练也没问题！
 ```
 
 数据标注是训练模型的关键步骤之一，它涉及到对原始数据进行标注，以便模型能够学习到数据的特征和模式。在进行数据标注时，需要考虑以下几个方面：
@@ -236,7 +197,7 @@ KPU支持各种主流的神经网络模型结构，适用于广泛的边缘视�
 ### 模型训练
 
 ```{note}
-👉 模型训练的方法有很多，其中 YOLO 系列是现在特别常用的选择，比如 YOLOv5、YOLOv8 或 YOLO11。我们推荐你用 YOLO 来进行训练，因为它效果好、速度快、社区也很活跃。更棒的是，我们提供的数据集已经整理好了，可以直接用来训练 YOLO 模型！你只需要跳转到这个示例：[YOLO检测示例](#yolov8跌倒检测)，按照里面的流程来做，把示例中的数据集部分换成我们准备的“0/1/2/3 四类打印数字识别数据集”就行啦。本节的目标是先把模型训练好，并导出为 ONNX 格式，后面还有更多有趣的内容等着你继续解锁！
+👉 模型训练的方法有很多，其中 YOLO 系列是现在特别常用的选择，比如 YOLOv5、YOLOv8 或 YOLO11。我们推荐你用 YOLO 来进行训练，因为它效果好、速度快、社区也很活跃。更棒的是，我们提供的数据集已经整理好了，可以直接用来训练 YOLO 模型！你只需要跳转到这个示例：[YOLO检测示例](#yolov8-fall-detection)，按照里面的流程来做，把示例中的数据集部分换成我们准备的“0/1/2/3 四类打印数字识别数据集”就行啦。本节的目标是先把模型训练好，并导出为 ONNX 格式，后面还有更多有趣的内容等着你继续解锁！
 ```
 
 模型训练是整个AI流程中最重要的一步，它涉及到模型的构建、训练和优化。在进行模型训练时，需要考虑以下几个方面：
@@ -283,7 +244,7 @@ nncase 支持从主流深度学习框架导出的以下模型格式：
 
 **架构概览**
 
-![nncase架构](https://www.kendryte.com/api/post/attachment?id=509)
+![nncase架构](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/9e869eeb5b09.png)
 
 nncase 的软件栈主要包括以下两大组成部分：
 
@@ -352,14 +313,14 @@ docker run -it --rm -v `pwd`:/mnt -w /mnt ghcr.io/kendryte/k230_sdk /bin/bash
 ```python
 >>> import _nncase
 >>> print(_nncase.__version__)
-2.9.0
+2.11.0
 ```
 
-> 示例输出为 `2.9.0`，请以实际安装版本为准。
+> 示例输出为 `2.11.0`，请以实际安装版本为准。
 
 ### 使用 nncase 编译器转换kmodel
 
-![compile_kmodel](https://www.kendryte.com/api/post/attachment?id=636)
+![compile_kmodel](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/3a16288edfb5.jpg)
 
 编译kmodel的流程主要包含以下关键步骤，每个步骤都有其特定的目的和技术考量：
 
@@ -369,7 +330,7 @@ docker run -it --rm -v `pwd`:/mnt -w /mnt ghcr.io/kendryte/k230_sdk /bin/bash
 
 **导入原始模型**：当前主流训练框架（如TensorFlow/PyTorch）生成的ONNX/TFLite模型包含通用运算符，但KPU作为专用加速器需要特定算子格式。此步骤通过模型解析和算子转换，将原始模型转化为编译器可优化的中间表示，为后续硬件相关优化奠定基础。
 
-**量化处理**：这是提升边缘侧推理性能的关键环节。我们训练得到的FP32模型虽精度高但存在计算延迟大、内存占用高等问题。通过量化到INT8/INT16：显著减少模型体积，提升计算速度（利用硬件定点加速指令），降低功耗（减少内存带宽需求）。需注意的是，量化会引入精度损失，因此需要通过校准数据集帮助模型确定在量化过程中每一层权重和激活值应该被映射到的范围，以便保留更多的信息，减少量化误差。量化过程需要配置量化参数和校准数据，量化参数见[编译参数说明](#编译参数说明)。
+**量化处理**：这是提升边缘侧推理性能的关键环节。我们训练得到的FP32模型虽精度高但存在计算延迟大、内存占用高等问题。通过量化到INT8/INT16：显著减少模型体积，提升计算速度（利用硬件定点加速指令），降低功耗（减少内存带宽需求）。需注意的是，量化会引入精度损失，因此需要通过校准数据集帮助模型确定在量化过程中每一层权重和激活值应该被映射到的范围，以便保留更多的信息，减少量化误差。量化过程需要配置量化参数和校准数据，量化参数见[编译参数说明](#compilation-parameters)。
 
 **编译生成kmodel**：在前述优化基础上，最终生成的kmodel是经过深度优化的可直接部署到K230设备执行高效推理。
 
@@ -572,6 +533,8 @@ python to_kmodel.py --target k230 --model best.onnx --dataset_path test --input_
 
 通过上面的代码，我们已经成功拿到了用于识别四类数字的 Kmodel 模型。那么你可能会好奇：在把模型转换成 Kmodel 的过程中，里面用到的那些参数到底是啥意思？如果以后我想换个模型来转，是不是也要改参数呢？别着急，接下来的章节我们就会带你搞懂这些转换参数的具体含义，还会教你在转换其他模型时该怎么正确配置，一步步带你上手，不迷路！
 
+<a id="compilation-parameters"></a>
+
 #### 编译参数说明
 
 使用 `nncase compiler` 将 `tflite/onnx` 模型转换成 `kmodel` ，模型转换代码的关键在于根据自身需求进行选项配置，主要是 `CompileOptions` 、 `PTQTensorOptions` 和 `ImportOptions`。
@@ -661,9 +624,9 @@ compiler.import_onnx(model_content, import_options)
 首先需要在python环境下安装onnx相关的包：
 
 ```shell
-pip install onnx
-pip install onnxruntime
-pip install onnxsim
+pip install onnx==1.15.0
+pip install onnxruntime==1.19.0
+pip install onnxsim==0.4.36
 ```
 
 执行模拟器推理脚本需要添加nncase插件环境变量：
@@ -820,7 +783,7 @@ KModel 所支持并可封装的预处理操作包括：
 
 关于 ONNX 与 KModel 推理流程的差异，可参考以下流程图：
 
-![inference_diff_onnx_kmodel](https://www.kendryte.com/api/post/attachment?id=612)
+![inference_diff_onnx_kmodel](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/682d145bc0d1.png)
 
 在使用 ONNX 模型推理时，由于其本体不包含任何预处理逻辑，用户必须在输入前完成所需的全部预处理步骤。
 而对于 KModel，如果在模型编译时启用了 `preprocess` 选项，则相关预处理操作将被自动封装进模型内部，推理时不再需要用户手动处理。
@@ -966,7 +929,7 @@ def cosine_similarity(onnx_results,kmodel_results):
 
 对于一个实用的 AI 程序，不仅包括模型推理，还包括有图像输入、前后处理程序、结果显示等不同模块。下图展示了一个典型的AI应用程序的完整框图：
 
-![deploy_pipeline](https://www.kendryte.com/api/post/attachment?id=630)
+![deploy_pipeline](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/dd5383ab43ed.png)
 
 🚀 部署流程讲解：部署其实可以理解为“让模型真正工作起来”的过程，下面我们按照流程，分步介绍。
 
@@ -990,7 +953,7 @@ KPU 输出的是一堆数字，我们得把这些“干货”解析出来。比�
 
 总结：部署的核心流程就是：拿图像 → 处理成输入 → 扔给模型 → 拿结果 → 解读结果 → 显示出来！这套流程跑通了，你的模型就等于真正“上线工作”了！🎉
 
-💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
+💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](./userguide/how_to_build.md)。
 
 ### 获取输入并创建tensor
 
@@ -1004,7 +967,7 @@ KPU 输出的是一堆数字，我们得把这些“干货”解析出来。比�
 
 那什么是 tensor 呢？你可以把它想象成是模型能听懂的“语言”——它就像一个装数据的盒子，模型吃进去的是 tensor，推理之后吐出来的结果也是 tensor。在 `nncase_runtime` 模块里，这个东西被封装成了 `runtime_tensor`，你只要按照要求构造好，就能直接用了，特别方便。
 
-![image2tensor](https://www.kendryte.com/api/post/attachment?id=629)
+![image2tensor](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/159f6662a39b.png)
 
 上图说明了在获取输入图像并创建tensor的过程。模型推理输入为`nncase_runtime runtime_tensor`类型，可以从`ulab.numpy.ndarray`数据创建，`ulab.numpy.ndarray`数据可以来自`Image`实例，`Image`实例可以来自以下三种：
 
@@ -1060,14 +1023,14 @@ print(type(input_tensor))
   
 #### MIPI视频流输入
 
-k230 Sensor模块负责图像采集和数据处理，支持MIPI接口摄像头。MIPI摄像头可以通过Sensor模块采集图像数据，Sensor模块支持多通道采图，可以将采集到的图像数据转换为`nncase_runtime runtime_tensor`类型，供kmodel模型推理使用。Sensor模块的配置和使用请参考 [Sensor API文档](./api/mpp/K230_CanMV_Sensor模块API手册.md)。
+k230 Sensor模块负责图像采集和数据处理，支持MIPI接口摄像头。MIPI摄像头可以通过Sensor模块采集图像数据，Sensor模块支持多通道采图，可以将采集到的图像数据转换为`nncase_runtime runtime_tensor`类型，供kmodel模型推理使用。Sensor模块的配置和使用请参考 [Sensor API文档](./api/mpp/k230_canmv_sensor_module_api_manual.md)。
 
 🏷️ **单通道采图**
 
 每个MIPI摄像头最多可以出3路图像通道（各路通道可以具有不同分辨率或不同格式）。
 这里我们采用一路通道输出作为示例，数据处理流程图下图所示：
 
-![1_chn_process](https://www.kendryte.com/api/post/attachment?id=613)
+![1_chn_process](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/928b6059eea3.png)
 
 模型推理过程中的输入数据也可以来自MIPI摄像头的视频流，为了保证输出数据为CHW排布，我们一般指定摄像头流出数据格式为`Sensor.RGBP888`。代码如下：
 
@@ -1153,7 +1116,7 @@ CanMV IDE的串口输出为：
 
 虽然推理结果在视觉上会存在一定延迟（即上一帧的检测框显示在当前帧图像上），但整体画面连续性更好，用户体验更加流畅。
 
-![2_chn_process](https://www.kendryte.com/api/post/attachment?id=614)
+![2_chn_process](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/9a6786d388a1.png)
 
 代码如下：
 
@@ -1188,7 +1151,7 @@ sensor.set_framesize(width = DISPLAY_WIDTH, height = DISPLAY_HEIGHT,chn=CAM_CHN_
 sensor.set_pixformat(Sensor.YUV420SP,chn=CAM_CHN_ID_0)
 # 通道1给到AI做算法处理，格式为RGB888P
 sensor.set_framesize(width = AI_RGB888P_WIDTH , height = AI_RGB888P_HEIGHT, chn=CAM_CHN_ID_1)
-# set chn2 output format
+# 设置通道1的出图格式
 sensor.set_pixformat(Sensor.RGBP888, chn=CAM_CHN_ID_1)
 
 # 绑定通道0的摄像头图像到屏幕，防止另一个通道的AI推理过程太慢影响显示过程，导致出现卡顿效果
@@ -1255,7 +1218,7 @@ CanMV IDE的串口输出为：
 
 k230 MicroPython在1.3版本之后支持USB摄像头。UVC模块提供了摄像头检测、配置和图像采集功能，支持单摄像头操作。获取的视频流图像也可以作为kmodel模型的输入实现推理。UVC推理流程如下图所示：
 
-![uvc_process](https://www.kendryte.com/api/post/attachment?id=615)
+![uvc_process](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/99bf4c229c83.png)
 
 这里给出创建`runtime_tensor`的代码，其他步骤在后面章节介绍。示例代码如下：
 
@@ -1368,7 +1331,7 @@ ai2d 是 K230 平台上专门用于图像tensor预处理的模块，运行在硬
 
 下图展示了在 K230 平台上通过 ai2d 模块进行预处理的输入输出流程和格式：
 
-![preprocess](https://www.kendryte.com/api/post/attachment?id=628)
+![preprocess](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/a57682171f6d.png)
 
 #### 预处理过程介绍
 
@@ -1401,7 +1364,7 @@ ai2d 是 K230 平台上专门用于图像tensor预处理的模块，运行在硬
 - **仿射变换（Affine）**
 - **比特位右移（Shift）**
 
-使用 `ai2d` 模块可有效降低 CPU 运算负担，提高预处理效率，适用于模型推理前的图像适配操作。相关 API 使用方法详见官方文档：[ai2d API 文档](./api/nncase/K230_CanMV_nncase_runtime_API手册.md#24-nncase_runtimeai2d)。
+使用 `ai2d` 模块可有效降低 CPU 运算负担，提高预处理效率，适用于模型推理前的图像适配操作。相关 API 使用方法详见官方文档：[ai2d API 文档](./api/nncase/k230_canmv_nncase_runtime_api_manual.md#nncase-runtime-ai2d)。
 
 ```{attention}
 (1) **Affine 与 Resize 互斥**：二者不可同时启用，仅能选择其中一种进行几何变换。  
@@ -1485,9 +1448,9 @@ ai2d output shape: (1, 3, 320, 320)
 
 基于 `nncase_runtime` 模块提供的接口，应用层对 `nncase_runtime.ai2d` 进行了**二次封装**，其底层实现和使用`nncase_runtime.ai2d`是一样的。
 
-封装模块在烧录固件后的 `/sdcard/libs/AI2D.py` 内，提供的接口见：[Ai2d 模块 API 手册](https://www.kendryte.com/k230_canmv/zh/main/zh/api/aidemo/Ai2d%20%E6%A8%A1%E5%9D%97%20API%20%E6%89%8B%E5%86%8C.html)。
+封装模块在烧录固件后的 `/sdcard/libs/AI2D.py` 内，提供的接口见：[ai2d_module_api_manual](./api/aidemo/ai2d_module_api_manual.md)。
 
-为了帮助用户更好的实现预处理过程，Ai2d文档提供了针对五种预处理方法的示例，并将处理结果实现可视化，示例文档见链接：[Ai2d示例文档](https://www.kendryte.com/k230_canmv/zh/main/zh/example/ai/Ai2d_Examples.html)。
+为了帮助用户更好的实现预处理过程，Ai2d文档提供了针对五种预处理方法的示例，并将处理结果实现可视化，示例文档见链接：[Ai2d示例文档](./example/ai/ai2d_examples.md)。
   
 ### KPU推理
 
@@ -1502,9 +1465,9 @@ KPU 是 K230 上专门用来跑神经网络模型的硬件加速器，它的作�
 
 下图是使用 KPU 实现模型推理的过程，模型推理过程包括加载模型、设置模型输入、执行模型推理、获取模型输出：
 
-![kpu_run](https://www.kendryte.com/api/post/attachment?id=631)
+![kpu_run](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/262abdc53cda.png)
 
-KPU是一个专门用于深度学习的加速引擎，实现对神经网络模型的计算过程进行加速。在MicroPython中，`nncase_runtime.kpu` 模块提供了调用KPU推理模型的接口。该模块的API文档见链接：[nncase_runtime API文档](https://www.kendryte.com/k230_canmv/zh/main/zh/api/nncase/K230_CanMV_nncase_runtime_API%E6%89%8B%E5%86%8C.html)。
+KPU是一个专门用于深度学习的加速引擎，实现对神经网络模型的计算过程进行加速。在MicroPython中，`nncase_runtime.kpu` 模块提供了调用KPU推理模型的接口。该模块的API文档见链接：[nncase_runtime API文档](./api/nncase/k230_canmv_nncase_runtime_api_manual.md)。
 
 这里给出使用`nncase_runtime.kpu`模块进行KPU推理的核心代码（此代码仅用于说明，无法直接运行）如下：
 
@@ -1548,7 +1511,7 @@ nn.shrink_memory_pool()
 
 对于**四类打印数字识别任务**，kpu模型推理的输出只有一个，输出shape为[1,8,2100]。输出的数据shape如下图：
 
-![output_shape](https://www.kendryte.com/api/post/attachment?id=634)
+![output_shape](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/5276f4bf5f71.png)
 
 ### 后处理
 
@@ -1568,7 +1531,7 @@ nn.shrink_memory_pool()
 
 下图说明了后处理过程的主要工作：
 
-![postprocess](https://www.kendryte.com/api/post/attachment?id=632)
+![postprocess](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/97e39e174ae7.png)
 
 模型推理结束后，模型的输出`tensor`被转换成`ulab.numpy.ndarray`格式存放在`results`中。用户可以根据应用场景的需求实现后处理。比如，对YOLOv8模型的输出实现后处理得到检测框的坐标和类别信息。首先要了解输出的含义，对于[1,8,2100]的输出，8表示4个数据是坐标信息和4个类的分数，后处理过程需要找到分数最大的类别索引和类别分数，并将坐标信息使用预处理时计算的比例复原回原图尺寸，从**中心点+宽高格式**转换成**左上右下坐标格式**，然后使用置信度阈值筛掉一部分框，再使用NMS（非极大值抑制）方法筛掉冗余重叠框，最后得到的才是基于原图的检测框信息。针对**四类打印数字识别**，我们给出该任务后处理的MicroPython**核心代码**（此代码仅用于说明，无法直接运行）如下：
 
@@ -1613,7 +1576,8 @@ def nms(boxes,scores,thresh):
         for ovr_i,ind in enumerate(ovr):
             if ind < thresh:
                 new_order.append(order[ovr_i])
-        order = np.array(new_order,dtype=np.uint8)
+        # 这里存的是框索引，用uint16避免框数超过255时溢出（ulab支持uint8/int8/uint16/int16/float）
+        order = np.array(new_order,dtype=np.uint16)
     return keep
 
 # 假设results中包含模型推理的输出数据
@@ -1659,7 +1623,7 @@ if len(boxes)!=0:
 
 上述代码给出了YOLOv8 四类打印数字识别模型的后处理步骤，这里的后处理全部使用MicroPython模块实现，效率不高。
 
-针对这一特点，我们使用C++对YOLO相关的后处理做了封装。YOLO相关的模型可以使用该方法，参考：[YOLO大作战](https://www.kendryte.com/k230_canmv/zh/main/zh/example/ai/YOLO%E5%A4%A7%E4%BD%9C%E6%88%98.html)。
+针对这一特点，我们使用C++对YOLO相关的后处理做了封装。YOLO相关的模型可以使用该方法，参考：[yolo_battle](./example/ai/yolo_battle.md)。
   
 ### 结果绘制
 
@@ -1673,7 +1637,7 @@ if len(boxes)!=0:
 
 下图给出了绘制结果的流程：
 
-![draw_result](https://www.kendryte.com/api/post/attachment?id=633)
+![draw_result](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/388cdce4fc79.png)
 
 以**四类打印数字识别**的检测框为例，我们计算得到的检测框坐标是基于输入原图分辨率的，如果要在屏幕上实现显示，我们需要将坐标等比例转换成屏幕坐标分辨率下的坐标，然后将效果绘制在初始化透明图像的`osd_img`上，然后调用`Display`模块的`show_image`方法实现显示。这里给出核心代码（此代码仅用于说明，无法直接运行）如下：
 
@@ -1725,7 +1689,7 @@ Display.show_image(osd_img)
   
 ### 显示设备介绍
 
-对于显示输出，k230提供了三种显示设备，你可以选择使用`HDMI/LCD屏幕/IDE`三种方式中的一种。对应模块的API文档见链接：[Display模块API文档](https://www.kendryte.com/k230_canmv/zh/main/zh/api/mpp/K230_CanMV_Display%E6%A8%A1%E5%9D%97API%E6%89%8B%E5%86%8C.html)。下面分别介绍这三种方式：
+对于显示输出，k230提供了三种显示设备，你可以选择使用`HDMI/LCD屏幕/IDE`三种方式中的一种。对应模块的API文档见链接：[Display模块API文档](./api/mpp/k230_canmv_display_module_api_manual.md)。下面分别介绍这三种方式：
 
 🏷️ **HDMI**：设备类型为`LT9611`，可以参照API文档查看初始化时支持的分辨率、帧率、osd数目和是否IDE同步显示。在双通道AI推理下，一般还会创建一帧和屏幕显示分辨率同样大的OSD透明图像用于绘制推理结果。调用`Display.show_image`接口时需要注意OSD显示的图层编号，OSD仅支持在`LAYER_OSD0`/`LAYER_OSD1`/`LAYER_OSD2`/`LAYER_OSD3`四层显示。示例代码如下：
 
@@ -1862,7 +1826,8 @@ def nms(boxes,scores,thresh):
         for ovr_i,ind in enumerate(ovr):
             if ind < thresh:
                 new_order.append(order[ovr_i])
-        order = np.array(new_order,dtype=np.uint8)
+        # 这里存的是框索引，用uint16避免框数超过255时溢出（ulab支持uint8/int8/uint16/int16/float）
+        order = np.array(new_order,dtype=np.uint16)
     return keep
 
 # 计算padding缩放比例和上下左右padding大小
@@ -2060,7 +2025,8 @@ def nms(boxes,scores,thresh):
         for ovr_i,ind in enumerate(ovr):
             if ind < thresh:
                 new_order.append(order[ovr_i])
-        order = np.array(new_order,dtype=np.uint8)
+        # 这里存的是框索引，用uint16避免框数超过255时溢出（ulab支持uint8/int8/uint16/int16/float）
+        order = np.array(new_order,dtype=np.uint16)
     return keep
 
 # 计算padding缩放比例和上下左右padding大小
@@ -2251,7 +2217,7 @@ nn.shrink_memory_pool()
 
 ## YOLO部署库
 
-YOLO 是视觉任务中常用的模型，支持分类、检测、分割、旋转目标检测等任务。我们选择YOLO系列模型中经典的YOLOv5、YOLOv8和YOLO11为基础，封装了YOLOv5、YOLOv8和YOLO11的MicroPython部署库，方便用户快速部署YOLO模型。具体内容见链接：[YOLO大作战](https://www.kendryte.com/k230_canmv/zh/main/zh/example/ai/YOLO%E5%A4%A7%E4%BD%9C%E6%88%98.html)。
+YOLO 是视觉任务中常用的模型，支持分类、检测、分割、旋转目标检测、关键点检测等任务。我们选择YOLO系列模型中经典的YOLOv5、YOLOv8、YOLO11和YOLO26为基础，封装了对应的MicroPython部署库（`libs/YOLO.py`），方便用户快速部署YOLO模型。具体内容见链接：[yolo_battle](./example/ai/yolo_battle.md)，API说明见：[YOLO 模块API手册](./api/aidemo/yolo_module_api_manual.md)。
 
 ### YOLOv5猫狗分类
 
@@ -2275,7 +2241,7 @@ pip install -r requirements.txt
 
 ```shell
 cd yolov5
-wget https://kendryte-download.canaan-creative.com/developer/k230/yolo_dataset/cat_dog.zip
+wget https://download.kendryte.com/developer/k230/yolo_dataset/cat_dog.zip
 unzip cat_dog.zip
 ```
 
@@ -2299,23 +2265,23 @@ python classify/train.py --model yolov5n-cls.pt --data cat_dog --epochs 100 --ba
 # linux平台：nncase和nncase-kpu可以在线安装，nncase-2.x 需要安装 dotnet-7
 sudo apt-get install -y dotnet-sdk-7.0
 pip install --upgrade pip
-pip install nncase==2.9.0
-pip install nncase-kpu==2.9.0
+pip install nncase==2.11.0
+pip install nncase-kpu==2.11.0
 
 # windows平台：请自行安装dotnet-7并添加环境变量,支持使用pip在线安装nncase，但是nncase-kpu库需要离线安装，在https://github.com/kendryte/nncase/releases下载nncase_kpu-2.*-py2.py3-none-win_amd64.whl
 # 进入对应的python环境，在nncase_kpu-2.*-py2.py3-none-win_amd64.whl下载目录下使用pip安装
 pip install nncase_kpu-2.*-py2.py3-none-win_amd64.whl
 
 # 除nncase和nncase-kpu外，脚本还用到的其他库包括：
-pip install onnx
-pip install onnxruntime
-pip install onnxsim
+pip install onnx==1.15.0
+pip install onnxruntime==1.19.0
+pip install onnxsim==0.4.36
 ```
 
 下载脚本工具，将模型转换脚本工具 `test_yolov5.zip` 解压到 `yolov5` 目录下；
 
 ```shell
-wget https://kendryte-download.canaan-creative.com/developer/k230/yolo_files/test_yolov5.zip
+wget https://download.kendryte.com/developer/k230/yolo_files/test_yolov5.zip
 unzip test_yolov5.zip
 ```
 
@@ -2339,15 +2305,15 @@ cd ../../
 | dataset      | 校准图片集  | 模型转换时使用的图片数据，在量化阶段使用，可以从训练数据中取一部分                    | str   |
 | input_width  | 输入宽度 | 模型输入的宽度                                             | int   |
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
-| ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
+| ptq_option   | 量化方式 | 量化策略为`Kld`和`NoClip`,组合data和weights的量化精度,0为`NoClip`+[uint8,uint8], 1为`NoClip`+[uint8,int16], 2为`NoClip`+[int16,uint8]，3为`Kld`+[uint8,uint8], 4为`Kld`+[uint8,int16], 5为`Kld`+[int16,uint8] | 0/1/2/3/4/5 |
 
 #### 在k230上使用MicroPython部署模型
 
 ##### 烧录镜像并安装CanMV IDE
 
-💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
+💡 **固件介绍**：请按照您的开发板类型下载最新的 [Dalily Build固件](https://download.kendryte.com/developer/releases/canmv_k230_micropython/daily_build/) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](./userguide/how_to_build.md)。
 
-下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
+下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/zh/resource/ide,k230))，在 IDE 中编写代码并运行。
 
 ##### 模型文件拷贝
 
@@ -2428,12 +2394,15 @@ if __name__=="__main__":
     labels = ["cat","dog"]
     model_input_size=[224,224]
 
-    # 添加显示模式，默认hdmi，可选hdmi/lcd/lt9611/st7701/hx8399,其中hdmi默认置为lt9611，分辨率1920*1080；lcd默认置为st7701，分辨率800*480
-    display_mode="lcd"
+    # 显示模式，"auto"按开发板型号自动选择屏驱动；也可显式指定hdmi/lcd/st7701等，取值见PipeLine手册
+    display_mode="auto"
+    # None表示使用屏驱动的默认分辨率；需要指定时填[宽, 高]
+    display_size=None
     rgb888p_size=[640,360]
     confidence_threshold = 0.5
-    pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode)
+    pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode,display_size=display_size)
     pl.create()
+    # create之后再取实际显示分辨率
     display_size=pl.get_display_size()
     # 初始化YOLOv5实例
     yolo=YOLOv5(task_type="classify",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,debug_mode=0)
@@ -2453,7 +2422,9 @@ if __name__=="__main__":
 
 选择两张猫狗图片使用kmodel进行分类。效果如下图：
 
-![cat_dog_cls_res](https://www.kendryte.com/api/post/attachment?id=624)
+![cat_dog_cls_res](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/8545917e935e.png)
+
+<a id="yolov8-fall-detection"></a>
 
 ### YOLOv8跌倒检测
 
@@ -2476,7 +2447,7 @@ pip install ultralytics
 
 ```shell
 cd yolov8
-wget https://kendryte-download.canaan-creative.com/developer/k230/yolo_dataset/fall_det.zip
+wget https://download.kendryte.com/developer/k230/yolo_dataset/fall_det.zip
 unzip fall_det.zip
 ```
 
@@ -2500,23 +2471,23 @@ yolo detect train data=fall_det.yaml model=yolov8n.pt epochs=300 imgsz=320
 # linux平台：nncase和nncase-kpu可以在线安装，nncase-2.x 需要安装 dotnet-7
 sudo apt-get install -y dotnet-sdk-7.0
 pip install --upgrade pip
-pip install nncase==2.9.0
-pip install nncase-kpu==2.9.0
+pip install nncase==2.11.0
+pip install nncase-kpu==2.11.0
 
 # windows平台：请自行安装dotnet-7并添加环境变量,支持使用pip在线安装nncase，但是nncase-kpu库需要离线安装，在https://github.com/kendryte/nncase/releases下载nncase_kpu-2.*-py2.py3-none-win_amd64.whl
 # 进入对应的python环境，在nncase_kpu-2.*-py2.py3-none-win_amd64.whl下载目录下使用pip安装
 pip install nncase_kpu-2.*-py2.py3-none-win_amd64.whl
 
 # 除nncase和nncase-kpu外，脚本还用到的其他库包括：
-pip install onnx
-pip install onnxruntime
-pip install onnxsim
+pip install onnx==1.15.0
+pip install onnxruntime==1.19.0
+pip install onnxsim==0.4.36
 ```
 
 下载脚本工具，将模型转换脚本工具 `test_yolov8.zip` 解压到 `yolov8` 目录下；
 
 ```shell
-wget https://kendryte-download.canaan-creative.com/developer/k230/yolo_files/test_yolov8.zip
+wget https://download.kendryte.com/developer/k230/yolo_files/test_yolov8.zip
 unzip test_yolov8.zip
 ```
 
@@ -2540,15 +2511,15 @@ cd ../../
 | dataset      | 校准图片集  | 模型转换时使用的图片数据，在量化阶段使用，可以从训练集中取一部分图片替换                   | str   |
 | input_width  | 输入宽度 | 模型输入的宽度                                             | int   |
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
-| ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
+| ptq_option   | 量化方式 | 量化策略为`Kld`和`NoClip`,组合data和weights的量化精度,0为`NoClip`+[uint8,uint8], 1为`NoClip`+[uint8,int16], 2为`NoClip`+[int16,uint8]，3为`Kld`+[uint8,uint8], 4为`Kld`+[uint8,int16], 5为`Kld`+[int16,uint8] | 0/1/2/3/4/5 |
 
 #### 在k230上使用MicroPython部署模型
 
 ##### 烧录镜像并安装CanMV IDE
 
-💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
+💡 **固件介绍**：请按照您的开发板类型下载最新的 [Dalily Build固件](https://download.kendryte.com/developer/releases/canmv_k230_micropython/daily_build/) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](./userguide/how_to_build.md)。
 
-下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
+下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/zh/resource/ide,k230))，在 IDE 中编写代码并运行。
 
 ##### 模型文件拷贝
 
@@ -2556,7 +2527,7 @@ cd ../../
 
 ##### YOLOv8 模块
 
-`YOLOv8` 类集成了 `YOLOv8` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLOv8` 的 kmodel 推理流程。
+`YOLOv8` 类集成了 `YOLOv8` 的五种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)、关键点检测(pose)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLOv8` 的 kmodel 推理流程。
 
 - **导入方法**
 
@@ -2579,6 +2550,8 @@ from libs.YOLO import YOLOv8
 | nms_thresh       | nms阈值        | 非极大值抑制阈值，检测和分割任务必填；                       | float【0~1】 |
 | mask_thresh      | mask阈值       | 分割任务中的对检测框中对象做分割时的二值化阈值；             | float【0~1】 |
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
+| kp_num           | 关键点个数     | 关键点检测任务中关键点的数量；                              | int        |
+| kp_dim           | 关键点维度     | 关键点检测任务中关键点的维度，仅支持2和3，由训练模型决定；    | int【2/3】  |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
 ##### 部署模型实现图片推理
@@ -2630,14 +2603,17 @@ if __name__=="__main__":
     labels = ["fall"]
     model_input_size=[320,320]
 
-    # 添加显示模式，默认hdmi，可选hdmi/lcd/lt9611/st7701/hx8399,其中hdmi默认置为lt9611，分辨率1920*1080；lcd默认置为st7701，分辨率800*480
-    display_mode="lcd"
+    # 显示模式，"auto"按开发板型号自动选择屏驱动；也可显式指定hdmi/lcd/st7701等，取值见PipeLine手册
+    display_mode="auto"
+    # None表示使用屏驱动的默认分辨率；需要指定时填[宽, 高]
+    display_size=None
     rgb888p_size=[640,360]
     confidence_threshold = 0.5
     nms_threshold=0.45
     # 初始化PipeLine
-    pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode)
+    pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode,display_size=display_size)
     pl.create()
+    # create之后再取实际显示分辨率
     display_size=pl.get_display_size()
     # 初始化YOLOv8实例
     yolo=YOLOv8(task_type="detect",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,max_boxes_num=50,debug_mode=0)
@@ -2658,7 +2634,7 @@ if __name__=="__main__":
 
 选择一张跌倒图片使用kmodel进行跌倒检测。原图和推理结果的对比如下图：
 
-![fall_det_res](https://www.kendryte.com/api/post/attachment?id=625)
+![fall_det_res](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/fb96a4b49819.png)
 
 ### YOLO11水果分割
 
@@ -2679,7 +2655,7 @@ pip install ultralytics
 
 ```shell
 cd yolo11
-wget https://kendryte-download.canaan-creative.com/developer/k230/yolo_dataset/fruit_seg.zip
+wget https://download.kendryte.com/developer/k230/yolo_dataset/fruit_seg.zip
 unzip fruit_seg.zip
 ```
 
@@ -2703,23 +2679,23 @@ yolo segment train data=fruits_seg.yaml model=yolo11n-seg.pt epochs=100 imgsz=32
 # linux平台：nncase和nncase-kpu可以在线安装，nncase-2.x 需要安装 dotnet-7
 sudo apt-get install -y dotnet-sdk-7.0
 pip install --upgrade pip
-pip install nncase==2.9.0
-pip install nncase-kpu==2.9.0
+pip install nncase==2.11.0
+pip install nncase-kpu==2.11.0
 
 # windows平台：请自行安装dotnet-7并添加环境变量,支持使用pip在线安装nncase，但是nncase-kpu库需要离线安装，在https://github.com/kendryte/nncase/releases下载nncase_kpu-2.*-py2.py3-none-win_amd64.whl
 # 进入对应的python环境，在nncase_kpu-2.*-py2.py3-none-win_amd64.whl下载目录下使用pip安装
 pip install nncase_kpu-2.*-py2.py3-none-win_amd64.whl
 
 # 除nncase和nncase-kpu外，脚本还用到的其他库包括：
-pip install onnx
-pip install onnxruntime
-pip install onnxsim
+pip install onnx==1.15.0
+pip install onnxruntime==1.19.0
+pip install onnxsim==0.4.36
 ```
 
 下载脚本工具，将模型转换脚本工具 `test_yolo11.zip` 解压到 `yolo11` 目录下；
 
 ```shell
-wget https://kendryte-download.canaan-creative.com/developer/k230/yolo_files/test_yolo11.zip
+wget https://download.kendryte.com/developer/k230/yolo_files/test_yolo11.zip
 unzip test_yolo11.zip
 ```
 
@@ -2743,15 +2719,15 @@ cd ../../
 | dataset      | 校准图片集  | 模型转换时使用的图片数据，在量化阶段使用，可以从训练集中取一部分替换                    | str   |
 | input_width  | 输入宽度 | 模型输入的宽度                                             | int   |
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
-| ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
+| ptq_option   | 量化方式 | 量化策略为`Kld`和`NoClip`,组合data和weights的量化精度,0为`NoClip`+[uint8,uint8], 1为`NoClip`+[uint8,int16], 2为`NoClip`+[int16,uint8]，3为`Kld`+[uint8,uint8], 4为`Kld`+[uint8,int16], 5为`Kld`+[int16,uint8] | 0/1/2/3/4/5 |
 
 #### 在k230上使用MicroPython部署模型
 
 ##### 烧录镜像并安装CanMV IDE
 
-💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
+💡 **固件介绍**：请按照您的开发板类型下载最新的 [Dalily Build固件](https://download.kendryte.com/developer/releases/canmv_k230_micropython/daily_build/) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](./userguide/how_to_build.md)。
 
-下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
+下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/zh/resource/ide,k230))，在 IDE 中编写代码并运行。
 
 ##### 模型文件拷贝
 
@@ -2759,7 +2735,7 @@ cd ../../
 
 ##### YOLO11 模块
 
-`YOLO11` 类集成了 `YOLO11` 的四种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLO11` 的 kmodel 推理流程。
+`YOLO11` 类集成了 `YOLO11` 的五种任务，包括分类(classify)、检测(detect)、分割(segment)、旋转目标检测(obb)、关键点检测(pose)；支持两种推理模式，包括图片(image)和视频流(video)；该类封装了 `YOLO11` 的 kmodel 推理流程。
 
 - **导入方法**
 
@@ -2782,6 +2758,8 @@ from libs.YOLO import YOLO11
 | nms_thresh       | nms阈值        | 非极大值抑制阈值，检测和分割任务必填；                       | float【0~1】 |
 | mask_thresh      | mask阈值       | 分割任务中的对检测框中对象做分割时的二值化阈值；             | float【0~1】 |
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
+| kp_num           | 关键点个数     | 关键点检测任务中关键点的数量；                              | int        |
+| kp_dim           | 关键点维度     | 关键点检测任务中关键点的维度，仅支持2和3，由训练模型决定；    | int【2/3】  |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
 ##### 部署模型实现图片推理
@@ -2834,15 +2812,18 @@ if __name__=="__main__":
     labels = ["apple","banana","orange"]
     model_input_size=[320,320]
 
-    # 添加显示模式，默认hdmi，可选hdmi/lcd/lt9611/st7701/hx8399,其中hdmi默认置为lt9611，分辨率1920*1080；lcd默认置为st7701，分辨率800*480
-    display_mode="lcd"
+    # 显示模式，"auto"按开发板型号自动选择屏驱动；也可显式指定hdmi/lcd/st7701等，取值见PipeLine手册
+    display_mode="auto"
+    # None表示使用屏驱动的默认分辨率；需要指定时填[宽, 高]
+    display_size=None
     rgb888p_size=[320,320]
     confidence_threshold = 0.5
     nms_threshold=0.45
     mask_threshold=0.5
     # 初始化PipeLine
-    pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode)
+    pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode,display_size=display_size)
     pl.create()
+    # create之后再取实际显示分辨率
     display_size=pl.get_display_size()
     # 初始化YOLO11实例
     yolo=YOLO11(task_type="segment",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,mask_thresh=mask_threshold,max_boxes_num=50,debug_mode=0)
@@ -2863,7 +2844,7 @@ if __name__=="__main__":
 
 选择一张水果图片使用kmodel进行水果分割。原图和推理结果的对比如下图：
 
-![fruit_seg_res](https://www.kendryte.com/api/post/attachment?id=626)
+![fruit_seg_res](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/6620fa927b45.png)
 
 ### YOLO11旋转目标检测
 
@@ -2884,7 +2865,7 @@ pip install ultralytics
 
 ```shell
 cd yolo11
-wget https://kendryte-download.canaan-creative.com/developer/k230/yolo_dataset/pen_obb.zip
+wget https://download.kendryte.com/developer/k230/yolo_dataset/pen_obb.zip
 unzip pen_obb.zip
 ```
 
@@ -2908,23 +2889,23 @@ yolo obb train data=pen_obb.yaml model=yolo11n-obb.pt epochs=100 imgsz=320
 # linux平台：nncase和nncase-kpu可以在线安装，nncase-2.x 需要安装 dotnet-7
 sudo apt-get install -y dotnet-sdk-7.0
 pip install --upgrade pip
-pip install nncase==2.9.0
-pip install nncase-kpu==2.9.0
+pip install nncase==2.11.0
+pip install nncase-kpu==2.11.0
 
 # windows平台：请自行安装dotnet-7并添加环境变量,支持使用pip在线安装nncase，但是nncase-kpu库需要离线安装，在https://github.com/kendryte/nncase/releases下载nncase_kpu-2.*-py2.py3-none-win_amd64.whl
 # 进入对应的python环境，在nncase_kpu-2.*-py2.py3-none-win_amd64.whl下载目录下使用pip安装
 pip install nncase_kpu-2.*-py2.py3-none-win_amd64.whl
 
 # 除nncase和nncase-kpu外，脚本还用到的其他库包括：
-pip install onnx
-pip install onnxruntime
-pip install onnxsim
+pip install onnx==1.15.0
+pip install onnxruntime==1.19.0
+pip install onnxsim==0.4.36
 ```
 
 下载脚本工具，将模型转换脚本工具 `test_yolo11.zip` 解压到 `yolo11` 目录下；
 
 ```shell
-wget https://kendryte-download.canaan-creative.com/developer/k230/yolo_files/test_yolo11.zip
+wget https://download.kendryte.com/developer/k230/yolo_files/test_yolo11.zip
 unzip test_yolo11.zip
 ```
 
@@ -2948,15 +2929,15 @@ cd ../../
 | dataset      | 校准图片集  | 模型转换时使用的图片数据，在量化阶段使用，可以从训练集中取一部分替换                    | str   |
 | input_width  | 输入宽度 | 模型输入的宽度                                             | int   |
 | input_height | 输入高度 | 模型输入的高度                                             | int   |
-| ptq_option   | 量化方式 | data和weights的量化方式，0为[uint8,uint8], 1为[uint8,int16], 2为[int16,uint8] | 0/1/2 |
+| ptq_option   | 量化方式 | 量化策略为`Kld`和`NoClip`,组合data和weights的量化精度,0为`NoClip`+[uint8,uint8], 1为`NoClip`+[uint8,int16], 2为`NoClip`+[int16,uint8]，3为`Kld`+[uint8,uint8], 4为`Kld`+[uint8,int16], 5为`Kld`+[int16,uint8] | 0/1/2/3/4/5 |
 
 #### 在k230上使用MicroPython部署模型
 
 ##### 烧录镜像并安装CanMV IDE
 
-💡 **固件介绍**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
+💡 **固件介绍**：请按照您的开发板类型下载最新的 [Dalily Build固件](https://download.kendryte.com/developer/releases/canmv_k230_micropython/daily_build/) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](./userguide/how_to_build.md)。
 
-下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/resource?selected=0-2-1))，在 IDE 中编写代码并运行。
+下载并安装 CanMV IDE (下载链接：[CanMV IDE download](https://www.kendryte.com/zh/resource/ide,k230))，在 IDE 中编写代码并运行。
 
 ##### 模型文件拷贝
 
@@ -2987,6 +2968,8 @@ from libs.YOLO import YOLO11
 | nms_thresh       | nms阈值        | 非极大值抑制阈值，检测和分割任务必填；                       | float【0~1】 |
 | mask_thresh      | mask阈值       | 分割任务中的对检测框中对象做分割时的二值化阈值；             | float【0~1】 |
 | max_boxes_num    | 最大检测框数   | 一帧图像中允许返回的最多检测框数目；                         | int          |
+| kp_num           | 关键点个数     | 关键点检测任务中关键点的数量；                              | int        |
+| kp_dim           | 关键点维度     | 关键点检测任务中关键点的维度，仅支持2和3，由训练模型决定；    | int【2/3】  |
 | debug_mode       | 调试模式       | 计时函数是否生效，可选项0/1，0为不计时，1为计时；            | int【0/1】   |
 
 ##### 部署模型实现图片推理
@@ -3038,14 +3021,17 @@ if __name__=="__main__":
     labels = ['pen']
     model_input_size=[320,320]
 
-    # 添加显示模式，默认hdmi，可选hdmi/lcd/lt9611/st7701/hx8399,其中hdmi默认置为lt9611，分辨率1920*1080；lcd默认置为st7701，分辨率800*480
-    display_mode="lcd"
+    # 显示模式，"auto"按开发板型号自动选择屏驱动；也可显式指定hdmi/lcd/st7701等，取值见PipeLine手册
+    display_mode="auto"
+    # None表示使用屏驱动的默认分辨率；需要指定时填[宽, 高]
+    display_size=None
     rgb888p_size=[640,360]
     confidence_threshold = 0.1
     nms_threshold=0.6
     # 初始化PipeLine
-    pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode)
+    pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode,display_size=display_size)
     pl.create()
+    # create之后再取实际显示分辨率
     display_size=pl.get_display_size()
     # 初始化YOLO11实例
     yolo=YOLO11(task_type="obb",mode="video",kmodel_path=kmodel_path,labels=labels,rgb888p_size=rgb888p_size,model_input_size=model_input_size,display_size=display_size,conf_thresh=confidence_threshold,nms_thresh=nms_threshold,max_boxes_num=50,debug_mode=0)
@@ -3066,7 +3052,7 @@ if __name__=="__main__":
 
 选择一张桌面签字笔图片使用kmodel进行旋转目标检测。原图和推理结果的对比如下图：
 
-![pen_obb_res](https://www.kendryte.com/api/post/attachment?id=627)
+![pen_obb_res](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/224584a9acac.png)
 
 ## 辅助工具
 
@@ -3076,7 +3062,7 @@ if __name__=="__main__":
 
 Canaan开发者社区模型训练功能是为简化开发流程，提高开发效率开放的训练平台。该平台使用户关注视觉场景的落地实现，更加快捷的完成从数据标注到获得部署包中的KModel模型的过程，并在搭载嘉楠科技Kendryte®系列AIoT芯片中K230、K230D芯片开发板上进行部署。用户仅需上传数据集，简单的配置参数就可以开始训练了。
 
-![plat](https://www.kendryte.com/api/post/attachment?id=600)
+![plat](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/04792fdbd787.png)
 
 📌平台地址：**[嘉楠云训练平台](https://www.kendryte.com/zh/training/start)**
 
@@ -3120,15 +3106,15 @@ Canaan开发者社区模型训练功能是为简化开发流程，提高开发�
 
 内容如图所示：
 
-![部署包](https://www.kendryte.com/api/post/attachment?id=657)
+![部署包](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/407be353913e.jpg)
 
 其中`mp_deployment_source`即是在K230 MicroPython 镜像上部署的代码包，内部包含部署的配置文件和部署的KModel模型。
 
 ##### 文件拷贝
 
-✅ **固件选择**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
+✅ **固件选择**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](./userguide/how_to_build.md)。
 
-✅ **固件烧录**： 按照开发板类型烧录固件，固件烧录参考：[固件烧录](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_burn_firmware.html)。
+✅ **固件烧录**： 按照开发板类型烧录固件，固件烧录参考：[固件烧录](./userguide/how_to_burn_firmware.md)。
 
 ✅ **部署脚本**：固件烧录成功后，上电开机，您可以在文件系统根目录下发现`CanMV/sdcard`目录，将`mp_deployment_source`拷贝到`CanMV/sdcard`目录下。
 
@@ -3211,23 +3197,23 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 🗂️ **项目页面**图示：
 
-![项目页面](https://www.kendryte.com/api/post/attachment?id=616)
+![项目页面](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/3baf7a9989c4.jpg)
 
 🗂️ **图像页面**图示：
 
-![图像页面](https://www.kendryte.com/api/post/attachment?id=617)
+![图像页面](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/3eacf59a5b00.jpg)
 
 🗂️ **拆分页面**图示：
 
-![拆分页面](https://www.kendryte.com/api/post/attachment?id=618)
+![拆分页面](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/5511218dd06f.jpg)
 
 🗂️ **训练页面**图示：
 
-![训练页面](https://www.kendryte.com/api/post/attachment?id=619)
+![训练页面](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/dd2455af26b8.jpg)
 
 🗂️ **评估页面**图示：
 
-![评估页面](https://www.kendryte.com/api/post/attachment?id=620)
+![评估页面](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/00d6cc5f736e.jpg)
 
 ##### 创建数据集
 
@@ -3254,7 +3240,7 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 新建项目界面如下图所示：
 
-![新建项目](https://www.kendryte.com/api/post/attachment?id=621)
+![新建项目](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/6f47221812b4.jpg)
 
 项目新建完成后，会自动跳转到`图像页面`，您可以查看您的数据集详情。进入`拆分页面`，您可以按照自定义比例对数据集进行拆分，并查看拆分集的统计信息。
 
@@ -3297,7 +3283,7 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 按照不同的任务配置好对应参数后，可以点击`增强样本按钮`查看经过数据增强的部分示例样本；点击`学习率曲线`可以查看不同的学习率策略导致的学习率变化；点击`开始训练按钮`，训练的信息会在右上方面板显示，损失曲线和指标曲线会在中间位置绘制；示例样本的预测结果会在右下面板迭代显示每个epoch的变化。训练时界面如下图：
 
-![训练过程](https://www.kendryte.com/api/post/attachment?id=619)
+![训练过程](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/dd2455af26b8.jpg)
 
 ##### 模型测试
 
@@ -3315,7 +3301,7 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 如果模型的性能符合您的需求，您可以在芯片适配面板配置部署参数，主要是模型的输入分辨率和一些基础参数，点击`部署按钮`生成部署包。
 
-![部署包生成](https://www.kendryte.com/api/post/attachment?id=622)
+![部署包生成](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/b9afb50048f9.jpg)
 
 部署产物生成后您可以在当前项目的根目录下找到如下文件，我们主要使用`kmodel`和配置文件`deploy_config.json`：
 
@@ -3326,7 +3312,7 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 └── README.md
 ```
 
-![项目文件](https://www.kendryte.com/api/post/attachment?id=623)
+![项目文件](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/d454806222db.jpg)
 
 其中`mp_deployment_source`目录是在K230 MicroPython方案上部署的资源，包含Kmodel文件和部署配置文件！
 
@@ -3338,17 +3324,29 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 
 ##### 文件拷贝
 
-✅ **固件选择**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_build.html)。
+✅ **固件选择**：请在 `github` 按照您的开发板类型下载最新的 [PreRelease固件](https://github.com/kendryte/canmv_k230/releases/tag/PreRelease) 以保证**最新的特性**被支持！或者使用最新的代码自行编译固件，教程见：[固件编译](./userguide/how_to_build.md)。
 
-✅ **固件烧录**： 按照开发板类型烧录固件，固件烧录参考：[固件烧录](https://www.kendryte.com/k230_canmv/zh/main/zh/userguide/how_to_burn_firmware.html)。
+✅ **固件烧录**： 按照开发板类型烧录固件，固件烧录参考：[固件烧录](./userguide/how_to_burn_firmware.md)。
 
 ✅ **部署脚本**：固件烧录成功后，上电开机，您可以在文件系统根目录下发现`CanMV/sdcard`目录，将`mp_deployment_source`拷贝到`CanMV/sdcard`目录下。
 
 ##### 脚本运行
 
-打开CanMV IDE K230，选择左上角`文件(F)`->`打开文件`->`选择CanMV/sdcard/examples/19-CloudPlatScripts`中的不同任务的脚本运行。或者选择部署资源目录中的部署脚本运行。
+AICube 训练产出的部署包与在线训练平台共用同一套部署脚本。打开CanMV IDE K230，选择左上角`文件(F)`->`打开文件`->`选择CanMV/sdcard/examples/19-CloudPlatScripts`中的不同任务的脚本运行。或者选择部署资源目录中的部署脚本运行。
 
-💡 **脚本介绍**：
+除此之外，`CanMV/sdcard/examples/16-AI-Cube` 目录下提供了一组**直接调用 `aicube` 原生后处理模块**的独立示例，不依赖 `libs/PlatTasks.py` 封装，便于您参考如何自行对接 AICube 模型：
+
+|脚本名称|脚本说明|
+|--|--|
+|ClassificationApp.py|图像分类任务示例。|
+|DetectionApp.py|目标检测任务示例，支持 `AnchorBaseDet`/`AnchorFreeDet`/`GFLDet` 三种检测头，通过部署配置文件中的 `model_type` 自动选择对应的 `aicube` 后处理接口。|
+|SegmentationApp.py|语义分割任务示例。|
+|MultiLabelApp.py|多标签分类任务示例。|
+|OCR_Det.py|OCR检测任务示例。|
+|SelfLearningApp.py|自学习（度量学习）任务示例，通过特征库比对实现免重训的新类别识别。|
+|DataCollectionCamera.py|数据采集脚本，按开发板上的 key 按键拍照，图像保存到 `/sdcard/examples/data/`。将其改名为 `main.py` 放到 `/sdcard` 下可开机自动运行。|
+
+💡 **在线训练平台部署脚本介绍**：
 
 |脚本名称|脚本说明|
 |--|--|
@@ -3375,6 +3373,197 @@ AI Cube包含5个功能页，“项目”页面主要实现项目管理功能，
 - 📢 学会定位问题，比如查看AICube模型评估的结果，如果该图片正常，则可能是部署代码、模型转换或者阈值的问题，您可以选择调整量化方式或者调整部署参数进行优化！
 
 - 📢 AICube存在大量的训练参数，对深度学习了解的用户可以根据可能的优化方向调整训练参数，调整模型训练的参数实现重新训练转换！
+
+<a id="ai-resource-management"></a>
+
+## AI资源管理与内存优化
+
+K230 的 AI 推理涉及三类内存：MicroPython 的堆、nncase 运行时的内存池、以及 media 模块的物理内存。其中 **nncase 内存池只增不减**——加载过的 kmodel 即使释放了 kpu 实例，内存仍然留在池子里，必须显式归还。这是长时间运行的 AI 应用最容易踩的坑：单个模型跑得好好的，一旦做"模型切换"或"应用切换"，第二个模型就加载失败甚至直接 abort。
+
+本章先对比例程中的两种主循环写法，再说明正确的资源释放方式。
+
+<a id="ai-standard-template"></a>
+
+<a id="main-loop-patterns"></a>
+
+### 两种主循环写法
+
+例程里存在两种主循环写法，新写代码时建议参照第二种。
+
+**写法一：简洁式（多数例程采用）**
+
+`05-AI-Demo` 的大部分例程、`20-YOLO-Module-Examples` 的全部例程、`21-AI-With-Others/ai_uart.py` 等都采用这种写法，本文档和 API 手册中的示例与这些例程保持一致：
+
+```python
+    pl = PipeLine(rgb888p_size=rgb888p_size, display_mode=display_mode, display_size=display_size)
+    pl.create()
+    display_size = pl.get_display_size()        # create 之后再取实际显示分辨率
+    app = MyApp(..., rgb888p_size=rgb888p_size, display_size=display_size)
+    app.config_preprocess()
+    while True:
+        with ScopedTiming("total", 1):
+            img = pl.get_frame()
+            res = app.run(img)
+            app.draw_result(pl, res)
+            pl.show_image()
+            gc.collect()
+    app.deinit()
+    pl.destroy()
+```
+
+```{admonition} 注意
+:class: warning
+这种写法的 `while True` 没有正常出口，**末尾的 `app.deinit()` 和 `pl.destroy()` 实际不会执行**。在 IDE 里点停止会以异常方式打断脚本，资源不会被释放，再次运行就可能因 nncase 内存不足而失败（此时重新上电即可恢复）。
+
+例程这样写是为了突出算法逻辑、减少干扰。跑 demo 体验没有问题，但**编写自己的应用时请改用写法二**。
+```
+
+**写法二：带资源回收（新例程采用）**
+
+`05-AI-Demo` 中较新的例程——`bytetrack.py`、`ocsort.py`、`deepsort.py`、`botsort.py`、`face_masking_count.py`、`nanotracker.py`、`keyword_spotting.py`、`multi_kws.py`、`tts_zh.py`——以及 `21-AI-With-Others` 的两个 UVC 例程，都采用了带资源回收的写法。以 `bytetrack.py` 为例：
+
+```python
+import os, gc
+
+def main():
+    # auto按开发板选择默认驱动；可手动改为hdmi/lcd/st7701/nt35516等模式
+    display_mode="auto"
+    # None使用SDK默认分辨率；更换屏幕规格时手动指定，如[640,480]
+    display_size=None
+    rgb888p_size=[1280,720]
+    # ... 其它参数省略
+
+    pl=None
+    app=None
+    img=None
+    res=None
+    os.exitpoint(os.EXITPOINT_ENABLE)           # 允许IDE的停止按钮打断主循环
+    try:
+        pl=PipeLine(rgb888p_size=rgb888p_size,display_mode=display_mode,display_size=display_size)
+        pl.create()
+        display_size=pl.get_display_size()      # create 之后再取实际显示分辨率
+        app=MyApp(...)
+        app.config_preprocess()
+
+        while True:
+            os.exitpoint()                      # 响应停止请求
+            with ScopedTiming("total",1):
+                img=pl.get_frame()
+                res=app.run(img)
+                app.draw_result(pl,res)
+                pl.show_image()
+                gc.collect()
+    except KeyboardInterrupt:
+        print("stopped")
+    except Exception as error:
+        if "IDE interrupt" in str(error):       # IDE停止会抛异常，不算错误
+            print("stopped")
+        else:
+            raise
+    finally:
+        os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
+        img=None
+        res=None
+        # 释放顺序：先模型，后PipeLine；逐个用 try 包住，避免一个失败影响后面的
+        try:
+            if app is not None:
+                app.deinit()
+        except BaseException as error:
+            print("cleanup app failed:", error)
+        app=None
+        try:
+            if pl is not None:
+                pl.destroy()
+        except BaseException as error:
+            print("cleanup pipeline failed:", error)
+        pl=None
+        gc.collect()
+```
+
+要点：
+
+| 要点 | 说明 |
+|------|------|
+| `display_mode="auto"` + `display_size=None` | 由 `libs/DisplayConfig.py` 按 `os.uname()` 查表选屏，同一份脚本可在不同开发板运行。取值见 [PipeLine 手册](./api/aidemo/pipeline_module_api_manual.md#init) |
+| `create()` 后取 `get_display_size()` | 屏驱动可能不支持请求的分辨率而使用自己的默认值，构造时传入的 `display_size` 会被实际值覆盖 |
+| `os.exitpoint()` | 不加的话，IDE 点停止无法及时中断主循环 |
+| `try ... finally` | 保证任何退出路径都释放资源。释放顺序是先模型（`deinit()`）后 PipeLine（`destroy()`） |
+| 每项释放单独 `try` | 某个资源释放失败时，后面的资源仍能被释放 |
+
+### 释放顺序
+
+AI 应用的资源存在依赖关系，释放顺序不能颠倒：
+
+```text
+AI 模型实例 (deinit)  →  PipeLine (destroy)
+      ↓
+  kpu.release()                 解释器持有输入/输出 tensor 的引用，
+      ↓                          必须先释放解释器再释放 tensor
+  tensor / results 清空
+      ↓
+  ai2d.deinit()
+      ↓
+  gc.collect() + nn.shrink_memory_pool()
+```
+
+好消息是这套流程 [`AIBase.deinit()`](./api/aidemo/aibase_module_api_manual.md#deinit) 已经封装好了，**包括最后的 `gc.collect()` 和 `shrink_memory_pool()`**。继承 `AIBase` 的应用只要按[两种主循环写法](#main-loop-patterns)在 `finally` 里依次调用 `app.deinit()` 和 `pl.destroy()` 即可，不需要自己去碰 `kpu.release()` 这一层。
+
+```{admonition} 注意
+:class: warning
+一定要用 `try ... finally` 包住主循环。在 IDE 中点击停止按钮会向脚本抛出异常，如果没有 `finally`，模型资源不会被释放，下次运行就可能因内存不足而失败。同时建议在开头调用 `os.exitpoint(os.EXITPOINT_ENABLE)`，并在循环内调用 `os.exitpoint()`，让 IDE 的停止请求能及时生效。
+```
+
+<a id="multi-model-switching"></a>
+
+### 多模型切换
+
+同一个脚本里先后加载多个 kmodel 时，**必须在加载下一个模型之前把上一个模型彻底释放**：
+
+```python
+# 错误：直接覆盖变量，旧模型的内存没有归还给 nncase 内存池
+app = ModelA(...)
+app = ModelB(...)          # 大概率在这里因内存不足失败
+
+# 正确
+app = ModelA(...)
+...
+app.deinit()               # 内部已含 gc.collect() + shrink_memory_pool()
+app = None
+app = ModelB(...)
+```
+
+开发板上的 `28-APP_CENTER/model_cleanup.py` 提供了两个可以直接复用的辅助函数：
+
+| 函数 | 用途 |
+|------|------|
+| `deinit_model(model, pipelines=(), tensor_lists=())` | 在 `AIBase.deinit()` 之外，额外释放子类自行创建的 tensor 列表和 `Ai2d` 实例。适合多级预处理、多输入模型 |
+| `deinit_with_retry(model)` | 释放失败时先 `gc.collect()` 再重试一次。`deinit()` 是幂等的，重试安全 |
+
+### 共存的模型要算内存账
+
+多个模型同时驻留时，占用的是各自权重加上各自输出张量的总和。以人体分割模型 `body_seg.kmodel` 为例：权重约 25 MB，输出张量为 `512*512*15*4 B ≈ 15.7 MB`，单独运行就接近内存上限，再并排加载第二个模型必然失败。
+
+因此多模型应用有两条路：
+
+- **串行**：用完一个释放一个，见上一节。适合"检测 → 识别"这类前后依赖的流程，但每次切换都有加载耗时。
+- **并行**：确认总内存够用后同时驻留。适合帧率敏感、模型都比较小的场景（如 `21-AI-With-Others/ai_multi_thread.py`）。注意 **KPU 是互斥资源**，多线程推理时需要串行化访问 KPU。
+
+### Ai2d 与 tensor 的所有权
+
+- `Ai2d.run()` 返回的是实例**复用**的输出 tensor，下一次 `run()` 会覆盖其内容。不要自行 `release()`，也不要跨帧保存引用。
+- 分割任务的 mask 缓冲区由调用方分配并复用（`aidemo.*_seg_postprocess` 的最后一个参数），不要每帧重新分配。
+- `image.Image(..., alloc=image.ALLOC_REF, data=...)` 创建的 Image 只是引用，底层数据的生命周期由数据的所有者决定，底层数据失效后不要再使用该 Image。
+
+### 排查内存问题
+
+| 现象 | 可能原因 |
+|------|----------|
+| 第二次运行脚本就失败，重启后正常 | 上次退出时没有 `deinit()`，内存没归还。检查 `try/finally` |
+| 加载第二个模型时报内存不足 | 切换模型前没有 `deinit()`，或模型太大无法共存 |
+| 长时间运行后越来越卡最终崩溃 | 主循环里缺少 `gc.collect()`，或每帧都在新建对象（如每帧 `image.Image(...)`、每帧重新 `build()` ai2d） |
+| `deinit()` 抛异常 | 某个原生资源释放失败。资源会被保留以便重试，可参考 `deinit_with_retry` 先 `gc.collect()` 再调一次 |
+
+也可以用 `nncase_runtime.version()` 确认板上 runtime 版本与 PC 端转换 kmodel 所用的 nncase 编译器大版本一致，版本不匹配同样会导致 kmodel 加载失败。
 
 ## 进阶开发
 
@@ -3432,7 +3621,7 @@ class ObjectDetectionApp(AIBase):
         self.ai2d=Ai2d(debug_mode)
         self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
 
-    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/libs/AI2D.py查看
     def config_preprocess(self,input_image_size=None):
         with ScopedTiming("set preprocess config",self.debug_mode > 0):
             ai2d_input_size=input_image_size if input_image_size else self.rgb888p_size
@@ -3472,7 +3661,7 @@ class FaceDetectionApp(AIBase):
         self.ai2d = Ai2d(debug_mode)  # 实例化Ai2d，用于实现模型预处理
         self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)  # 设置Ai2d的输入输出格式和类型
 
-    # 配置预处理操作，这里使用了pad和resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    # 配置预处理操作，这里使用了pad和resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/libs/AI2D.py查看
     def config_preprocess(self, input_image_size=None):
         with ScopedTiming("set preprocess config", self.debug_mode > 0):  # 计时器，如果debug_mode大于0则开启
             ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size  # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
@@ -3597,6 +3786,10 @@ if __name__ == "__main__":
 ### AI+UART通信
 
 AI推理结束后，如何将识别到的内容通过串口发送到上位机，这里以YOLOv8检测作为AI部分为例，给出如何使用UART通信实现AI+UART通信。示例代码如下：
+
+```{warning}
+本例需要连接物理 UART 引脚。接线前必须确认开发板使用 1.8 V 还是 3.3 V I/O 电平，禁止使用 5 V 信号及文档图片所示的劣质 CH340G 模块。完整要求见 [串口电平与转接模块安全](./example/peripheral/uart.md)。
+```
 
 ```python
 from libs.PipeLine import PipeLine
@@ -3723,8 +3916,10 @@ class ObjectDetectionApp(AIBase):
                 pl.osd_img.clear()
 
 if __name__ == "__main__":
-    # Choose display mode: lcd / hdmi / lt9611 / st7701 / hx8399
-    display_mode = "lcd"
+    # Display mode: "auto" 按开发板型号自动选择屏驱动；也可显式指定 hdmi/lcd/st7701 等
+    display_mode = "auto"
+    # None 表示使用屏驱动的默认分辨率
+    display_size = None
     rgb888p_size = [224, 224]
     kmodel_path = "/sdcard/examples/kmodel/yolov8n_224.kmodel"
 
@@ -3744,8 +3939,9 @@ if __name__ == "__main__":
     nms_threshold = 0.4
     max_boxes_num = 30
 
-    # Initialize video pipeline
-    pl = PipeLine(rgb888p_size=rgb888p_size, display_mode=display_mode)
+    # Initialize the PipeLine. rgb888p_size is the AI input resolution and display_size is the display resolution
+    pl = PipeLine(rgb888p_size=rgb888p_size, display_mode=display_mode, display_size=display_size)
+    # Create the PipeLine. Pass sensor_id to select a camera when needed, for example pl.create(sensor_id=2)
     pl.create()
     display_size = pl.get_display_size()
 
@@ -3835,7 +4031,7 @@ class ObjectDetectionApp(AIBase):
         # 设置Ai2d的输入输出格式和类型
         self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT,nn.ai2d_format.NCHW_FMT,np.uint8, np.uint8)
 
-    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    # 配置预处理操作，这里使用了resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/libs/AI2D.py查看
     def config_preprocess(self,input_image_size=None):
         with ScopedTiming("set preprocess config",self.debug_mode > 0):
             # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，您可以通过设置input_image_size自行修改输入尺寸
@@ -3881,7 +4077,7 @@ class FaceDetectionApp(AIBase):
          self.ai2d = Ai2d(debug_mode)  # 实例化Ai2d，用于实现模型预处理
          self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)  # 设置Ai2d的输入输出格式和类型
 
-    # 配置预处理操作，这里使用了pad和resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/app/libs/AI2D.py查看
+    # 配置预处理操作，这里使用了pad和resize，Ai2d支持crop/shift/pad/resize/affine，具体代码请打开/sdcard/libs/AI2D.py查看
     def config_preprocess(self, input_image_size=None):
          with ScopedTiming("set preprocess config", self.debug_mode > 0):  # 计时器，如果debug_mode大于0则开启
              ai2d_input_size = input_image_size if input_image_size else self.rgb888p_size  # 初始化ai2d预处理配置，默认为sensor给到AI的尺寸，可以通过设置input_image_size自行修改输入尺寸
@@ -4060,7 +4256,7 @@ if __name__=="__main__":
 
 ### AI+UVC硬解码推理
 
-使用UVC摄像头获取图像，并使用硬件CSC将图像转换成RGB888格式，创建tensor，将tensor输入到AI模型中，获取AI模型的输出结果，最后将输出结果绘制到屏幕上。这里AI推理场景为YOLOv8检测。示例代码如下：
+使用UVC摄像头获取图像，并使用硬件CSC将图像转换成RGB888格式，创建tensor，将tensor输入到AI模型中，获取AI模型的输出结果，最后将输出结果绘制到屏幕上。这里AI推理场景为YOLOv8检测。完整代码对应开发板上的 **此电脑->CanMV->sdcard->examples->21-AI-With-Others->ai_uvc_hard_decode.py**，示例代码如下：
 
 ```python
 from libs.PipeLine import PipeLine
@@ -4069,6 +4265,7 @@ from libs.AI2D import Ai2d
 from libs.Utils import *
 import os,sys,ujson,gc,math, urandom
 from media.display import *
+from libs.DisplayConfig import init_display, DisplayImage
 from media.media import *
 from media.uvc import *
 import nncase_runtime as nn
@@ -4116,7 +4313,7 @@ class ObjectDetectionApp(AIBase):
 
         # Ai2d instance for preprocessing
         self.ai2d = Ai2d(debug_mode)
-        self.ai2d.set_ai2d_dtype(nn.ai2d_format.NCHW_FMT, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
+        self.ai2d.set_ai2d_dtype(nn.ai2d_format.RGB_packed, nn.ai2d_format.NCHW_FMT, np.uint8, np.uint8)
 
     def config_preprocess(self, input_image_size=None):
         """
@@ -4128,7 +4325,7 @@ class ObjectDetectionApp(AIBase):
             self.ai2d.pad([0,0,0,0,top,bottom,left,right], 0, [128,128,128])
             self.ai2d.resize(nn.interp_method.tf_bilinear, nn.interp_mode.half_pixel)
             self.ai2d.build(
-                [1, 3, ai2d_input_size[1], ai2d_input_size[0]],
+                [1, ai2d_input_size[1], ai2d_input_size[0], 3],
                 [1, 3, self.model_input_size[1], self.model_input_size[0]]
             )
 
@@ -4164,18 +4361,18 @@ class ObjectDetectionApp(AIBase):
 
 if __name__ == "__main__":
 
-    # Align display width to 16 bytes for hardware requirement
-    DISPLAY_WIDTH = ALIGN_UP(800, 16)
-    DISPLAY_HEIGHT = 480
+    display_mode = "auto"
+    requested_display_size = None  # Optional [width, height] override.
 
     # Create CSC instance for pixel format conversion (e.g., to RGB888)
-    csc = CSC(0, CSC.PIXEL_FORMAT_RGB_888)
+    csc = CSC(CSC.PIXEL_FORMAT_RGB_888)
 
-    # Initialize LCD display (ST7701) and enable IDE display
-    Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
+    display_size = init_display(display_mode, requested_display_size, to_ide=True)
+    # Reuse AI2D configuration; inference and annotations stay in source coordinates.
+    display_resize = None
 
     # Initialize media manager to manage frame buffers and UVC stream
-    MediaManager.init()
+
 
     # Wait for USB camera to be detected
     while True:
@@ -4186,7 +4383,7 @@ if __name__ == "__main__":
         time.sleep_ms(100)
 
     # Select and configure UVC video mode: 640x480 @ 30 FPS, MJPEG format
-    mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)
+    mode = UVC.video_mode(640, 480, UVC.FOURCC_MJPEG, 30)
     succ, mode = UVC.select_video_mode(mode)
     print(f"select mode success: {succ}, mode: {mode}")
 
@@ -4228,43 +4425,67 @@ if __name__ == "__main__":
 
     # Configure Ai2d preprocessing (resize + letterbox pad)
     ob_det.config_preprocess()
+
     # Start UVC video stream with pixel format conversion enabled
     UVC.start(cvt=True)
+
     clock = time.clock()
-    # Main loop: acquire frame, run inference, draw and display
-    while True:
-        clock.tick()
-        img = UVC.snapshot()
-        if img is not None:
-            # Convert format (e.g., to RGB888)
-            img = csc.convert(img)
-            # Convert to Ulab.Numpy.ndarray
-            img_np_hwc = img.to_numpy_ref()
-            # HWC->CHW
-            img_np_chw = hwc2chw(img_np_hwc)
-            # Run YOLOv8 inference on the current frame
-            res = ob_det.run(img_np_chw)
-            # Draw detection results on the frame
-            ob_det.draw_result(img, res)
-            # Show result on display
-            Display.show_image(img)
-            # Explicitly release image buffer
-            img.__del__()
-            gc.collect()
-        # Print current frame rate
-        print(f"fps: {clock.fps()}")
-    # Clean up: stop display and media system
-    ob_det.deinit()
-    Display.deinit()
-    csc.destroy()
-    UVC.stop()
-    time.sleep_ms(100)
-    MediaManager.deinit()
+
+    try:
+        # Main loop: acquire frame, run inference, draw and display
+        while True:
+            clock.tick()
+            img = UVC.snapshot()
+            if img is not None:
+                # Convert format (e.g., to RGB888)
+                img = csc.convert(img)
+                # Convert to Ulab.Numpy.ndarray
+                img_np_hwc = img.to_numpy_ref()
+
+                img_np_nhwc=img_np_hwc.reshape((1,img_np_hwc.shape[0],img_np_hwc.shape[1],3))
+
+                # Run YOLOv8 inference on the current frame
+                res = ob_det.run(img_np_nhwc)
+
+                # Draw detection results on the frame
+                ob_det.draw_result(img, res)
+
+                # Show result on display
+                if [img.width(), img.height()] == display_size:
+                    Display.show_image(img)
+                else:
+                    if display_resize is None:
+                        display_resize = DisplayImage(display_size)
+                    display_img = display_resize.run(img.to_numpy_ref())
+                    Display.show_image(display_img)
+
+                # Explicitly release image buffer
+                img.__del__()
+
+                gc.collect()
+
+            # Print current frame rate
+            print(f"fps: {clock.fps()}")
+    except KeyboardInterrupt:
+        pass
+    finally:
+        # Clean up: stop display and media system
+        try:
+            UVC.stop()
+            time.sleep_ms(100)
+            ob_det.deinit()
+            csc.destroy()
+        finally:
+            try:
+                if display_resize is not None:
+                    display_resize.deinit()
+            finally:
+                Display.deinit()
 ```
 
 ### AI+UVC软解码推理
 
-使用UVC摄像头获取图像，并使用软件解码将图像转换成RGB888格式，创建tensor，将tensor输入到AI模型中，获取AI模型的输出结果，最后将输出结果绘制到屏幕上。这里AI推理场景为YOLOv8检测。示例代码如下：
+使用UVC摄像头获取图像，并使用软件解码将图像转换成RGB888格式，创建tensor，将tensor输入到AI模型中，获取AI模型的输出结果，最后将输出结果绘制到屏幕上。这里AI推理场景为YOLOv8检测。完整代码对应开发板上的 **此电脑->CanMV->sdcard->examples->21-AI-With-Others->ai_uvc_soft_decode.py**，示例代码如下：
 
 ```python
 from libs.PipeLine import PipeLine
@@ -4273,6 +4494,7 @@ from libs.AI2D import Ai2d
 from libs.Utils import *
 import os,sys,ujson,gc,math, urandom
 from media.display import *
+from libs.DisplayConfig import init_display, DisplayImage
 from media.media import *
 from media.uvc import *
 import nncase_runtime as nn
@@ -4367,15 +4589,15 @@ class ObjectDetectionApp(AIBase):
 
 if __name__ == "__main__":
 
-    # Align display width to 16 bytes for hardware requirement
-    DISPLAY_WIDTH = ALIGN_UP(800, 16)
-    DISPLAY_HEIGHT = 480
+    display_mode = "auto"
+    requested_display_size = None  # Optional [width, height] override.
 
-    # Initialize LCD display (ST7701) and enable IDE display
-    Display.init(Display.ST7701, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, to_ide=True)
+    display_size = init_display(display_mode, requested_display_size, to_ide=True)
+    # Reuse AI2D configuration; inference and annotations stay in source coordinates.
+    display_resize = None
 
     # Initialize media manager to manage frame buffers and UVC stream
-    MediaManager.init()
+
 
     # Wait for USB camera to be detected
     while True:
@@ -4386,7 +4608,7 @@ if __name__ == "__main__":
         time.sleep_ms(100)
 
     # Select and configure UVC video mode: 640x480 @ 30 FPS, MJPEG format
-    mode = UVC.video_mode(640, 480, UVC.FORMAT_MJPEG, 30)
+    mode = UVC.video_mode(640, 480, UVC.FOURCC_MJPEG, 30)
     succ, mode = UVC.select_video_mode(mode)
     print(f"select mode success: {succ}, mode: {mode}")
 
@@ -4428,39 +4650,161 @@ if __name__ == "__main__":
 
     # Configure Ai2d preprocessing (resize + letterbox pad)
     ob_det.config_preprocess()
+
     # Start UVC video stream with pixel format conversion enabled
     UVC.start(cvt=False)
-    clock = time.clock()
-    # Main loop: acquire frame, run inference, draw and display
-    while True:
-        clock.tick()
-        img = UVC.snapshot()
-        if img is not None:
-            # Convert format (e.g., to RGB888)
-            img = img.to_rgb888()
-            # Convert to Ulab.Numpy.ndarray
-            img_np_hwc = img.to_numpy_ref()
-            # HWC->CHW
-            img_np_chw = hwc2chw(img_np_hwc)
-            # Run YOLOv8 inference on the current frame
-            res = ob_det.run(img_np_chw)
-            # Draw detection results on the frame
-            ob_det.draw_result(img, res)
-            # Show result on display
-            Display.show_image(img)
-            # Explicitly release image buffer
-            img.__del__()
-            gc.collect()
-        # Print current frame rate
-        print(f"fps: {clock.fps()}")
-    # Clean up: stop display and media system
-    ob_det.deinit()
-    Display.deinit()
-    UVC.stop()
-    time.sleep_ms(100)
-    MediaManager.deinit()
 
+    clock = time.clock()
+
+    try:
+        # Main loop: acquire frame, run inference, draw and display
+        while True:
+            clock.tick()
+            img = UVC.snapshot()
+            if img is not None:
+                # Convert format (e.g., to RGB888)
+                img = img.to_rgb888()
+                # Convert to Ulab.Numpy.ndarray
+                img_np_hwc = img.to_numpy_ref()
+                # HWC->CHW
+                img_np_chw = hwc2chw(img_np_hwc)
+
+                # Run YOLOv8 inference on the current frame
+                res = ob_det.run(img_np_chw)
+
+                # Draw detection results on the frame
+                ob_det.draw_result(img, res)
+
+                # Show result on display
+                if [img.width(), img.height()] == display_size:
+                    Display.show_image(img)
+                else:
+                    if display_resize is None:
+                        display_resize = DisplayImage(display_size)
+                    display_img = display_resize.run(img.to_numpy_ref())
+                    Display.show_image(display_img)
+
+                # Explicitly release image buffer
+                img.__del__()
+
+                gc.collect()
+
+            # Print current frame rate
+            print(f"fps: {clock.fps()}")
+    except KeyboardInterrupt:
+        pass
+    finally:
+        # Clean up: stop display and media system
+        try:
+            UVC.stop()
+            time.sleep_ms(100)
+            ob_det.deinit()
+        finally:
+            try:
+                if display_resize is not None:
+                    display_resize.deinit()
+            finally:
+                Display.deinit()
 ```
+
+### AI+LVGL图形界面
+
+在 AI 推理的基础上叠加 LVGL 图形界面，用触摸屏控制推理任务的启停。示例中 YOLOv8 目标检测和人脸检测各跑在独立线程中，结果分别绘制到两个 OSD 图层上，LVGL 界面绘制在另一个图层，互不干扰。
+
+关键点：
+
+- **多 OSD 图层**：通过 `init_display(..., osd_num=2)` 申请多个 OSD 层，AI 结果和 LVGL 界面分层绘制，避免互相覆盖。
+- **LVGL 显示驱动对接**：实现 `disp_drv_flush_cb` 把 LVGL 渲染的缓冲区刷到 Display。
+- **触摸输入**：通过 `lv.indev_create()` 注册 POINTER 类型输入设备，在回调中读取 `TOUCH` 数据并换算成 LVGL 坐标。
+- **线程与资源释放**：每个检测任务一个线程，注意 KPU 是互斥资源，多线程推理时需要串行化访问；退出时按"线程停止 → 模型 `deinit()` → LVGL 反初始化 → media 反初始化"的顺序释放。
+
+```python
+from libs.DisplayConfig import init_display
+import lvgl as lv
+import _thread
+
+def media_init():
+    # 申请 2 个 OSD 图层：一个给 AI 结果，一个给 LVGL 界面
+    display_size = init_display(display_mode, requested_display_size, to_ide=True, osd_num=2)
+    ...
+
+def disp_drv_flush_cb(disp_drv, area, color):
+    # 把 LVGL 渲染结果刷到 Display 的 OSD 图层
+    ...
+
+def lvgl_init():
+    lv.init()
+    disp_drv = lv.disp_create(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    disp_drv.set_flush_cb(disp_drv_flush_cb)
+    ...
+
+# 两个检测任务各起一个线程
+_thread.start_new_thread(face_det_thread, ())
+_thread.start_new_thread(yolov8_det_thread, ())
+```
+
+完整代码见开发板上的 **此电脑->CanMV->sdcard->examples->21-AI-With-Others->ai_lvgl.py**。
+
+### AI+保存MP4
+
+在实时目标检测的过程中，检测到指定目标（示例中为 `apple`）时自动把视频编码保存成标准 MP4 文件，可用于事件抓拍、告警录像等场景。
+
+关键点：
+
+- **双通道出图**：一路 RGB888P 给 AI 推理，一路 YUV 给硬件编码器，互不影响。
+- **硬件编码**：使用 `media.vencoder` 做 H.264/H.265 硬件编码，示例默认 `K_PT_H265`，码率 512 kbps。
+- **MP4 封装**：通过 `mpp.mp4_format` 创建 muxer 和 video track，把编码后的码流写成标准 MP4。
+- **从 I 帧开始录制**：编码器输出的第一包必须是 IDR 帧，否则录出来的文件无法正常播放。示例中用 `save_idr` 缓存 SPS/PPS 和 IDR 帧，确保每个文件都以关键帧开头。
+
+```python
+from media.vencoder import *
+from mpp.mp4_format import *
+
+def draw_result(self, osd_img, dets):
+    has_apple = False
+    for i in range(len(dets[0])):
+        if self.labels[dets[1][i]] == "apple":
+            has_apple = True
+        ...
+    return has_apple
+
+# 主循环中：检测到目标才开始录制
+has_apple = ob_det.draw_result(osd_img, res)
+if has_apple:
+    file_name = "/data/has_apple_" + str(mp4_id) + ".mp4"
+    mp4_handle = mp4_muxer_init(file_name, fmp4_flag)
+    mp4_muxer_create_video_track(mp4_handle, mp4_size[0], mp4_size[1], venc_payload_type)
+    ...
+```
+
+完整代码见开发板上的 **此电脑->CanMV->sdcard->examples->21-AI-With-Others->ai_save_mp4.py**。
+
+```{admonition} 提示
+录制文件保存在 `/data` 目录下。请注意该分区容量有限，长时间录制前需要自行清理或改用 SD 卡路径。
+```
+
+### AI+MP4文件推理
+
+前面的示例都是对摄像头实时画面推理。本示例演示对**本地 MP4 文件**推理：解封装 MP4 取出视频码流，经硬件解码得到图像帧，再送入 AI 模型，适合离线视频的批量分析。示例使用 YuNet 人脸检测模型。
+
+关键点：
+
+- **解封装 + 解码**：用 `mpp.mp4_format` 解封装 MP4，用 `media.vdecoder` 做 H.264/H.265 硬件解码。
+- **格式转换**：解码输出为 YUV，通过 `nonai2d` 的 `CSC` 模块硬件转换成 RGB888 供 AI 使用。
+- **显示适配**：视频分辨率与屏幕分辨率通常不一致，用 `libs.DisplayConfig` 的 `DisplayImage` 把画面缩放到实际显示分辨率，详见 [DisplayConfig 模块API手册](./api/aidemo/display_config_module_api_manual.md)。
+
+```python
+from mpp.mp4_format import *
+import media.vdecoder as vdecoder
+from nonai2d import CSC
+from libs.DisplayConfig import get_display_type, init_display, DisplayImage
+
+# display_type 为 None 时按开发板型号自动选择屏驱动
+display_type = None
+requested_display_size = None
+```
+
+完整代码见开发板上的 **此电脑->CanMV->sdcard->examples->21-AI-With-Others->face_detect_yunet_from_mp4.py**。
 
 ## FAQ
   
@@ -4500,13 +4844,17 @@ Windows: 请参考微软官方网站。
 
 📝 在线训练平台的使用云端算力，资源紧张时需要排队，同时参数配置比较简单，一键训练，灵活性较低；AICube使用本地私人算力，环境和参数配置比较复杂，灵活性高。他们的目的都是获得kmodel和配置文件，使用固件中的`CanMV/sdcard/examples/19-CloudPlatScripts`的脚本即可实现部署。
 
+<a id="faq-script-autostart"></a>
+
 ### 如何将调试好的脚本设置为自启动？
 
 📝 将脚本保存在`/sdcard`目录下以`main.py`命名。或者使用CanMV IDE的`工具(T)`->`Save open script to CanMV board (as main.py)`保存后，重新上电启动。
 
 ### YOLO库中支持哪些任务？
 
-📝 YOLOv5支持分类、检测、分割三类任务，YOLOv8和YOLO11支持分类、检测、分割和旋转目标检测四类任务。
+📝 YOLOv5支持分类、检测、分割三类任务；YOLOv8、YOLO11和YOLO26支持分类、检测、分割、旋转目标检测和关键点检测五类任务。各类支持情况见 [YOLO 模块API手册](./api/aidemo/yolo_module_api_manual.md)。
+
+另外，YOLO26 模型直接输出带有语义信息的结果，构造函数中**不再包含** `nms_thresh` 参数。
 
 ### UVC的软硬件解码有什么区别？
 

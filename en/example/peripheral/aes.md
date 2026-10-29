@@ -1,89 +1,125 @@
-# Explanation of AES Routines
+# K230 AES Encryption/Decryption Tutorial
 
-## Overview
+## What is AES?
 
-The K230 comes with a built-in cryptographic algorithm accelerator that supports AES and SM4 national cryptographic algorithms for encryption and decryption operations.
+**AES (Advanced Encryption Standard)** is a symmetric encryption algorithm widely used in file protection, network communication, embedded device encryption, and other scenarios.
 
-## Examples
+The K230 chip has a built-in hardware acceleration module that can quickly implement AES encryption and decryption operations via `ucryptolib.aes`.
 
-### AES-GCM Example
+## Supported AES Modes
 
-This example demonstrates AES-GCM encryption and decryption computations.
+| Mode     | Feature Description                |
+| -------- | ---------------------------------- |
+| ECB      | Electronic Codebook mode, basic but insecure |
+| CBC      | Cipher Block Chaining mode, stronger security |
+| CTR      | Counter mode, suitable for streaming data      |
 
-```python
-print('\n###################### AES-GCM Test ##############################')
-import ucryptolib
-import collections
+## Contents of This Example
 
-# Create a named tuple
-Aes = collections.namedtuple('Aes', ['key', 'iv', 'aad', 'pt', 'ct', 'tag'])
-aes = [
-    Aes(b'\xb5\x2c\x50\x5a\x37\xd7\x8e\xda\x5d\xd3\x4f\x20\xc2\x25\x40\xea\x1b\x58\x96\x3c\xf8\xe5\xbf\x8f\xfa\x85\xf9\xf2\x49\x25\x05\xb4',
-        b'\x51\x6c\x33\x92\x9d\xf5\xa3\x28\x4f\xf4\x63\xd7',
-        b'',
-        b'',
-        b'',
-        b'\xbd\xc1\xac\x88\x4d\x33\x24\x57\xa1\xd2\x66\x4f\x16\x8c\x76\xf0'
-    ),
-    # More AES test data...
-]
+This tutorial uses **AES-CBC (Cipher Block Chaining) mode** to demonstrate how to perform the following on a piece of arbitrary-length data:
 
-# Test Case 1
-print('********************** Test-1: ivlen=12, ptlen=0, aadlen=0 ******************')
-print('GCM Encrypt......')
-crypto = ucryptolib.aes(aes[0].key, 0, aes[0].iv, aes[0].aad)
-inbuf = aes[0].pt
-outbuf = bytearray(16)
-val = crypto.encrypt(inbuf, outbuf)
-val0 = aes[0].ct + aes[0].tag
-print(val0 == val)
+* Padding (Pad)
+* Encryption (Encrypt)
+* Decryption (Decrypt)
+* Verification of original plaintext consistency
 
-print('GCM Decrypt......')
-crypto = ucryptolib.aes(aes[0].key, 0, aes[0].iv, aes[0].aad)
-inbuf = aes[0].ct + aes[0].tag
-val = crypto.decrypt(inbuf)
-print(val[:1] == b'\x00')
-
-# Other test cases...
-```
-
-### SM4 Example
-
-This example demonstrates encryption and decryption computations in SM4's ECB, CFB, OFB, CBC, and CTR modes.
+## Example Code
 
 ```python
-print('\n###################### SM4-ECB/CFB/OFB/CBC/CTR Test ##############################')
-Sm4 = collections.namedtuple('Sm4', ['key', 'iv', 'pt', 'ct'])
-sm4 = [
-    Sm4(b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10',
-        None,
-        b'\xaa\xaa\xaa\xaa\xbb\xbb\xbb\xbb\xcc\xcc\xcc\xcc\xdd\xdd\xdd\xdd\xee\xee\xee\xee\xff\xff\xff\xff\xaa\xaa\xaa\xaa\xbb\xbb\xbb\xbb',
-        b'\x5e\xc8\x14\x3d\xe5\x09\xcf\xf7\xb5\x17\x9f\x8f\x47\x4b\x86\x19\x2f\x1d\x30\x5a\x7f\xb1\x7d\xf9\x85\xf8\x1c\x84\x82\x19\x23\x04'
-    ),
-    # More SM4 test data...
-]
+import urandom
+from ucryptolib import aes
 
-# Test Case 1
-print('********************** Test-1: keybits=128, ptlen=32 ******************')
-print('SM4-ECB Encrypt......')
-crypto = ucryptolib.sm4(sm4[0].key, 1)
-inbuf = sm4[0].pt
-outbuf = bytearray(32)
-val = crypto.encrypt(inbuf, outbuf)
-val0 = sm4[0].ct
-print(val0 == val)
+# ========== Helper Functions: Padding and Unpadding ==========
+def pad(data):
+    pad_len = 16 - len(data) % 16
+    return data + bytes([pad_len] * pad_len)
 
-print('SM4-ECB Decrypt......')
-crypto = ucryptolib.sm4(sm4[0].key, 1)
-inbuf = sm4[0].ct
-outbuf = bytearray(32)
-val = crypto.decrypt(inbuf, outbuf)
-val0 = sm4[0].pt
-print(val0 == val)
+def unpad(data):
+    pad_len = data[-1]
+    return data[:-pad_len]
 
-# Other test cases...
+# ========== Encryption Function ==========
+def aes_encrypt(plaintext: bytes, key: bytes) -> bytes:
+    iv = bytes([urandom.getrandbits(8) for _ in range(16)])  # Generate random IV
+    cipher = aes(key, 2, iv)  # Mode 2 = CBC
+    padded = pad(plaintext)
+    ciphertext = cipher.encrypt(padded)
+    return iv + ciphertext  # Return IV + ciphertext
+
+# ========== Decryption Function ==========
+def aes_decrypt(data: bytes, key: bytes) -> bytes:
+    iv = data[:16]
+    ciphertext = data[16:]
+    cipher = aes(key, 2, iv)
+    padded_plaintext = cipher.decrypt(ciphertext)
+    return unpad(padded_plaintext)
+
+# ========== Example Usage ==========
+key = b"0123456789abcdef"              # 16-byte key
+plaintext = b"This is a raw data"      # Plaintext (not necessarily a multiple of 16)
+
+encrypted_data = aes_encrypt(plaintext, key)
+print("Ciphertext (IV + Ciphertext):", encrypted_data)
+
+decrypted_data = aes_decrypt(encrypted_data, key)
+print("Decrypted plaintext:", decrypted_data)
+
+assert decrypted_data == plaintext, "Plaintext decryption mismatch!"
 ```
 
-```{admonition} Tip
-For specific interfaces of the AES module, please refer to the [API documentation](../../api/cipher/K230_CanMV_UcryptolibModuleAPI_manual.md)
+## Core Workflow Analysis
+
+### 1. Padding the Plaintext
+
+Since the AES encryption block size is 16 bytes, the plaintext needs to be padded using PKCS#7:
+
+```python
+pad_len = 16 - len(data) % 16
+data + bytes([pad_len] * pad_len)
 ```
+
+### 2. Random IV Generation
+
+In CBC mode, a new random initialization vector (IV) is required for each encryption:
+
+```python
+iv = bytes([urandom.getrandbits(8) for _ in range(16)])
+```
+
+### 3. CBC Mode Encryption & Decryption
+
+```python
+cipher = aes(key, 2, iv)   # Mode 2: CBC
+cipher.encrypt()           # Encrypt
+cipher.decrypt()           # Decrypt
+```
+
+Note: CBC mode cannot verify data integrity; consider GCM mode if authentication is required.
+
+## Module Interface Description
+
+| Function/Class Name       | Description                              |
+| --------------------- | ---------------------------------------- |
+| `aes(key, mode, iv)` | Create an AES encryptor/decryptor, `mode=2` is CBC mode |
+| `.encrypt(data)`     | Encrypt byte string (length must be a multiple of 16) |
+| `.decrypt(data)`     | Decrypt byte string (same as above)              |
+
+## Parameter Description
+
+| Parameter | Type    | Description                                |
+| ------ | ----- | ------------------------------------------ |
+| `key`  | bytes | 16-byte key (supports 128-bit)               |
+| `iv`   | bytes | 16-byte initialization vector, used for CBC encryption |
+| `data` | bytes | Original plaintext / ciphertext (requires pad/unpad handling) |
+
+## Application Recommendations
+
+| Application Scenario   | Recommended Description                          |
+| ------ | ---------------------------------------------- |
+| Data storage encryption | Use AES-CBC to encrypt configuration files or logs      |
+| Serial transmission encryption | Encrypt transmitted data, combined with IV for secure communication |
+| Simple authenticated communication | Recommended to use with HMAC, otherwise CBC does not provide data integrity verification |
+
+## Further Reading
+
+* 📘 [K230 Ucryptolib Module API Documentation](../../api/cipher/k230_canmv_ucryptolib_api_manual.md)

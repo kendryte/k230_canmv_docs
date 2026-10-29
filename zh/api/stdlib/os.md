@@ -85,6 +85,25 @@ uos.mkdir(path)
 
 在指定路径创建一个新目录。
 
+#### `mkfs`
+
+```python
+uos.mkfs(mount_path)
+```
+
+格式化指定挂载点的文件系统。当前仅支持已经挂载的 `/data`。
+
+该操作会删除文件系统中的所有目录和文件。格式化前请关闭 `/data` 上打开的文件；格式化完成后建议重启设备。该操作只重建文件系统元数据，不保证覆盖分区中的全部数据，不能用于安全擦除。
+
+成功时返回 `None`。如果挂载点未挂载、参数不是 `/data` 或底层格式化失败，函数会抛出 `OSError`（例如 `EIO`）。
+
+```python
+try:
+    uos.mkfs("/data")
+except OSError as e:
+    print("格式化失败:", e)
+```
+
 #### `remove`
 
 ```python

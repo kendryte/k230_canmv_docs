@@ -33,16 +33,25 @@ ai2d = nn.ai2d()
 
 ### 读取模型
 
-读取模型有两种方式：通过文件路径或二进制数据。
+加载 kmodel 使用 `kpu.load_kmodel()`，支持传入文件路径或二进制数据两种方式。
 
 ```Python
-# 文件路径
-model = nn.load_model('test.kmodel')
+# 方式一：传入文件路径
+kpu.load_kmodel('/sdcard/examples/kmodel/test.kmodel')
 
-# 二进制数据
-with open("test.kmodel", "rb") as f:
+# 方式二：传入二进制数据
+with open("/sdcard/examples/kmodel/test.kmodel", "rb") as f:
     data = f.read()
     kpu.load_kmodel(data)
+```
+
+加载完成后，可以通过下面的接口查询模型的输入输出信息：
+
+```Python
+print(kpu.inputs_size())        # 输入个数
+print(kpu.outputs_size())       # 输出个数
+print(kpu.inputs_desc(0))       # 第0个输入的描述，dict，含 tensor_datatype/tensor_start/tensor_size
+print(kpu.outputs_desc(0))      # 第0个输出的描述
 ```
 
 ### 单独使用 KPU 进行推理
@@ -74,7 +83,7 @@ data = result.to_numpy()  # 将输出tensor转换为numpy对象
 
 ### 使用 AI2D+KPU 进行推理
 
-使用 AI2D 对摄像头采集的数据进行预处理，然后使用 KPU 进行推理。有关摄像头等输入设备的配置，请参考[AI Demo说明文档](./AI_Demo说明文档.md)。
+使用 AI2D 对摄像头采集的数据进行预处理，然后使用 KPU 进行推理。有关摄像头等输入设备的配置，请参考[AI Demo说明文档](./ai_demo_user_manual.md)。
 
 #### 配置 AI2D 参数
 
@@ -116,27 +125,48 @@ data = result.to_numpy()  # 将输出tensor转换为numpy对象
 
 ### 释放内存
 
-确保在程序结束前，所有`global`变量的引用计数为0，以避免内存泄漏。也可以在程序开始时调用`gc.collect()`，释放未被释放的内存。
+nncase 的内存池**只增不减**：加载过的 kmodel 即使对象被回收，内存仍然留在池中。因此程序结束或切换模型前必须显式释放，否则下一个模型会因内存不足而加载失败。
+
+推荐使用各对象的 `release()` 方法主动释放，不要依赖垃圾回收的时机：
 
 ```Python
 import nncase_runtime as nn
 import gc
 
-del kpu
-del ai2d
-del ai2d_builder
+kpu = None
+ai2d = None
+ai2d_builder = None
+try:
+    kpu = nn.kpu()
+    kpu.load_kmodel(kmodel_path)
+    ai2d = nn.ai2d()
+    # ... 配置并 build、推理 ...
+finally:
+    # 1) 先释放解释器：它持有输入/输出 tensor 的引用
+    if kpu is not None:
+        kpu.release()
+    # 2) 再释放 ai2d_builder 和 ai2d
+    if ai2d_builder is not None:
+        ai2d_builder.release()
+    if ai2d is not None:
+        ai2d.release()
+    # 3) 回收 Python 对象
+    gc.collect()
+    # 4) 最后把内存归还给 nncase 内存池
+    nn.shrink_memory_pool()
+```
 
-# tensor = nn.from_numpy()
-del tensor
+```{admonition} 注意
+:class: warning
+- **释放顺序不能颠倒**。解释器持有输入/输出 tensor 的引用，必须先 `kpu.release()` 再释放 tensor 和 ai2d。
+- `release()` 可以重复调用，第二次调用不做任何事。
+- `shrink_memory_pool()` 必须在 `gc.collect()` **之后**调用，否则还有对象持有引用，内存归还不掉。
+- 通过 `kpu.get_input_tensor(i)` / `get_output_tensor(i)` 取出的 tensor，用完后置 `None` 让 `gc.collect()` 回收即可，不要在 `kpu.release()` 之前单独释放它们。
+```
 
-# input_tensor = kpu.get_input_tensor(i)
-del input_tensor
-
-# output_tensor = kpu.get_output_tensor(i)
-del output_tensor
-
-gc.collect()
-nn.shrink_memory_pool()
+```{admonition} 提示
+:class: note
+如果使用 [`AIBase`](../../api/aidemo/aibase_module_api_manual.md) 封装库，上面这一整套流程已经由 `AIBase.deinit()` 完成（**包含 `gc.collect()` 和 `shrink_memory_pool()`**），只需在 `finally` 里调用 `app.deinit()`。完整写法见 [两种主循环写法](../../ai_dev_doc.md#main-loop-patterns)。
 ```
 
 ## 总结

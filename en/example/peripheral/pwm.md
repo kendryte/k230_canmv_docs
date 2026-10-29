@@ -1,55 +1,106 @@
-# PWM Example
+# PWM Usage Tutorial
 
-## Overview
+## What is PWM?
 
-The K230 integrates two PWM hardware modules, each providing 3 output channels. These channels share a clock, but the duty cycle can be adjusted independently. Therefore, channels 0, 1, and 2 share one clock, while channels 3, 4, and 5 share another clock. The configuration of the output IO can be set through the IOMUX module.
+**PWM (Pulse Width Modulation)**
+is a method of simulating analog signals by controlling the **high/low level ratio (duty cycle)** of a digital signal. It is commonly used for:
 
-## Example
+- Controlling LED brightness
+- Driving motor speed
+- Adjusting audio volume
+- Generating tones/square wave signals
 
-The following example demonstrates how to use the PWM interface for output control.
+The K230 integrates two PWM hardware modules internally, each supporting 3 channels (6 channels in total):
 
-**Example**
+- Channels **0\~2** share the same clock source (same frequency, with separate duty cycle settings)
+- Channels **3\~5** use another independent clock source
+- Each channel can be configured to different output pins via `IOMUX`
+
+## Example Overview
+
+The following example demonstrates how to use the K230's `PWM` module to perform the following operations:
+
+- Initialize and start PWM output
+- Dynamically adjust frequency and duty cycle
+- Release PWM channel resources
+
+### 1. Import Module and Initialize PWM
 
 ```python
-from machine import PWM
+from machine import PWM, Pin
 
-# Initialize channel 0, set output frequency to 1 kHz, duty cycle to 50%, and enable it
-pwm0 = PWM(0, 1000, 50, enable=True)
+# Initialize PWM channel 0, set frequency to 1kHz, duty cycle to 50%
+pwm0 = PWM(Pin(42), freq=1000, duty=50)
+```
 
-# Disable channel 0 output
-pwm0.enable(False)
+- `PWM(channel number, frequency Hz, duty cycle %)`
+  Creates a PWM output for the specified channel, outputting a 1kHz square wave with a 50% duty cycle
 
-# Set channel 0 output frequency to 2 kHz
+### 2. Dynamically Adjust Frequency and Duty Cycle
+
+```python
+# Modify channel 0's output frequency to 2kHz
 pwm0.freq(2000)
 
-# Set channel 0 output duty cycle to 10%
+# Modify duty cycle to 10%
 pwm0.duty(10)
+```
 
-# Enable channel 0 output
-pwm0.enable(True)
+- `freq(x)`: Set output frequency (unit: Hz)
+- `duty(x)`: Set duty cycle (unit: %, range 0\~100)
 
-# Release channel 0
+### 3. Release Channel Resources
+
+```python
+# Completely release channel 0, turn off output and free underlying resources
 pwm0.deinit()
 ```
 
-## Code Explanation
+- `deinit()`: Close the channel, free resources, suitable for exit scenarios or switching functions
 
-1. **Initialize PWM Channel**:
-   - Create a `PWM` object, specify the channel number (0 in this example), set the initial frequency to 1 kHz, the duty cycle to 50%, and immediately enable the output.
+### 4. Example Output Waveform Description
 
-1. **Disable PWM Output**:
-   - Call the `enable(False)` method to disable the output of channel 0, which might be necessary to temporarily stop signal output in some situations.
+Assume we set channel 0 to output a 1kHz, 50% duty cycle PWM waveform. The waveform is:
 
-1. **Adjust Frequency and Duty Cycle**:
-   - Use the `freq(2000)` method to change the output frequency of channel 0 to 2 kHz.
-   - Use the `duty(10)` method to adjust the duty cycle to 10%.
-
-1. **Enable PWM Output**:
-   - Use the `enable(True)` method to re-enable the PWM output, starting to send signals with the new frequency and duty cycle.
-
-1. **Release Channel Resources**:
-   - Call the `deinit()` method to release the channel, which is usually done when the PWM functionality is no longer needed to free up resources.
-
-```{admonition} Tip
-For detailed interfaces and usage of the PWM module, please refer to the [API documentation](../../api/machine/K230_CanMV_PWM_Module_API_Manual.md).
+```text
+Period T = 1ms
+High level time = 0.5ms, Low level time = 0.5ms
 ```
+
+```python
+|‾‾‾‾‾     ‾‾‾‾‾     ‾‾‾‾‾
+|     ‾‾‾‾‾     ‾‾‾‾‾     
+```
+
+If the duty cycle is adjusted to 10%, the waveform is as follows:
+
+```text
+|‾     ‾     ‾     ‾
+|                         
+```
+
+## PWM Channel Description
+
+| Channel Number | Module | Clock Sharing Group |
+|-  | - | - |
+| 0   | PWM0 | Group A |
+| 1   | PWM0 | Group A |
+| 2   | PWM0 | Group A |
+| 3   | PWM1 | Group B |
+| 4   | PWM1 | Group B |
+| 5   | PWM1 | Group B |
+
+> ⚠ Note: Channels in the same group share one frequency, but **the duty cycle can be set independently**
+
+## Application Scenarios
+
+- **LED Brightness Control** (control brightness through duty cycle)
+- **Buzzer Sound** (control pitch through frequency)
+- **Servo Control** (specific duty cycle controls rotation angle)
+- **DC Motor Speed Control** (control average voltage through PWM)
+- **Signal Waveform Generator** (square wave, PWM modulated wave, etc.)
+
+## Further Reading
+
+- [K230 PWM API Documentation](../../api/machine/k230_canmv_pwm_api_manual.md)
+- [FPIOA Module Complete API Manual](../../api/machine/k230_canmv_fpioa_api_manual.md)

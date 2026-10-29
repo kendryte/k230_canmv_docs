@@ -156,4 +156,4 @@ print("READ_BACK:", read_back.decode())
 
 ## 延伸阅读
 
-- 📘 [K230 SPI 模块 API 文档](../../api/machine/K230_CanMV_SPI模块API手册.md)
+- 📘 [K230 SPI 模块 API 文档](../../api/machine/k230_canmv_spi_api_manual.md)

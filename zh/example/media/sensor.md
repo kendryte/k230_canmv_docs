@@ -150,5 +150,5 @@ finally:
 ```
 
 ```{admonition} 提示
-有关 Sensor 模块的详细接口，请参考 [API 文档](../../api/mpp/K230_CanMV_Sensor模块API手册.md)。
+有关 Sensor 模块的详细接口，请参考 [API 文档](../../api/mpp/k230_canmv_sensor_module_api_manual.md)。
 ```

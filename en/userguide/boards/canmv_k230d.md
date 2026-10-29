@@ -1,33 +1,33 @@
-# CanMV-K230D Development Board
+# CanMV-K230D-Zero Development Board
 
 ## Overview
 
-The CanMV-K230D Zero development board is a collaborative design by Canaan Technology and the Banana Pi open-source hardware community. It features with the Kendryte K230D chip, equipped with a dual-core XuanTie C908 RISC-V CPU and an independently developed third-generation KPU (Neural Network Processing Unit). The board includes 128MB of LPDDR4 memory, providing robust support for high-performance local AI inference computing. With its comprehensive development resources and compact design, the CanMV-K230D Zero is well-suited for a wide range of DIY projects, AIoT (Artificial Intelligence of Things) devices, and embedded system applications. It is an ideal choice for programming education, AI-based audio and video innovation, and system performance evaluation, empowering users to embark on a journey of technological exploration.
+The CanMV-K230D Zero development board is jointly designed and developed by Canaan Technology and the Banana Pi open-source community, aiming to explore cutting-edge applications of RISC-V Vector 1.0 technology. This development board integrates the high-performance K230D chip, featuring a dual-core Xuantie C908 RISC-V CPU, and is equipped with Canaan's self-developed third-generation KPU (Neural Network Processing Unit). With onboard 128MB LPDDR4 memory, it provides excellent local inference computing capability. With its compact design and rich development resources, the CanMV-K230D Zero is widely applicable to DIY projects, IoT devices, and embedded system development, making it an ideal choice for learning programming, developing edge AI audio/video products, and conducting performance evaluation.
 
-![Board Interface](../../../zh/images/bpi-canmv-k230d-zero_interface.jpg)
+![Development Board Interface Diagram](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/images/bpi-canmv-k230d-zero_interface.jpg)
 
 ## Technical Specifications
 
-| Parameter            | Description                                                           |
-|----------------------|-----------------------------------------------------------------------|
-| **CPU**              | Dual-core XuanTie C908 RISC-V CPU <br> - Core 1: 1.6GHz, supports RVV1.0 <br> - Core 2: 800MHz                   |
-| **KPU**              | Third-generation Neural Network Processing Unit, supports multiple data types (e.g., INT8/INT16) <br> Typical performance: ResNet50 ≥ 85 fps@INT8, MobileNet_v2 ≥ 670 fps@INT8, YOLOv5s ≥ 38 fps@INT8    |
-| **DPU**              | Integrated 3D structured light depth engine, supporting up to 1920×1080 resolution           |
-| **VPU**              | Built-in H.264/H.265 hardware encoder and decoder                                      |
-| **Video Input**      | Dual MIPI-CSI interfaces: 2-lane and 4-lane configurations            |
-| **Display Output**   | MIPI DSI interface, supporting up to 1080P resolution                              |
-| **RAM**              | 128MB LPDDR4 @ 2666Mbps                                                        |
-| **Storage**          | Onboard TF card slot, supporting up to 1TB                                          |
-| **USB**              | One USB 2.0 port, supporting OTG functionality                                         |
-| **Network**          | 2.4GHz Wi-Fi module                                                             |
-| **Audio**            | Onboard audio input/output interface                                              |
-| **GPIO Expansion**   | 40-pin expandable GPIO, supports I2C, UART, I2S, SPI, PWM, ADC, JTAG, etc.                       |
-| **Buttons**          | One function button and one reset button                                          |
-| **Power Supply**     | USB Type-C, 5V/2A input                                                     |
-| **Dimensions**       | 65mm (Length) × 30mm (Width) × 7mm (Height)                                   |
+| Parameter        | Description                                                                                                                                                              |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **CPU**          | Xuantie C908 Dual-core RISC-V CPU <br> CPU1: 1.6GHz, supports RVV1.0 <br> CPU2: 800MHz                                                                                    |
+| **KPU**          | Third-generation Neural Network Processing Unit, supports multiple data types such as INT8/INT16 <br> Typical performance: ResNet50 >= 85fps@INT8, MobileNet_v2 >= 670fps@INT8, YOLOv5s >= 38fps@INT8 |
+| **DPU**          | Built-in 3D structured light depth engine, supports up to 1920×1080 resolution                                                                                            |
+| **VPU**          | Built-in H.264/H.265 hardware codec                                                                                                                                     |
+| **Image Input**  | 2-channel MIPI-CSI (2-lane and 4-lane)                                                                                                                                   |
+| **Display Output** | MIPI DSI interface, supports up to 1080P resolution output                                                                                                              |
+| **RAM**          | 128MB LPDDR4                                                                                                                                                             |
+| **Storage Expansion** | Onboard TF card slot, supports up to 1TB expansion                                                                                                                   |
+| **USB**          | 1 USB 2.0 interface, supports OTG function                                                                                                                               |
+| **Network**      | Built-in 2.4GHz Wi-Fi module                                                                                                                                             |
+| **Audio**        | Supports external audio input/output interface                                                                                                                           |
+| **GPIO Expansion** | 40-pin GPIO expansion, supports I2C, UART, I2S, SPI, PWM, ADC, JTAG and other interfaces                                                                                |
+| **Buttons**      | 1 function button, 1 reset button                                                                                                                                        |
+| **Power**        | USB Type-C interface, input voltage 5V, current 2A                                                                                                                       |
+| **Dimensions**   | Length 65mm, width 30mm, height 7mm                                                                                                                                     |
 
 ## Connection Diagram
 
-When using the BPI-CanMV-K230D Zero development board, connect two USB cables: one for power supply and the other for serial communication.
+When using the BPI-CanMV-K230D Zero development board, two USB data cables need to be connected simultaneously, one for power supply and the other for serial communication.
 
-![Connection Diagram](../../../zh/images/BPI_K230D_Zero_Wire_Connection.jpg)
+![Connection Diagram](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/images/BPI_K230D_Zero_Wire_Connection.jpg)

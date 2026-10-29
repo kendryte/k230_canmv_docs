@@ -73,4 +73,4 @@ print("新时间设置后：", rtc.datetime())
 
 ## 延伸阅读
 
-- [K230 RTC API 文档](../../api/machine/K230_CanMV_RTC模块API手册.md)
+- [K230 RTC API 文档](../../api/machine/k230_canmv_rtc_api_manual.md)

@@ -8,4 +8,5 @@ media/index.md
 ai/index.md
 omv/index.md
 network/index.md
+xiaozhi/index.md
 ```

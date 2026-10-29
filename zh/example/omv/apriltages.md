@@ -126,5 +126,5 @@ finally:
 - **异常处理**：捕获用户中断或其他异常，确保传感器正常停止并释放资源。
 
 ```{admonition} 提示
-具体接口定义请参考 [find_apriltags](../../api/openmv/image.md#2282-find_apriltags)。
+具体接口定义请参考 [find_apriltags](../../api/openmv/image.md#find-apriltags)。
 ```

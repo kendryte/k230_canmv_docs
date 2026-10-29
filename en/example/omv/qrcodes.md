@@ -29,9 +29,9 @@ DETECT_HEIGHT = 480
 sensor = None
 
 try:
-    # Construct Sensor object with default configuration
+    # Construct a Sensor object with default configuration
     sensor = Sensor(width=DETECT_WIDTH, height=DETECT_HEIGHT)
-    # Reset sensor
+    # Reset the sensor
     sensor.reset()
     # Set horizontal mirror
     # sensor.set_hmirror(False)
@@ -42,7 +42,7 @@ try:
     # Set output format
     sensor.set_pixformat(Sensor.GRAYSCALE)
 
-    # Initialize display. If the selected screen cannot be lit, refer to the K230_CanMV_Display module API manual in the API documentation for configuration
+    # Initialize the display. If the selected screen cannot be lit up, please refer to the K230_CanMV_Display module API manual in the API documentation for configuration.
     # Use HDMI output, set to VGA
     # Display.init(Display.LT9611, width=640, height=480, to_ide=True)
 
@@ -55,7 +55,7 @@ try:
     # Use IDE output
     Display.init(Display.VIRT, width=DETECT_WIDTH, height=DETECT_HEIGHT, fps=100)
 
-    # Initialize media manager
+    # Initialize the media manager
     MediaManager.init()
     # Start sensor
     sensor.run()
@@ -94,10 +94,10 @@ finally:
     os.exitpoint(os.EXITPOINT_ENABLE_SLEEP)
     time.sleep_ms(100)
 
-    # Release media buffer
+    # Release media buffers
     MediaManager.deinit()
 ```
 
 ```{admonition} Tip
-For specific interface definitions, refer to [find_qrcodes](../../api/openmv/image.md#2281-find_qrcodes).
+For the specific interface definition, please refer to [find_qrcodes](../../api/openmv/image.md#find-qrcodes).
 ```

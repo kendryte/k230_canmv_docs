@@ -1,6 +1,6 @@
-# Obtaining the Development Board
+# Get Development Board
 
-CanMV K230 supports development boards based on the K230 and K230D chips. Users can choose according to their needs.
+CanMV K230 supports development boards based on K230 and K230D chips, users can choose according to their needs
 
 ```{toctree}
 :maxdepth: 1

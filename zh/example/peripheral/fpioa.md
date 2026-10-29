@@ -17,7 +17,7 @@ K230 芯片内置多个外设资源，包括 5 路 UART、5 路 I2C、6 路 PWM 
 
 我们以 **立创·庐山派K230CanMV开发板** 开发板为例进行说明。该开发板提供了一张接口定义图，如下所示：
 
-![立创·庐山派K230CanMV开发板](https://www.kendryte.com/api/post/attachment?id=637)
+![立创·庐山派K230CanMV开发板](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/502e21df4bb4.jpg)
 
 ### 查看当前所有引脚功能状态
 
@@ -119,7 +119,7 @@ function IIC0_SDA can be set to PIN33, PIN49, PIN61
 current set PIN49 as IIC0_SDA
 ```
 
-更多引脚功能对应表请参考官方文档： [K230 芯片引脚定义列表](https://kendryte-download.canaan-creative.com/developer/k230/HDK/K230%E7%A1%AC%E4%BB%B6%E6%96%87%E6%A1%A3/K230_PINOUT_V1.2_20240822.xlsx)
+更多引脚功能对应表请参考官方文档： [K230 芯片引脚定义列表](https://download.kendryte.com/developer/k230/HDK/K230%E7%A1%AC%E4%BB%B6%E6%96%87%E6%A1%A3/K230_PINOUT_V1.2_20240822.xlsx)
 
 ### Q2：我设置了引脚功能，但通信仍然不正常，是什么原因？
 
@@ -132,6 +132,6 @@ current set PIN49 as IIC0_SDA
 
 ## 延伸阅读
 
-* [FPIOA 模块完整 API 手册](../../api/machine/K230_CanMV_FPIOA模块API手册.md)
-* [K230 芯片引脚定义列表（Excel）](https://kendryte-download.canaan-creative.com/developer/k230/HDK/K230%E7%A1%AC%E4%BB%B6%E6%96%87%E6%A1%A3/K230_PINOUT_V1.2_20240822.xlsx)
+* [FPIOA 模块完整 API 手册](../../api/machine/k230_canmv_fpioa_api_manual.md)
+* [K230 芯片引脚定义列表（Excel）](https://download.kendryte.com/developer/k230/HDK/K230%E7%A1%AC%E4%BB%B6%E6%96%87%E6%A1%A3/K230_PINOUT_V1.2_20240822.xlsx)
 * [K230 IOMUX 配置工具](https://www.kendryte.com/zh/tools/dts_config_generation_tool)

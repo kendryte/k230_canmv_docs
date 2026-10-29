@@ -1,210 +1,86 @@
-# TCP-Client 例程讲解
+# TCP Client 例程讲解
 
-## 环境准备
+## 例程位置
 
-为了确保顺利进行 TCP 通信的演示，我们需要确认以下环境已正确配置：
+- 开发板固件路径：`/sdcard/examples/14-Socket/tcp_client.py`
+- SDK 源码路径：`src/canmv/resources/examples/14-Socket/tcp_client.py`
 
-### 硬件连接
+该例程把开发板作为 TCP 客户端，连接电脑上的 TCP 服务，并连续发送 10 条测试
+消息。
 
-- 请确保您的 CanMV 开发板和电脑通过网线连接至同一个路由器或交换机，形成局域网。
-- 确保路由器或交换机正常工作，以保证网络连接的稳定性。
+## 运行前准备
 
-### 关闭防火墙
-
-- 为了避免防火墙阻止 TCP 通信，建议暂时关闭电脑的防火墙。
-
-```{image} ../images/network/image-20240722145319713.png
-:scale: 50 %
-```
-
-### 工具准备
-
-- 下载并安装 [NetAssist 网络调试助手](https://www.bing.com/search?q=netassist+cmsoft) 作为网络通信的测试工具，帮助实现网络数据的收发。
-
-### 获取 IP 地址
-
-- 打开命令提示符（CMD），输入 `ipconfig`，查询并记录电脑网卡的 IP 地址，供后续配置和测试使用。
-
-```{image} ../images/network/image-20240722145500693.png
-:scale: 50 %
-```
-
-## 客户端代码解析
-
-### 导入必要的库
+先在电脑上启动 TCP 调试工具并监听一个端口。然后修改脚本中的两类配置：
 
 ```python
-import network  
-import socket  
-import time
+NETWORK_TYPE = "wifi_sta"
+WLAN_DEVICE = "auto"
+WIFI_SSID = "TEST"
+WIFI_PASSWORD = "12345678"
+NETWORK_TIMEOUT = 20
 ```
 
-- **network**：用于网络接口操作，例如配置 IP 地址和检查网络状态。
-- **socket**：提供网络通信的 Socket 接口。
-- **time**：提供与时间相关的函数，比如延时（`sleep`）。
-
-### 定义客户端函数
-
 ```python
-def client():  
-    # ...（后续代码）
+ai = socket.getaddrinfo("192.168.1.110", 8080)
 ```
 
-- `client` 函数包含了 TCP 客户端的主要逻辑。
+把 `192.168.1.110` 改为电脑的 IP，把 `8080` 改为调试工具监听的 TCP 端口。电脑与
+开发板必须网络互通，电脑防火墙也必须允许该端口入站。
 
-### 配置网络接口
+## 代码流程
+
+### 1. 连接网络
 
 ```python
-def network_use_wlan(is_wlan=True):
-    if is_wlan:
-        sta = network.WLAN(0)
-        sta.connect("TEST", "12345678")
-        print(sta.status())
-        while sta.ifconfig()[0] == '0.0.0.0':
-            os.exitpoint()
-        print(sta.ifconfig())
-        ip = sta.ifconfig()[0]
-        return ip
-    else:
-        a = network.LAN()
-        if not a.active():
-            raise RuntimeError("LAN interface is not active.")
-        a.ifconfig("dhcp")
-        print(a.ifconfig())
-        ip = a.ifconfig()[0]
-        return ip
+netif, _ = connect_network(
+    NETWORK_TYPE,
+    ssid=WIFI_SSID,
+    password=WIFI_PASSWORD,
+    wlan_device=WLAN_DEVICE,
+    timeout=NETWORK_TIMEOUT,
+)
 ```
 
-根据参数配置网络接口，流程如下：
+公共网络库负责选择网卡、等待 IP 和设置默认上行，应用无需写死 netdev 名称。
 
-1. **WLAN 模式**：
-   - 如果 `is_wlan=True`，则配置无线网络接口（WLAN），连接到 SSID 为 "TEST"、密码为 "12345678" 的 Wi-Fi。
-   - 等待并检查是否分配到有效 IP 地址，返回 IP。
-
-1. **LAN 模式**：
-   - 如果 `is_wlan=False`，配置有线网络接口（LAN），启用 DHCP 以自动获取 IP 地址，返回 IP。
-
-### 创建 Socket
+### 2. 创建 TCP Socket 并解析地址
 
 ```python
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+addr = socket.getaddrinfo("192.168.1.110", 8080)[0][-1]
 ```
 
-- 使用 IPv4（`AF_INET`）和 TCP（`SOCK_STREAM`）协议创建 Socket 对象。
+`AF_INET` 选择 IPv4，`SOCK_STREAM` 选择有连接、可靠且有序的 TCP 字节流。
+`getaddrinfo()` 同时适用于 IPv4 字符串和域名。
 
-### 获取服务器地址和端口
+### 3. 连接服务端
 
 ```python
-ai = socket.getaddrinfo("172.16.1.174", 8080)  
-addr = ai[0][-1]  # 提取地址和端口
+s.connect(addr)
 ```
 
-- 使用 `getaddrinfo` 获取服务器的 IP 地址和端口号，并提取出地址信息。
+TCP 必须完成连接后才能发送数据。连接被拒绝通常表示目标地址可达，但对应端口没有
+服务监听；连接超时通常与地址、路由或防火墙有关。
 
-### 连接到服务器
-
-```python
-try:  
-    s.connect(addr)  
-    print("Connected to server:", addr)  
-except Exception as e:  
-    s.close()  
-    print("Connection error:", e)  
-    return
-```
-
-- 尝试连接到服务器，如果连接失败则打印错误信息并关闭连接。
-
-### 发送数据
+### 4. 连续发送消息
 
 ```python
-for i in range(10):  
-    message = "K230 TCP client send test {0} \r\n".format(i)  
-    print("Sending:", message)  
-    s.sendall(message.encode())  
+for i in range(10):
+    message = "K230 tcp client send test {0} \r\n".format(i)
+    s.write(message)
     time.sleep(0.2)
 ```
 
-- 在循环中发送 10 条测试信息，并且使用 `sendall` 方法确保每条消息完全发送。
+例程每隔 `0.2` 秒发送一条带序号的消息。TCP 是字节流，不保留单次 `write()` 的
+消息边界；示例用 `\r\n` 方便接收端按行显示或拆分数据。
 
-### 关闭 Socket
+### 5. 关闭连接
 
-```python
-s.close()  
-print("Client ends connection.")
-```
+发送完成后脚本等待 1 秒，再调用 `s.close()` 释放连接并打印 `end`。
 
-- 关闭 Socket 以释放资源，表示客户端结束连接。
+## 运行与验证
 
-### 完整代码示例
-
-```python
-import network
-import socket
-import os, time
-
-def network_use_wlan(is_wlan=True):
-    if is_wlan:
-        sta = network.WLAN(0)
-        sta.connect("TEST", "12345678")
-        print(sta.status())
-        while sta.ifconfig()[0] == '0.0.0.0':
-            os.exitpoint()
-        print(sta.ifconfig())
-        ip = sta.ifconfig()[0]
-        return ip
-    else:
-        a = network.LAN()
-        if not a.active():
-            raise RuntimeError("LAN interface is not active.")
-        a.ifconfig("dhcp")
-        print(a.ifconfig())
-        ip = a.ifconfig()[0]
-        return ip
-
-def client():
-    network_use_wlan(True)
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ai = socket.getaddrinfo("192.168.1.110", 8080)
-    print("Address infos:", ai)
-    addr = ai[0][-1]
-
-    print("Connecting to:", addr)
-    try:
-        s.connect(addr)
-    except Exception as e:
-        s.close()
-        print("Connection error:", e)
-        return
-
-    for i in range(10):
-        message = "K230 TCP client send test {0} \r\n".format(i)
-        print("Sending:", message)
-        s.sendall(message.encode())
-        time.sleep(0.2)
-
-    s.close()
-    print("Connection closed.")
-
-client()
-```
-
-## 运行结果与操作说明
-
-1. 打开 NetAssist 网络调试助手，配置为 TCP 服务器并等待连接：
-
-```{image} ../images/network/image-20240722152102440.png
-:scale: 50 %
-```
-
-1. 在代码中修改服务器的 IP 和端口号：
-
-```python
-ai = socket.getaddrinfo("172.16.1.174", 8080)
-```
-
-1. 运行客户端代码，NetAssist 将显示客户端发送的消息：
-
-```{image} ../images/network/image-20240722151843380.png
-:scale: 50 %
-```
+1. 先启动电脑端 TCP 服务并确认监听地址和端口。
+2. 在 CanMV IDE 中运行开发板固件路径下的脚本。
+3. 电脑端应收到序号 `0` 到 `9` 的 10 条消息。
+4. 若电脑有多块网卡，目标 IP 应选择与开发板互通的那一个，而不是回环地址。

@@ -170,7 +170,7 @@ def camera_init():
     sensor.set_framesize(width=DETECT_WIDTH,height=DETECT_HEIGHT)
     # 设置通道 0 输出格式
     sensor.set_pixformat(Sensor.GRAYSCALE)
-    # 使用 IDE 作为显示输出，如果您选择的屏幕无法点亮，请参考API文档中的K230_CanMV_Display模块API手册自行配置
+    # 使用 IDE 作为显示输出，如果您选择的屏幕无法点亮，请参考API文档中的k230_canmv_display_module_api_manual自行配置
     Display.init(Display.VIRT, width= DETECT_WIDTH, height = DETECT_HEIGHT,fps=100,to_ide = True)
     # 初始化媒体管理器
     MediaManager.init()

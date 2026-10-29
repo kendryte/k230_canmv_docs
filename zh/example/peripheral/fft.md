@@ -78,7 +78,7 @@ print(signal_fixed[0:20])
 ```
 
 合成波形示意：
-![Origal Waveform](https://www.kendryte.com/api/post/attachment?id=644)
+![Origal Waveform](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/f5f0b06ec35e.png)
 
 ### 3. FFT 分析
 
@@ -97,7 +97,7 @@ print(freqs)
 ```
 
 频谱结果如下图所示，可见 50 Hz、150 Hz、250 Hz 处存在显著峰值，且幅度比约为 4 : 2 : 1，与信号合成时的设置一致。
-![FFT waveform](https://www.kendryte.com/api/post/attachment?id=643)
+![FFT waveform](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/fc2191209c15.png)
 
 ## 4. 频率分辨率 Δf
 
@@ -133,4 +133,4 @@ $$
 
 ## 延伸阅读
 
-* [K230 FFT API 文档](../../api/machine/K230_CanMV_FFT模块API手册.md)
+* [K230 FFT API 文档](../../api/machine/k230_canmv_fft_api_manual.md)

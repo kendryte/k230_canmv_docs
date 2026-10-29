@@ -81,7 +81,7 @@ try:
     # 设置通道 0 输出格式
     sensor.set_pixformat(Sensor.RGB565)
 
-    # 设置显示，如果您选择的屏幕无法点亮，请参考API文档中的K230_CanMV_Display模块API手册自行配置,下面给出四种显示方式
+    # 设置显示，如果您选择的屏幕无法点亮，请参考API文档中的k230_canmv_display_module_api_manual自行配置,下面给出四种显示方式
     # 使用 HDMI 作为显示输出，设置为 VGA
     # Display.init(Display.LT9611, width = 640, height = 480, to_ide = True)
 
@@ -145,5 +145,5 @@ finally:
 ```
 
 ```{admonition} 提示
-具体接口定义请参考 [find_blobs](../../api/openmv/image.md#2276-find_blobs)
+具体接口定义请参考 [find_blobs](../../api/openmv/image.md#find-blobs)
 ```

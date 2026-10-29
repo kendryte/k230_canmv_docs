@@ -1,180 +1,86 @@
-# HTTP-Client Example Explanation
+# HTTP Client Routine Explanation
 
-## Environment Setup
+## Routine Location
 
-First, ensure that the CanMV development board is connected to a router or switch via an Ethernet port, and that the router is functioning properly with internet access. This is the basic setup for making HTTP requests.
+- Development board firmware path: `/sdcard/examples/14-Socket/http_client.py`
+- SDK source code path: `src/canmv/resources/examples/14-Socket/http_client.py`
 
-## Detailed Example
+This routine first establishes a network connection, then accesses `http://www.baidu.com/index.html`, and demonstrates both the Socket file stream interface and the regular send/receive interface.
 
-The following Python example demonstrates how to implement an HTTP client on the CanMV development board. This client sends an HTTP GET request to a specified server (in this case, Baidu) and receives the response content.
+## Preparation Before Running
 
-### Import Necessary Modules
-
-```python
-import network  
-import socket
-```
-
-- The `network` module is used to manage network interfaces.
-- The `socket` module provides the underlying interface for network communication.
-
-### Define the Main Function
+Modify the network configuration at the top of the script:
 
 ```python
-def main(use_stream=True):  
-    # ... (subsequent code)
+NETWORK_TYPE = "wifi_sta"  # "default", "lan", "wifi_sta" or "wifi_ap"
+WLAN_DEVICE = "auto"       # "auto", "usb", "sdio" or "spi"
+WIFI_SSID = "TEST"
+WIFI_PASSWORD = "12345678"
+NETWORK_TIMEOUT = 20
 ```
 
-The `main` function defines a parameter `use_stream` which determines whether to use a stream interface to read the response data. The default value is `True`, which controls the data reception method.
+The HTTP client requires internet access and proper DNS resolution. When using a wired network, change `NETWORK_TYPE` to `"lan"`; use `"default"` to reuse the already-connected default interface.
 
-### Configure Network Interface
+## Code Flow
+
+### 1. Connect to the Network
 
 ```python
-def network_use_wlan(is_wlan=True):
-    if is_wlan:
-        sta = network.WLAN(0)
-        sta.connect("TEST", "12345678")
-        print(sta.status())
-        while sta.ifconfig()[0] == '0.0.0.0':
-            os.exitpoint()
-        print(sta.ifconfig())
-        ip = sta.ifconfig()[0]
-        return ip
-    else:
-        a = network.LAN()
-        if not a.active():
-            raise RuntimeError("LAN interface is not active.")
-        a.ifconfig("dhcp")
-        print(a.ifconfig())
-        ip = a.ifconfig()[0]
-        return ip
+netif, _ = connect_network(
+    NETWORK_TYPE,
+    ssid=WIFI_SSID,
+    password=WIFI_PASSWORD,
+    wlan_device=WLAN_DEVICE,
+    timeout=NETWORK_TIMEOUT,
+)
 ```
 
-This function configures the network interface based on the input:
+`connect_network()` waits for the interface to obtain a valid IP and sets it as the default uplink interface. An exception is thrown if the network is not ready within `NETWORK_TIMEOUT` seconds, and the HTTP request will not proceed.
 
-1. **WLAN Mode**: Connects to a specified Wi-Fi network (SSID is "TEST") using the wireless network interface (WLAN).
-1. **LAN Mode**: Automatically obtains an IP address using the wired network interface (LAN).
-
-### Create and Configure Socket
+### 2. Resolve the Server Address
 
 ```python
-# Create socket object  
-s = socket.socket()   
-# Get target address and port number  
-ai = []  
-for attempt in range(0, 3):  
-    try:  
-        ai = socket.getaddrinfo("www.baidu.com", 80)  
-        break  
-    except:  
-        print("getaddrinfo again")  
-  
-if ai == []:  
-    print("Connection error")  
-    s.close()  
-    return  
-  
-addr = ai[0][-1]  
-print("Connection address:", addr)
+ai = socket.getaddrinfo("www.baidu.com", 80)
+addr = ai[0][-1]
 ```
 
-This code creates a `socket` object and uses the `getaddrinfo` function to obtain the server's (Baidu) address and port information. It employs a retry mechanism to enhance robustness.
+The routine retries DNS resolution up to 3 times. The `Address infos` in the serial console is the resolution result, and `Connect address` is the actual address used by this connection.
 
-### Send HTTP Request and Receive Response
+### 3. Establish a TCP Connection
 
 ```python
-# Connect to the server  
-s.connect(addr)  
-  
-if use_stream:  
-    # Use stream interface to read response  
-    s = s.makefile("rwb", 0)  
-    s.write(b"GET /index.html HTTP/1.0\r\n\r\n")  
-    print(s.read())  
-else:  
-    # Directly use socket interface to send and receive data  
-    s.send(b"GET /index.html HTTP/1.0\r\n\r\n")  
-    print(s.recv(4096))  
-   
-# Close socket  
-s.close()
+s = socket.socket()
+s.connect(addr)
 ```
 
-The code selects whether to use the stream interface or directly use the socket interface to send an HTTP request and read the response data based on the `use_stream` parameter.
+HTTP/1.0 runs on TCP, so you must first connect to the server's port `80`.
 
-### Function Invocation
+### 4. Send and Receive Using the File Stream Interface
 
 ```python
-# Test both stream and non-stream interfaces  
-main(use_stream=True)  
-main(use_stream=False)
+s = s.makefile("rwb", 0)
+s.write(b"GET /index.html HTTP/1.0\r\n\r\n")
+print(s.read())
 ```
 
-The `main` function is called with different `use_stream` parameters to test the effects of reading the HTTP response using stream and non-stream methods. If `use_stream` is `True`, it uses the stream interface to send the request and read the entire response; if `False`, it directly sends the request and receives a fixed length of response data (4096 bytes in this example). Finally, the socket connection is closed to release resources.
+`makefile()` wraps the Socket into a stream that can call `read()` and `write()`. After the HTTP/1.0 request is complete, the server closes the connection, so `read()` can read until the response ends.
 
-### Complete Example
+### 5. Send and Receive Using the Regular Socket Interface
 
 ```python
-import network
-import socket
-import os, time
-
-def network_use_wlan(is_wlan=True):
-    if is_wlan:
-        sta = network.WLAN(0)
-        sta.connect("TEST", "12345678")
-        print(sta.status())
-        while sta.ifconfig()[0] == '0.0.0.0':
-            os.exitpoint()
-        print(sta.ifconfig())
-        ip = sta.ifconfig()[0]
-        return ip
-    else:
-        a = network.LAN()
-        if not a.active():
-            raise RuntimeError("LAN interface is not active.")
-        a.ifconfig("dhcp")
-        print(a.ifconfig())
-        ip = a.ifconfig()[0]
-        return ip
-
-def main(use_stream=True):
-    # Get LAN interface
-    network_use_wlan(True)
-    # Create socket
-    s = socket.socket()
-    # Get address and port number
-    ai = []
-    for attempt in range(0, 3):
-        try:
-            ai = socket.getaddrinfo("www.baidu.com", 80)
-            break
-        except:
-            print("getaddrinfo again")
-    
-    if ai == []:
-        print("Connection error")
-        s.close()
-        return
-
-    addr = ai[0][-1]
-    print("Connection address:", addr)
-    # Connect
-    s.connect(addr)
-
-    if use_stream:
-        s = s.makefile("rwb", 0)
-        s.write(b"GET /index.html HTTP/1.0\r\n\r\n")
-        print(s.read())
-    else:
-        s.send(b"GET /index.html HTTP/1.0\r\n\r\n")
-        print(s.recv(4096))
-
-    s.close()
- 
-# main()
-main(use_stream=True)
-main(use_stream=False)
+s.send(b"GET /index.html HTTP/1.0\r\n\r\n")
+print(s.recv(4096))
 ```
 
-For specific interface definitions, please refer to [socket](../../api/extmod/K230_CanMV_socket_API_Manual.md) and [network](../../api/extmod/K230_CanMV_network_API_Manual.md).
+The regular interface uses `send()` and `recv()`. A single `recv(4096)` reads at most 4096 bytes and does not guarantee obtaining the complete response; practical applications should read in a loop until the server closes the connection or the protocol provides a complete length.
+
+At the end of the script, `main(use_stream=True)` and `main(use_stream=False)` are called in sequence, so two independent requests are initiated.
+
+## Running and Troubleshooting
+
+1. Open the script under the development board firmware path in CanMV IDE and run it.
+2. Confirm that the serial console first outputs network connection information, then outputs the DNS address and HTTP response.
+3. If `getaddrinfo again` keeps appearing, check DNS, gateway, and internet connection.
+4. If the domain name resolves but the connection fails, check the target service, default uplink, and network firewall.
+
+For related interfaces, see [network module](../../api/extmod/k230_canmv_network_api_manual.md) and [socket module](../../api/extmod/k230_canmv_socket_api_manual.md).

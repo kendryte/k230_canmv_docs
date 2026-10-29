@@ -4,7 +4,7 @@
 
 CanMV-K230D Zero 开发板由嘉楠科技和香蕉派开源社区联合设计开发，旨在探索 RISC-V Vector 1.0 技术的前沿应用。该开发板集成了高性能的 K230D 芯片，采用双核玄铁 C908 RISC-V CPU，并配备嘉楠自主研发的第三代 KPU（神经网络处理单元）。板载 128MB LPDDR4 内存，可提供出色的本地推理运算能力。CanMV-K230D Zero 以其紧凑的设计和丰富的开发资源，广泛适用于 DIY 项目、物联网设备和嵌入式系统开发，是学习编程、开发边缘 AI 音视频产品和进行性能评估的理想选择。
 
-![开发板接口图](../../images/bpi-canmv-k230d-zero_interface.jpg)
+![开发板接口图](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/images/bpi-canmv-k230d-zero_interface.jpg)
 
 ## 技术规格
 
@@ -30,4 +30,4 @@ CanMV-K230D Zero 开发板由嘉楠科技和香蕉派开源社区联合设计开
 
 使用 BPI-CanMV-K230D Zero 开发板时，需要同时连接两根 USB 数据线，其中一根用于供电，另一根用于串口通信。
 
-![连接示意图](../../images/BPI_K230D_Zero_Wire_Connection.jpg)
+![连接示意图](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/images/BPI_K230D_Zero_Wire_Connection.jpg)

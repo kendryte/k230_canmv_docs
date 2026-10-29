@@ -11,7 +11,7 @@
 - 启动介质中未烧录固件，导致芯片启动失败，自动进入 USB 烧录模式。
 - Boot 模式设置不正确，导致芯片无法读取到正确的固件，从而启动失败。
 
-您可以通过按住 BOOT 按键强制 K230 进入 USB 烧录模式，此时电脑上将显示 `K230 USB Boot Device`，您可以使用 [K230 Burning Tool](https://kendryte-download.canaan-creative.com/k230/downloads/burn_tool/) 烧录固件。
+您可以通过按住 BOOT 按键强制 K230 进入 USB 烧录模式，此时电脑上将显示 `K230 USB Boot Device`，您可以使用 [K230 Burning Tool](https://download.kendryte.com/k230/downloads/burn_tool/) 烧录固件。
 
 在使用 `K230 USB Boot Device` 时，需要通过 [Zadig](https://zadig.akeo.ie/) 安装相应的驱动，以便正常使用烧录工具。
 
@@ -23,7 +23,7 @@
 
 `CanmV-K230-V1.1` 开发板需要修改硬件才可以点亮板载`LED`灯
 
-![how-to-fix](https://www.kendryte.com/api/post/attachment?id=435)
+![how-to-fix](https://www.kendryte.com/api/imagecdn/zh/sdk/canmv_k230_sdk/attachments/dbd335ff2e62.jpg)
 
 ## SDK 问题
 
