@@ -986,23 +986,28 @@ MIPI lane preference during auto-detection, defined in `mpp.vicap`. The underlyi
 
 ## Image Sensor Support List
 
-| Image Sensor Model | Resolution<br>Width x Height | Frame Rate |
-|----------------|---------------------------|--------|
-| OV5647         | 2592x1944                 | 15 FPS |
-|                | 1920x1080                 | 30 FPS |
-|                | 1280x960                  | 45 FPS |
-|                | 1280x720                  | 60 FPS |
-|                | 640x480                   | 90 FPS |
-| GC2093         | 1920x1080                 | 30 FPS |
-|                | 1920x1080                 | 60 FPS |
-|                | 1280x960                  | 90 FPS |
-|                | 1280x720                  | 90 FPS |
-| IMX335         | 1920x1080                 | 30 FPS |
-|                | 2592x1944                 | 30 FPS |
-| SC132GS        | 1080x1280                 | 120 FPS |
-|                | 640x480                   | 240 FPS |
-| BF3238         | 1920x1080                 | 30 FPS |
-|                | 1280x960                  | 30 FPS |
+The following table is extracted from `sensor_info_list` in the application-layer `mpi_sensor.c` (from the same source as MicroPython `Sensor.list_mode()`) and cross-checked against each Sensor’s `sensor_csi*_mode_list.c`. The model order is consistent with the `#if CONFIG_MPP_ENABLE_SENSOR_*` sections in the code.
+
+| Model | Supported Timing List |
+| :--- | :--- |
+| IMX335 | 1920x1080@30（2LANE）、2592x1944@30（2LANE）；CSI0 also supports 2592x1944@30（4LANE, requires `CONFIG_MPP_SENSOR_IMX335_ENABLE_4LANE_CONFIGURE`, and uses `lane_pref=VICAP_MIPI_4LANE`） |
+| OV5647 | 2592x1944@15、1920x1080@30、1280x960@45、1280x720@60、640x480@90、640x480@60（all are 2LANE） |
+| GC2093 | 1920x1080@30、1920x1080@60、1280x960@90、1280x720@90（all are 2LANE） |
+| SC132GS | 1080x1280@120、640x480@240（all are 2LANE） |
+| SC130GS | 1280x1024@90（2LANE, `color_type=SENSOR_MONO`） |
+| XS9950 | 1280x720@25（2LANE, `data_type=YUV422_8`） |
+| BF3238 | 1920x1080@30、1280x960@30（all are 1LANE） |
+| OV13850 | 3840x2160@7（2LANE）；CSI0 4LANE（requires `CONFIG_MPP_SENSOR_OV13850_ENABLE_4LANE_CONFIGURE`, and uses `lane_pref=VICAP_MIPI_4LANE`）：3840x2160@27、1920x1080@30、1920x1080@60、2112x1568@30、2112x1568@60 |
+| IMX415 | 3840x2160@30（CSI0 4LANE only; requires `CONFIG_MPP_ENABLE_SENSOR_IMX415` and `CONFIG_MPP_SENSOR_IMX415_ENABLE_4LANE_CONFIGURE`, and uses `lane_pref=VICAP_MIPI_4LANE`） |
+| IMX675 | 2592x1944@30（2LANE） |
+| IMX290 | 1920x1080@30（2LANE） |
+
+```{note}
+- The support list is based on the code and will be updated with each iteration; on the board, use [`Sensor.list_mode()`](#sensor-list-mode) to view the modes actually included in the current firmware.
+- The defconfigs of the development boards may not enable all `CONFIG_MPP_ENABLE_SENSOR_*`; models that are not enabled will not appear in `list_mode`.
+- Unless otherwise specified, corresponding entries for the modes above are available on CSI0/CSI1/CSI2; **4LANE is CSI0 only**.
+- When both 2LANE / 4LANE are available at the same resolution, use the constructor or the `lane_pref` of `list_mode` to select one. See [lane_pref](#lane-pref) for details.
+```
 
 ---
 
@@ -1059,6 +1064,8 @@ if gain_range:
 ```
 
 ---
+
+<a id="sensor-list-mode"></a>
 
 ### Sensor.list_mode
 

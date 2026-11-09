@@ -986,23 +986,28 @@ while True:
 
 ## 图像传感器支持列表
 
-| 图像传感器型号 | 分辨率<br>Width x Height | 帧率   |
-|----------------|---------------------------|--------|
-| OV5647         | 2592x1944                 | 15 FPS |
-|                | 1920x1080                 | 30 FPS |
-|                | 1280x960                  | 45 FPS |
-|                | 1280x720                  | 60 FPS |
-|                | 640x480                   | 90 FPS |
-| GC2093         | 1920x1080                 | 30 FPS |
-|                | 1920x1080                 | 60 FPS |
-|                | 1280x960                  | 90 FPS |
-|                | 1280x720                  | 90 FPS |
-| IMX335         | 1920x1080                 | 30 FPS |
-|                | 2592x1944                 | 30 FPS |
-| SC132GS        | 1080x1280                 | 120 FPS |
-|                | 640x480                   | 240 FPS |
-| BF3238         | 1920x1080                 | 30 FPS |
-|                | 1280x960                  | 30 FPS |
+下表根据应用层 `mpi_sensor.c` 中 `sensor_info_list` 提取（与 MicroPython `Sensor.list_mode()` 同源），并用各 Sensor 的 `sensor_csi*_mode_list.c` 交叉核对。型号顺序与代码中 `#if CONFIG_MPP_ENABLE_SENSOR_*` 区块一致。
+
+| 型号 | 支持 Timing List |
+| :--- | :--- |
+| IMX335 | 1920x1080@30（2LANE）、2592x1944@30（2LANE）；CSI0 另有 2592x1944@30（4LANE，需 `CONFIG_MPP_SENSOR_IMX335_ENABLE_4LANE_CONFIGURE`，并用 `lane_pref=VICAP_MIPI_4LANE`） |
+| OV5647 | 2592x1944@15、1920x1080@30、1280x960@45、1280x720@60、640x480@90、640x480@60（均为 2LANE） |
+| GC2093 | 1920x1080@30、1920x1080@60、1280x960@90、1280x720@90（均为 2LANE） |
+| SC132GS | 1080x1280@120、640x480@240（均为 2LANE） |
+| SC130GS | 1280x1024@90（2LANE，`color_type=SENSOR_MONO`） |
+| XS9950 | 1280x720@25（2LANE，`data_type=YUV422_8`） |
+| BF3238 | 1920x1080@30、1280x960@30（均为 1LANE） |
+| OV13850 | 3840x2160@7（2LANE）；CSI0 4LANE（需 `CONFIG_MPP_SENSOR_OV13850_ENABLE_4LANE_CONFIGURE`，并用 `lane_pref=VICAP_MIPI_4LANE`）：3840x2160@27、1920x1080@30、1920x1080@60、2112x1568@30、2112x1568@60 |
+| IMX415 | 3840x2160@30（仅 CSI0 4LANE；需 `CONFIG_MPP_ENABLE_SENSOR_IMX415` 且 `CONFIG_MPP_SENSOR_IMX415_ENABLE_4LANE_CONFIGURE`，并用 `lane_pref=VICAP_MIPI_4LANE`） |
+| IMX675 | 2592x1944@30（2LANE） |
+| IMX290 | 1920x1080@30（2LANE） |
+
+```{note}
+- 支持列表以代码为准，会随迭代更新；板端请用 [`Sensor.list_mode()`](#sensor-list-mode) 查看当前固件实际编入的模式。
+- 各开发板 defconfig 未必打开全部 `CONFIG_MPP_ENABLE_SENSOR_*`；未启用的型号不会出现在 `list_mode` 中。
+- 除注明外，上述模式在 CSI0/CSI1/CSI2 均有对应条目；**4LANE 仅 CSI0**。
+- 同分辨率同时存在 2LANE / 4LANE 时，用构造函数或 `list_mode` 的 `lane_pref` 选择，详见 [lane_pref](#lane-pref)。
+```
 
 ---
 
@@ -1059,6 +1064,8 @@ if gain_range:
 ```
 
 ---
+
+<a id="sensor-list-mode"></a>
 
 ### Sensor.list_mode
 
